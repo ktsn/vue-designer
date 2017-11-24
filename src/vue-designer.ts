@@ -1,47 +1,43 @@
 import VueDesignerView from './vue-designer-view';
 import { CompositeDisposable } from 'atom';
 
-export = {
+let vueDesignerView = null as any
+let modalPanel = null as any
+let subscriptions = null as any
 
-  vueDesignerView: null as any,
-  modalPanel: null as any,
-  subscriptions: null as any,
+export function activate(state: any) {
+  vueDesignerView = new VueDesignerView(state.vueDesignerViewState);
+  modalPanel = atom.workspace.addModalPanel({
+    item: vueDesignerView.getElement(),
+    visible: false
+  });
 
-  activate(state: any) {
-    this.vueDesignerView = new VueDesignerView(state.vueDesignerViewState);
-    this.modalPanel = atom.workspace.addModalPanel({
-      item: this.vueDesignerView.getElement(),
-      visible: false
-    });
+  // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
+  subscriptions = new CompositeDisposable();
 
-    // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-    this.subscriptions = new CompositeDisposable();
+  // Register command that toggles this view
+  subscriptions.add(atom.commands.add('atom-workspace', {
+    'vue-designer:toggle': () => toggle()
+  }));
+}
 
-    // Register command that toggles this view
-    this.subscriptions.add(atom.commands.add('atom-workspace', {
-      'vue-designer:toggle': () => this.toggle()
-    }));
-  },
+export function deactivate() {
+  modalPanel.destroy();
+  subscriptions.dispose();
+  vueDesignerView.destroy();
+}
 
-  deactivate() {
-    this.modalPanel.destroy();
-    this.subscriptions.dispose();
-    this.vueDesignerView.destroy();
-  },
+export function serialize() {
+  return {
+    vueDesignerViewState: vueDesignerView.serialize()
+  };
+}
 
-  serialize() {
-    return {
-      vueDesignerViewState: this.vueDesignerView.serialize()
-    };
-  },
-
-  toggle() {
-    console.log('VueDesigner was toggled!');
-    return (
-      this.modalPanel.isVisible() ?
-      this.modalPanel.hide() :
-      this.modalPanel.show()
-    );
-  }
-
-};
+function toggle() {
+  console.log('VueDesigner was toggled!');
+  return (
+    modalPanel.isVisible() ?
+    modalPanel.hide() :
+    modalPanel.show()
+  );
+}

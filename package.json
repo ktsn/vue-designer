@@ -5,7 +5,7 @@
   "description": "A short description of your package",
   "keywords": [],
   "scripts": {
-    "build": "tsc -p ."
+    "build": "webpack --config webpack.config.js"
   },
   "activationCommands": {
     "atom-workspace": "vue-designer:toggle"
@@ -17,6 +17,12 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@types/atom": "^1.22.2"
+    "@types/atom": "^1.22.2",
+    "css-loader": "^0.28.7",
+    "ts-loader": "^3.1.1",
+    "typescript": "^2.6.1",
+    "vue-loader": "^13.5.0",
+    "vue-template-compiler": "^2.5.8",
+    "webpack": "^3.8.1"
   }
 }

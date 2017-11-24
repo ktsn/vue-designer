@@ -1,0 +1,22 @@
+{
+  "name": "vue-designer",
+  "main": "./lib/vue-designer",
+  "version": "0.0.0",
+  "description": "A short description of your package",
+  "keywords": [],
+  "scripts": {
+    "build": "tsc -p ."
+  },
+  "activationCommands": {
+    "atom-workspace": "vue-designer:toggle"
+  },
+  "repository": "https://github.com/atom/vue-designer",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/atom": "^1.22.2"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "context-menu": {
+    "atom-text-editor": [
+      {
+        "label": "Toggle vue-designer",
+        "command": "vue-designer:toggle"
+      }
+    ]
+  },
+  "menu": [
+    {
+      "label": "Packages",
+      "submenu": [
+        {
+          "label": "vue-designer",
+          "submenu": [
+            {
+              "label": "Toggle",
+              "command": "vue-designer:toggle"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

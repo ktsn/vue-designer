@@ -1,12 +1,12 @@
-import VueDesignerView from './vue-designer-view';
+import { createView, View } from './view/main';
 import { CompositeDisposable } from 'atom';
 
-let vueDesignerView = null as any
+let vueDesignerView: View
 let modalPanel = null as any
 let subscriptions = null as any
 
 export function activate(state: any) {
-  vueDesignerView = new VueDesignerView(state.vueDesignerViewState);
+  vueDesignerView = createView();
   modalPanel = atom.workspace.addModalPanel({
     item: vueDesignerView.getElement(),
     visible: false

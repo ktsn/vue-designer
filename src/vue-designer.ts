@@ -1,27 +1,23 @@
 import * as vscode from 'vscode'
+import { startServer, disposeServer } from './server/main'
 import { parseComponent } from 'vue-template-compiler'
-import { createView, View } from './view/main';
-
-let vueDesignerView: View
 
 export function activate(context: vscode.ExtensionContext) {
-  vueDesignerView = createView()
+  const previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer');
+  const server = startServer()
 
-  let previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer');
+  console.log(`Vue Designer server listening at http://localhost:${server.htmlServer.port}`)
 
   class TextDocumentContentProvider implements vscode.TextDocumentContentProvider {
-    private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
-
     public provideTextDocumentContent(uri: vscode.Uri): string {
       return this.createVueSnippet();
     }
 
-    get onDidChange(): vscode.Event<vscode.Uri> {
-      return this._onDidChange.event;
-    }
-
     public update(uri: vscode.Uri) {
-      this._onDidChange.fire(uri);
+      let editor = vscode.window.activeTextEditor!;
+      let text = editor.document.getText();
+
+      const { template, styles } = parseComponent(text)
     }
 
     private createVueSnippet() {
@@ -33,11 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     private extractSnippet(): string {
-      let editor = vscode.window.activeTextEditor!;
-      let text = editor.document.getText();
-      const { template, styles } = parseComponent(text)
-
-      return this.snippet(template, styles);
+      return this.snippet();
     }
 
     private errorSnippet(error: string): string {
@@ -47,14 +39,19 @@ export function activate(context: vscode.ExtensionContext) {
         </body>`;
     }
 
-    private snippet(template: any, styles: any): string {
+    private snippet(): string {
       return `<style>
-        ${styles.map((s: any) => s.content).join('\n')}
+        html, body, iframe {
+          margin: 0;
+          padding: 0;
+          height: 100%;
+          width: 100%;
+          border-width: 0;
+          background-color: #fff;
+        }
         </style>
         <body>
-          <div id="app">
-            ${template.content}
-          </div>
+          <iframe src="http://localhost:${server.staticServer.address().port}"></iframe>
         </body>`;
     }
   }
@@ -81,5 +78,5 @@ export function activate(context: vscode.ExtensionContext) {
     });
   });
 
-  context.subscriptions.push(disposable, registration);
+  context.subscriptions.push(disposable, registration, { dispose: () => disposeServer(server) });
 }

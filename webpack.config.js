@@ -5,11 +5,10 @@ const base = path.resolve(__dirname)
 
 module.exports = {
   context: path.join(base, 'src'),
-  entry: './vue-designer.ts',
+  entry: './view/main.ts',
   output: {
     path: path.join(base, 'lib'),
-    libraryTarget: 'commonjs',
-    filename: 'vue-designer.js'
+    filename: 'vue-designer-view.js'
   },
   resolve: {
     extensions: ['.js', '.json', '.ts']
@@ -32,10 +31,5 @@ module.exports = {
   plugins: [
     new webpack.optimize.ModuleConcatenationPlugin()
   ],
-  devtool: "source-map",
-  externals: {
-    vscode: {
-      commonjs: 'vscode'
-    }
-  }
+  devtool: 'source-map',
 }

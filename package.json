@@ -6,7 +6,7 @@
   "keywords": [],
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",
-    "build": "webpack --config webpack.config.js"
+    "build": "tsc -p tsconfig.main.json && webpack --config webpack.config.js"
   },
   "repository": "https://github.com/ktsn/vue-designer",
   "license": "MIT",

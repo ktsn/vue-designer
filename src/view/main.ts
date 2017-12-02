@@ -1,24 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-export interface View {
-  getElement(): Element
-  destroy(): void
-}
-
-export function createView(): View {
-  const vm = new Vue({
-    render: h => h(App)
-  }).$mount()
-
-  return {
-    getElement() {
-      return vm.$el
-    },
-
-    destroy() {
-      vm.$destroy()
-      vm.$el.remove()
-    }
-  }
-}
+new Vue({
+  el: '#app',
+  render: h => h(App)
+})

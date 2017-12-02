@@ -1,54 +1,85 @@
-import { ExtensionContext, StatusBarAlignment, window, StatusBarItem, Selection, workspace, TextEditor, commands } from 'vscode'
+import * as vscode from 'vscode'
+import { parseComponent } from 'vue-template-compiler'
 import { createView, View } from './view/main';
 
 let vueDesignerView: View
 
-export function activate(context: ExtensionContext) {
-  vueDesignerView = createView();
-  const status = window.createStatusBarItem(StatusBarAlignment.Right, 100);
-  status.command = 'extension.selectedLines';
-  context.subscriptions.push(status);
+export function activate(context: vscode.ExtensionContext) {
+  vueDesignerView = createView()
 
-  context.subscriptions.push(window.onDidChangeActiveTextEditor(e => updateStatus(status)));
-  context.subscriptions.push(window.onDidChangeTextEditorSelection(e => updateStatus(status)));
-  context.subscriptions.push(window.onDidChangeTextEditorViewColumn(e => updateStatus(status)));
-  context.subscriptions.push(workspace.onDidOpenTextDocument(e => updateStatus(status)));
-  context.subscriptions.push(workspace.onDidCloseTextDocument(e => updateStatus(status)));
+  let previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer');
 
-  context.subscriptions.push(commands.registerCommand('extension.selectedLines', () => {
-    window.showInformationMessage(getSelectedLines());
-  }));
+  class TextDocumentContentProvider implements vscode.TextDocumentContentProvider {
+    private _onDidChange = new vscode.EventEmitter<vscode.Uri>();
 
-  updateStatus(status);
-}
+    public provideTextDocumentContent(uri: vscode.Uri): string {
+      return this.createVueSnippet();
+    }
 
-function updateStatus(status: StatusBarItem): void {
-  let text = getSelectedLines();
-  if (text) {
-    status.text = '$(megaphone) ' + text;
-  }
+    get onDidChange(): vscode.Event<vscode.Uri> {
+      return this._onDidChange.event;
+    }
 
-  if (text) {
-    status.show();
-  } else {
-    status.hide();
-  }
-}
+    public update(uri: vscode.Uri) {
+      this._onDidChange.fire(uri);
+    }
 
-function getSelectedLines(): string {
-  const editor = window.activeTextEditor;
-  let text = '';
+    private createVueSnippet() {
+      let editor = vscode.window.activeTextEditor!;
+      if (editor.document.languageId !== 'vue') {
+        return this.errorSnippet("Active editor doesn't show a Vue document - no properties to preview.")
+      }
+      return this.extractSnippet();
+    }
 
-  if (editor) {
-    let lines = 0;
-    editor.selections.forEach(selection => {
-      lines += (selection.end.line - selection.start.line + 1);
-    });
+    private extractSnippet(): string {
+      let editor = vscode.window.activeTextEditor!;
+      let text = editor.document.getText();
+      const { template, styles } = parseComponent(text)
 
-    if (lines > 0) {
-      text = `${lines} line(s) selected`;
+      return this.snippet(template, styles);
+    }
+
+    private errorSnippet(error: string): string {
+      return `
+        <body>
+          ${error}
+        </body>`;
+    }
+
+    private snippet(template: any, styles: any): string {
+      return `<style>
+        ${styles.map((s: any) => s.content).join('\n')}
+        </style>
+        <body>
+          <div id="app">
+            ${template.content}
+          </div>
+        </body>`;
     }
   }
 
-  return text;
+  let provider = new TextDocumentContentProvider();
+  let registration = vscode.workspace.registerTextDocumentContentProvider('vue-designer', provider);
+
+  vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
+    if (e.document === vscode.window.activeTextEditor!.document) {
+      provider.update(previewUri);
+    }
+  });
+
+  vscode.window.onDidChangeTextEditorSelection((e: vscode.TextEditorSelectionChangeEvent) => {
+    if (e.textEditor === vscode.window.activeTextEditor) {
+      provider.update(previewUri);
+    }
+  })
+
+  let disposable = vscode.commands.registerCommand('extension.showVueComponentPreview', () => {
+    return vscode.commands.executeCommand('vscode.previewHtml', previewUri, vscode.ViewColumn.Two, 'Vue component preview').then((success) => {
+    }, (reason) => {
+      vscode.window.showErrorMessage(reason);
+    });
+  });
+
+  context.subscriptions.push(disposable, registration);
 }

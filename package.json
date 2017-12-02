@@ -14,6 +14,22 @@
   "activationEvents": [
     "*"
   ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.showVueComponentPreview",
+        "title": "Show Vue Component Preview"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "extension.showVueComponentPreview",
+          "when": "resourceLangId == vue-html"
+        }
+      ]
+    }
+  },
   "engines": {
     "vscode": "^1.18.0"
   },
@@ -26,7 +42,7 @@
     "typescript": "^2.6.1",
     "vscode": "^1.1.9",
     "vue-loader": "^13.5.0",
-    "vue-template-compiler": "^2.5.8",
+    "vue-template-compiler": "^2.5.9",
     "webpack": "^3.8.1"
   }
 }

@@ -13,6 +13,12 @@ const html = `<html>
 
 export function startStaticServer(): http.Server {
   const server = http.createServer((req, res) => {
+    if (!/^localhost(:\d+)?$/.test(req.headers.host || '')) {
+      res.statusCode = 403
+      res.end()
+      return
+    }
+
     if (req.url === '/' || req.url === '/index.html') {
       res.write(html)
     } else if (req.url === '/vue-designer-view.js') {

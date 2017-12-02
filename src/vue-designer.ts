@@ -1,43 +1,54 @@
+import { ExtensionContext, StatusBarAlignment, window, StatusBarItem, Selection, workspace, TextEditor, commands } from 'vscode'
 import { createView, View } from './view/main';
-import { CompositeDisposable } from 'atom';
 
 let vueDesignerView: View
-let modalPanel = null as any
-let subscriptions = null as any
 
-export function activate(state: any) {
+export function activate(context: ExtensionContext) {
   vueDesignerView = createView();
-  modalPanel = atom.workspace.addModalPanel({
-    item: vueDesignerView.getElement(),
-    visible: false
-  });
+  const status = window.createStatusBarItem(StatusBarAlignment.Right, 100);
+  status.command = 'extension.selectedLines';
+  context.subscriptions.push(status);
 
-  // Events subscribed to in atom's system can be easily cleaned up with a CompositeDisposable
-  subscriptions = new CompositeDisposable();
+  context.subscriptions.push(window.onDidChangeActiveTextEditor(e => updateStatus(status)));
+  context.subscriptions.push(window.onDidChangeTextEditorSelection(e => updateStatus(status)));
+  context.subscriptions.push(window.onDidChangeTextEditorViewColumn(e => updateStatus(status)));
+  context.subscriptions.push(workspace.onDidOpenTextDocument(e => updateStatus(status)));
+  context.subscriptions.push(workspace.onDidCloseTextDocument(e => updateStatus(status)));
 
-  // Register command that toggles this view
-  subscriptions.add(atom.commands.add('atom-workspace', {
-    'vue-designer:toggle': () => toggle()
+  context.subscriptions.push(commands.registerCommand('extension.selectedLines', () => {
+    window.showInformationMessage(getSelectedLines());
   }));
+
+  updateStatus(status);
 }
 
-export function deactivate() {
-  modalPanel.destroy();
-  subscriptions.dispose();
-  vueDesignerView.destroy();
+function updateStatus(status: StatusBarItem): void {
+  let text = getSelectedLines();
+  if (text) {
+    status.text = '$(megaphone) ' + text;
+  }
+
+  if (text) {
+    status.show();
+  } else {
+    status.hide();
+  }
 }
 
-export function serialize() {
-  return {
-    vueDesignerViewState: vueDesignerView.serialize()
-  };
-}
+function getSelectedLines(): string {
+  const editor = window.activeTextEditor;
+  let text = '';
 
-function toggle() {
-  console.log('VueDesigner was toggled!');
-  return (
-    modalPanel.isVisible() ?
-    modalPanel.hide() :
-    modalPanel.show()
-  );
+  if (editor) {
+    let lines = 0;
+    editor.selections.forEach(selection => {
+      lines += (selection.end.line - selection.start.line + 1);
+    });
+
+    if (lines > 0) {
+      text = `${lines} line(s) selected`;
+    }
+  }
+
+  return text;
 }

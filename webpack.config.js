@@ -32,9 +32,10 @@ module.exports = {
   plugins: [
     new webpack.optimize.ModuleConcatenationPlugin()
   ],
+  devtool: "source-map",
   externals: {
-    atom: {
-      commonjs: 'atom'
+    vscode: {
+      commonjs: 'vscode'
     }
   }
 }

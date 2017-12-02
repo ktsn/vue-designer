@@ -4,7 +4,6 @@ import App from './App.vue'
 export interface View {
   getElement(): Element
   destroy(): void
-  serialize(): any
 }
 
 export function createView(): View {
@@ -20,8 +19,6 @@ export function createView(): View {
     destroy() {
       vm.$destroy()
       vm.$el.remove()
-    },
-
-    serialize() {}
+    }
   }
 }

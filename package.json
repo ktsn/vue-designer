@@ -5,24 +5,26 @@
   "description": "A short description of your package",
   "keywords": [],
   "scripts": {
+    "postinstall": "node ./node_modules/vscode/bin/install",
     "build": "webpack --config webpack.config.js"
   },
-  "activationCommands": {
-    "atom-workspace": "vue-designer:toggle"
-  },
-  "repository": "https://github.com/atom/vue-designer",
+  "repository": "https://github.com/ktsn/vue-designer",
   "license": "MIT",
+  "publisher": "",
+  "activationEvents": [
+    "*"
+  ],
   "engines": {
-    "atom": ">=1.0.0 <2.0.0"
+    "vscode": "^1.18.0"
   },
   "dependencies": {
     "vue": "^2.5.8"
   },
   "devDependencies": {
-    "@types/atom": "^1.22.2",
     "css-loader": "^0.28.7",
     "ts-loader": "^3.1.1",
     "typescript": "^2.6.1",
+    "vscode": "^1.1.9",
     "vue-loader": "^13.5.0",
     "vue-template-compiler": "^2.5.8",
     "webpack": "^3.8.1"

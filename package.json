@@ -6,6 +6,9 @@
   "keywords": [],
   "scripts": {
     "postinstall": "node ./node_modules/vscode/bin/install",
+    "watch": "run-p watch:*",
+    "watch:ts": "tsc --watch -p tsconfig.main.json",
+    "watch:webpack": "webpack --watch --config webpack.config.js",
     "build": "tsc -p tsconfig.main.json && webpack --config webpack.config.js"
   },
   "repository": "https://github.com/ktsn/vue-designer",
@@ -38,6 +41,7 @@
   },
   "devDependencies": {
     "css-loader": "^0.28.7",
+    "npm-run-all": "^4.1.2",
     "ts-loader": "^3.1.1",
     "typescript": "^2.6.1",
     "vscode": "^1.1.9",

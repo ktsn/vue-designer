@@ -37,9 +37,11 @@
     "vscode": "^1.18.0"
   },
   "dependencies": {
-    "vue": "^2.5.8"
+    "vue": "^2.5.8",
+    "ws": "^3.3.2"
   },
   "devDependencies": {
+    "@types/ws": "^3.2.1",
     "css-loader": "^0.28.7",
     "npm-run-all": "^4.1.2",
     "ts-loader": "^3.1.1",

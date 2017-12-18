@@ -31,5 +31,5 @@ module.exports = {
   plugins: [
     new webpack.optimize.ModuleConcatenationPlugin()
   ],
-  devtool: 'source-map',
+  devtool: 'inline-source-map'
 }

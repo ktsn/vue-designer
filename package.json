@@ -9,7 +9,9 @@
     "watch": "run-p watch:*",
     "watch:ts": "tsc --watch -p tsconfig.main.json",
     "watch:webpack": "webpack --watch --config webpack.config.js",
-    "build": "tsc -p tsconfig.main.json && webpack --config webpack.config.js"
+    "build": "tsc -p tsconfig.main.json && webpack --config webpack.config.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "repository": "https://github.com/ktsn/vue-designer",
   "license": "MIT",
@@ -36,14 +38,28 @@
   "engines": {
     "vscode": "^1.18.0"
   },
+  "jest": {
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "testRegex": "/test/.+\\.spec\\.(js|ts)$",
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ]
+  },
   "dependencies": {
     "vue": "^2.5.8",
     "ws": "^3.3.2"
   },
   "devDependencies": {
+    "@types/jest": "^21.1.8",
     "@types/ws": "^3.2.1",
     "css-loader": "^0.28.7",
+    "jest": "^22.0.3",
     "npm-run-all": "^4.1.2",
+    "ts-jest": "^22.0.0",
     "ts-loader": "^3.1.1",
     "typescript": "^2.6.1",
     "vscode": "^1.1.9",

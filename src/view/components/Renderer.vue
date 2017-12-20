@@ -1,23 +1,38 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
+import Node from './Node.vue'
+import { Template } from '../../payload'
 
 export default Vue.extend({
   name: 'Renderer',
   functional: true,
 
   props: {
-    node: {
-      type: Object,
+    template: Object as { (): Template | null },
+    styles: {
+      type: Array as { (): string[] },
       required: true
     }
   },
 
   render(h, { props }): VNode {
-    // TODO: use parsed template/style
-    return h('div', [
-      h('style', { domProps: { textContent: props.node.style } }),
-      h('div', { domProps: { innerHTML: props.node.template } })
-    ])
+    // TODO: use parsed styles
+    const children = props.styles.map((style: string) => h('style', { domProps: { textContent: style } }))
+    if (props.template) {
+      children.push(
+        h('div', props.template.children.map(c => {
+          switch (c.type) {
+            case 'Element':
+              return h(Node, { props: { data: c } })
+            case 'TextNode':
+              return c.text
+            case 'ExpressionNode':
+              return c.expression
+          }
+        }))
+      )
+    }
+    return h('div', children)
   }
 })
 </script>

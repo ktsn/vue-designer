@@ -1,7 +1,9 @@
 import * as vscode from 'vscode'
 import { startServer } from './server/main'
-import { parseComponent } from 'vue-template-compiler'
 import { initDocument } from './server/communication';
+import { parseComponent } from 'vue-template-compiler'
+import * as parser from 'vue-eslint-parser'
+import { templateToPayload } from './ast/template';
 
 export function activate(context: vscode.ExtensionContext) {
   let lastActiveTextEditor = vscode.window.activeTextEditor
@@ -17,14 +19,20 @@ export function activate(context: vscode.ExtensionContext) {
     ws => {
       console.log('Client connected')
       if (lastActiveTextEditor) {
-        const { template, styles } = parseComponent(lastActiveTextEditor.document.getText())
-        initDocument(ws, template.content, styles.map((s: any) => s.content).join('\n'))
+        const code = lastActiveTextEditor.document.getText()
+        const { styles } = parseComponent(code)
+        const program = parser.parse(code, { sourceType: 'module' })
+        const template = program.templateBody ? templateToPayload(program.templateBody, code) : null
+        initDocument(ws, template, styles.map((s: any) => s.content))
       }
 
       vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
         if (e.document === vscode.window.activeTextEditor!.document) {
-          const { template, styles } = parseComponent(e.document.getText())
-          initDocument(ws, template.content, styles.map((s: any) => s.content).join('\n'))
+          const code = e.document.getText()
+          const { styles } = parseComponent(code)
+          const program = parser.parse(code, { sourceType: 'module' })
+          const template = program.templateBody ? templateToPayload(program.templateBody, code) : null
+          initDocument(ws, template, styles.map((s: any) => s.content))
         }
       })
     },

@@ -1,4 +1,4 @@
-import { ServerPayload, ClientPayload } from "../payload";
+import { ServerPayload, ClientPayload, Template } from "../payload";
 import { DocumentProvider } from "./document";
 
 export class ClientConnection implements DocumentProvider {
@@ -19,10 +19,10 @@ export class ClientConnection implements DocumentProvider {
     this.ws.send(JSON.stringify(payload))
   }
 
-  onInitDocument(fn: (template: string, style: string) => void): void {
+  onInitDocument(fn: (template: Template | null, styles: string[]) => void): void {
     this.onMessages.push(data => {
-      if (data.type === 'init-document') {
-        fn(data.template, data.style)
+      if (data.type === 'InitDocument') {
+        fn(data.template, data.styles)
       }
     })
   }

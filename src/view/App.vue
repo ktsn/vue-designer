@@ -1,9 +1,10 @@
 <template>
-  <Renderer :node="node" />
+  <Renderer :template="template" :styles="styles" />
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import { Template } from '../payload'
 import Renderer from './components/Renderer.vue'
 import { ClientConnection } from './communication'
 import { Document } from './document'
@@ -17,7 +18,8 @@ export default Vue.extend({
 
   data() {
     return {
-      node: {}
+      template: null as Template | null,
+      styles: [] as string[]
     }
   },
 
@@ -25,8 +27,9 @@ export default Vue.extend({
     const connection = new ClientConnection()
     connection.connect(location.port)
     const document = new Document(connection)
-    document.subscribe(doc => {
-      this.node = doc
+    document.subscribe((template, styles) => {
+      this.template = template
+      this.styles = styles
     })
   }
 })

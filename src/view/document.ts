@@ -1,19 +1,23 @@
+import { Template } from "../payload";
+
 export interface DocumentProvider {
-  onInitDocument(fn: (template: string, style: string) => void): void
+  onInitDocument(fn: (template: Template | null, styles: string[]) => void): void
 }
 
 export class Document {
-  private listeners: ((document: any) => void)[] = []
+  private listeners: ((template: Template | null, styles: string[]) => void)[] = []
 
   constructor(private provider: DocumentProvider) {
-    provider.onInitDocument((template, style) => {
+    provider.onInitDocument((template, styles) => {
       this.listeners.forEach(listener => {
-        listener({ template, style })
+        listener(template, styles)
       })
     })
   }
 
-  subscribe(listener: (document: any) => void): () => void {
+  subscribe(
+    listener: (template: Template | null, styles: string[]) => void
+  ): () => void {
     this.listeners.push(listener)
     return () => {
       this.listeners.splice(this.listeners.indexOf(listener), 1)

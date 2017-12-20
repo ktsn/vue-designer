@@ -2,9 +2,17 @@ export type ServerPayload = InitDocument
 export type ClientPayload = {}
 
 export interface InitDocument {
-  type: 'init-document',
-  template: Element | undefined
+  type: 'InitDocument',
+  template: Template | null
   styles: string[]
+}
+
+export type ElementChild = Element | TextNode | ExpressionNode
+
+export interface Template {
+  type: 'Template'
+  attributes: Attribute[]
+  children: ElementChild[]
 }
 
 export interface Element {
@@ -12,7 +20,7 @@ export interface Element {
   path: number[]
   name: string
   attributes: Attribute[]
-  children: (Element | TextNode | ExpressionNode)[]
+  children: ElementChild[]
 }
 
 export interface TextNode {
@@ -34,7 +42,7 @@ export interface Attribute {
   value: string | null
 }
 
-export function element(path: number[], name: string, attributes: Attribute[], children: (Element | TextNode | ExpressionNode)[]): Element {
+export function element(path: number[], name: string, attributes: Attribute[], children: ElementChild[]): Element {
   return {
     type: 'Element',
     path,

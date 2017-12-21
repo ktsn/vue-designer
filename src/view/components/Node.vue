@@ -1,6 +1,14 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import { Element } from '../../payload'
+import { Element, Attribute } from '../../payload'
+
+function toAttrs(attrs: Attribute[]): Record<string, string | null> {
+  const res: Record<string, string | null> = {}
+  attrs.forEach(attr => {
+    res[attr.name] = attr.value
+  })
+  return res
+}
 
 export default Vue.extend({
   name: 'Node',
@@ -17,7 +25,7 @@ export default Vue.extend({
     const { data } = props
     return h(
       data.name,
-      {},
+      { attrs: toAttrs(data.attributes) },
       data.children.map(c => {
         switch (c.type) {
           case 'Element':

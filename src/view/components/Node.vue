@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
+import Child from './Child.vue'
 import { Element, Attribute } from '../../payload'
 
 function toAttrs(attrs: Attribute[]): Record<string, string | null> {
@@ -26,16 +27,7 @@ export default Vue.extend({
     return h(
       data.name,
       { attrs: toAttrs(data.attributes) },
-      data.children.map(c => {
-        switch (c.type) {
-          case 'Element':
-            return h('Node', { props: { data: c } })
-          case 'TextNode':
-            return c.text
-          case 'ExpressionNode':
-            return c.expression
-        }
-      })
+      data.children.map(c => h(Child, { props: { data: c } }))
     )
   }
 })

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import Node from './Node.vue'
+import Child from './Child.vue'
 import { Template } from '../../payload'
 
 export default Vue.extend({
@@ -17,21 +17,18 @@ export default Vue.extend({
 
   render(h, { props }): VNode {
     // TODO: use parsed styles
-    const children = props.styles.map((style: string) => h('style', { domProps: { textContent: style } }))
+    const children = props.styles.map((style: string) => {
+      return h('style', { domProps: { textContent: style } })
+    })
+
     if (props.template) {
       children.push(
         h('div', props.template.children.map(c => {
-          switch (c.type) {
-            case 'Element':
-              return h(Node, { props: { data: c } })
-            case 'TextNode':
-              return c.text
-            case 'ExpressionNode':
-              return c.expression
-          }
+          return h(Child, { props: { data: c } })
         }))
       )
     }
+
     return h('div', children)
   }
 })

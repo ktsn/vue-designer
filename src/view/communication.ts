@@ -1,5 +1,6 @@
-import { ServerPayload, ClientPayload, Template } from "../payload";
-import { DocumentProvider } from "./document";
+import { ServerPayload, ClientPayload } from '../payload'
+import { Template } from '../parser/template'
+import { DocumentProvider } from './document'
 
 export class ClientConnection implements DocumentProvider {
   private ws: WebSocket | null = null

@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
-import { Template } from '../../payload'
+import { Template } from '../../parser/template'
 
 export default Vue.extend({
   name: 'Renderer',

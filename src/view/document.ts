@@ -1,4 +1,4 @@
-import { Template } from "../payload";
+import { Template } from "../parser/template";
 
 export interface DocumentProvider {
   onInitDocument(fn: (template: Template | null, styles: string[]) => void): void

@@ -1,6 +1,6 @@
 import * as WebSocket from 'ws'
 import { ServerPayload } from "../payload";
-import { Template } from '../payload';
+import { Template } from '../parser/template';
 
 export function initDocument(ws: WebSocket, template: Template | null, styles: string[]): void {
   send(ws, {

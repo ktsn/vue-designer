@@ -3,7 +3,7 @@ import { startServer } from './server/main'
 import { initDocument } from './server/communication';
 import { parseComponent } from 'vue-template-compiler'
 import * as parser from 'vue-eslint-parser'
-import { templateToPayload } from './ast/template';
+import { templateToPayload } from './parser/template';
 
 export function activate(context: vscode.ExtensionContext) {
   let lastActiveTextEditor = vscode.window.activeTextEditor

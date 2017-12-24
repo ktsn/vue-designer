@@ -4,7 +4,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Template } from '../payload'
+import { Template } from '../parser/template'
 import Renderer from './components/Renderer.vue'
 import { ClientConnection } from './communication'
 import { Document } from './document'

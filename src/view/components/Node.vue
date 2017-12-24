@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
-import { Element, Attribute } from '../../payload'
+import { Element, Attribute } from '../../parser/template'
 
 function toAttrs(attrs: Attribute[]): Record<string, string | null> {
   const res: Record<string, string | null> = {}

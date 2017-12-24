@@ -56,7 +56,6 @@
     "ws": "^3.3.2"
   },
   "devDependencies": {
-    "@types/estree": "0.0.38",
     "@types/jest": "^21.1.8",
     "@types/ws": "^3.2.1",
     "css-loader": "^0.28.7",

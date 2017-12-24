@@ -20,7 +20,9 @@ export class ClientConnection implements DocumentProvider {
     this.ws.send(JSON.stringify(payload))
   }
 
-  onInitDocument(fn: (template: Template | null, styles: string[]) => void): void {
+  onInitDocument(
+    fn: (template: Template | null, styles: string[]) => void
+  ): void {
     this.onMessages.push(data => {
       if (data.type === 'InitDocument') {
         fn(data.template, data.styles)

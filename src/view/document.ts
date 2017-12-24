@@ -1,11 +1,16 @@
-import { Template } from "../parser/template";
+import { Template } from '../parser/template'
 
 export interface DocumentProvider {
-  onInitDocument(fn: (template: Template | null, styles: string[]) => void): void
+  onInitDocument(
+    fn: (template: Template | null, styles: string[]) => void
+  ): void
 }
 
 export class Document {
-  private listeners: ((template: Template | null, styles: string[]) => void)[] = []
+  private listeners: ((
+    template: Template | null,
+    styles: string[]
+  ) => void)[] = []
 
   constructor(private provider: DocumentProvider) {
     provider.onInitDocument((template, styles) => {

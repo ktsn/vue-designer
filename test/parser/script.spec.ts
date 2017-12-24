@@ -39,11 +39,13 @@ describe('Script parser', () => {
 
     const program = parse(code, { sourceType: 'module' })
     const extracted = extractProps(program.body)
-    const expected: Prop[] = [{
-      name: 'test',
-      type: 'any',
-      default: undefined
-    }]
+    const expected: Prop[] = [
+      {
+        name: 'test',
+        type: 'any',
+        default: undefined
+      }
+    ]
     expect(extracted).toEqual(expected)
   })
 })

@@ -1,6 +1,9 @@
 import { AST } from 'vue-eslint-parser'
 
-export function templateToPayload(body: AST.VElement & AST.HasConcreteInfo, code: string): Template {
+export function templateToPayload(
+  body: AST.VElement & AST.HasConcreteInfo,
+  code: string
+): Template {
   return {
     type: 'Template',
     attributes: body.startTag.attributes
@@ -10,15 +13,18 @@ export function templateToPayload(body: AST.VElement & AST.HasConcreteInfo, code
   }
 }
 
-function transformElement(el: AST.VElement, code: string, path: number[]): Element {
+function transformElement(
+  el: AST.VElement,
+  code: string,
+  path: number[]
+): Element {
   return element(
     path,
     el.name,
     el.startTag.attributes
       .filter(attr => !attr.directive)
       .map((attr, i) => transformAttribute(attr as AST.VAttribute, i)),
-    el.children
-      .map((child, i) => transformChild(child, code, path.concat(i)))
+    el.children.map((child, i) => transformChild(child, code, path.concat(i)))
   )
 }
 
@@ -26,7 +32,11 @@ function transformAttribute(attr: AST.VAttribute, index: number): Attribute {
   return attribute(index, attr.key.name, attr.value && attr.value.value)
 }
 
-function transformChild(child: AST.VElement | AST.VText | AST.VExpressionContainer, code: string, path: number[]): ElementChild {
+function transformChild(
+  child: AST.VElement | AST.VText | AST.VExpressionContainer,
+  code: string,
+  path: number[]
+): ElementChild {
   switch (child.type) {
     case 'VElement':
       return transformElement(child, code, path)
@@ -72,7 +82,12 @@ export interface Attribute {
   value: string | null
 }
 
-export function element(path: number[], name: string, attributes: Attribute[], children: ElementChild[]): Element {
+export function element(
+  path: number[],
+  name: string,
+  attributes: Attribute[],
+  children: ElementChild[]
+): Element {
   return {
     type: 'Element',
     path,
@@ -90,7 +105,10 @@ export function textNode(path: number[], text: string): TextNode {
   }
 }
 
-export function expressionNode(path: number[], expression: string): ExpressionNode {
+export function expressionNode(
+  path: number[],
+  expression: string
+): ExpressionNode {
   return {
     type: 'ExpressionNode',
     path,
@@ -98,7 +116,11 @@ export function expressionNode(path: number[], expression: string): ExpressionNo
   }
 }
 
-export function attribute(index: number, name: string, value: string | null): Attribute {
+export function attribute(
+  index: number,
+  name: string,
+  value: string | null
+): Attribute {
   return {
     type: 'Attribute',
     index,

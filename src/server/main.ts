@@ -3,9 +3,12 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as http from 'http'
 import * as WebSocket from 'ws'
-import { ClientPayload } from '../payload';
+import { ClientPayload } from '../payload'
 
-function readContent (file: string, cb: (err: Error, content: string) => void): void {
+function readContent(
+  file: string,
+  cb: (err: Error, content: string) => void
+): void {
   fs.readFile(path.join(__dirname, '..', file), 'utf8', cb)
 }
 

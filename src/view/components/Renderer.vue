@@ -23,9 +23,12 @@ export default Vue.extend({
 
     if (props.template) {
       children.push(
-        h('div', props.template.children.map(c => {
-          return h(Child, { props: { data: c } })
-        }))
+        h(
+          'div',
+          props.template.children.map(c => {
+            return h(Child, { props: { data: c } })
+          })
+        )
       )
     }
 

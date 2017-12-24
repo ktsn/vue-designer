@@ -1,6 +1,7 @@
 import { ServerPayload, ClientPayload } from '../payload'
 import { Template } from '../parser/template'
 import { DocumentProvider } from './document'
+import { Prop } from '../parser/script'
 
 export class ClientConnection implements DocumentProvider {
   private ws: WebSocket | null = null
@@ -21,11 +22,11 @@ export class ClientConnection implements DocumentProvider {
   }
 
   onInitDocument(
-    fn: (template: Template | null, styles: string[]) => void
+    fn: (template: Template | null, props: Prop[], styles: string[]) => void
   ): void {
     this.onMessages.push(data => {
       if (data.type === 'InitDocument') {
-        fn(data.template, data.styles)
+        fn(data.template, data.props, data.styles)
       }
     })
   }

@@ -1,5 +1,5 @@
 import { parse, AST } from 'vue-eslint-parser'
-import { templateToPayload } from '../../src/ast/template'
+import { templateToPayload } from '../../src/parser/template'
 
 describe('Template AST transformer', () => {
   it('should transform element', () => {

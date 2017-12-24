@@ -38,7 +38,7 @@ export function activate(context: vscode.ExtensionContext) {
     () => {}
   )
 
-  const serverPort = server.address().port
+  const serverPort = process.env.DEV ? 50000 : server.address().port
   console.log(`Vue Designer server listening at http://localhost:${serverPort}`)
 
   class TextDocumentContentProvider

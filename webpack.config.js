@@ -28,8 +28,24 @@ module.exports = {
       }
     ]
   },
-  plugins: [
-    new webpack.optimize.ModuleConcatenationPlugin()
-  ],
-  devtool: 'inline-source-map'
+  plugins: [new webpack.optimize.ModuleConcatenationPlugin()],
+  devtool: 'inline-source-map',
+  devServer: {
+    port: 50000,
+    proxy: [
+      {
+        context: ['/', '/index.html', 'vue-designer.js'],
+        target: {
+          port: 50001
+        }
+      },
+      {
+        context: ['/api'],
+        target: {
+          port: 50001
+        },
+        ws: true
+      }
+    ]
+  }
 }

@@ -46,7 +46,8 @@ function startStaticServer(): http.Server {
     res.end()
   })
 
-  server.listen()
+  const port = process.env.DEV ? 50001 : 0
+  server.listen(port)
 
   return server
 }
@@ -58,7 +59,8 @@ function startWebSocketServer(
 ): WebSocket.Server {
   const wss = new WebSocket.Server({
     host: 'localhost',
-    server: http
+    server: http,
+    path: '/api'
   })
 
   wss.on('connection', ws => {

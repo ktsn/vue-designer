@@ -8,7 +8,7 @@ export class ClientConnection implements DocumentProvider {
   private onMessages: ((data: ServerPayload) => void)[] = []
 
   connect(port: string): void {
-    this.ws = new WebSocket(`ws://localhost:${port}`)
+    this.ws = new WebSocket(`ws://localhost:${port}/api`)
     this.ws.addEventListener('message', event => {
       this.onMessages.forEach(fn => {
         fn(JSON.parse(event.data))

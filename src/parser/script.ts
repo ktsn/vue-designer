@@ -43,6 +43,32 @@ function isStaticProperty(
   return node.type === 'Property' && node.key.type === 'Identifier'
 }
 
+/**
+ * Detect `Vue.extend(...)`
+ */
+function isVueExtend(
+  node: AST.ESLintDeclaration | AST.ESLintExpression
+): node is AST.ESLintCallExpression {
+  if (
+    node.type !== 'CallExpression' ||
+    node.callee.type !== 'MemberExpression'
+  ) {
+    return false
+  }
+
+  const property = node.callee.property
+  if (property.type !== 'Identifier' || property.name !== 'extend') {
+    return false
+  }
+
+  const object = node.callee.object
+  if (!object || object.type !== 'Identifier' || object.name !== 'Vue') {
+    return false
+  }
+
+  return true
+}
+
 function getPropType(value: AST.ESLintExpression | AST.ESLintPattern): string {
   if (value.type === 'Identifier') {
     // Constructor
@@ -95,11 +121,22 @@ function findComponentOptions(
     | undefined
   if (!exported) return null
 
-  // TODO: support Vue.extend and class style component
-  if (exported.declaration.type !== 'ObjectExpression') {
-    return null
+  // TODO: support class style component
+  const dec = exported.declaration
+  if (dec.type === 'ObjectExpression') {
+    // Using object literal definition
+    // export default {
+    //   ...
+    // }
+    return dec
+  } else if (isVueExtend(dec) && dec.arguments[0].type === 'ObjectExpression') {
+    // Using Vue.extend with object literal
+    // export default Vue.extend({
+    //   ...
+    // })
+    return dec.arguments[0] as AST.ESLintObjectExpression
   }
-  return exported.declaration
+  return null
 }
 
 type DefaultValue = boolean | number | string | null | undefined

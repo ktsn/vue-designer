@@ -48,4 +48,21 @@ describe('Script parser', () => {
     ]
     expect(extracted).toEqual(expected)
   })
+
+  it('should extract props from Vue.extend defintion', () => {
+    const code = `<script>
+    export default Vue.extend({ props: ['foo'] })
+    </script>`
+
+    const program = parse(code, { sourceType: 'module' })
+    const extracted = extractProps(program.body)
+    const expected: Prop[] = [
+      {
+        name: 'foo',
+        type: 'any',
+        default: undefined
+      }
+    ]
+    expect(extracted).toEqual(expected)
+  })
 })

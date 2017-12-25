@@ -42,3 +42,7 @@ export default Vue.extend({
   }
 })
 </script>
+
+<style lang="scss">
+@import './themes/reset';
+</style>

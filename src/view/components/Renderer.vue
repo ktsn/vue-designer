@@ -1,11 +1,13 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
+import ShadowDom from '../mixins/shadow-dom'
 import { Template } from '../../parser/template'
 
 export default Vue.extend({
   name: 'Renderer',
-  functional: true,
+
+  mixins: [ShadowDom],
 
   props: {
     template: Object as { (): Template | null },
@@ -15,17 +17,20 @@ export default Vue.extend({
     }
   },
 
-  render(h, { props }): VNode {
+  render(h): VNode {
     // TODO: use parsed styles
-    const children = props.styles.map((style: string) => {
+    const children = this.styles.map((style: string) => {
       return h('style', { domProps: { textContent: style } })
     })
 
-    if (props.template) {
+    if (this.template) {
       children.push(
         h(
           'div',
-          props.template.children.map(c => {
+          {
+            class: 'renderer'
+          },
+          this.template.children.map(c => {
             return h(Child, { props: { data: c } })
           })
         )

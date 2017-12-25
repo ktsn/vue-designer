@@ -32,20 +32,18 @@ module.exports = {
   devtool: 'inline-source-map',
   devServer: {
     port: 50000,
-    proxy: [
-      {
-        context: ['/', '/index.html', 'vue-designer.js'],
+    proxy: {
+      '*': {
         target: {
           port: 50001
         }
       },
-      {
-        context: ['/api'],
+      '/api': {
         target: {
           port: 50001
         },
         ws: true
       }
-    ]
+    }
   }
 }

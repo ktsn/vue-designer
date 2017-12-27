@@ -44,5 +44,5 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-@import './themes/reset';
+@import '~k-css/k.css';
 </style>

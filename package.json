@@ -8,8 +8,7 @@
     "postinstall": "node ./node_modules/vscode/bin/install",
     "watch": "run-p watch:*",
     "watch:ts": "tsc --watch -p tsconfig.main.json",
-    "watch:webpack":
-      "DEV=1 webpack-dev-server --hot --config webpack.config.js",
+    "watch:webpack": "DEV=1 webpack-dev-server --hot --config webpack.config.js",
     "build": "tsc -p tsconfig.main.json && webpack --config webpack.config.js",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -18,7 +17,9 @@
   "repository": "https://github.com/ktsn/vue-designer",
   "license": "MIT",
   "publisher": "",
-  "activationEvents": ["*"],
+  "activationEvents": [
+    "*"
+  ],
   "contributes": {
     "commands": [
       {
@@ -43,9 +44,14 @@
       "^.+\\.ts$": "ts-jest"
     },
     "testRegex": "/test/.+\\.spec\\.(js|ts)$",
-    "moduleFileExtensions": ["ts", "js", "json"]
+    "moduleFileExtensions": [
+      "ts",
+      "js",
+      "json"
+    ]
   },
   "dependencies": {
+    "k-css": "^2.0.0",
     "vue": "^2.5.13",
     "vue-eslint-parser": "^2.0.1-beta.2",
     "vue-template-compiler": "^2.5.13",

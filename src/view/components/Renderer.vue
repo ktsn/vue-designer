@@ -1,44 +1,22 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import Child from './Child.vue'
-import ShadowDom from '../mixins/shadow-dom'
-import { Template } from '../../parser/template'
+import Component from './Component.vue'
 
 export default Vue.extend({
   name: 'Renderer',
+  functional: true,
 
-  mixins: [ShadowDom],
-
-  props: {
-    template: Object as { (): Template | null },
-    styles: {
-      type: Array as { (): string[] },
-      required: true
-    }
-  },
-
-  render(h): VNode {
-    // TODO: use parsed styles
-    const children = this.styles.map((style: string) => {
-      return h('style', { domProps: { textContent: style } })
-    })
-
-    if (this.template) {
-      children.push(
-        h(
-          'div',
-          {
-            class: 'renderer'
-          },
-          this.template.children.map(c => {
-            return h(Child, { props: { data: c } })
-          })
-        )
-      )
-    }
-
-    return h('div', children)
+  render(h, { data }): VNode {
+    return h('div', { class: 'renderer' }, [h(Component, data)])
   }
 })
 </script>
+
+<style lang="scss" scoped>
+.renderer {
+  position: relative;
+  font-size: initial;
+  font-family: initial;
+}
+</style>
 

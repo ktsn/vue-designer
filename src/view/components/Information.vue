@@ -14,12 +14,24 @@
         </li>
       </ul>
     </section>
+
+    <section class="information-group">
+      <h2 class="information-title">Data</h2>
+      <ul class="information-list">
+        <li v-for="d in data" :key="d.name" class="information-list-item">
+          <strong class="information-label">{{ d.name }}</strong>
+          <span class="information-text">
+            {{ d.default }}
+          </span>
+        </li>
+      </ul>
+    </section>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { Prop } from '../../parser/script'
+import { Prop, Data } from '../../parser/script'
 
 export default Vue.extend({
   name: 'Information',
@@ -28,6 +40,10 @@ export default Vue.extend({
     props: {
       type: Array as { (): Prop[] },
       required: true
+    },
+    data: {
+      type: Array as { (): Data[] },
+      required: true
     }
   }
 })
@@ -35,6 +51,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .information {
+  display: flex;
   position: absolute;
   left: 0;
   right: 0;
@@ -43,6 +60,7 @@ export default Vue.extend({
   background-color: #349c47;
 
   &-group {
+    flex: 1 1 auto;
     padding: 13px 15px;
     color: #fff;
   }

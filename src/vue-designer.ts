@@ -4,7 +4,7 @@ import { initDocument } from './server/communication'
 import { parseComponent } from 'vue-template-compiler'
 import * as parser from 'vue-eslint-parser'
 import { templateToPayload } from './parser/template'
-import { extractProps } from './parser/script'
+import { extractProps, extractData } from './parser/script'
 import { VueFile } from './parser/vue-file'
 
 export function activate(context: vscode.ExtensionContext) {
@@ -96,9 +96,11 @@ function parseCode(code: string): VueFile {
     ? templateToPayload(program.templateBody, code)
     : undefined
   const props = extractProps(program.body)
+  const data = extractData(program.body)
   return {
     template,
     props,
+    data,
     styles: styles.map((s: any) => s.content)
   }
 }

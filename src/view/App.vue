@@ -1,14 +1,14 @@
 <template>
   <div>
     <Renderer :template="template" :styles="styles" />
-    <Information :props="props" />
+    <Information :props="props" :data="data" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { Template } from '../parser/template'
-import { Prop } from '../parser/script'
+import { Prop, Data } from '../parser/script'
 import Renderer from './components/Renderer.vue'
 import Information from './components/Information.vue'
 import { ClientConnection } from './communication'
@@ -26,6 +26,7 @@ export default Vue.extend({
     return {
       template: undefined as Template | undefined,
       props: [] as Prop[],
+      data: [] as Data[],
       styles: [] as string[]
     }
   },
@@ -34,9 +35,10 @@ export default Vue.extend({
     const connection = new ClientConnection()
     connection.connect(location.port)
     const document = new Document(connection)
-    document.subscribe(({ template, props, styles }) => {
+    document.subscribe(({ template, props, data, styles }) => {
       this.template = template
       this.props = props
+      this.data = data
       this.styles = styles
     })
   }

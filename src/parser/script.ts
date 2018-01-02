@@ -115,11 +115,11 @@ function getPropDefault(
 
 function findComponentOptions(
   body: AST.ESLintNode[]
-): AST.ESLintObjectExpression | null {
+): AST.ESLintObjectExpression | undefined {
   const exported = body.find(n => n.type === 'ExportDefaultDeclaration') as
     | AST.ESLintExportDefaultDeclaration
     | undefined
-  if (!exported) return null
+  if (!exported) return undefined
 
   // TODO: support class style component
   const dec = exported.declaration
@@ -136,7 +136,7 @@ function findComponentOptions(
     // })
     return dec.arguments[0] as AST.ESLintObjectExpression
   }
-  return null
+  return undefined
 }
 
 type DefaultValue = boolean | number | string | null | undefined

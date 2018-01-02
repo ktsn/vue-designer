@@ -45,4 +45,8 @@ export default Vue.extend({
 
 <style lang="scss">
 @import '~k-css/k.css';
+
+body {
+  font-size: 1.6rem;
+}
 </style>

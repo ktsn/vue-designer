@@ -14,9 +14,8 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 .renderer {
+  all: initial;
   position: relative;
-  font-size: initial;
-  font-family: initial;
 }
 </style>
 

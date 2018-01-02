@@ -9,6 +9,7 @@ export function extractProps(body: AST.ESLintNode[]): Prop[] {
       isStaticProperty(p) && (p.key as AST.ESLintIdentifier).name === 'props'
     )
   }) as AST.ESLintProperty | undefined
+
   if (!props) return []
 
   if (props.value.type === 'ObjectExpression') {
@@ -33,10 +34,38 @@ export function extractProps(body: AST.ESLintNode[]): Prop[] {
   }
 }
 
+export function extractData(body: AST.ESLintNode[]): Data[] {
+  const options = findComponentOptions(body)
+  if (!options) return []
+
+  const data = options.properties.find(p => {
+    return (
+      isStaticProperty(p) && (p.key as AST.ESLintIdentifier).name === 'data'
+    )
+  }) as AST.ESLintProperty | undefined
+
+  if (!data) return []
+
+  const obj = getDataObject(data.value)
+  if (!obj) return []
+
+  return obj.properties.filter(isStaticProperty).map(p => {
+    const key = p.key as AST.ESLintIdentifier
+    return {
+      name: key.name,
+      default: getLiteralValue(p.value)
+    }
+  })
+}
+
 function isStringLiteral(node: AST.ESLintNode): node is AST.ESLintLiteral {
   return node.type === 'Literal' && typeof node.value === 'string'
 }
 
+/**
+ * Check if the property has a statically defined key
+ * If it returns `true`, `node.key` should be `Identifier`.
+ */
 function isStaticProperty(
   node: AST.ESLintNode | AST.ESLintLegacySpreadProperty
 ): node is AST.ESLintProperty {
@@ -102,15 +131,50 @@ function getPropDefault(
     }) as AST.ESLintProperty | undefined
 
     if (def) {
-      if (
-        def.value.type === 'Literal' &&
-        !(def.value.value instanceof RegExp)
-      ) {
-        return def.value.value
-      }
+      return getLiteralValue(def.value)
     }
   }
   return undefined
+}
+
+function getDataObject(
+  node: AST.ESLintExpression | AST.ESLintPattern
+): AST.ESLintObjectExpression | undefined {
+  if (node.type === 'ObjectExpression') return node
+
+  if (
+    node.type === 'FunctionExpression' ||
+    node.type === 'ArrowFunctionExpression'
+  ) {
+    // `node.body` should be `BlockStatement` in the declared type
+    // but it can be other expressions if it forms like `() => ({ foo: 'bar' })`
+    const body = node.body as AST.ESLintBlockStatement | AST.ESLintExpression
+
+    if (body.type === 'ObjectExpression') {
+      return body
+    } else if (body.type === 'BlockStatement') {
+      const statements = node.body.body.slice().reverse()
+      for (const s of statements) {
+        if (
+          s.type === 'ReturnStatement' &&
+          s.argument &&
+          s.argument.type === 'ObjectExpression'
+        ) {
+          return s.argument
+        }
+      }
+    }
+  }
+
+  return undefined
+}
+
+function getLiteralValue(node: AST.ESLintNode): DefaultValue {
+  if (node.type === 'Literal' && !(node.value instanceof RegExp)) {
+    return node.value
+  } else {
+    return undefined
+  }
 }
 
 function findComponentOptions(
@@ -144,5 +208,10 @@ type DefaultValue = boolean | number | string | null | undefined
 export interface Prop {
   name: string
   type: string
+  default?: DefaultValue
+}
+
+export interface Data {
+  name: string
   default?: DefaultValue
 }

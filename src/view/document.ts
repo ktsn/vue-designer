@@ -1,34 +1,21 @@
-import { Template } from '../parser/template'
-import { Prop } from '../parser/script'
+import { VueFile } from '../parser/vue-file'
 
 export interface DocumentProvider {
-  onInitDocument(
-    fn: (template: Template | null, props: Prop[], styles: string[]) => void
-  ): void
+  onInitDocument(fn: (vueFile: VueFile) => void): void
 }
 
 export class Document {
-  private listeners: ((
-    template: Template | null,
-    props: Prop[],
-    styles: string[]
-  ) => void)[] = []
+  private listeners: ((vueFile: VueFile) => void)[] = []
 
   constructor(private provider: DocumentProvider) {
-    provider.onInitDocument((template, props, styles) => {
+    provider.onInitDocument(vueFile => {
       this.listeners.forEach(listener => {
-        listener(template, props, styles)
+        listener(vueFile)
       })
     })
   }
 
-  subscribe(
-    listener: (
-      template: Template | null,
-      props: Prop[],
-      styles: string[]
-    ) => void
-  ): () => void {
+  subscribe(listener: (vueFile: VueFile) => void): () => void {
     this.listeners.push(listener)
     return () => {
       this.listeners.splice(this.listeners.indexOf(listener), 1)

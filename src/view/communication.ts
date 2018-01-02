@@ -2,9 +2,10 @@ import { ServerPayload, ClientPayload } from '../payload'
 import { Template } from '../parser/template'
 import { DocumentProvider } from './document'
 import { Prop } from '../parser/script'
+import { VueFile } from '../parser/vue-file'
 
 export class ClientConnection implements DocumentProvider {
-  private ws: WebSocket | null = null
+  private ws: WebSocket | undefined
   private onMessages: ((data: ServerPayload) => void)[] = []
 
   connect(port: string): void {
@@ -21,12 +22,10 @@ export class ClientConnection implements DocumentProvider {
     this.ws.send(JSON.stringify(payload))
   }
 
-  onInitDocument(
-    fn: (template: Template | null, props: Prop[], styles: string[]) => void
-  ): void {
+  onInitDocument(fn: (vueFile: VueFile) => void): void {
     this.onMessages.push(data => {
       if (data.type === 'InitDocument') {
-        fn(data.template, data.props, data.styles)
+        fn(data.vueFile)
       }
     })
   }

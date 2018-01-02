@@ -10,7 +10,7 @@ export default Vue.extend({
   mixins: [ShadowDom],
 
   props: {
-    template: Object as { (): Template | null },
+    template: Object as { (): Template | undefined },
     styles: {
       type: Array as { (): string[] },
       required: true

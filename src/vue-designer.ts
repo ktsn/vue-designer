@@ -5,6 +5,7 @@ import { parseComponent } from 'vue-template-compiler'
 import * as parser from 'vue-eslint-parser'
 import { templateToPayload } from './parser/template'
 import { extractProps } from './parser/script'
+import { VueFile } from './parser/vue-file'
 
 export function activate(context: vscode.ExtensionContext) {
   let lastActiveTextEditor = vscode.window.activeTextEditor
@@ -20,17 +21,15 @@ export function activate(context: vscode.ExtensionContext) {
     ws => {
       console.log('Client connected')
       if (lastActiveTextEditor) {
-        const { template, props, styles } = parseCode(
-          lastActiveTextEditor.document.getText()
-        )
-        initDocument(ws, template, props, styles)
+        const vueFile = parseCode(lastActiveTextEditor.document.getText())
+        initDocument(ws, vueFile)
       }
 
       vscode.workspace.onDidChangeTextDocument(
         (e: vscode.TextDocumentChangeEvent) => {
           if (e.document === vscode.window.activeTextEditor!.document) {
-            const { template, props, styles } = parseCode(e.document.getText())
-            initDocument(ws, template, props, styles)
+            const vueFile = parseCode(e.document.getText())
+            initDocument(ws, vueFile)
           }
         }
       )
@@ -90,12 +89,12 @@ export function activate(context: vscode.ExtensionContext) {
   })
 }
 
-function parseCode(code: string) {
+function parseCode(code: string): VueFile {
   const { styles } = parseComponent(code)
   const program = parser.parse(code, { sourceType: 'module' })
   const template = program.templateBody
     ? templateToPayload(program.templateBody, code)
-    : null
+    : undefined
   const props = extractProps(program.body)
   return {
     template,

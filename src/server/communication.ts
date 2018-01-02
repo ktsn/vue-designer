@@ -1,19 +1,11 @@
 import * as WebSocket from 'ws'
 import { ServerPayload } from '../payload'
-import { Template } from '../parser/template'
-import { Prop } from '../parser/script'
+import { VueFile } from '../parser/vue-file'
 
-export function initDocument(
-  ws: WebSocket,
-  template: Template | null,
-  props: Prop[],
-  styles: string[]
-): void {
+export function initDocument(ws: WebSocket, vueFile: VueFile): void {
   send(ws, {
     type: 'InitDocument',
-    template,
-    props,
-    styles
+    vueFile
   })
 }
 

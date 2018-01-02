@@ -24,7 +24,7 @@ export default Vue.extend({
 
   data() {
     return {
-      template: null as Template | null,
+      template: undefined as Template | undefined,
       props: [] as Prop[],
       styles: [] as string[]
     }
@@ -34,7 +34,7 @@ export default Vue.extend({
     const connection = new ClientConnection()
     connection.connect(location.port)
     const document = new Document(connection)
-    document.subscribe((template, props, styles) => {
+    document.subscribe(({ template, props, styles }) => {
       this.template = template
       this.props = props
       this.styles = styles

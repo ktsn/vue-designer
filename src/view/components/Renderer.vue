@@ -18,4 +18,3 @@ export default Vue.extend({
   position: relative;
 }
 </style>
-

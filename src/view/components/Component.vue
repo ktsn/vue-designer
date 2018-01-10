@@ -3,6 +3,7 @@ import Vue, { VNode } from 'vue'
 import ShadowDom from '../mixins/shadow-dom'
 import Child from './Child.vue'
 import { Template } from '../../parser/template'
+import { DefaultValue, Prop, Data } from '../../parser/script'
 
 export default Vue.extend({
   name: 'Component',
@@ -14,6 +15,34 @@ export default Vue.extend({
     styles: {
       type: Array as { (): string[] },
       required: true
+    },
+    props: {
+      type: Array as { (): Prop[] },
+      required: true
+    },
+    data: {
+      type: Array as { (): Data[] },
+      required: true
+    }
+  },
+
+  computed: {
+    scope(): Record<string, string> {
+      const scope: Record<string, string> = {}
+      const data: { name: string; default?: DefaultValue }[] = [
+        ...this.props,
+        ...this.data
+      ]
+
+      data.forEach(({ name, default: value }) => {
+        if (value == null) {
+          scope[name] = ''
+        } else {
+          scope[name] = String(value)
+        }
+      })
+
+      return scope
     }
   },
 
@@ -25,15 +54,14 @@ export default Vue.extend({
 
     if (this.template) {
       children.push(
-        h(
-          'div',
-          {
-            class: 'renderer'
-          },
-          this.template.children.map(c => {
-            return h(Child, { props: { data: c } })
+        ...this.template.children.map(c => {
+          return h(Child, {
+            props: {
+              data: c,
+              scope: this.scope
+            }
           })
-        )
+        })
       )
     }
 

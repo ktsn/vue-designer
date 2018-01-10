@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Renderer :template="template" :styles="styles" />
+    <Renderer :template="template" :styles="styles" :props="props" :data="data" />
     <Information :props="props" :data="data" />
   </div>
 </template>

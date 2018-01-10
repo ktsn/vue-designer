@@ -43,7 +43,11 @@ function transformChild(
     case 'VText':
       return textNode(path, child.value)
     case 'VExpressionContainer':
-      return expressionNode(path, code.slice(child.range[0], child.range[1]))
+      const exp = child.expression
+      return expressionNode(
+        path,
+        exp ? code.slice(exp.range[0], exp.range[1]) : ''
+      )
   }
 }
 

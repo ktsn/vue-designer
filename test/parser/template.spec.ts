@@ -25,7 +25,7 @@ describe('Template AST transformer', () => {
             {
               path: [0, 1],
               type: 'ExpressionNode',
-              expression: '{{ foo }}'
+              expression: 'foo'
             },
             {
               path: [0, 2],

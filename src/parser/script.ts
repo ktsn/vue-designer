@@ -203,7 +203,7 @@ function findComponentOptions(
   return undefined
 }
 
-type DefaultValue = boolean | number | string | null | undefined
+export type DefaultValue = boolean | number | string | null | undefined
 
 export interface Prop {
   name: string

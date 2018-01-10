@@ -1,6 +1,8 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import Node from './Node.vue'
+import Expression from './Expression.vue'
+import { ElementChild } from '../../parser/template'
 
 export default Vue.extend({
   name: 'Child',
@@ -8,20 +10,30 @@ export default Vue.extend({
 
   props: {
     data: {
-      type: Object,
+      type: Object as { (): ElementChild },
+      required: true
+    },
+
+    scope: {
+      type: Object as { (): Record<string, string> },
       required: true
     }
   },
 
   render(h, { props }): VNode {
-    const { data } = props
+    const { data, scope } = props
     switch (data.type) {
       case 'Element':
-        return h(Node, { props: { data } })
+        return h(Node, { props: { data, scope } })
       case 'TextNode':
-        return data.text
+        return h('span', [data.text])
       case 'ExpressionNode':
-        return data.expression
+        return h(Expression, {
+          props: {
+            expression: data.expression,
+            scope
+          }
+        })
       default:
         return h()
     }

@@ -19,15 +19,26 @@ export default Vue.extend({
     data: {
       type: Object as { (): Element },
       required: true
+    },
+    scope: {
+      type: Object as { (): Record<string, string> },
+      required: true
     }
   },
 
   render(h, { props }): VNode {
-    const { data } = props
+    const { data, scope } = props
     return h(
       data.name,
       { attrs: toAttrs(data.attributes) },
-      data.children.map(c => h(Child, { props: { data: c } }))
+      data.children.map(c =>
+        h(Child, {
+          props: {
+            data: c,
+            scope
+          }
+        })
+      )
     )
   }
 })

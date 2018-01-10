@@ -6,7 +6,7 @@ import { Template } from '../../parser/template'
 import { DefaultValue, Prop, Data } from '../../parser/script'
 
 export default Vue.extend({
-  name: 'Component',
+  name: 'VueComponent',
 
   mixins: [ShadowDom],
 

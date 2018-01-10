@@ -23,7 +23,19 @@ export default Vue.extend({
 
     const str = ref == null ? '{{ ' + exp + ' }}' : ref
 
-    return h('span', { class: 'expression' }, [str])
+    // Using inline styles for now since we cannot use <style> block.
+    // Because the <Render> component is in Shadow DOM.
+    const style =
+      ref != null
+        ? {}
+        : {
+            padding: '2px',
+            margin: '-2px',
+            'background-color': 'rgba(119, 166, 255, 0.3)',
+            'border-radius': '3px'
+          }
+
+    return h('span', { style }, [str])
   }
 })
 </script>

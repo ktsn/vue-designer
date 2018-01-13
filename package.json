@@ -46,14 +46,20 @@
     },
     "testRegex": "/test/.+\\.spec\\.(js|ts)$",
     "moduleNameMapper": {
-      "^@/(.+)$": "src/$1"
+      "^@/(.+)$": "<rootDir>/src/$1",
+      "^vue$": "vue/dist/vue.runtime.common.js"
     },
     "moduleFileExtensions": [
       "ts",
       "js",
       "json",
       "vue"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfigFile": "tsconfig.test.json"
+      }
+    }
   },
   "dependencies": {
     "k-css": "^2.0.0",

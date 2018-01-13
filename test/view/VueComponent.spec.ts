@@ -19,6 +19,38 @@ describe('VueComponent', () => {
     expect(p.text()).toBe('Hello World!')
     expect(p.attributes()!.title).toBe('Hello')
   })
+
+  it('should render expression', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', {}, [
+        'This is ',
+        exp('foo + bar')
+      ])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.find('p').text()).toBe('This is {{ foo + bar }}')
+  })
+
+  it('should replace resolved expression', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', {}, [
+        'This is ',
+        exp('test')
+      ])
+    ])
+
+    const wrapper = render(template, [
+      {
+        name: 'test',
+        type: 'String',
+        default: 'replaced text'
+      }
+    ])
+    expect(wrapper.find('p').text()).toBe('This is replaced text')
+  })
 })
 
 function render(

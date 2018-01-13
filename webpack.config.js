@@ -11,6 +11,10 @@ module.exports = {
     filename: 'vue-designer-view.js'
   },
   resolve: {
+    alias: {
+      '@': path.join(base, 'src'),
+      vue$: 'vue/dist/vue.runtime.esm.js'
+    },
     extensions: ['.js', '.json', '.ts']
   },
   module: {

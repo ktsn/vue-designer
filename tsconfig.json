@@ -7,9 +7,15 @@
       "es2015",
       "dom"
     ],
+    "strict": true,
     "sourceMap": true,
     "rootDir": "src",
-    "strict": true
+    "baseUrl": "src",
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts",

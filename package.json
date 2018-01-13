@@ -41,13 +41,18 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.ts$": "ts-jest"
+      "^.+\\.ts$": "ts-jest",
+      "^.+\\.vue$": "vue-jest"
     },
     "testRegex": "/test/.+\\.spec\\.(js|ts)$",
+    "moduleNameMapper": {
+      "^@/(.+)$": "src/$1"
+    },
     "moduleFileExtensions": [
       "ts",
       "js",
-      "json"
+      "json",
+      "vue"
     ]
   },
   "dependencies": {
@@ -60,6 +65,7 @@
   "devDependencies": {
     "@types/jest": "^21.1.8",
     "@types/ws": "^3.2.1",
+    "@vue/test-utils": "^1.0.0-beta.10",
     "css-loader": "^0.28.7",
     "jest": "^22.0.3",
     "node-sass": "^4.7.2",
@@ -70,6 +76,7 @@
     "ts-loader": "^3.1.1",
     "typescript": "^2.6.1",
     "vscode": "^1.1.9",
+    "vue-jest": "^1.4.0",
     "vue-loader": "^13.5.0",
     "webpack": "^3.8.1",
     "webpack-dev-server": "^2.9.7"

@@ -23,6 +23,7 @@ module.exports = {
         test: /\.ts$/,
         loader: 'ts-loader',
         options: {
+          configFile: 'tsconfig.view.json',
           appendTsSuffixTo: [/\.vue$/]
         }
       },

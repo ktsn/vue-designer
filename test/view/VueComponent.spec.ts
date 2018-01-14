@@ -1,6 +1,12 @@
 import { mount, Wrapper } from '@vue/test-utils'
 import VueComponent from '@/view/components/VueComponent.vue'
-import { Template, Element, ExpressionNode } from 'parser/template'
+import {
+  Template,
+  Element,
+  ExpressionNode,
+  Directive,
+  Attribute
+} from 'parser/template'
 import { Prop, Data } from 'parser/script'
 
 jest.mock('../../src/view/mixins/shadow-dom', () => {
@@ -10,7 +16,7 @@ jest.mock('../../src/view/mixins/shadow-dom', () => {
 describe('VueComponent', () => {
   it('should render template', () => {
     const template = createTemplate([
-      h('p', { title: 'Hello' }, ['Hello World!'])
+      h('p', [a('title', 'Hello')], ['Hello World!'])
     ])
 
     const wrapper = render(template)
@@ -22,7 +28,7 @@ describe('VueComponent', () => {
   it('should render expression', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', {}, [
+      h('p', [], [
         'This is ',
         exp('foo + bar')
       ])
@@ -35,7 +41,7 @@ describe('VueComponent', () => {
   it('should replace resolved expression', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', {}, [
+      h('p', [], [
         'This is ',
         exp('test')
       ])
@@ -49,6 +55,55 @@ describe('VueComponent', () => {
       }
     ])
     expect(wrapper.find('p').text()).toBe('This is replaced text')
+  })
+
+  it('should print an empty string if the expression is resolved as null or undefined', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        h('p', [a('id', 'foo')], [
+          exp('foo')
+        ]),
+        h('p', [a('id', 'bar')], [
+          exp('bar')
+        ])
+      ])
+    ])
+
+    const wrapper = render(
+      template,
+      [],
+      [
+        {
+          name: 'foo',
+          default: null
+        },
+        {
+          name: 'bar',
+          default: undefined
+        }
+      ]
+    )
+    expect(wrapper.find('#foo').text()).toBe('')
+    expect(wrapper.find('#bar').text()).toBe('')
+  })
+
+  it('should bind attributes with v-bind', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('input', [
+        d('bind', { argument: 'value' }, 'foo')
+      ], [])
+    ])
+
+    const wrapper = render(template, [
+      {
+        name: 'foo',
+        type: 'String',
+        default: 'default value'
+      }
+    ])
+    expect(wrapper.find('input').attributes()!.value).toBe('default value')
   })
 })
 
@@ -87,17 +142,11 @@ function createTemplate(
 
 function h(
   tag: string,
-  attrs: Record<string, string | null>,
+  attributes: (Attribute | Directive)[],
   children: (Element | ExpressionNode | string)[]
 ): Element {
-  const attributes = Object.keys(attrs).map((key, i) => {
-    return {
-      type: 'Attribute' as 'Attribute',
-      directive: false as false,
-      index: i,
-      name: key,
-      value: attrs[key]
-    }
+  attributes.forEach((attr, i) => {
+    attr.index = i
   })
 
   return {
@@ -114,6 +163,42 @@ function h(
           }
         : c
     })
+  }
+}
+
+function a(name: string, value: string | null): Attribute {
+  return {
+    type: 'Attribute',
+    directive: false,
+    index: 0,
+    name,
+    value
+  }
+}
+
+function d(name: string, expression: string): Directive
+function d(
+  name: string,
+  options?: { argument?: string; modifiers?: string[] },
+  expression?: string
+): Directive
+function d(
+  name: string,
+  options: { argument?: string; modifiers?: string[] } | string = {},
+  expression?: string
+): Directive {
+  if (typeof options === 'string') {
+    expression = options
+    options = {}
+  }
+  return {
+    type: 'Attribute',
+    directive: true,
+    index: 0,
+    name,
+    argument: options.argument || null,
+    modifiers: options.modifiers || [],
+    expression: expression || null
   }
 }
 

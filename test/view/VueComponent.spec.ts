@@ -1,8 +1,7 @@
 import { mount, Wrapper } from '@vue/test-utils'
 import VueComponent from '@/view/components/VueComponent.vue'
 import { Template, Element, ExpressionNode } from 'parser/template'
-import { Prop } from 'parser/script'
-import { Data } from 'ws'
+import { Prop, Data } from 'parser/script'
 
 jest.mock('../../src/view/mixins/shadow-dom', () => {
   return {}

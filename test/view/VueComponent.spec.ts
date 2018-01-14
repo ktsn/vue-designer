@@ -93,6 +93,7 @@ function h(
   const attributes = Object.keys(attrs).map((key, i) => {
     return {
       type: 'Attribute' as 'Attribute',
+      directive: false as false,
       index: i,
       name: key,
       value: attrs[key]

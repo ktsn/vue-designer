@@ -1,5 +1,5 @@
 import { parse, AST } from 'vue-eslint-parser'
-import { templateToPayload } from '../../src/parser/template'
+import { templateToPayload, Template } from '../../src/parser/template'
 
 describe('Template AST transformer', () => {
   it('should transform element', () => {
@@ -62,18 +62,21 @@ describe('Template AST transformer', () => {
           attributes: [
             {
               index: 0,
+              directive: false,
               type: 'Attribute',
               name: 'id',
               value: 'test'
             },
             {
               index: 1,
+              directive: false,
               type: 'Attribute',
               name: 'title',
               value: 'title'
             },
             {
               index: 2,
+              directive: false,
               type: 'Attribute',
               name: 'foo',
               value: null
@@ -83,5 +86,46 @@ describe('Template AST transformer', () => {
         }
       ]
     })
+  })
+
+  it('should transform directives', () => {
+    const code = '<template><input :name="foo" v-model="value"></template>'
+    const program = parse(code, {})
+    const ast = program.templateBody!
+
+    const expected: Template = {
+      type: 'Template',
+      attributes: [],
+      children: [
+        {
+          path: [0],
+          type: 'Element',
+          name: 'input',
+          attributes: [
+            {
+              index: 0,
+              directive: true,
+              type: 'Attribute',
+              name: 'bind',
+              argument: 'name',
+              modifiers: [],
+              expression: 'foo'
+            },
+            {
+              index: 1,
+              directive: true,
+              type: 'Attribute',
+              name: 'model',
+              argument: null,
+              modifiers: [],
+              expression: 'value'
+            }
+          ],
+          children: []
+        }
+      ]
+    }
+
+    expect(templateToPayload(ast, code)).toEqual(expected)
   })
 })

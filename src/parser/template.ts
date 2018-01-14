@@ -8,7 +8,10 @@ export function templateToPayload(
     type: 'Template',
     attributes: body.startTag.attributes
       .filter(attr => !attr.directive)
-      .map((attr, i) => transformAttribute(attr as AST.VAttribute, i)),
+      .map((attr, i) => {
+        const a = attr as AST.VAttribute
+        return attribute(i, a.key.name, a.value && a.value.value)
+      }),
     children: body.children.map((child, i) => transformChild(child, code, [i]))
   }
 }
@@ -21,15 +24,29 @@ function transformElement(
   return element(
     path,
     el.name,
-    el.startTag.attributes
-      .filter(attr => !attr.directive)
-      .map((attr, i) => transformAttribute(attr as AST.VAttribute, i)),
+    el.startTag.attributes.map((attr, i) => transformAttribute(attr, i, code)),
     el.children.map((child, i) => transformChild(child, code, path.concat(i)))
   )
 }
 
-function transformAttribute(attr: AST.VAttribute, index: number): Attribute {
-  return attribute(index, attr.key.name, attr.value && attr.value.value)
+function transformAttribute(
+  attr: AST.VAttribute | AST.VDirective,
+  index: number,
+  code: string
+): Attribute | Directive {
+  if (attr.directive) {
+    const exp = attr.value && attr.value.expression
+    const expStr = exp ? extractExpression(exp, code) : null
+    return directive(
+      index,
+      attr.key.name,
+      attr.key.argument,
+      attr.key.modifiers,
+      expStr
+    )
+  } else {
+    return attribute(index, attr.key.name, attr.value && attr.value.value)
+  }
 }
 
 function transformChild(
@@ -44,11 +61,12 @@ function transformChild(
       return textNode(path, child.value)
     case 'VExpressionContainer':
       const exp = child.expression
-      return expressionNode(
-        path,
-        exp ? code.slice(exp.range[0], exp.range[1]) : ''
-      )
+      return expressionNode(path, exp ? extractExpression(exp, code) : '')
   }
+}
+
+function extractExpression(node: AST.HasLocation, code: string): string {
+  return code.slice(node.range[0], node.range[1])
 }
 
 export type ElementChild = Element | TextNode | ExpressionNode
@@ -63,7 +81,7 @@ export interface Element {
   type: 'Element'
   path: number[]
   name: string
-  attributes: Attribute[]
+  attributes: (Attribute | Directive)[]
   children: ElementChild[]
 }
 
@@ -81,15 +99,26 @@ export interface ExpressionNode {
 
 export interface Attribute {
   type: 'Attribute'
+  directive: false
   index: number
   name: string
   value: string | null
 }
 
+export interface Directive {
+  type: 'Attribute'
+  directive: true
+  index: number
+  name: string
+  argument: string | null
+  modifiers: string[]
+  expression: string | null
+}
+
 export function element(
   path: number[],
   name: string,
-  attributes: Attribute[],
+  attributes: (Attribute | Directive)[],
   children: ElementChild[]
 ): Element {
   return {
@@ -127,8 +156,27 @@ export function attribute(
 ): Attribute {
   return {
     type: 'Attribute',
+    directive: false,
     index,
     name,
     value
+  }
+}
+
+export function directive(
+  index: number,
+  name: string,
+  argument: string | null,
+  modifiers: string[],
+  expression: string | null
+): Directive {
+  return {
+    type: 'Attribute',
+    directive: true,
+    index,
+    name,
+    argument,
+    modifiers,
+    expression
   }
 }

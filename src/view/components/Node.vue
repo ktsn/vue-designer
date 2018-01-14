@@ -1,12 +1,16 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
-import { Element, Attribute } from '../../parser/template'
+import { Element, Attribute, Directive } from '../../parser/template'
 
-function toAttrs(attrs: Attribute[]): Record<string, string | null> {
+function toAttrs(
+  attrs: (Attribute | Directive)[]
+): Record<string, string | null> {
   const res: Record<string, string | null> = {}
   attrs.forEach(attr => {
-    res[attr.name] = attr.value
+    if (!attr.directive) {
+      res[attr.name] = attr.value
+    }
   })
   return res
 }

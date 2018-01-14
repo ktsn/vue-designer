@@ -27,19 +27,15 @@ export default Vue.extend({
   },
 
   computed: {
-    scope(): Record<string, string> {
-      const scope: Record<string, string> = {}
+    scope(): Record<string, DefaultValue> {
+      const scope: Record<string, DefaultValue> = {}
       const data: { name: string; default?: DefaultValue }[] = [
         ...this.props,
         ...this.data
       ]
 
       data.forEach(({ name, default: value }) => {
-        if (value == null) {
-          scope[name] = ''
-        } else {
-          scope[name] = String(value)
-        }
+        scope[name] = value
       })
 
       return scope

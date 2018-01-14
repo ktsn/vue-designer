@@ -3,6 +3,7 @@ import Vue, { VNode } from 'vue'
 import Node from './Node.vue'
 import Expression from './Expression.vue'
 import { ElementChild } from '../../parser/template'
+import { DefaultValue } from '../../parser/script'
 
 export default Vue.extend({
   name: 'Child',
@@ -15,7 +16,7 @@ export default Vue.extend({
     },
 
     scope: {
-      type: Object as { (): Record<string, string> },
+      type: Object as { (): Record<string, DefaultValue> },
       required: true
     }
   },

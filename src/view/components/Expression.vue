@@ -25,7 +25,7 @@ export default Vue.extend({
 
     // Using inline styles for now since we cannot use <style> block.
     // Because the <Render> component is in Shadow DOM.
-    const style = !inScope
+    const style = inScope
       ? {}
       : {
           padding: '2px',

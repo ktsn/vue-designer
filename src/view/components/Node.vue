@@ -4,6 +4,13 @@ import Child from './Child.vue'
 import { Element, Attribute, Directive } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
 
+function inScope(
+  exp: string | null,
+  scope: Record<string, DefaultValue>
+): exp is string {
+  return Boolean(exp && exp in scope)
+}
+
 function toAttrs(
   attrs: (Attribute | Directive)[],
   scope: Record<string, DefaultValue>
@@ -13,14 +20,11 @@ function toAttrs(
   attrs.forEach(attr => {
     if (!attr.directive) {
       res[attr.name] = attr.value
-    } else {
-      if (
-        attr.name === 'bind' &&
-        attr.argument &&
-        attr.expression &&
-        attr.expression in scope
-      ) {
+    } else if (inScope(attr.expression, scope)) {
+      if (attr.name === 'bind' && attr.argument) {
         res[attr.argument] = scope[attr.expression]
+      } else if (attr.name === 'model') {
+        res.value = scope[attr.expression]
       }
     }
   })

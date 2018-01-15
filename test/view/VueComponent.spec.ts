@@ -105,6 +105,27 @@ describe('VueComponent', () => {
     ])
     expect(wrapper.find('input').attributes()!.value).toBe('default value')
   })
+
+  it('should bind a value with v-model', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('input', [
+        d('model', 'test')
+      ], [])
+    ])
+
+    const wrapper = render(
+      template,
+      [],
+      [
+        {
+          name: 'test',
+          default: 'message'
+        }
+      ]
+    )
+    expect(wrapper.find('input').attributes()!.value).toBe('message')
+  })
 })
 
 function render(

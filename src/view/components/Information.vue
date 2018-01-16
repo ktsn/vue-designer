@@ -69,8 +69,9 @@ export default Vue.extend({
   right: 0;
   top: 0;
   bottom: 0;
-  width: 250px;
-  background-color: #349c47;
+  width: 330px;
+  background-color: #f5f5f5;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
   transform: translateX(100%);
   transition: transform 400ms cubic-bezier(0.19, 1, 0.22, 1);
 
@@ -81,28 +82,31 @@ export default Vue.extend({
   &-body {
     overflow-y: auto;
     max-height: 100%;
+    padding: 13px 15px;
   }
 
   &-group {
-    flex: 1 1 auto;
-    padding: 13px 15px;
-    color: #fff;
+    &:not(:first-child) {
+      margin-top: 16px;
+    }
   }
 
   &-title {
-    margin-bottom: 12px;
+    margin-bottom: 6px;
     font-weight: bold;
-    font-size: 2rem;
   }
 
   &-list-item {
-    margin-bottom: 8px;
     padding-bottom: 1px;
-    border-bottom: 1px solid #fff;
+    border-bottom: 1px solid #333;
+
+    &:not(:first-child) {
+      margin-top: 8px;
+    }
   }
 
   &-placeholder {
-    color: #75d286;
+    color: #999;
   }
 
   &-text {

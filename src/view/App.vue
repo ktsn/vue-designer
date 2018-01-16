@@ -50,5 +50,6 @@ export default Vue.extend({
 
 body {
   font-size: 1.6rem;
+  color: #333;
 }
 </style>

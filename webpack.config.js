@@ -3,6 +3,11 @@ const webpack = require('webpack')
 
 const base = path.resolve(__dirname)
 
+const plugins = []
+if (!process.env.DEV) {
+  plugins.push(new webpack.optimize.ModuleConcatenationPlugin())
+}
+
 module.exports = {
   context: path.join(base, 'src'),
   entry: './view/main.ts',
@@ -33,7 +38,7 @@ module.exports = {
       }
     ]
   },
-  plugins: [new webpack.optimize.ModuleConcatenationPlugin()],
+  plugins,
   devtool: 'inline-source-map',
   devServer: {
     port: 50000,

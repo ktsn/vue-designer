@@ -1,5 +1,5 @@
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import Vue, { VNode, VNodeDirective } from 'vue'
 import Child from './Child.vue'
 import { Element, Attribute, Directive } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
@@ -32,6 +32,33 @@ function toAttrs(
   return res
 }
 
+function getVShowDirective(
+  attrs: (Attribute | Directive)[],
+  scope: Record<string, DefaultValue>
+): VNodeDirective | undefined {
+  const vShow = attrs.find(a => a.directive && a.name === 'show') as
+    | Directive
+    | undefined
+  if (!vShow) return
+
+  const modifierMap: Record<string, boolean> = {}
+  vShow.modifiers.forEach(modifier => {
+    modifierMap[modifier] = true
+  })
+
+  const exp = vShow.expression
+  const value = vShow.value || (inScope(exp, scope) && scope[exp])
+
+  return {
+    name: 'show',
+    expression: vShow.expression,
+    oldValue: undefined,
+    arg: vShow.argument || '',
+    modifiers: modifierMap,
+    value
+  }
+}
+
 export default Vue.extend({
   name: 'Node',
   functional: true,
@@ -49,10 +76,13 @@ export default Vue.extend({
 
   render(h, { props }): VNode {
     const { data, scope } = props
+    const vShow = getVShowDirective(data.attributes, scope)
+
     return h(
       data.name,
       {
-        attrs: toAttrs(data.attributes, scope)
+        attrs: toAttrs(data.attributes, scope),
+        directives: vShow ? [vShow] : []
       },
       data.children.map(c =>
         h(Child, {

@@ -9,6 +9,10 @@ import {
 import { Prop, Data } from '../../../src/parser/script'
 import VueComponent from '@/view/components/VueComponent.vue'
 
+jest.mock('../../../src/view/mixins/shadow-dom', () => {
+  return {}
+})
+
 export function render(
   template: Template,
   props: Prop[] = [],

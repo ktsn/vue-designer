@@ -128,4 +128,41 @@ describe('Template AST transformer', () => {
 
     expect(templateToPayload(ast, code)).toEqual(expected)
   })
+
+  it('should evaluate literal value of directives', () => {
+    const code = '<template><p v-if="true">test</p></template>'
+    const program = parse(code, {})
+    const ast = program.templateBody!
+
+    const expected: Template = {
+      type: 'Template',
+      attributes: [],
+      children: [
+        {
+          path: [0],
+          type: 'Element',
+          name: 'p',
+          attributes: [
+            {
+              index: 0,
+              directive: true,
+              type: 'Attribute',
+              name: 'if',
+              argument: null,
+              modifiers: [],
+              expression: 'true',
+              value: true
+            }
+          ],
+          children: [
+            {
+              path: [0, 0],
+              type: 'TextNode',
+              text: 'test'
+            }
+          ]
+        }
+      ]
+    }
+  })
 })

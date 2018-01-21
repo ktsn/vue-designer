@@ -42,7 +42,8 @@ function transformAttribute(
       attr.key.name,
       attr.key.argument,
       attr.key.modifiers,
-      expStr
+      expStr,
+      exp && evalExpression(exp)
     )
   } else {
     return attribute(index, attr.key.name, attr.value && attr.value.value)
@@ -68,6 +69,25 @@ function transformChild(
 function extractExpression(node: AST.HasLocation, code: string): string {
   return code.slice(node.range[0], node.range[1])
 }
+
+function evalExpression(
+  exp: AST.ESLintExpression | AST.VForExpression | AST.VOnExpression
+): ExpressionValue {
+  switch (exp.type) {
+    case 'Literal':
+      return exp.value
+    default:
+      return undefined
+  }
+}
+
+export type ExpressionValue =
+  | string
+  | boolean
+  | number
+  | RegExp
+  | null
+  | undefined
 
 export type ElementChild = Element | TextNode | ExpressionNode
 
@@ -113,6 +133,7 @@ export interface Directive {
   argument: string | null
   modifiers: string[]
   expression: string | null
+  value?: any
 }
 
 export function element(
@@ -168,7 +189,8 @@ export function directive(
   name: string,
   argument: string | null,
   modifiers: string[],
-  expression: string | null
+  expression: string | null,
+  value: ExpressionValue
 ): Directive {
   return {
     type: 'Attribute',
@@ -177,6 +199,7 @@ export function directive(
     name,
     argument,
     modifiers,
-    expression
+    expression,
+    value
   }
 }

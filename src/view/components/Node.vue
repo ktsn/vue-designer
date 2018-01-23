@@ -8,6 +8,7 @@ import {
   ElementChild
 } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
+import { mapFindRight } from '@/utils'
 
 function findDirective(
   attrs: (Attribute | Directive)[],
@@ -74,21 +75,42 @@ function getVShowDirective(
 }
 
 function shouldAppearChild(
-  prevChild: ElementChild | undefined,
+  acc: ElementChild[],
   child: ElementChild,
   scope: Record<string, DefaultValue>
-): boolean {
-  if (child.type === 'TextNode' || child.type === 'ExpressionNode') {
-    return true
+): ElementChild[] {
+  if (child.type === 'Element') {
+    const vIf = findDirective(child.attributes, d => d.name === 'if')
+    if (vIf) {
+      const exp = vIf.expression
+      const value = vIf.value || (inScope(exp, scope) && scope[exp])
+      return value ? acc.concat(child) : acc
+    }
+
+    const vElse = findDirective(child.attributes, d => d.name === 'else')
+    if (vElse) {
+      const lastVIf = mapFindRight(acc, el => {
+        if (el.type !== 'Element') {
+          return
+        }
+        return findDirective(
+          el.attributes,
+          dir => dir.name === 'if' || dir.name === 'else-if'
+        )
+      })
+
+      if (!lastVIf) {
+        return acc.concat(child)
+      }
+
+      const lastVIfExp = lastVIf.expression
+      const lastVIfValue =
+        lastVIf.value || (inScope(lastVIfExp, scope) && scope[lastVIfExp])
+      return !lastVIfValue ? acc.concat(child) : acc
+    }
   }
 
-  const vIf = findDirective(child.attributes, d => d.name === 'if')
-  if (!vIf) {
-    return true
-  }
-
-  const exp = vIf.expression
-  return vIf.value || (inScope(exp, scope) && scope[exp])
+  return acc.concat(child)
 }
 
 export default Vue.extend({
@@ -110,8 +132,9 @@ export default Vue.extend({
     const { data, scope } = props
     const vShow = getVShowDirective(data.attributes, scope)
 
-    const filteredChildren = data.children.filter((child, i) =>
-      shouldAppearChild(data.children[i - 1], child, scope)
+    const filteredChildren = data.children.reduce<ElementChild[]>(
+      (acc, child) => shouldAppearChild(acc, child, scope),
+      []
     )
 
     return h(

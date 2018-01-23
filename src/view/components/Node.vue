@@ -1,8 +1,22 @@
 <script lang="ts">
-import Vue, { VNode, VNodeDirective } from 'vue'
+import Vue, { CreateElement, VNode, VNodeDirective } from 'vue'
 import Child from './Child.vue'
-import { Element, Attribute, Directive } from '../../parser/template'
+import {
+  Element,
+  Attribute,
+  Directive,
+  ElementChild
+} from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
+
+function findDirective(
+  attrs: (Attribute | Directive)[],
+  fn: (directive: Directive) => boolean
+): Directive | undefined {
+  return attrs.find(attr => {
+    return attr.directive && fn(attr)
+  }) as Directive | undefined
+}
 
 function inScope(
   exp: string | null,
@@ -59,6 +73,24 @@ function getVShowDirective(
   }
 }
 
+function shouldAppearChild(
+  prevChild: ElementChild | undefined,
+  child: ElementChild,
+  scope: Record<string, DefaultValue>
+): boolean {
+  if (child.type === 'TextNode' || child.type === 'ExpressionNode') {
+    return true
+  }
+
+  const vIf = findDirective(child.attributes, d => d.name === 'if')
+  if (!vIf) {
+    return true
+  }
+
+  const exp = vIf.expression
+  return vIf.value || (inScope(exp, scope) && scope[exp])
+}
+
 export default Vue.extend({
   name: 'Node',
   functional: true,
@@ -78,20 +110,24 @@ export default Vue.extend({
     const { data, scope } = props
     const vShow = getVShowDirective(data.attributes, scope)
 
+    const filteredChildren = data.children.filter((child, i) =>
+      shouldAppearChild(data.children[i - 1], child, scope)
+    )
+
     return h(
       data.name,
       {
         attrs: toAttrs(data.attributes, scope),
         directives: vShow ? [vShow] : []
       },
-      data.children.map(c =>
-        h(Child, {
+      filteredChildren.map(c => {
+        return h(Child, {
           props: {
             data: c,
             scope
           }
         })
-      )
+      })
     )
   }
 })

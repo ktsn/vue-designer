@@ -1,8 +1,8 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import ShadowDom from '../mixins/shadow-dom'
-import Child from './Child.vue'
-import { Template } from '../../parser/template'
+import Node from './Node.vue'
+import { Template, Element } from '../../parser/template'
 import { DefaultValue, Prop, Data } from '../../parser/script'
 
 export default Vue.extend({
@@ -49,14 +49,20 @@ export default Vue.extend({
     })
 
     if (this.template) {
+      const rootEl: Element = {
+        type: 'Element',
+        path: [],
+        name: 'div',
+        attributes: [],
+        children: this.template.children
+      }
+
       children.push(
-        ...this.template.children.map(c => {
-          return h(Child, {
-            props: {
-              data: c,
-              scope: this.scope
-            }
-          })
+        h(Node, {
+          props: {
+            data: rootEl,
+            scope: this.scope
+          }
         })
       )
     }

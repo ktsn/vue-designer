@@ -13,9 +13,9 @@ function findDirective(
   attrs: (Attribute | Directive)[],
   fn: (directive: Directive) => boolean
 ): Directive | undefined {
-  return attrs.find(attr => {
+  return attrs.find((attr): attr is Directive => {
     return attr.directive && fn(attr)
-  }) as Directive | undefined
+  })
 }
 
 function inScope(

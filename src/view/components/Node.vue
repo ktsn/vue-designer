@@ -25,6 +25,14 @@ function inScope(
   return Boolean(exp && exp in scope)
 }
 
+function directiveValue(
+  dir: Directive,
+  scope: Record<string, DefaultValue>
+): DefaultValue | undefined {
+  const exp = dir.expression
+  return dir.value || (inScope(exp, scope) && scope[exp])
+}
+
 function toAttrs(
   attrs: (Attribute | Directive)[],
   scope: Record<string, DefaultValue>
@@ -60,16 +68,13 @@ function getVShowDirective(
     modifierMap[modifier] = true
   })
 
-  const exp = vShow.expression
-  const value = vShow.value || (inScope(exp, scope) && scope[exp])
-
   return {
     name: 'show',
     expression: vShow.expression,
     oldValue: undefined,
     arg: vShow.argument || '',
     modifiers: modifierMap,
-    value
+    value: directiveValue(vShow, scope)
   }
 }
 
@@ -81,9 +86,7 @@ function shouldAppearChild(
   if (child.type === 'Element') {
     const vIf = findDirective(child.attributes, d => d.name === 'if')
     if (vIf) {
-      const exp = vIf.expression
-      const value = vIf.value || (inScope(exp, scope) && scope[exp])
-      return value ? acc.concat(child) : acc
+      return directiveValue(vIf, scope) ? acc.concat(child) : acc
     }
 
     const vElse = findDirective(child.attributes, d => d.name === 'else')
@@ -107,10 +110,7 @@ function shouldAppearChild(
         return acc.concat(child)
       }
 
-      const lastVIfExp = lastVIf.expression
-      const lastVIfValue =
-        lastVIf.value || (inScope(lastVIfExp, scope) && scope[lastVIfExp])
-      return !lastVIfValue ? acc.concat(child) : acc
+      return !directiveValue(lastVIf, scope) ? acc.concat(child) : acc
     }
   }
 

@@ -8,7 +8,6 @@ import {
   ElementChild
 } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
-import { mapFindRight } from '@/utils'
 
 function findDirective(
   attrs: (Attribute | Directive)[],
@@ -89,15 +88,20 @@ function shouldAppearChild(
 
     const vElse = findDirective(child.attributes, d => d.name === 'else')
     if (vElse) {
-      const lastVIf = mapFindRight(acc, el => {
-        if (el.type !== 'Element') {
-          return
-        }
-        return findDirective(
-          el.attributes,
-          dir => dir.name === 'if' || dir.name === 'else-if'
-        )
-      })
+      const isElement = (node: ElementChild): node is Element => {
+        return node.type === 'Element'
+      }
+
+      const elements = acc.filter(isElement)
+      const last = elements[elements.length - 1]
+      if (!last) {
+        return acc.concat(child)
+      }
+
+      const lastVIf = findDirective(
+        last.attributes,
+        dir => dir.name === 'if' || dir.name === 'else-if'
+      )
 
       if (!lastVIf) {
         return acc.concat(child)

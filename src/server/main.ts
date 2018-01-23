@@ -35,7 +35,7 @@ function startStaticServer(): http.Server {
     }
 
     if (req.url && allowedUrls.indexOf(req.url) >= 0) {
-      const content = readContent(req.url, (err, content) => {
+      readContent(req.url, (err, content) => {
         assert(!err, 'Unexpectedly file not found')
         res.end(content)
       })
@@ -80,7 +80,7 @@ export function startServer(
   onMessage: (ws: WebSocket, payload: ClientPayload) => void
 ): http.Server {
   const server = startStaticServer()
-  const webSocket = startWebSocketServer(server, onConnection, onMessage)
+  startWebSocketServer(server, onConnection, onMessage)
 
   return server
 }

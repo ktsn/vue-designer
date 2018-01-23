@@ -1,7 +1,5 @@
 import { ServerPayload, ClientPayload } from '../payload'
-import { Template } from '../parser/template'
 import { DocumentProvider } from './document'
-import { Prop } from '../parser/script'
 import { VueFile } from '../parser/vue-file'
 
 export class ClientConnection implements DocumentProvider {

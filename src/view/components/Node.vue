@@ -1,5 +1,5 @@
 <script lang="ts">
-import Vue, { CreateElement, VNode, VNodeDirective } from 'vue'
+import Vue, { VNode, VNodeDirective } from 'vue'
 import Child from './Child.vue'
 import {
   Element,

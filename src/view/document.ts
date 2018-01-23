@@ -7,7 +7,7 @@ export interface DocumentProvider {
 export class Document {
   private listeners: ((vueFile: VueFile) => void)[] = []
 
-  constructor(private provider: DocumentProvider) {
+  constructor(provider: DocumentProvider) {
     provider.onInitDocument(vueFile => {
       this.listeners.forEach(listener => {
         listener(vueFile)

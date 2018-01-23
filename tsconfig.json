@@ -8,6 +8,8 @@
       "dom"
     ],
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "sourceMap": true,
     "rootDir": "src",
     "baseUrl": "src",

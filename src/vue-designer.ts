@@ -9,7 +9,7 @@ import { VueFile } from './parser/vue-file'
 
 export function activate(context: vscode.ExtensionContext) {
   let lastActiveTextEditor = vscode.window.activeTextEditor
-  vscode.window.onDidChangeActiveTextEditor(e => {
+  vscode.window.onDidChangeActiveTextEditor(() => {
     const editor = vscode.window.activeTextEditor
     if (editor) {
       lastActiveTextEditor = editor
@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   class TextDocumentContentProvider
     implements vscode.TextDocumentContentProvider {
-    public provideTextDocumentContent(uri: vscode.Uri): string {
+    public provideTextDocumentContent(): string {
       return `<style>
       html, body, iframe {
         margin: 0;
@@ -76,7 +76,7 @@ export function activate(context: vscode.ExtensionContext) {
           'Vue component preview'
         )
         .then(
-          success => {},
+          () => {},
           reason => {
             vscode.window.showErrorMessage(reason)
           }

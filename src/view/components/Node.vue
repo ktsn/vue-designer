@@ -78,6 +78,34 @@ function getVShowDirective(
   }
 }
 
+function shouldAppearVElse(
+  acc: boolean,
+  scope: Record<string, DefaultValue>,
+  stack: Element[]
+): boolean {
+  const last = stack[stack.length - 1]
+  if (!last) {
+    return acc
+  }
+
+  const lastVIf = findDirective(
+    last.attributes,
+    dir => dir.name === 'if' || dir.name === 'else-if'
+  )
+
+  if (!lastVIf) {
+    return acc
+  }
+
+  const appearPrev = directiveValue(lastVIf, scope)
+  const appearElse = acc && !appearPrev
+  if (lastVIf.name === 'if') {
+    return appearElse
+  } else {
+    return shouldAppearVElse(appearElse, scope, stack.slice(0, -1))
+  }
+}
+
 function shouldAppearChild(
   acc: ElementChild[],
   child: ElementChild,
@@ -89,28 +117,24 @@ function shouldAppearChild(
       return directiveValue(vIf, scope) ? acc.concat(child) : acc
     }
 
-    const vElse = findDirective(child.attributes, d => d.name === 'else')
+    const vElse = findDirective(child.attributes, d => {
+      return d.name === 'else' || d.name === 'else-if'
+    })
     if (vElse) {
       const isElement = (node: ElementChild): node is Element => {
         return node.type === 'Element'
       }
-
       const elements = acc.filter(isElement)
-      const last = elements[elements.length - 1]
-      if (!last) {
+
+      if (!shouldAppearVElse(true, scope, elements)) {
+        return acc
+      }
+
+      if (vElse.name === 'else') {
         return acc.concat(child)
       }
 
-      const lastVIf = findDirective(
-        last.attributes,
-        dir => dir.name === 'if' || dir.name === 'else-if'
-      )
-
-      if (!lastVIf) {
-        return acc.concat(child)
-      }
-
-      return !directiveValue(lastVIf, scope) ? acc.concat(child) : acc
+      return directiveValue(vElse, scope) ? acc.concat(child) : acc
     }
   }
 

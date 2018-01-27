@@ -64,6 +64,8 @@ function toDomProps(
     if (attr.directive) {
       if (attr.name === 'text') {
         res.textContent = directiveValue(attr, scope)
+      } else if (attr.name === 'html') {
+        res.innerHTML = directiveValue(attr, scope)
       }
     }
   })

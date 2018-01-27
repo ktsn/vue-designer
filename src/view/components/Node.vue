@@ -54,6 +54,23 @@ function toAttrs(
   return res
 }
 
+function toDomProps(
+  attrs: (Attribute | Directive)[],
+  scope: Record<string, DefaultValue>
+): Record<string, any> {
+  const res: Record<string, any> = {}
+
+  attrs.forEach(attr => {
+    if (attr.directive) {
+      if (attr.name === 'text') {
+        res.textContent = directiveValue(attr, scope)
+      }
+    }
+  })
+
+  return res
+}
+
 function getVShowDirective(
   attrs: (Attribute | Directive)[],
   scope: Record<string, DefaultValue>
@@ -169,6 +186,7 @@ export default Vue.extend({
       data.name,
       {
         attrs: toAttrs(data.attributes, scope),
+        domProps: toDomProps(data.attributes, scope),
         directives: vShow ? [vShow] : []
       },
       filteredChildren.map(c => {

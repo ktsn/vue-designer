@@ -41,4 +41,14 @@ describe('VueComponent v-html', () => {
     const p = wrapper.find('p')
     expect(p.html()).toBe('<p><strong>overwritten</strong></p>')
   })
+
+  it('should not render if the value is not resolved', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [d('html', 'message')], [])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.find('p').text()).toBe('')
+  })
 })

@@ -30,7 +30,14 @@ function directiveValue(
   scope: Record<string, DefaultValue>
 ): DefaultValue | undefined {
   const exp = dir.expression
-  return dir.value || (inScope(exp, scope) && scope[exp])
+
+  if (dir.value !== undefined) {
+    return dir.value
+  } else if (inScope(exp, scope)) {
+    return scope[exp]
+  } else {
+    return undefined
+  }
 }
 
 function toAttrs(

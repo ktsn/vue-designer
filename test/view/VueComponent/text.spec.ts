@@ -42,4 +42,14 @@ describe('VueComponent v-text', () => {
     expect(p.text()).toBe('overwritten')
     expect(p.contains('span')).toBe(false)
   })
+
+  it('should not render if the value is not resolved', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [d('text', 'message')], [])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.find('p').text()).toBe('')
+  })
 })

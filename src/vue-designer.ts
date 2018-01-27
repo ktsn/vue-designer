@@ -25,14 +25,19 @@ export function activate(context: vscode.ExtensionContext) {
         initDocument(ws, vueFile)
       }
 
-      vscode.workspace.onDidChangeTextDocument(
-        (e: vscode.TextDocumentChangeEvent) => {
-          if (e.document === vscode.window.activeTextEditor!.document) {
-            const vueFile = parseCode(e.document.getText())
-            initDocument(ws, vueFile)
-          }
+      vscode.window.onDidChangeActiveTextEditor(editor => {
+        if (editor) {
+          const vueFile = parseCode(editor.document.getText())
+          initDocument(ws, vueFile)
         }
-      )
+      })
+
+      vscode.workspace.onDidChangeTextDocument(event => {
+        if (event.document === vscode.window.activeTextEditor!.document) {
+          const vueFile = parseCode(event.document.getText())
+          initDocument(ws, vueFile)
+        }
+      })
     },
     () => {}
   )

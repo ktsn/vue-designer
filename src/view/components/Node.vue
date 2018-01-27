@@ -28,7 +28,7 @@ function inScope(
 function directiveValue(
   dir: Directive,
   scope: Record<string, DefaultValue>
-): DefaultValue | undefined {
+): DefaultValue {
   const exp = dir.expression
 
   if (dir.value !== undefined) {
@@ -132,7 +132,7 @@ function shouldAppearVElse(
   }
 }
 
-function shouldAppearChild(
+function resolveVIf(
   acc: ElementChild[],
   child: ElementChild,
   scope: Record<string, DefaultValue>
@@ -187,7 +187,7 @@ export default Vue.extend({
     const vShow = getVShowDirective(data.attributes, scope)
 
     const filteredChildren = data.children.reduce<ElementChild[]>(
-      (acc, child) => shouldAppearChild(acc, child, scope),
+      (acc, child) => resolveVIf(acc, child, scope),
       []
     )
 

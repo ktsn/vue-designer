@@ -84,9 +84,7 @@ function getVShowDirective(
   attrs: (Attribute | Directive)[],
   scope: Record<string, DefaultValue>
 ): VNodeDirective | undefined {
-  const vShow = attrs.find(a => a.directive && a.name === 'show') as
-    | Directive
-    | undefined
+  const vShow = findDirective(attrs, a => a.name === 'show')
   if (!vShow) return
 
   const modifierMap: Record<string, boolean> = {}

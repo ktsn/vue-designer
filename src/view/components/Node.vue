@@ -194,7 +194,7 @@ export default Vue.extend({
       required: true
     },
     scope: {
-      type: Object as { (): Record<string, string> },
+      type: Object as { (): Record<string, DefaultValue> },
       required: true
     }
   },

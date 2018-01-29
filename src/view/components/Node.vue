@@ -1,5 +1,5 @@
 <script lang="ts">
-import Vue, { VNode, VNodeDirective } from 'vue'
+import Vue, { VNode, VNodeData, VNodeDirective } from 'vue'
 import Child from './Child.vue'
 import {
   Element,
@@ -171,6 +171,19 @@ function resolveVIf(
   return acc.concat(child)
 }
 
+function createVNodeData(
+  node: Element,
+  scope: Record<string, DefaultValue>
+): VNodeData {
+  const vShow = getVShowDirective(node.attributes, scope)
+
+  return {
+    attrs: toAttrs(node.attributes, scope),
+    domProps: toDomProps(node.attributes, scope),
+    directives: vShow ? [vShow] : []
+  }
+}
+
 export default Vue.extend({
   name: 'Node',
   functional: true,
@@ -188,7 +201,6 @@ export default Vue.extend({
 
   render(h, { props }): VNode {
     const { data, scope } = props
-    const vShow = getVShowDirective(data.attributes, scope)
 
     const filteredChildren = data.children.reduce<ElementChild[]>(
       (acc, child) => resolveVIf(acc, child, scope),
@@ -197,11 +209,7 @@ export default Vue.extend({
 
     return h(
       data.name,
-      {
-        attrs: toAttrs(data.attributes, scope),
-        domProps: toDomProps(data.attributes, scope),
-        directives: vShow ? [vShow] : []
-      },
+      createVNodeData(data, scope),
       filteredChildren.map(c => {
         return h(Child, {
           props: {

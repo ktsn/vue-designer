@@ -105,31 +105,37 @@ function getVShowDirective(
 }
 
 function shouldAppearVElse(
-  acc: boolean,
   scope: Record<string, DefaultValue>,
   stack: Element[]
 ): boolean {
-  const last = stack[stack.length - 1]
-  if (!last) {
-    return acc
-  }
+  function loop(
+    acc: boolean,
+    scope: Record<string, DefaultValue>,
+    stack: Element[]
+  ): boolean {
+    const last = stack[stack.length - 1]
+    if (!last) {
+      return acc
+    }
 
-  const lastVIf = findDirective(
-    last.attributes,
-    dir => dir.name === 'if' || dir.name === 'else-if'
-  )
+    const lastVIf = findDirective(
+      last.attributes,
+      dir => dir.name === 'if' || dir.name === 'else-if'
+    )
 
-  if (!lastVIf) {
-    return acc
-  }
+    if (!lastVIf) {
+      return acc
+    }
 
-  const appearPrev = directiveValue(lastVIf, scope)
-  const appearElse = acc && !appearPrev
-  if (lastVIf.name === 'if') {
-    return appearElse
-  } else {
-    return shouldAppearVElse(appearElse, scope, stack.slice(0, -1))
+    const appearPrev = directiveValue(lastVIf, scope)
+    const appearElse = acc && !appearPrev
+    if (lastVIf.name === 'if') {
+      return appearElse
+    } else {
+      return loop(appearElse, scope, stack.slice(0, -1))
+    }
   }
+  return loop(true, scope, stack)
 }
 
 function resolveVIf(
@@ -152,7 +158,7 @@ function resolveVIf(
       }
       const elements = acc.filter(isElement)
 
-      if (!shouldAppearVElse(true, scope, elements)) {
+      if (!shouldAppearVElse(scope, elements)) {
         return acc
       }
 

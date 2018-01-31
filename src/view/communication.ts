@@ -1,15 +1,13 @@
 import { ServerPayload, ClientPayload } from '../payload'
-import { DocumentProvider } from './document'
-import { VueFile } from '../parser/vue-file'
 
-export class ClientConnection implements DocumentProvider {
+export class ClientConnection {
   private ws: WebSocket | undefined
-  private onMessages: ((data: ServerPayload) => void)[] = []
+  private listeners: ((data: ServerPayload) => void)[] = []
 
   connect(port: string): void {
     this.ws = new WebSocket(`ws://localhost:${port}/api`)
     this.ws.addEventListener('message', event => {
-      this.onMessages.forEach(fn => {
+      this.listeners.forEach(fn => {
         fn(JSON.parse(event.data))
       })
     })
@@ -20,11 +18,13 @@ export class ClientConnection implements DocumentProvider {
     this.ws.send(JSON.stringify(payload))
   }
 
-  onInitDocument(fn: (vueFile: VueFile) => void): void {
-    this.onMessages.push(data => {
-      if (data.type === 'InitDocument') {
-        fn(data.vueFile)
+  onMessage(fn: (data: ServerPayload) => void): () => void {
+    this.listeners.push(fn)
+    return () => {
+      const index = this.listeners.indexOf(fn)
+      if (index >= 0) {
+        this.listeners.splice(index, 1)
       }
-    })
+    }
   }
 }

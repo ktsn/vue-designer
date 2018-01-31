@@ -66,6 +66,7 @@
     "vue": "^2.5.13",
     "vue-eslint-parser": "^2.0.1-beta.2",
     "vue-template-compiler": "^2.5.13",
+    "vuex": "github:ktsn/vuex#fc1f29b",
     "ws": "^3.3.2"
   },
   "devDependencies": {

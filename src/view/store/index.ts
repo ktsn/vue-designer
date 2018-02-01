@@ -11,14 +11,7 @@ export const store = new Store({
 
 const connection = new ClientConnection()
 connection.connect(location.port)
-connection.onMessage(data => {
-  switch (data.type) {
-    case 'InitDocument':
-      store.commit('project/setDocument', data.vueFile)
-      break
-    default: // Do nothing
-  }
-})
+store.dispatch('project/init', connection)
 
 declare const module: any
 if (module.hot) {

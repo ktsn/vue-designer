@@ -2,6 +2,7 @@ import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFile } from 'parser/vue-file'
 import { Template } from 'parser/template'
 import { Prop, Data } from 'parser/script'
+import { ClientConnection } from 'view/communication'
 
 interface ProjectState {
   document: VueFile | undefined
@@ -14,6 +15,10 @@ interface ProjectGetters {
   styles: string[]
 }
 
+interface ProjectActions {
+  init: ClientConnection
+}
+
 interface ProjectMutations {
   setDocument: VueFile
 }
@@ -22,14 +27,14 @@ export const projectHelpers = createNamespacedHelpers<
   ProjectState,
   ProjectGetters,
   ProjectMutations,
-  {}
+  ProjectActions
 >('project')
 
 export const project: DefineModule<
   ProjectState,
   ProjectGetters,
   ProjectMutations,
-  {}
+  ProjectActions
 > = {
   namespaced: true,
 
@@ -52,6 +57,19 @@ export const project: DefineModule<
 
     styles(state) {
       return state.document ? state.document.styles : []
+    }
+  },
+
+  actions: {
+    init({ commit }, connection) {
+      connection.onMessage(data => {
+        switch (data.type) {
+          case 'InitDocument':
+            commit('setDocument', data.vueFile)
+            break
+          default: // Do nothing
+        }
+      })
     }
   },
 

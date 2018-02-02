@@ -44,6 +44,9 @@
       "^.+\\.ts$": "ts-jest",
       "^.+\\.vue$": "vue-jest"
     },
+    "setupFiles": [
+      "<rootDir>/test/setup.ts"
+    ],
     "testRegex": "/test/.+\\.spec\\.(js|ts)$",
     "moduleNameMapper": {
       "^@/(.+)$": "<rootDir>/src/$1",

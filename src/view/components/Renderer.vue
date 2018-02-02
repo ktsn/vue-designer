@@ -15,6 +15,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .renderer {
   all: initial;
+  display: block;
   position: relative;
 }
 </style>

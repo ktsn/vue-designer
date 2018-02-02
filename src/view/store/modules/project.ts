@@ -1,8 +1,8 @@
 import { DefineModule, createNamespacedHelpers } from 'vuex'
-import { VueFile } from 'parser/vue-file'
-import { Template } from 'parser/template'
-import { Prop, Data } from 'parser/script'
-import { ClientConnection } from 'view/communication'
+import { VueFile } from '@/parser/vue-file'
+import { Template, Element } from '@/parser/template'
+import { Prop, Data } from '@/parser/script'
+import { ClientConnection } from '@/view/communication'
 
 interface ProjectState {
   document: VueFile | undefined

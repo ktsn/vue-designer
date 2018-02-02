@@ -12,10 +12,10 @@
     "noUnusedParameters": true,
     "sourceMap": true,
     "rootDir": "src",
-    "baseUrl": "src",
+    "baseUrl": ".",
     "paths": {
       "@/*": [
-        "*"
+        "src/*"
       ]
     }
   },

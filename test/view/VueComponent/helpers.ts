@@ -5,8 +5,8 @@ import {
   ExpressionNode,
   Attribute,
   Directive
-} from '../../../src/parser/template'
-import { Prop, Data } from '../../../src/parser/script'
+} from '@/parser/template'
+import { Prop, Data } from '@/parser/script'
 import VueComponent from '@/view/components/VueComponent.vue'
 
 jest.mock('../../../src/view/mixins/shadow-dom', () => {

@@ -5,7 +5,8 @@ import {
   Element,
   ExpressionNode,
   Attribute,
-  Directive
+  Directive,
+  ElementChild
 } from '@/parser/template'
 import { Prop, Data } from '@/parser/script'
 import VueComponent from '@/view/components/VueComponent.vue'
@@ -35,21 +36,42 @@ export function render(
   })
 }
 
-export function createTemplate(
-  children: (Element | ExpressionNode | string)[]
-): Template {
-  return {
-    type: 'Template',
-    attributes: [],
-    children: children.map(c => {
-      return typeof c === 'string'
+function processRootChildren(
+  children: (Element | ExpressionNode | string)[],
+  path: number[]
+): ElementChild[] {
+  return children.map((c, i) => {
+    const node =
+      typeof c === 'string'
         ? {
             type: 'TextNode' as 'TextNode',
             path: [],
             text: c
           }
         : c
+
+    modifyChildPath(node, [i])
+    return node
+  })
+}
+
+function modifyChildPath(child: ElementChild, path: number[]): ElementChild {
+  child.path = path
+  if (child.type === 'Element') {
+    child.children.forEach((c, i) => {
+      modifyChildPath(c, path.concat(i))
     })
+  }
+  return child
+}
+
+export function createTemplate(
+  children: (Element | ExpressionNode | string)[]
+): Template {
+  return {
+    type: 'Template',
+    attributes: [],
+    children: processRootChildren(children, [])
   }
 }
 

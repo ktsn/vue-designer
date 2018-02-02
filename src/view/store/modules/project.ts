@@ -6,6 +6,7 @@ import { ClientConnection } from '@/view/communication'
 
 interface ProjectState {
   document: VueFile | undefined
+  selectedPath: number[]
 }
 
 interface ProjectGetters {
@@ -21,6 +22,7 @@ interface ProjectActions {
 
 interface ProjectMutations {
   setDocument: VueFile
+  select: Element
 }
 
 export const projectHelpers = createNamespacedHelpers<
@@ -38,9 +40,10 @@ export const project: DefineModule<
 > = {
   namespaced: true,
 
-  state: {
-    document: undefined
-  },
+  state: () => ({
+    document: undefined,
+    selectedPath: []
+  }),
 
   getters: {
     template(state) {
@@ -76,6 +79,10 @@ export const project: DefineModule<
   mutations: {
     setDocument(state, vueFile) {
       state.document = vueFile
+    },
+
+    select(state, node) {
+      state.selectedPath = node.path
     }
   }
 }

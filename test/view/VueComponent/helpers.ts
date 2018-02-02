@@ -1,3 +1,4 @@
+import { Store } from 'vuex'
 import { mount, Wrapper } from '@vue/test-utils'
 import {
   Template,
@@ -8,6 +9,7 @@ import {
 } from '@/parser/template'
 import { Prop, Data } from '@/parser/script'
 import VueComponent from '@/view/components/VueComponent.vue'
+import { project as originalProject } from '@/view/store/modules/project'
 
 jest.mock('../../../src/view/mixins/shadow-dom', () => {
   return {}
@@ -18,13 +20,18 @@ export function render(
   props: Prop[] = [],
   data: Data[] = []
 ): Wrapper<VueComponent> {
+  const store = new Store({
+    modules: { project: originalProject }
+  })
+
   return mount(VueComponent, {
     propsData: {
       template,
       props,
       data,
       styles: []
-    }
+    },
+    store
   })
 }
 

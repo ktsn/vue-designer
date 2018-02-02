@@ -173,14 +173,25 @@ function resolveVIf(
 
 function createVNodeData(
   node: Element,
-  scope: Record<string, DefaultValue>
+  scope: Record<string, DefaultValue>,
+  selected: boolean,
+  listeners: Record<string, Function>
 ): VNodeData {
   const vShow = getVShowDirective(node.attributes, scope)
 
   return {
     attrs: toAttrs(node.attributes, scope),
     domProps: toDomProps(node.attributes, scope),
-    directives: vShow ? [vShow] : []
+    directives: vShow ? [vShow] : [],
+    class: {
+      selected
+    },
+    on: {
+      click: (event: Event) => {
+        event.stopPropagation()
+        listeners.select(node)
+      }
+    }
   }
 }
 
@@ -196,11 +207,13 @@ export default Vue.extend({
     scope: {
       type: Object as { (): Record<string, DefaultValue> },
       required: true
-    }
+    },
+    selected: Boolean
   },
 
-  render(h, { props }): VNode {
-    const { data, scope } = props
+  // @ts-ignore
+  render(h, { props, listeners }): VNode {
+    const { data, scope, selected } = props
 
     const filteredChildren = data.children.reduce<ElementChild[]>(
       (acc, child) => resolveVIf(acc, child, scope),
@@ -209,7 +222,7 @@ export default Vue.extend({
 
     return h(
       data.name,
-      createVNodeData(data, scope),
+      createVNodeData(data, scope, selected, listeners),
       filteredChildren.map(c => {
         return h(Child, {
           props: {

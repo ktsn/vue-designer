@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import Node from './Node.vue'
+import ContainerNode from './ContainerNode.vue'
 import Expression from './Expression.vue'
 import { ElementChild } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
@@ -25,7 +25,7 @@ export default Vue.extend({
     const { data, scope } = props
     switch (data.type) {
       case 'Element':
-        return h(Node, { props: { data, scope } })
+        return h(ContainerNode, { props: { data, scope } })
       case 'TextNode':
         return h('span', [data.text])
       case 'ExpressionNode':

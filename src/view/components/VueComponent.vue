@@ -61,7 +61,8 @@ export default Vue.extend({
         h(Node, {
           props: {
             data: rootEl,
-            scope: this.scope
+            scope: this.scope,
+            selected: false
           }
         })
       )

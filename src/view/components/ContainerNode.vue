@@ -44,6 +44,6 @@ export default Vue.extend({
     }
   },
 
-  methods: projectHelpers.mapMutations(['select'])
+  methods: projectHelpers.mapActions(['select'])
 })
 </script>

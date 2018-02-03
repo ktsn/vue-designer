@@ -1,14 +1,16 @@
 import * as vscode from 'vscode'
 import { startServer } from './server/main'
 import { initDocument } from './server/communication'
-import { parseComponent } from 'vue-template-compiler'
-import * as parser from 'vue-eslint-parser'
-import { templateToPayload } from './parser/template'
-import { extractProps, extractData } from './parser/script'
-import { VueFilePayload } from './parser/vue-file'
+import { parseVueFile, VueFile } from './parser/vue-file'
+import { getNode } from './parser/template'
 
 export function activate(context: vscode.ExtensionContext) {
+  const highlight = vscode.window.createTextEditorDecorationType({
+    backgroundColor: 'rgba(200, 200, 200, 0.35)'
+  })
   let lastActiveTextEditor = vscode.window.activeTextEditor
+  let vueFile: VueFile | undefined
+
   vscode.window.onDidChangeActiveTextEditor(() => {
     const editor = vscode.window.activeTextEditor
     if (editor) {
@@ -20,26 +22,57 @@ export function activate(context: vscode.ExtensionContext) {
   const server = startServer(
     ws => {
       console.log('Client connected')
+
       if (lastActiveTextEditor) {
-        const vueFile = parseCode(lastActiveTextEditor.document.getText())
-        initDocument(ws, vueFile)
+        const code = lastActiveTextEditor.document.getText()
+        const uri = lastActiveTextEditor.document.uri.toString()
+        const parsed = parseVueFile(code, uri)
+        vueFile = parsed.vueFile
+        initDocument(ws, parsed.payload)
       }
 
       vscode.window.onDidChangeActiveTextEditor(editor => {
         if (editor) {
-          const vueFile = parseCode(editor.document.getText())
-          initDocument(ws, vueFile)
+          const code = editor.document.getText()
+          const uri = editor.document.uri.toString()
+          const parsed = parseVueFile(code, uri)
+          vueFile = parsed.vueFile
+          initDocument(ws, parsed.payload)
         }
       })
 
       vscode.workspace.onDidChangeTextDocument(event => {
         if (event.document === vscode.window.activeTextEditor!.document) {
-          const vueFile = parseCode(event.document.getText())
-          initDocument(ws, vueFile)
+          const code = event.document.getText()
+          const uri = event.document.uri.toString()
+          const parsed = parseVueFile(code, uri)
+          vueFile = parsed.vueFile
+          initDocument(ws, parsed.payload)
         }
       })
     },
-    () => {}
+    (_ws, payload) => {
+      switch (payload.type) {
+        case 'SelectNode':
+          if (!vueFile || !vueFile.template) break
+
+          const target = getNode(vueFile.template, payload.path)
+          if (!target) break
+
+          for (const editor of vscode.window.visibleTextEditors) {
+            const doc = editor.document
+            if (doc.uri.toString() === vueFile.uri.toString()) {
+              const start = doc.positionAt(target.range[0])
+              const end = doc.positionAt(target.range[1])
+
+              editor.setDecorations(highlight, [new vscode.Range(start, end)])
+            }
+          }
+          break
+        default:
+          throw new Error('Unexpected client payload: ' + payload.type)
+      }
+    }
   )
 
   const serverPort = process.env.DEV ? 50000 : server.address().port
@@ -92,20 +125,4 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable, registration, {
     dispose: () => server.close()
   })
-}
-
-function parseCode(code: string): VueFilePayload {
-  const { styles } = parseComponent(code)
-  const program = parser.parse(code, { sourceType: 'module' })
-  const template = program.templateBody
-    ? templateToPayload(program.templateBody, code)
-    : undefined
-  const props = extractProps(program.body)
-  const data = extractData(program.body)
-  return {
-    template,
-    props,
-    data,
-    styles: styles.map((s: any) => s.content)
-  }
 }

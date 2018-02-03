@@ -18,6 +18,7 @@ interface ProjectGetters {
 
 interface ProjectActions {
   init: ClientConnection
+  select: Element
 }
 
 interface ProjectMutations {
@@ -31,6 +32,8 @@ export const projectHelpers = createNamespacedHelpers<
   ProjectMutations,
   ProjectActions
 >('project')
+
+let connection: ClientConnection
 
 export const project: DefineModule<
   ProjectState,
@@ -64,7 +67,8 @@ export const project: DefineModule<
   },
 
   actions: {
-    init({ commit }, connection) {
+    init({ commit }, conn) {
+      connection = conn
       connection.onMessage(data => {
         switch (data.type) {
           case 'InitDocument':
@@ -73,6 +77,14 @@ export const project: DefineModule<
           default: // Do nothing
         }
       })
+    },
+
+    select({ commit }, node) {
+      connection.send({
+        type: 'SelectNode',
+        path: node.path
+      })
+      commit('select', node)
     }
   },
 

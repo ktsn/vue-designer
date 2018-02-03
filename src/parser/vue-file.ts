@@ -1,7 +1,7 @@
 import { Template } from './template'
 import { Prop, Data } from './script'
 
-export interface VueFile {
+export interface VueFilePayload {
   template: Template | undefined
   props: Prop[]
   data: Data[]

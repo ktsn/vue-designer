@@ -5,7 +5,7 @@ import { parseComponent } from 'vue-template-compiler'
 import * as parser from 'vue-eslint-parser'
 import { templateToPayload } from './parser/template'
 import { extractProps, extractData } from './parser/script'
-import { VueFile } from './parser/vue-file'
+import { VueFilePayload } from './parser/vue-file'
 
 export function activate(context: vscode.ExtensionContext) {
   let lastActiveTextEditor = vscode.window.activeTextEditor
@@ -94,7 +94,7 @@ export function activate(context: vscode.ExtensionContext) {
   })
 }
 
-function parseCode(code: string): VueFile {
+function parseCode(code: string): VueFilePayload {
   const { styles } = parseComponent(code)
   const program = parser.parse(code, { sourceType: 'module' })
   const template = program.templateBody

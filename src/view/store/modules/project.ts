@@ -1,11 +1,11 @@
 import { DefineModule, createNamespacedHelpers } from 'vuex'
-import { VueFile } from '@/parser/vue-file'
+import { VueFilePayload } from '@/parser/vue-file'
 import { Template, Element } from '@/parser/template'
 import { Prop, Data } from '@/parser/script'
 import { ClientConnection } from '@/view/communication'
 
 interface ProjectState {
-  document: VueFile | undefined
+  document: VueFilePayload | undefined
   selectedPath: number[]
 }
 
@@ -21,7 +21,7 @@ interface ProjectActions {
 }
 
 interface ProjectMutations {
-  setDocument: VueFile
+  setDocument: VueFilePayload
   select: Element
 }
 

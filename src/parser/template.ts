@@ -1,9 +1,9 @@
 import { AST } from 'vue-eslint-parser'
 
-export function templateToPayload(
-  body: AST.VElement & AST.HasConcreteInfo,
-  code: string
-): Template {
+type RootElement = AST.VElement & AST.HasConcreteInfo
+type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
+
+export function templateToPayload(body: RootElement, code: string): Template {
   return {
     type: 'Template',
     attributes: body.startTag.attributes
@@ -51,7 +51,7 @@ function transformAttribute(
 }
 
 function transformChild(
-  child: AST.VElement | AST.VText | AST.VExpressionContainer,
+  child: ChildNode,
   code: string,
   path: number[]
 ): ElementChild {
@@ -79,6 +79,33 @@ function evalExpression(
     default:
       return undefined
   }
+}
+
+export function getNode(
+  root: RootElement,
+  path: number[]
+): ChildNode | undefined {
+  function loop(current: ChildNode, rest: number[]): ChildNode | undefined {
+    // If `rest` does not have any items,
+    // `current` is the node we are looking for.
+    if (rest.length === 0) {
+      return current
+    }
+
+    // The current node does not have children,
+    // then we cannot traverse any more.
+    if (current.type !== 'VElement') {
+      return undefined
+    }
+
+    const next = current.children[rest[0]]
+    if (!next) {
+      return undefined
+    } else {
+      return loop(next, rest.slice(1))
+    }
+  }
+  return loop(root, path)
 }
 
 export type ExpressionValue =

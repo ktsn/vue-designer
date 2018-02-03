@@ -1,5 +1,5 @@
 import { parse, AST } from 'vue-eslint-parser'
-import { templateToPayload, Template } from '../../src/parser/template'
+import { templateToPayload, getNode, Template } from '../../src/parser/template'
 
 describe('Template AST transformer', () => {
   it('should transform element', () => {
@@ -165,5 +165,38 @@ describe('Template AST transformer', () => {
       ]
     }
     expect(templateToPayload(ast, code)).toEqual(expected)
+  })
+})
+
+describe('AST traversal', () => {
+  it('should return a node by path', () => {
+    const code = `
+    <template>
+      <div>
+        <p></p>
+        <input type="text">
+      </div>
+    </template>`
+    const program = parse(code, {})
+    const ast = program.templateBody!
+
+    const res = getNode(ast, [1, 3])! as AST.VElement
+    expect(res.type === 'VElement')
+    expect(res.name === 'input')
+  })
+
+  it('should return undefined if not exists', () => {
+    const code = `
+    <template>
+      <div>
+        <p></p>
+        <input type="text">
+      </div>
+    </template>`
+    const program = parse(code, {})
+    const ast = program.templateBody!
+
+    const res = getNode(ast, [1, 5])
+    expect(res === undefined)
   })
 })

@@ -164,5 +164,6 @@ describe('Template AST transformer', () => {
         }
       ]
     }
+    expect(templateToPayload(ast, code)).toEqual(expected)
   })
 })

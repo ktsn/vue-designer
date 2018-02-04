@@ -23,31 +23,27 @@ export function activate(context: vscode.ExtensionContext) {
     ws => {
       console.log('Client connected')
 
-      if (lastActiveTextEditor) {
-        const code = lastActiveTextEditor.document.getText()
-        const uri = lastActiveTextEditor.document.uri.toString()
+      function initCurrentDocument(document: vscode.TextDocument): void {
+        const code = document.getText()
+        const uri = document.uri.toString()
         const parsed = parseVueFile(code, uri)
         vueFile = parsed.vueFile
         initDocument(ws, parsed.payload)
       }
 
+      if (lastActiveTextEditor) {
+        initCurrentDocument(lastActiveTextEditor.document)
+      }
+
       vscode.window.onDidChangeActiveTextEditor(editor => {
         if (editor) {
-          const code = editor.document.getText()
-          const uri = editor.document.uri.toString()
-          const parsed = parseVueFile(code, uri)
-          vueFile = parsed.vueFile
-          initDocument(ws, parsed.payload)
+          initCurrentDocument(editor.document)
         }
       })
 
       vscode.workspace.onDidChangeTextDocument(event => {
         if (event.document === vscode.window.activeTextEditor!.document) {
-          const code = event.document.getText()
-          const uri = event.document.uri.toString()
-          const parsed = parseVueFile(code, uri)
-          vueFile = parsed.vueFile
-          initDocument(ws, parsed.payload)
+          initCurrentDocument(event.document)
         }
       })
     },

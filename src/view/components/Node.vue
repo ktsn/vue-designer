@@ -109,6 +109,22 @@ function resolveVIf(
   return acc.concat(child)
 }
 
+// Borrowed from Vue.js style parser
+function parseStyleText(cssText: string): Record<string, string> {
+  const res: Record<string, string> = {}
+  const listDelimiter = /;(?![^(]*\))/g
+  const propertyDelimiter = /:(.+)/
+
+  cssText.split(listDelimiter).forEach(function(item) {
+    if (item) {
+      const tmp = item.split(propertyDelimiter)
+      tmp.length > 1 && (res[tmp[0].trim()] = tmp[1].trim())
+    }
+  })
+
+  return res
+}
+
 function convertToVNodeData(
   attrs: (Attribute | Directive)[],
   scope: Record<string, DefaultValue>
@@ -116,25 +132,39 @@ function convertToVNodeData(
   const initial: VNodeData = {
     attrs: {},
     domProps: {},
+    class: [],
     directives: []
   }
 
   return attrs.reduce((acc, attr) => {
     // Normal attribute
     if (!attr.directive) {
-      acc.attrs![attr.name] = attr.value
+      if (attr.name === 'class') {
+        acc.staticClass = attr.value || undefined
+      } else if (attr.name === 'style') {
+        acc.staticStyle = parseStyleText(attr.value || '')
+      } else {
+        acc.attrs![attr.name] = attr.value
+      }
       return acc
     }
 
     // Directive
+    const value = directiveValue(attr, scope)
     if (attr.name === 'bind' && attr.argument) {
-      acc.attrs![attr.argument] = directiveValue(attr, scope)
+      if (attr.argument === 'class') {
+        acc.class.push(value)
+      } else if (attr.argument === 'style') {
+        acc.style = value as any
+      } else {
+        acc.attrs![attr.argument] = value
+      }
     } else if (attr.name === 'model') {
-      acc.attrs!.value = directiveValue(attr, scope)
+      acc.attrs!.value = value
     } else if (attr.name === 'text') {
-      acc.domProps!.textContent = directiveValue(attr, scope)
+      acc.domProps!.textContent = value
     } else if (attr.name === 'html') {
-      acc.domProps!.innerHTML = directiveValue(attr, scope)
+      acc.domProps!.innerHTML = value
     } else if (attr.name === 'show') {
       const modifierMap: Record<string, boolean> = {}
       attr.modifiers.forEach(modifier => {
@@ -147,7 +177,7 @@ function convertToVNodeData(
         oldValue: undefined,
         arg: attr.argument || '',
         modifiers: modifierMap,
-        value: directiveValue(attr, scope)
+        value
       })
     }
     return acc
@@ -162,7 +192,10 @@ function createVNodeData(
 ): VNodeData {
   const data = convertToVNodeData(node.attributes, scope)
 
-  data.class = { selected }
+  if (selected) {
+    data.class.push('selected')
+  }
+
   data.on = {
     click: (event: Event) => {
       event.stopPropagation()

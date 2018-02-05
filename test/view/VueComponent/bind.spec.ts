@@ -18,4 +18,45 @@ describe('VueComponent v-bind', () => {
     ])
     expect(wrapper.find('input').attributes()!.value).toBe('default value')
   })
+
+  it('should merge a bound class with a static class', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [
+        a('class', 'foo'),
+        d('bind', { argument: 'class' }, 'bar')
+      ], [])
+    ])
+
+    const wrapper = render(template, [
+      {
+        name: 'bar',
+        type: 'String',
+        default: 'test-class'
+      }
+    ])
+    const p = wrapper.find('p')
+    expect(p.classes()).toEqual(['foo', 'test-class'])
+  })
+
+  it('should merge a bound style with a static style', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [
+        a('style', 'color: red;'),
+        d('bind', { argument: 'style' }, 'foo')
+      ], [])
+    ])
+
+    const wrapper = render(template, [
+      {
+        name: 'foo',
+        type: 'String',
+        default: 'font-size: 20px;'
+      }
+    ])
+    const p = wrapper.find('p')
+    expect(p.element.style.color).toBe('red')
+    expect(p.element.style.fontSize).toBe('20px')
+  })
 })

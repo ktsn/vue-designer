@@ -74,4 +74,26 @@ describe('VueComponent basic', () => {
     expect(wrapper.find('#foo').text()).toBe('')
     expect(wrapper.find('#bar').text()).toBe('')
   })
+
+  it('should add class', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [a('class', 'foo bar')], [])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.find('p').classes()).toEqual(['foo', 'bar'])
+  })
+
+  it('should add style', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [a('style', 'color: red; background: url(img;test.png);')], [])
+    ])
+
+    const wrapper = render(template)
+    const p = wrapper.find('p')
+    expect(p.element.style.color).toBe('red')
+    expect(p.element.style.background).toBe('url(img;test.png)')
+  })
 })

@@ -1,5 +1,5 @@
 <script lang="ts">
-import Vue, { VNode, VNodeData, VNodeDirective } from 'vue'
+import Vue, { VNode, VNodeData } from 'vue'
 import Child from './Child.vue'
 import {
   Element,
@@ -37,68 +37,6 @@ function directiveValue(
     return scope[exp]
   } else {
     return undefined
-  }
-}
-
-function toAttrs(
-  attrs: (Attribute | Directive)[],
-  scope: Record<string, DefaultValue>
-): Record<string, DefaultValue> {
-  const res: Record<string, DefaultValue> = {}
-
-  attrs.forEach(attr => {
-    if (!attr.directive) {
-      res[attr.name] = attr.value
-    } else if (inScope(attr.expression, scope)) {
-      if (attr.name === 'bind' && attr.argument) {
-        res[attr.argument] = scope[attr.expression]
-      } else if (attr.name === 'model') {
-        res.value = scope[attr.expression]
-      }
-    }
-  })
-
-  return res
-}
-
-function toDomProps(
-  attrs: (Attribute | Directive)[],
-  scope: Record<string, DefaultValue>
-): Record<string, any> {
-  const res: Record<string, any> = {}
-
-  attrs.forEach(attr => {
-    if (attr.directive) {
-      if (attr.name === 'text') {
-        res.textContent = directiveValue(attr, scope)
-      } else if (attr.name === 'html') {
-        res.innerHTML = directiveValue(attr, scope)
-      }
-    }
-  })
-
-  return res
-}
-
-function getVShowDirective(
-  attrs: (Attribute | Directive)[],
-  scope: Record<string, DefaultValue>
-): VNodeDirective | undefined {
-  const vShow = findDirective(attrs, a => a.name === 'show')
-  if (!vShow) return
-
-  const modifierMap: Record<string, boolean> = {}
-  vShow.modifiers.forEach(modifier => {
-    modifierMap[modifier] = true
-  })
-
-  return {
-    name: 'show',
-    expression: vShow.expression,
-    oldValue: undefined,
-    arg: vShow.argument || '',
-    modifiers: modifierMap,
-    value: directiveValue(vShow, scope)
   }
 }
 
@@ -171,28 +109,68 @@ function resolveVIf(
   return acc.concat(child)
 }
 
+function convertToVNodeData(
+  attrs: (Attribute | Directive)[],
+  scope: Record<string, DefaultValue>
+): VNodeData {
+  const initial: VNodeData = {
+    attrs: {},
+    domProps: {},
+    directives: []
+  }
+
+  return attrs.reduce((acc, attr) => {
+    // Normal attribute
+    if (!attr.directive) {
+      acc.attrs![attr.name] = attr.value
+      return acc
+    }
+
+    // Directive
+    if (attr.name === 'bind' && attr.argument) {
+      acc.attrs![attr.argument] = directiveValue(attr, scope)
+    } else if (attr.name === 'model') {
+      acc.attrs!.value = directiveValue(attr, scope)
+    } else if (attr.name === 'text') {
+      acc.domProps!.textContent = directiveValue(attr, scope)
+    } else if (attr.name === 'html') {
+      acc.domProps!.innerHTML = directiveValue(attr, scope)
+    } else if (attr.name === 'show') {
+      const modifierMap: Record<string, boolean> = {}
+      attr.modifiers.forEach(modifier => {
+        modifierMap[modifier] = true
+      })
+
+      acc.directives!.push({
+        name: 'show',
+        expression: attr.expression,
+        oldValue: undefined,
+        arg: attr.argument || '',
+        modifiers: modifierMap,
+        value: directiveValue(attr, scope)
+      })
+    }
+    return acc
+  }, initial)
+}
+
 function createVNodeData(
   node: Element,
   scope: Record<string, DefaultValue>,
   selected: boolean,
   listeners: Record<string, Function>
 ): VNodeData {
-  const vShow = getVShowDirective(node.attributes, scope)
+  const data = convertToVNodeData(node.attributes, scope)
 
-  return {
-    attrs: toAttrs(node.attributes, scope),
-    domProps: toDomProps(node.attributes, scope),
-    directives: vShow ? [vShow] : [],
-    class: {
-      selected
-    },
-    on: {
-      click: (event: Event) => {
-        event.stopPropagation()
-        listeners.select(node)
-      }
+  data.class = { selected }
+  data.on = {
+    click: (event: Event) => {
+      event.stopPropagation()
+      listeners.select(node)
     }
   }
+
+  return data
 }
 
 export default Vue.extend({

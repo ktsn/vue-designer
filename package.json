@@ -65,6 +65,7 @@
     }
   },
   "dependencies": {
+    "eslint": "^4.17.0",
     "k-css": "^2.0.0",
     "postcss": "^6.0.17",
     "postcss-safe-parser": "^3.0.1",

@@ -7,14 +7,14 @@ import {
   Rule,
   Combinator,
   SelectorElement,
-  AtRule
+  AtRule,
+  PseudoClass,
+  PseudoElement
 } from '@/parser/style'
 
 describe('Style AST transformer', () => {
   it('should transform rules', () => {
-    const code = `a { color: cyan; }`
-    const root = parse(code)
-    const ast = transformStyle(root)
+    const ast = getAst(`a { color: cyan; }`)
 
     const expected: Style = style([
       rule([selector({ tag: 'a' })], [declaration('color', 'cyan')])
@@ -24,9 +24,7 @@ describe('Style AST transformer', () => {
   })
 
   it('should transform combinators', () => {
-    const code = `div > a strong + span {}`
-    const root = parse(code)
-    const ast = transformStyle(root)
+    const ast = getAst(`div > a strong + span {}`)
 
     const expected = style([
       rule([
@@ -51,7 +49,57 @@ describe('Style AST transformer', () => {
 
     expect(ast).toEqual(expected)
   })
+
+  it('should transform pseudo class', () => {
+    const ast = getAst(`.foo:not(.bar) {}`)
+
+    const expected = style([
+      rule([
+        selector({
+          class: ['foo'],
+          pseudoClass: [pClass('not', [selector({ class: ['bar'] })])]
+        })
+      ])
+    ])
+
+    expect(ast).toEqual(expected)
+  })
+
+  it('should transform pseudo element', () => {
+    const ast = getAst(`.foo::after {}`)
+
+    const expected = style([
+      rule([
+        selector({
+          class: ['foo'],
+          pseudoElement: pElement('after')
+        })
+      ])
+    ])
+
+    expect(ast).toEqual(expected)
+  })
+
+  it('should transform pseudo class belongs to pseudo element', () => {
+    const ast = getAst(`.foo::after:hover {}`)
+
+    const expected = style([
+      rule([
+        selector({
+          class: ['foo'],
+          pseudoElement: pElement('after', [pClass('hover')])
+        })
+      ])
+    ])
+
+    expect(ast).toEqual(expected)
+  })
 })
+
+function getAst(code: string): Style {
+  const root = parse(code)
+  return transformStyle(root)
+}
 
 function style(body: (AtRule | Rule)[]): Style {
   return {
@@ -83,7 +131,8 @@ function selector(
     type: 'SelectorElement',
     universal: options.universal || false,
     class: options.class || [],
-    attributes: options.attributes || []
+    attributes: options.attributes || [],
+    pseudoClass: options.pseudoClass || []
   }
 
   if (options.tag) {
@@ -94,8 +143,8 @@ function selector(
     s.id = options.id
   }
 
-  if (options.pseudo) {
-    s.pseudo = options.pseudo
+  if (options.pseudoElement) {
+    s.pseudoElement = options.pseudoElement
   }
 
   if (next) {
@@ -123,5 +172,29 @@ function declaration(
     prop,
     value,
     important
+  }
+}
+
+function pClass(value: string, params: SelectorElement[] = []): PseudoClass {
+  return {
+    type: 'PseudoClass',
+    value,
+    params: params.map((p): Selector => {
+      return {
+        type: 'Selector',
+        last: p
+      }
+    })
+  }
+}
+
+function pElement(
+  value: string,
+  pseudoClass: PseudoClass[] = []
+): PseudoElement {
+  return {
+    type: 'PseudoElement',
+    value,
+    pseudoClass
   }
 }

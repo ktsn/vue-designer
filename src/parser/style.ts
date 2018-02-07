@@ -1,3 +1,4 @@
+import * as assert from 'assert'
 import * as postcss from 'postcss'
 import parseSelector from 'postcss-selector-parser'
 import * as selectorParser from 'postcss-selector-parser'
@@ -58,45 +59,88 @@ function transformSelector(selector: selectorParser.Node[]): Selector {
 function transformSelectorElements(
   nodes: selectorParser.Node[]
 ): SelectorElement {
-  function loop(
-    current: SelectorElement,
-    el: selectorParser.Node | undefined,
-    rest: selectorParser.Node[]
-  ): SelectorElement {
-    if (!el) {
-      return current
-    }
+  const [first, ...tail] = nodes
+  return transformSelectorElement(emptySelectorElement(), first, tail)
+}
 
-    switch (el.type) {
-      case 'combinator':
-        const next = emptySelectorElement()
-        next.leftCombinator = transformCombinator(el, current)
-        return loop(next, rest[0], rest.slice(1))
-      case 'tag':
-        current.tag = el.value
-        break
-      case 'id':
-        current.id = el.value
-        break
-      case 'pseudo':
-        current.pseudo = el.value
-        break
-      case 'class':
-        current.class.push(el.value)
-        break
-      case 'universal':
-        current.universal = true
-        break
-      case 'attribute':
-        current.attributes.push(transformAttribute(el))
-        break
-      default:
-    }
-    return loop(current, rest[0], rest.slice(1))
+function transformSelectorElement(
+  current: SelectorElement,
+  el: selectorParser.Node | undefined,
+  rest: selectorParser.Node[]
+): SelectorElement {
+  if (!el) {
+    return current
   }
 
-  const [first, ...tail] = nodes
-  return loop(emptySelectorElement(), first, tail)
+  const [first, ...tail] = rest
+  switch (el.type) {
+    case 'combinator':
+      const next = emptySelectorElement()
+      next.leftCombinator = transformCombinator(el, current)
+      return transformSelectorElement(next, first, tail)
+    case 'pseudo':
+      if (selectorParser.isPseudoElement(el)) {
+        return transformPseudoElement(current, el, rest)
+      }
+
+      if (selectorParser.isPseudoClass(el)) {
+        current.pseudoClass.push(transformPseudoClass(el))
+      } else {
+        assert.fail(
+          "[style] Unexpected selector node: it has type 'pseudo' but neither pseudo element nor pseudo class."
+        )
+      }
+      break
+    case 'tag':
+      current.tag = el.value
+      break
+    case 'id':
+      current.id = el.value
+      break
+    case 'class':
+      current.class.push(el.value)
+      break
+    case 'universal':
+      current.universal = true
+      break
+    case 'attribute':
+      current.attributes.push(transformAttribute(el))
+      break
+    default:
+  }
+  return transformSelectorElement(current, first, tail)
+}
+
+function transformPseudoClass(node: selectorParser.Pseudo): PseudoClass {
+  const params = node.nodes as selectorParser.Selector[]
+
+  return {
+    type: 'PseudoClass',
+    value: node.value.replace(/^:/, ''),
+    params: params.map(p => transformSelector(p.nodes))
+  }
+}
+
+function transformPseudoElement(
+  parent: SelectorElement,
+  el: selectorParser.Pseudo,
+  rest: selectorParser.Node[]
+): SelectorElement {
+  const rawPseudoClass = takeWhile(rest, selectorParser.isPseudoClass)
+
+  parent.pseudoElement = {
+    type: 'PseudoElement',
+    value: el.value.replace(/^:{1,2}/, ''),
+    pseudoClass: rawPseudoClass.map(transformPseudoClass)
+  }
+
+  // No simple selector can follows after a paseudo element
+  const [first, ...tail] = dropWhile(
+    rest.slice(rawPseudoClass.length),
+    el => !selectorParser.isCombinator(el)
+  )
+
+  return transformSelectorElement(parent, first, tail)
 }
 
 function transformAttribute(attr: selectorParser.Attribute): Attribute {
@@ -135,12 +179,32 @@ function emptySelectorElement(): SelectorElement {
     type: 'SelectorElement',
     universal: false,
     class: [],
-    attributes: []
+    attributes: [],
+    pseudoClass: []
   }
 }
 
 function isDeclaration(node: postcss.Node): node is postcss.Declaration {
   return node.type === 'decl'
+}
+
+function takeWhile<T, R extends T>(list: T[], fn: (value: T) => value is R): R[]
+function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[]
+function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
+  const res = []
+  for (const item of list) {
+    if (fn(item)) {
+      res.push(item)
+    } else {
+      return res
+    }
+  }
+  return res
+}
+
+function dropWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
+  const skip = takeWhile(list, fn)
+  return list.slice(skip.length)
 }
 
 export interface Style {
@@ -181,8 +245,21 @@ export interface SelectorElement {
   id?: string
   class: string[]
   attributes: Attribute[]
-  pseudo?: string
+  pseudoClass: PseudoClass[]
+  pseudoElement?: PseudoElement
   leftCombinator?: Combinator
+}
+
+export interface PseudoClass {
+  type: 'PseudoClass'
+  value: string
+  params?: Selector[]
+}
+
+export interface PseudoElement {
+  type: 'PseudoElement'
+  value: string
+  pseudoClass: PseudoClass[]
 }
 
 export interface Attribute {

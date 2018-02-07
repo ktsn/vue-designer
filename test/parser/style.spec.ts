@@ -117,6 +117,27 @@ describe('Style AST transformer', () => {
 
     expect(ast).toEqual(expected)
   })
+
+  it('should transform declarations', () => {
+    const ast = getAst(`
+    a {
+      color: cyan;
+      text-decoration: underline !important;
+    }
+    `)
+
+    const expected = style([
+      rule(
+        [selector({ tag: 'a' })],
+        [
+          declaration('color', 'cyan'),
+          declaration('text-decoration', 'underline', true)
+        ]
+      )
+    ])
+
+    expect(ast).toEqual(expected)
+  })
 })
 
 function getAst(code: string): Style {

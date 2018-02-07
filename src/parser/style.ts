@@ -139,7 +139,7 @@ function transformAttribute(attr: selectorParser.Attribute): Attribute {
     type: 'Attribute',
     operator: attr.operator,
     name: attr.attribute,
-    value: attr.value
+    value: attr.raws.unquoted
   }
 }
 

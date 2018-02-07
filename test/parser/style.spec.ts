@@ -1,4 +1,5 @@
 import parse from 'postcss-safe-parser'
+import { AttributeOperator } from 'postcss-selector-parser'
 import {
   transformStyle,
   Style,
@@ -8,7 +9,8 @@ import {
   Selector,
   AtRule,
   PseudoClass,
-  PseudoElement
+  PseudoElement,
+  Attribute
 } from '@/parser/style'
 
 describe('Style AST transformer', () => {
@@ -42,6 +44,28 @@ describe('Style AST transformer', () => {
               )
             )
           )
+        )
+      ])
+    ])
+
+    expect(ast).toEqual(expected)
+  })
+
+  it('should transform compound selector', () => {
+    const ast = getAst(`a.foo > *#bar.baz.qux:hover[value*="name"]::before {}`)
+
+    const expected = style([
+      rule([
+        selector(
+          {
+            universal: true,
+            id: 'bar',
+            class: ['baz', 'qux'],
+            attributes: [attribute('value', '*=', 'name')],
+            pseudoClass: [pClass('hover')],
+            pseudoElement: pElement('before')
+          },
+          combinator('>', selector({ tag: 'a', class: ['foo'] }))
         )
       ])
     ])
@@ -140,6 +164,19 @@ function selector(options: Partial<Selector>, next?: Combinator): Selector {
   }
 
   return s
+}
+
+function attribute(
+  name: string,
+  operator?: AttributeOperator,
+  value?: string
+): Attribute {
+  return {
+    type: 'Attribute',
+    name,
+    operator,
+    value
+  }
 }
 
 function combinator(operator: string, next: Selector): Combinator {

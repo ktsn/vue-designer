@@ -114,7 +114,7 @@ function transformCombinator(
 ): Combinator {
   return {
     type: 'Combinator',
-    value: comb.value,
+    operator: comb.value,
     left
   }
 }
@@ -194,6 +194,6 @@ export interface Attribute {
 
 export interface Combinator {
   type: 'Combinator'
-  value: string
+  operator: string
   left: SelectorElement
 }

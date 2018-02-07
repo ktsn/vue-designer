@@ -78,11 +78,11 @@ function transformSelectorElement(
       next.leftCombinator = transformCombinator(el, current)
       return transformSelectorElement(next, first, tail)
     case 'pseudo':
-      if (selectorParser.isPseudoElement(el)) {
+      if (isPseudoElement(el)) {
         return transformPseudoElement(current, el, rest)
       }
 
-      if (selectorParser.isPseudoClass(el)) {
+      if (isPseudoClass(el)) {
         current.pseudoClass.push(transformPseudoClass(el))
       } else {
         assert.fail(
@@ -125,7 +125,7 @@ function transformPseudoElement(
   el: selectorParser.Pseudo,
   rest: selectorParser.Node[]
 ): Selector {
-  const rawPseudoClass = takeWhile(rest, selectorParser.isPseudoClass)
+  const rawPseudoClass = takeWhile(rest, isPseudoClass)
 
   parent.pseudoElement = {
     type: 'PseudoElement',
@@ -136,7 +136,7 @@ function transformPseudoElement(
   // No simple selector can follows after a paseudo element
   const [first, ...tail] = dropWhile(
     rest.slice(rawPseudoClass.length),
-    el => !selectorParser.isCombinator(el)
+    el => !isCombinator(el)
   )
 
   return transformSelectorElement(parent, first, tail)
@@ -200,6 +200,38 @@ function emptySelector(): Selector {
 
 function isDeclaration(node: postcss.Node): node is postcss.Declaration {
   return node.type === 'decl'
+}
+
+function isCombinator(
+  node: selectorParser.Node
+): node is selectorParser.Combinator {
+  return node.type === 'combinator'
+}
+
+function isPseudo(node: selectorParser.Node): node is selectorParser.Pseudo {
+  return node.type === 'pseudo'
+}
+
+function isPseudoElement(
+  node: selectorParser.Node
+): node is selectorParser.Pseudo {
+  return (
+    isPseudo(node) &&
+    (node.value.startsWith('::') ||
+      // Must support legacy pseudo element syntax
+      // for the below values
+      // See: https://www.w3.org/TR/selectors-4/#pseudo-element-syntax
+      node.value === ':before' ||
+      node.value === ':after' ||
+      node.value === ':first-letter' ||
+      node.value === ':first-line')
+  )
+}
+
+function isPseudoClass(
+  node: selectorParser.Node
+): node is selectorParser.Pseudo {
+  return isPseudo(node) && !isPseudoElement(node)
 }
 
 function takeWhile<T, R extends T>(list: T[], fn: (value: T) => value is R): R[]

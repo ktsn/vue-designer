@@ -49,25 +49,16 @@ function transformRule(rule: postcss.Rule): Rule {
   }
 }
 
-function transformSelector(selector: selectorParser.Node[]): Selector {
-  return {
-    type: 'Selector',
-    last: transformSelectorElements(selector)
-  }
-}
-
-function transformSelectorElements(
-  nodes: selectorParser.Node[]
-): SelectorElement {
+function transformSelector(nodes: selectorParser.Node[]): Selector {
   const [first, ...tail] = nodes
-  return transformSelectorElement(emptySelectorElement(), first, tail)
+  return transformSelectorElement(emptySelector(), first, tail)
 }
 
 function transformSelectorElement(
-  current: SelectorElement,
+  current: Selector,
   el: selectorParser.Node | undefined,
   rest: selectorParser.Node[]
-): SelectorElement {
+): Selector {
   if (!el) {
     return current
   }
@@ -75,7 +66,7 @@ function transformSelectorElement(
   const [first, ...tail] = rest
   switch (el.type) {
     case 'combinator':
-      const next = emptySelectorElement()
+      const next = emptySelector()
       next.leftCombinator = transformCombinator(el, current)
       return transformSelectorElement(next, first, tail)
     case 'pseudo':
@@ -122,10 +113,10 @@ function transformPseudoClass(node: selectorParser.Pseudo): PseudoClass {
 }
 
 function transformPseudoElement(
-  parent: SelectorElement,
+  parent: Selector,
   el: selectorParser.Pseudo,
   rest: selectorParser.Node[]
-): SelectorElement {
+): Selector {
   const rawPseudoClass = takeWhile(rest, selectorParser.isPseudoClass)
 
   parent.pseudoElement = {
@@ -154,7 +145,7 @@ function transformAttribute(attr: selectorParser.Attribute): Attribute {
 
 function transformCombinator(
   comb: selectorParser.Combinator,
-  left: SelectorElement
+  left: Selector
 ): Combinator {
   return {
     type: 'Combinator',
@@ -174,9 +165,9 @@ function transformDeclaration(decl: postcss.Declaration): Declaration {
 
 function transformChild(child: postcss.ChildNode): ChildNode {}
 
-function emptySelectorElement(): SelectorElement {
+function emptySelector(): Selector {
   return {
-    type: 'SelectorElement',
+    type: 'Selector',
     universal: false,
     class: [],
     attributes: [],
@@ -235,11 +226,6 @@ export type ChildNode = AtRule | Rule | Declaration
 
 export interface Selector {
   type: 'Selector'
-  last: SelectorElement
-}
-
-export interface SelectorElement {
-  type: 'SelectorElement'
   universal: boolean
   tag?: string
   id?: string
@@ -272,5 +258,5 @@ export interface Attribute {
 export interface Combinator {
   type: 'Combinator'
   operator: string
-  left: SelectorElement
+  left: Selector
 }

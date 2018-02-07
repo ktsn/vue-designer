@@ -2,11 +2,10 @@ import parse from 'postcss-safe-parser'
 import {
   transformStyle,
   Style,
-  Selector,
   Declaration,
   Rule,
   Combinator,
-  SelectorElement,
+  Selector,
   AtRule,
   PseudoClass,
   PseudoElement
@@ -107,28 +106,17 @@ function style(body: (AtRule | Rule)[]): Style {
   }
 }
 
-function rule(
-  selectors: SelectorElement[],
-  declarations: Declaration[] = []
-): Rule {
+function rule(selectors: Selector[], declarations: Declaration[] = []): Rule {
   return {
     type: 'Rule',
-    selectors: selectors.map((s): Selector => {
-      return {
-        type: 'Selector',
-        last: s
-      }
-    }),
+    selectors,
     declarations
   }
 }
 
-function selector(
-  options: Partial<SelectorElement>,
-  next?: Combinator
-): SelectorElement {
-  const s: SelectorElement = {
-    type: 'SelectorElement',
+function selector(options: Partial<Selector>, next?: Combinator): Selector {
+  const s: Selector = {
+    type: 'Selector',
     universal: options.universal || false,
     class: options.class || [],
     attributes: options.attributes || [],
@@ -154,7 +142,7 @@ function selector(
   return s
 }
 
-function combinator(operator: string, next: SelectorElement): Combinator {
+function combinator(operator: string, next: Selector): Combinator {
   return {
     type: 'Combinator',
     operator,
@@ -175,16 +163,11 @@ function declaration(
   }
 }
 
-function pClass(value: string, params: SelectorElement[] = []): PseudoClass {
+function pClass(value: string, params: Selector[] = []): PseudoClass {
   return {
     type: 'PseudoClass',
     value,
-    params: params.map((p): Selector => {
-      return {
-        type: 'Selector',
-        last: p
-      }
-    })
+    params
   }
 }
 

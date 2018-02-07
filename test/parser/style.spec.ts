@@ -22,6 +22,35 @@ describe('Style AST transformer', () => {
 
     expect(ast).toEqual(expected)
   })
+
+  it('should transform combinators', () => {
+    const code = `div > a strong + span {}`
+    const root = parse(code)
+    const ast = transformStyle(root)
+
+    const expected = style([
+      rule([
+        selector(
+          { tag: 'span' },
+          combinator(
+            '+',
+            selector(
+              { tag: 'strong' },
+              combinator(
+                ' ',
+                selector(
+                  { tag: 'a' },
+                  combinator('>', selector({ tag: 'div' }))
+                )
+              )
+            )
+          )
+        )
+      ])
+    ])
+
+    expect(ast).toEqual(expected)
+  })
 })
 
 function style(body: (AtRule | Rule)[]): Style {
@@ -30,7 +59,10 @@ function style(body: (AtRule | Rule)[]): Style {
   }
 }
 
-function rule(selectors: SelectorElement[], declarations: Declaration[]): Rule {
+function rule(
+  selectors: SelectorElement[],
+  declarations: Declaration[] = []
+): Rule {
   return {
     type: 'Rule',
     selectors: selectors.map((s): Selector => {

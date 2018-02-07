@@ -26,11 +26,19 @@ export function transformStyle(root: postcss.Root): Style {
 }
 
 function transformAtRule(atRule: postcss.AtRule): AtRule {
+  const isNotComment = <T extends postcss.Node>(
+    node: T | postcss.Comment
+  ): node is T => {
+    return node.type !== 'comment'
+  }
+
+  const children = atRule.nodes ? atRule.nodes.filter(isNotComment) : []
+
   return {
     type: 'AtRule',
     name: atRule.name,
     params: atRule.params,
-    children: []
+    children: children.map(transformChild)
   }
 }
 
@@ -163,7 +171,22 @@ function transformDeclaration(decl: postcss.Declaration): Declaration {
   }
 }
 
-function transformChild(child: postcss.ChildNode): ChildNode {}
+function transformChild(
+  child: postcss.AtRule | postcss.Rule | postcss.Declaration
+): ChildNode {
+  switch (child.type) {
+    case 'atrule':
+      return transformAtRule(child)
+    case 'rule':
+      return transformRule(child)
+    case 'decl':
+      return transformDeclaration(child)
+    default:
+      return assert.fail(
+        '[style] Unexpected child node type: ' + (child as any).type
+      ) as never
+  }
+}
 
 function emptySelector(): Selector {
   return {

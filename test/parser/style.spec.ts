@@ -10,7 +10,8 @@ import {
   AtRule,
   PseudoClass,
   PseudoElement,
-  Attribute
+  Attribute,
+  ChildNode
 } from '@/parser/style'
 
 describe('Style AST transformer', () => {
@@ -138,6 +139,27 @@ describe('Style AST transformer', () => {
 
     expect(ast).toEqual(expected)
   })
+
+  it('should transform at-rules', () => {
+    const ast = getAst(`
+    @import 'foo';
+
+    @media screen and (max-width: 767px) {
+      h1 {
+        font-size: 22px;
+      }
+    }
+    `)
+
+    const expected = style([
+      atRule('import', "'foo'"),
+      atRule('media', 'screen and (max-width: 767px)', [
+        rule([selector({ tag: 'h1' })], [declaration('font-size', '22px')])
+      ])
+    ])
+
+    expect(ast).toEqual(expected)
+  })
 })
 
 function getAst(code: string): Style {
@@ -148,6 +170,19 @@ function getAst(code: string): Style {
 function style(body: (AtRule | Rule)[]): Style {
   return {
     body
+  }
+}
+
+function atRule(
+  name: string,
+  params: string,
+  children: ChildNode[] = []
+): AtRule {
+  return {
+    type: 'AtRule',
+    name,
+    params,
+    children
   }
 }
 

@@ -1,5 +1,8 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": false
+  },
   "include": [
     "src/**/*.ts",
     "src/**/*.vue"

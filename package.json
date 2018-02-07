@@ -69,6 +69,7 @@
     "k-css": "^2.0.0",
     "postcss": "^6.0.17",
     "postcss-safe-parser": "^3.0.1",
+    "postcss-selector-parser": "^3.1.1",
     "vue": "^2.5.13",
     "vue-eslint-parser": "^2.0.1-beta.2",
     "vue-template-compiler": "^2.5.13",

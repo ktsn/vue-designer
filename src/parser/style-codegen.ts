@@ -76,7 +76,7 @@ function genSelector(s: Selector): string {
 
 function genPseudoClass(node: PseudoClass): string {
   if (node.params.length > 0) {
-    const selectors = node.params.map(genSelector).join(',')
+    const selectors = node.params.map(genSelector).join(', ')
     return ':' + node.value + '(' + selectors + ')'
   } else {
     return ':' + node.value

@@ -46,6 +46,15 @@ describe('Style codegen', () => {
     expect(genStyle(ast)).toBe(expected)
   })
 
+  it('should generate selector list', () => {
+    const ast = style([
+      rule([selector({ tag: 'p' }), selector({ tag: 'strong' })])
+    ])
+    const expected = 'p, strong {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
+
   it('should generate pseudo class params: selectors', () => {
     const ast = style([
       rule([
@@ -59,7 +68,7 @@ describe('Style codegen', () => {
         })
       ])
     ])
-    const expected = ':not(.bar,strong) {}'
+    const expected = ':not(.bar, strong) {}'
 
     expect(genStyle(ast)).toBe(expected)
   })

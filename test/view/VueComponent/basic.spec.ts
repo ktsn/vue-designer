@@ -1,4 +1,4 @@
-import { createTemplate, render, h, a, d, exp } from './helpers'
+import { createTemplate, render, h, a, exp } from './helpers'
 
 describe('VueComponent basic', () => {
   it('should render template', () => {
@@ -95,5 +95,17 @@ describe('VueComponent basic', () => {
     const p = wrapper.find('p')
     expect(p.element.style.color).toBe('red')
     expect(p.element.style.background).toBe('url(img;test.png)')
+  })
+
+  it('should not generate html node for text', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [], [
+        'test'
+      ])
+    ])
+
+    const p = render(template).find('p')
+    expect(p.element.innerHTML).toBe('test')
   })
 })

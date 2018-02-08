@@ -27,7 +27,7 @@ export default Vue.extend({
       case 'Element':
         return h(ContainerNode, { props: { data, scope } })
       case 'TextNode':
-        return h('span', [data.text])
+        return data.text as any
       case 'ExpressionNode':
         return h(Expression, {
           props: {

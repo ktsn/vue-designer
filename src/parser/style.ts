@@ -8,12 +8,12 @@ export function transformStyle(root: postcss.Root): Style {
     return { body: [] }
   }
   const body = root.nodes
-    .map(node => {
+    .map((node, i) => {
       switch (node.type) {
         case 'atrule':
-          return transformAtRule(node)
+          return transformAtRule(node, [i])
         case 'rule':
-          return transformRule(node)
+          return transformRule(node, [i])
         default:
           return undefined
       }
@@ -25,7 +25,7 @@ export function transformStyle(root: postcss.Root): Style {
   return { body }
 }
 
-function transformAtRule(atRule: postcss.AtRule): AtRule {
+function transformAtRule(atRule: postcss.AtRule, path: number[]): AtRule {
   const isNotComment = <T extends postcss.Node>(
     node: T | postcss.Comment
   ): node is T => {
@@ -36,24 +36,30 @@ function transformAtRule(atRule: postcss.AtRule): AtRule {
 
   return {
     type: 'AtRule',
+    path,
     name: atRule.name,
     params: atRule.params,
-    children: children.map(transformChild)
+    children: children.map((child, i) => {
+      return transformChild(child, path.concat(i))
+    })
   }
 }
 
-function transformRule(rule: postcss.Rule): Rule {
+function transformRule(rule: postcss.Rule, path: number[]): Rule {
   const decls = rule.nodes ? rule.nodes.filter(isDeclaration) : []
   const root = parseSelector().astSync(rule.selector)
 
   return {
     type: 'Rule',
+    path,
     selectors: root.nodes.map(n => {
       // A child of root node is always selector
       const selectors = (n as selectorParser.Selector).nodes
       return transformSelector(selectors)
     }),
-    declarations: decls.map(transformDeclaration)
+    declarations: decls.map((decl, i) => {
+      return transformDeclaration(decl, path.concat(i))
+    })
   }
 }
 
@@ -162,9 +168,13 @@ function transformCombinator(
   }
 }
 
-function transformDeclaration(decl: postcss.Declaration): Declaration {
+function transformDeclaration(
+  decl: postcss.Declaration,
+  path: number[]
+): Declaration {
   return {
     type: 'Declaration',
+    path,
     prop: decl.prop,
     value: decl.value,
     important: decl.important || false // decl.import is possibly undefined
@@ -172,15 +182,16 @@ function transformDeclaration(decl: postcss.Declaration): Declaration {
 }
 
 function transformChild(
-  child: postcss.AtRule | postcss.Rule | postcss.Declaration
+  child: postcss.AtRule | postcss.Rule | postcss.Declaration,
+  path: number[]
 ): ChildNode {
   switch (child.type) {
     case 'atrule':
-      return transformAtRule(child)
+      return transformAtRule(child, path)
     case 'rule':
-      return transformRule(child)
+      return transformRule(child, path)
     case 'decl':
-      return transformDeclaration(child)
+      return transformDeclaration(child, path)
     default:
       return assert.fail(
         '[style] Unexpected child node type: ' + (child as any).type
@@ -257,20 +268,24 @@ export interface Style {
   body: (AtRule | Rule)[]
 }
 
-export interface Rule {
+interface Traversable {
+  path: number[]
+}
+
+export interface Rule extends Traversable {
   type: 'Rule'
   selectors: Selector[]
   declarations: Declaration[]
 }
 
-export interface Declaration {
+export interface Declaration extends Traversable {
   type: 'Declaration'
   prop: string
   value: string
   important: boolean
 }
 
-export interface AtRule {
+export interface AtRule extends Traversable {
   type: 'AtRule'
   name: string
   params: string

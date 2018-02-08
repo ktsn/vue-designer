@@ -168,9 +168,25 @@ function getAst(code: string): Style {
 }
 
 function style(body: (AtRule | Rule)[]): Style {
+  modifyPath(body)
   return {
     body
   }
+}
+
+function modifyPath(nodes: (AtRule | Rule | Declaration)[]): void {
+  function loop(nodes: (AtRule | Rule | Declaration)[], path: number[]): void {
+    nodes.forEach((node, i) => {
+      const nextPath = path.concat(i)
+      node.path = nextPath
+      if (node.type === 'AtRule') {
+        loop(node.children, nextPath)
+      } else if (node.type === 'Rule') {
+        loop(node.declarations, nextPath)
+      }
+    })
+  }
+  loop(nodes, [])
 }
 
 function atRule(
@@ -180,6 +196,7 @@ function atRule(
 ): AtRule {
   return {
     type: 'AtRule',
+    path: [],
     name,
     params,
     children
@@ -189,6 +206,7 @@ function atRule(
 function rule(selectors: Selector[], declarations: Declaration[] = []): Rule {
   return {
     type: 'Rule',
+    path: [],
     selectors,
     declarations
   }
@@ -250,6 +268,7 @@ function declaration(
 ): Declaration {
   return {
     type: 'Declaration',
+    path: [],
     prop,
     value,
     important

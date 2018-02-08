@@ -4,7 +4,6 @@ import ShadowDom from '../mixins/shadow-dom'
 import Node from './Node.vue'
 import { Template, Element } from '../../parser/template'
 import { DefaultValue, Prop, Data } from '../../parser/script'
-import { Style } from '@/parser/style'
 
 export default Vue.extend({
   name: 'VueComponent',
@@ -14,7 +13,7 @@ export default Vue.extend({
   props: {
     template: Object as { (): Template | undefined },
     styles: {
-      type: Object as { (): Style },
+      type: String,
       required: true
     },
     props: {

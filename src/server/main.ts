@@ -1,8 +1,8 @@
-import * as assert from 'assert'
+import assert from 'assert'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as http from 'http'
-import * as WebSocket from 'ws'
+import WebSocket from 'ws'
 import { ClientPayload } from '../payload'
 
 function readContent(

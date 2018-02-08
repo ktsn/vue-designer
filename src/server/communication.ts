@@ -1,4 +1,4 @@
-import * as WebSocket from 'ws'
+import WebSocket from 'ws'
 import { ServerPayload } from '../payload'
 import { VueFilePayload } from '../parser/vue-file'
 

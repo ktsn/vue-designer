@@ -1,5 +1,5 @@
-import * as assert from 'assert'
-import * as postcss from 'postcss'
+import assert from 'assert'
+import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
 
 export function transformStyle(root: postcss.Root): Style {

@@ -18,8 +18,9 @@ export function genStyle(ast: Style): string {
 
 function genRule(rule: Rule): string {
   const selectors = rule.selectors.map(genSelector).join(', ')
+  const declarations = rule.declarations.map(genDeclaration).join(' ')
 
-  return `${selectors} {}`
+  return `${selectors} {${declarations}}`
 }
 
 function genSelector(s: Selector): string {
@@ -81,4 +82,14 @@ function genPseudoClass(node: PseudoClass): string {
   } else {
     return ':' + node.value
   }
+}
+
+function genDeclaration(decl: Declaration): string {
+  let buf = decl.prop + ': ' + decl.value
+
+  if (decl.important) {
+    buf += ' !important'
+  }
+
+  return buf + ';'
 }

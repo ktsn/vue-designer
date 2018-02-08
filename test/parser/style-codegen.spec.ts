@@ -5,7 +5,8 @@ import {
   attribute,
   pClass,
   pElement,
-  combinator
+  combinator,
+  declaration
 } from './style.spec'
 import { genStyle } from '@/parser/style-codegen'
 
@@ -95,6 +96,21 @@ describe('Style codegen', () => {
       ])
     ])
     const expected = '::after:hover {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
+
+  it('should generate declarations', () => {
+    const ast = style([
+      rule(
+        [selector({ tag: 'h1' })],
+        [
+          declaration('font-size', '22px'),
+          declaration('font-weight', 'bold', true)
+        ]
+      )
+    ])
+    const expected = 'h1 {font-size: 22px; font-weight: bold !important;}'
 
     expect(genStyle(ast)).toBe(expected)
   })

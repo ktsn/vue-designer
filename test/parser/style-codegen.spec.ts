@@ -1,4 +1,3 @@
-import * as deindent from 'deindent'
 import {
   style,
   rule,
@@ -43,6 +42,37 @@ describe('Style codegen', () => {
       ])
     ])
     const expected = '.test > h1 {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
+
+  it('should generate pseudo class params: selectors', () => {
+    const ast = style([
+      rule([
+        selector({
+          pseudoClass: [
+            pClass('not', [
+              selector({ class: ['bar'] }),
+              selector({ tag: 'strong' })
+            ])
+          ]
+        })
+      ])
+    ])
+    const expected = ':not(.bar,strong) {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
+
+  it('should generate pseudo class params: string', () => {
+    const ast = style([
+      rule([
+        selector({
+          pseudoClass: [pClass('nth-child', [selector({ tag: '2n' })])]
+        })
+      ])
+    ])
+    const expected = ':nth-child(2n) {}'
 
     expect(genStyle(ast)).toBe(expected)
   })

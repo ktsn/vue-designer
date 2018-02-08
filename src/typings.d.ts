@@ -5,7 +5,8 @@ declare module '*.vue' {
 
 declare module 'postcss-safe-parser' {
   import { parse } from 'postcss'
-  export default parse
+  const parser: typeof parse
+  export = parser
 }
 
 declare module 'vue-template-compiler'

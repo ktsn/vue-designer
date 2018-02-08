@@ -1,7 +1,6 @@
 import * as assert from 'assert'
 import * as postcss from 'postcss'
-import parseSelector from 'postcss-selector-parser'
-import * as selectorParser from 'postcss-selector-parser'
+import selectorParser from 'postcss-selector-parser'
 
 export function transformStyle(root: postcss.Root): Style {
   if (!root.nodes) {
@@ -47,7 +46,7 @@ function transformAtRule(atRule: postcss.AtRule, path: number[]): AtRule {
 
 function transformRule(rule: postcss.Rule, path: number[]): Rule {
   const decls = rule.nodes ? rule.nodes.filter(isDeclaration) : []
-  const root = parseSelector().astSync(rule.selector)
+  const root = selectorParser().astSync(rule.selector)
 
   return {
     type: 'Rule',

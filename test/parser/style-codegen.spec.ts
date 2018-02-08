@@ -76,4 +76,17 @@ describe('Style codegen', () => {
 
     expect(genStyle(ast)).toBe(expected)
   })
+
+  it('should generate pseudo class follows pseudo element', () => {
+    const ast = style([
+      rule([
+        selector({
+          pseudoElement: pElement('after', [pClass('hover')])
+        })
+      ])
+    ])
+    const expected = '::after:hover {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
 })

@@ -1,5 +1,5 @@
 import * as assert from 'assert'
-import { Style, Rule, Selector, Declaration } from './style'
+import { Style, Rule, Selector, Declaration, PseudoClass } from './style'
 
 export function genStyle(ast: Style): string {
   return ast.body
@@ -50,20 +50,16 @@ function genSelector(s: Selector): string {
   }
 
   if (s.pseudoClass.length > 0) {
-    buf += s.pseudoClass
-      .map(c => {
-        if (c.params.length > 0) {
-          const selectors = c.params.map(genSelector).join(',')
-          return ':' + c.value + '(' + selectors + ')'
-        } else {
-          return ':' + c.value
-        }
-      })
-      .join('')
+    buf += s.pseudoClass.map(genPseudoClass).join('')
   }
 
   if (s.pseudoElement) {
     buf += '::' + s.pseudoElement.value
+
+    const pseudoClass = s.pseudoElement.pseudoClass
+    if (pseudoClass.length > 0) {
+      buf += pseudoClass.map(genPseudoClass).join('')
+    }
   }
 
   if (s.leftCombinator) {
@@ -76,4 +72,13 @@ function genSelector(s: Selector): string {
   }
 
   return buf
+}
+
+function genPseudoClass(node: PseudoClass): string {
+  if (node.params.length > 0) {
+    const selectors = node.params.map(genSelector).join(',')
+    return ':' + node.value + '(' + selectors + ')'
+  } else {
+    return ':' + node.value
+  }
 }

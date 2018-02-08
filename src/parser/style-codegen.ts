@@ -66,5 +66,14 @@ function genSelector(s: Selector): string {
     buf += '::' + s.pseudoElement.value
   }
 
+  if (s.leftCombinator) {
+    buf =
+      genSelector(s.leftCombinator.left) +
+      ' ' +
+      s.leftCombinator.operator +
+      ' ' +
+      buf
+  }
+
   return buf
 }

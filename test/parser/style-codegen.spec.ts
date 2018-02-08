@@ -35,4 +35,15 @@ describe('Style codegen', () => {
 
     expect(genStyle(ast)).toBe(expected)
   })
+
+  it('should generate complex selector', () => {
+    const ast = style([
+      rule([
+        selector({ tag: 'h1' }, combinator('>', selector({ class: ['test'] })))
+      ])
+    ])
+    const expected = '.test > h1 {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
 })

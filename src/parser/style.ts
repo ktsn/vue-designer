@@ -308,7 +308,7 @@ export interface Selector {
 export interface PseudoClass {
   type: 'PseudoClass'
   value: string
-  params?: Selector[]
+  params: Selector[]
 }
 
 export interface PseudoElement {

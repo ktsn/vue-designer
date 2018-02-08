@@ -167,7 +167,7 @@ function getAst(code: string): Style {
   return transformStyle(root)
 }
 
-function style(body: (AtRule | Rule)[]): Style {
+export function style(body: (AtRule | Rule)[]): Style {
   modifyPath(body)
   return {
     body
@@ -189,7 +189,7 @@ function modifyPath(nodes: (AtRule | Rule | Declaration)[]): void {
   loop(nodes, [])
 }
 
-function atRule(
+export function atRule(
   name: string,
   params: string,
   children: ChildNode[] = []
@@ -203,7 +203,10 @@ function atRule(
   }
 }
 
-function rule(selectors: Selector[], declarations: Declaration[] = []): Rule {
+export function rule(
+  selectors: Selector[],
+  declarations: Declaration[] = []
+): Rule {
   return {
     type: 'Rule',
     path: [],
@@ -212,7 +215,10 @@ function rule(selectors: Selector[], declarations: Declaration[] = []): Rule {
   }
 }
 
-function selector(options: Partial<Selector>, next?: Combinator): Selector {
+export function selector(
+  options: Partial<Selector>,
+  next?: Combinator
+): Selector {
   const s: Selector = {
     type: 'Selector',
     universal: options.universal || false,
@@ -240,7 +246,7 @@ function selector(options: Partial<Selector>, next?: Combinator): Selector {
   return s
 }
 
-function attribute(
+export function attribute(
   name: string,
   operator?: AttributeOperator,
   value?: string
@@ -253,7 +259,7 @@ function attribute(
   }
 }
 
-function combinator(operator: string, next: Selector): Combinator {
+export function combinator(operator: string, next: Selector): Combinator {
   return {
     type: 'Combinator',
     operator,
@@ -261,7 +267,7 @@ function combinator(operator: string, next: Selector): Combinator {
   }
 }
 
-function declaration(
+export function declaration(
   prop: string,
   value: string,
   important: boolean = false
@@ -275,7 +281,7 @@ function declaration(
   }
 }
 
-function pClass(value: string, params: Selector[] = []): PseudoClass {
+export function pClass(value: string, params: Selector[] = []): PseudoClass {
   return {
     type: 'PseudoClass',
     value,
@@ -283,7 +289,7 @@ function pClass(value: string, params: Selector[] = []): PseudoClass {
   }
 }
 
-function pElement(
+export function pElement(
   value: string,
   pseudoClass: PseudoClass[] = []
 ): PseudoElement {

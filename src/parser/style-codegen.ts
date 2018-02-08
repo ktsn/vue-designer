@@ -1,19 +1,59 @@
 import * as assert from 'assert'
-import { Style, Rule, Selector, Declaration, PseudoClass } from './style'
+import {
+  Style,
+  Rule,
+  Selector,
+  Declaration,
+  PseudoClass,
+  AtRule
+} from './style'
 
 export function genStyle(ast: Style): string {
   return ast.body
     .map(node => {
       switch (node.type) {
+        case 'AtRule':
+          return genAtRule(node)
         case 'Rule':
           return genRule(node)
         default:
           assert.fail(
-            `[style codegen] Unexpected node type ${node.type} on root`
+            `[style codegen] Unexpected node type ${(node as any).type} on root`
           )
       }
     })
     .join('\n\n')
+}
+
+function genAtRule(atRule: AtRule): string {
+  let buf = `@${atRule.name} ${atRule.params}`
+
+  if (atRule.children.length > 0) {
+    const children = atRule.children
+      .map(child => {
+        switch (child.type) {
+          case 'AtRule':
+            return genAtRule(child)
+          case 'Rule':
+            return genRule(child)
+          case 'Declaration':
+            return genDeclaration(child)
+          default:
+            assert.fail(
+              `[style codegen] Unexpected node type ${
+                (child as any).type
+              } as child of AtRule`
+            )
+        }
+      })
+      .join(' ')
+
+    buf += ' {' + children + '}'
+  } else {
+    buf += ';'
+  }
+
+  return buf
 }
 
 function genRule(rule: Rule): string {

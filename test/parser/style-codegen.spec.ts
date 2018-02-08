@@ -6,7 +6,8 @@ import {
   pClass,
   pElement,
   combinator,
-  declaration
+  declaration,
+  atRule
 } from './style.spec'
 import { genStyle } from '@/parser/style-codegen'
 
@@ -111,6 +112,24 @@ describe('Style codegen', () => {
       )
     ])
     const expected = 'h1 {font-size: 22px; font-weight: bold !important;}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
+
+  it('should generate at-rule: without children', () => {
+    const ast = style([atRule('import', '"foo"')])
+    const expected = '@import "foo";'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
+
+  it('should generate at-rule: with children', () => {
+    const ast = style([
+      atRule('media', 'screen and (max-width: 767px)', [
+        rule([selector({ tag: 'p' })], [declaration('color', 'red')])
+      ])
+    ])
+    const expected = '@media screen and (max-width: 767px) {p {color: red;}}'
 
     expect(genStyle(ast)).toBe(expected)
   })

@@ -33,12 +33,7 @@ export default Vue.extend({
     }
   },
 
-  computed: projectHelpers.mapGetters([
-    'template',
-    'props',
-    'data',
-    'styles'
-  ])
+  computed: projectHelpers.mapGetters(['template', 'props', 'data', 'styles'])
 })
 </script>
 

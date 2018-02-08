@@ -3,6 +3,7 @@ import { VueFilePayload } from '@/parser/vue-file'
 import { Template, Element } from '@/parser/template'
 import { Prop, Data } from '@/parser/script'
 import { ClientConnection } from '@/view/communication'
+import { genStyle } from '@/parser/style-codegen'
 
 interface ProjectState {
   document: VueFilePayload | undefined
@@ -13,7 +14,7 @@ interface ProjectGetters {
   template: Template | undefined
   props: Prop[]
   data: Data[]
-  styles: string[]
+  styles: string
 }
 
 interface ProjectActions {
@@ -62,7 +63,7 @@ export const project: DefineModule<
     },
 
     styles(state) {
-      return state.document ? state.document.styles : []
+      return state.document ? genStyle(state.document.styles) : ''
     }
   },
 

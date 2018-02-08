@@ -4,6 +4,7 @@ import ShadowDom from '../mixins/shadow-dom'
 import Node from './Node.vue'
 import { Template, Element } from '../../parser/template'
 import { DefaultValue, Prop, Data } from '../../parser/script'
+import { Style } from '@/parser/style'
 
 export default Vue.extend({
   name: 'VueComponent',
@@ -13,7 +14,7 @@ export default Vue.extend({
   props: {
     template: Object as { (): Template | undefined },
     styles: {
-      type: Array as { (): string[] },
+      type: Object as { (): Style },
       required: true
     },
     props: {
@@ -43,10 +44,7 @@ export default Vue.extend({
   },
 
   render(h): VNode {
-    // TODO: use parsed styles
-    const children = this.styles.map((style: string) => {
-      return h('style', { domProps: { textContent: style } })
-    })
+    const children = [h('style', { domProps: { textContent: this.styles } })]
 
     if (this.template) {
       const rootEl: Element = {

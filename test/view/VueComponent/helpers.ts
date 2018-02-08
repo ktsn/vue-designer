@@ -30,7 +30,7 @@ export function render(
       template,
       props,
       data,
-      styles: []
+      styles: {}
     },
     store
   })

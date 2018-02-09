@@ -1,14 +1,11 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import ShadowDom from '../mixins/shadow-dom'
 import Node from './Node.vue'
 import { Template, Element } from '../../parser/template'
 import { DefaultValue, Prop, Data } from '../../parser/script'
 
 export default Vue.extend({
   name: 'VueComponent',
-
-  mixins: [ShadowDom],
 
   props: {
     template: Object as { (): Template | undefined },

@@ -12,10 +12,6 @@ import { Prop, Data } from '@/parser/script'
 import VueComponent from '@/view/components/VueComponent.vue'
 import { project as originalProject } from '@/view/store/modules/project'
 
-jest.mock('../../../src/view/mixins/shadow-dom', () => {
-  return {}
-})
-
 export function render(
   template: Template,
   props: Prop[] = [],
@@ -37,8 +33,7 @@ export function render(
 }
 
 function processRootChildren(
-  children: (Element | ExpressionNode | string)[],
-  path: number[]
+  children: (Element | ExpressionNode | string)[]
 ): ElementChild[] {
   return children.map((c, i) => {
     const node =
@@ -71,7 +66,7 @@ export function createTemplate(
   return {
     type: 'Template',
     attributes: [],
-    children: processRootChildren(children, [])
+    children: processRootChildren(children)
   }
 }
 

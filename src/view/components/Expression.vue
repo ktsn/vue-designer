@@ -23,18 +23,15 @@ export default Vue.extend({
     const inScope = exp in scope
     const str = inScope ? toStringForPrint(scope[exp]) : '{{ ' + exp + ' }}'
 
-    // Using inline styles for now since we cannot use <style> block.
-    // Because the <Render> component is in Shadow DOM.
-    const style = inScope
-      ? {}
-      : {
-          padding: '2px',
-          margin: '-2px',
-          'background-color': 'rgba(119, 166, 255, 0.3)',
-          'border-radius': '3px'
+    return h(
+      'span',
+      {
+        class: {
+          unresolved: !inScope
         }
-
-    return h('span', { style }, [str])
+      },
+      [str]
+    )
   }
 })
 
@@ -46,3 +43,12 @@ function toStringForPrint(value: DefaultValue): string {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.unresolved {
+  padding: 2px;
+  margin: -2px;
+  background-color: rgba(119, 166, 255, 0.3);
+  border-radius: 3px;
+}
+</style>

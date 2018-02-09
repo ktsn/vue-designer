@@ -5,7 +5,7 @@ import { parse as eslintParse, AST } from 'vue-eslint-parser'
 import postcss from 'postcss'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
-import { templateToPayload } from './template'
+import { transformTemplate } from './template'
 import { extractProps, extractData } from './script'
 import { Style, transformStyle } from './style'
 
@@ -49,7 +49,7 @@ export function parseVueFile(
   }
 
   const template = vueFile.template
-    ? templateToPayload(vueFile.template, code)
+    ? transformTemplate(vueFile.template, code)
     : undefined
   const props = extractProps(scriptBody)
   const data = extractData(scriptBody)

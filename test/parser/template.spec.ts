@@ -1,6 +1,6 @@
 import { parse, AST } from 'vue-eslint-parser'
 import {
-  templateToPayload,
+  transformTemplate,
   getNode,
   Template,
   Attribute,
@@ -14,7 +14,7 @@ describe('Template AST transformer', () => {
     const program = parse(code, {})
     const ast = program.templateBody!
 
-    expect(templateToPayload(ast, code)).toEqual({
+    expect(transformTemplate(ast, code)).toEqual({
       type: 'Template',
       attributes: [],
       children: [
@@ -58,7 +58,7 @@ describe('Template AST transformer', () => {
     const program = parse(code, {})
     const ast = program.templateBody!
 
-    expect(templateToPayload(ast, code)).toEqual({
+    expect(transformTemplate(ast, code)).toEqual({
       type: 'Template',
       attributes: [],
       children: [
@@ -133,7 +133,7 @@ describe('Template AST transformer', () => {
       ]
     }
 
-    expect(templateToPayload(ast, code)).toEqual(expected)
+    expect(transformTemplate(ast, code)).toEqual(expected)
   })
 
   it('should evaluate literal value of directives', () => {
@@ -171,7 +171,7 @@ describe('Template AST transformer', () => {
         }
       ]
     }
-    expect(templateToPayload(ast, code)).toEqual(expected)
+    expect(transformTemplate(ast, code)).toEqual(expected)
   })
 })
 
@@ -230,10 +230,10 @@ describe('Scope attribute', () => {
       value: null
     }
 
-    const result = templateToPayload(ast, code)
+    const result = transformTemplate(ast, code)
     addScope(result, scope)
 
-    const expected: any = templateToPayload(ast, code)
+    const expected: any = transformTemplate(ast, code)
     expected.children[1].attributes.push(scopeAttr) // #foo
     expected.children[1].children[1].attributes.push(scopeAttr) // .bar
     expected.children[1].children[3].attributes.push(scopeAttr) // [data-v-abcde]

@@ -4,7 +4,7 @@ import { scopePrefix } from './style'
 type RootElement = AST.VElement & AST.HasConcreteInfo
 type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
 
-export function templateToPayload(body: RootElement, code: string): Template {
+export function transformTemplate(body: RootElement, code: string): Template {
   return {
     type: 'Template',
     attributes: body.startTag.attributes

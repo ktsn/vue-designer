@@ -1,5 +1,12 @@
 import { parse, AST } from 'vue-eslint-parser'
-import { templateToPayload, getNode, Template } from '../../src/parser/template'
+import {
+  templateToPayload,
+  getNode,
+  Template,
+  Attribute,
+  addScope,
+  Element
+} from '../../src/parser/template'
 
 describe('Template AST transformer', () => {
   it('should transform element', () => {
@@ -198,5 +205,39 @@ describe('AST traversal', () => {
 
     const res = getNode(ast, [1, 5])
     expect(res === undefined)
+  })
+})
+
+describe('Scope attribute', () => {
+  it('should add scope attribute for all elements', () => {
+    const code = `
+    <template>
+      <div id="foo">
+        <p class="bar">Test</p>
+        <p data-v-abcde>{{ test }}</p>
+      </div>
+    </template>
+    `
+    const program = parse(code, {})
+    const ast = program.templateBody!
+
+    const scope = '1a2s3d'
+    const scopeAttr: Attribute = {
+      type: 'Attribute',
+      directive: false,
+      index: -1,
+      name: 'data-scope-' + scope,
+      value: null
+    }
+
+    const result = templateToPayload(ast, code)
+    addScope(result, scope)
+
+    const expected: any = templateToPayload(ast, code)
+    expected.children[1].attributes.push(scopeAttr) // #foo
+    expected.children[1].children[1].attributes.push(scopeAttr) // .bar
+    expected.children[1].children[3].attributes.push(scopeAttr) // [data-v-abcde]
+
+    expect(result).toEqual(expected)
   })
 })

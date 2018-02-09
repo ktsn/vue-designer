@@ -2,6 +2,8 @@ import assert from 'assert'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
 
+export const scopePrefix = 'data-scope-'
+
 export function transformStyle(root: postcss.Root): Style {
   if (!root.nodes) {
     return { body: [] }

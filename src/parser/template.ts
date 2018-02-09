@@ -1,4 +1,5 @@
 import { AST } from 'vue-eslint-parser'
+import { scopePrefix } from '@/parser/style'
 
 type RootElement = AST.VElement & AST.HasConcreteInfo
 type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
@@ -106,6 +107,30 @@ export function getNode(
     }
   }
   return loop(root, path)
+}
+
+export function visitElements(node: Template, fn: (el: Element) => void): void {
+  function loop(node: ElementChild): void {
+    switch (node.type) {
+      case 'Element':
+        fn(node)
+        return node.children.forEach(loop)
+      default: // Do nothing
+    }
+  }
+  return node.children.forEach(loop)
+}
+
+export function addScope(node: Template, scope: string): void {
+  visitElements(node, el => {
+    el.attributes.push({
+      type: 'Attribute',
+      directive: false,
+      index: -1,
+      name: scopePrefix + scope,
+      value: null
+    })
+  })
 }
 
 export type ExpressionValue =

@@ -1,5 +1,5 @@
 import { AST } from 'vue-eslint-parser'
-import { scopePrefix } from '@/parser/style'
+import { scopePrefix } from './style'
 
 type RootElement = AST.VElement & AST.HasConcreteInfo
 type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer

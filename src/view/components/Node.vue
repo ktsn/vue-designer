@@ -144,7 +144,7 @@ function convertToVNodeData(
       } else if (attr.name === 'style') {
         acc.staticStyle = parseStyleText(attr.value || '')
       } else {
-        acc.attrs![attr.name] = attr.value
+        acc.attrs![attr.name] = attr.value === null ? true : attr.value
       }
       return acc
     }

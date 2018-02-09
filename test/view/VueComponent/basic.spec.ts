@@ -12,6 +12,15 @@ describe('VueComponent basic', () => {
     expect(p.attributes()!.title).toBe('Hello')
   })
 
+  it('should render empty value attribute', () => {
+    const template = createTemplate([
+      h('input', [a('type', 'checkbox'), a('checked', null)], [])
+    ])
+
+    const input = render(template).find('input')
+    expect(input.attributes()!.checked).not.toBe(undefined)
+  })
+
   it('should render expression', () => {
     // prettier-ignore
     const template = createTemplate([

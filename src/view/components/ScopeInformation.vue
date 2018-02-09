@@ -62,16 +62,24 @@ export default Vue.extend({
   }
 
   &-title {
+    margin-top: 0;
     margin-bottom: 6px;
     font-weight: bold;
+    font-size: inherit;
   }
 
-  &-list-item {
-    padding-bottom: 1px;
-    border-bottom: 1px solid #333;
+  &-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 
-    &:not(:first-child) {
-      margin-top: 8px;
+    &-item {
+      padding-bottom: 1px;
+      border-bottom: 1px solid #333;
+
+      &:not(:first-child) {
+        margin-top: 8px;
+      }
     }
   }
 

@@ -57,8 +57,10 @@ export default Vue.extend({
     position: absolute;
     right: 100%;
     bottom: 0;
+    padding: 0;
     border-width: 0;
     background: none;
+    font-size: inherit;
   }
 }
 </style>

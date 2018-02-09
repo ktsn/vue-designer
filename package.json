@@ -66,7 +66,6 @@
   },
   "dependencies": {
     "eslint": "^4.17.0",
-    "k-css": "^2.0.0",
     "postcss": "^6.0.17",
     "postcss-safe-parser": "^3.0.1",
     "postcss-selector-parser": "^3.1.1",
@@ -86,6 +85,7 @@
     "npm-run-all": "^4.1.2",
     "prettier": "1.10.2",
     "sass-loader": "^6.0.6",
+    "style-loader": "^0.20.1",
     "ts-jest": "^22.0.2",
     "ts-loader": "^3.4.0",
     "typescript": "^2.7.1",

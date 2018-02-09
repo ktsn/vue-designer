@@ -34,7 +34,22 @@ module.exports = {
       },
       {
         test: /\.vue$/,
-        loader: 'vue-loader'
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            scss: [
+              'style-loader',
+              'css-loader',
+              {
+                loader: 'sass-loader',
+                options: {
+                  data: '@import "view/globals";',
+                  includePaths: [path.join(base, 'src')]
+                }
+              }
+            ]
+          }
+        }
       }
     ]
   },

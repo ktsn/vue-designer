@@ -1,5 +1,7 @@
 <template>
-  <PageMain />
+  <div class="app">
+    <PageMain />
+  </div>
 </template>
 
 <script lang="ts">
@@ -16,10 +18,15 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-@import '~k-css/k.css';
-
 body {
-  font-size: 1.6rem;
+  padding: 0;
+  margin: 0;
+}
+</style>
+
+<style lang="scss" scoped>
+.app {
+  font-size: rem(16);
   color: #333;
 }
 </style>

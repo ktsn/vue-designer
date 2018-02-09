@@ -9,4 +9,9 @@ declare module 'postcss-safe-parser' {
   export = parser
 }
 
+declare module 'hash-sum' {
+  function sum(value: any): string
+  export = sum
+}
+
 declare module 'vue-template-compiler'

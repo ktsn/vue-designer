@@ -1,9 +1,14 @@
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
-import { Template, Element } from '@/parser/template'
+import {
+  Template,
+  Element,
+  addScope as addScopeToTemplate
+} from '@/parser/template'
 import { Prop, Data } from '@/parser/script'
 import { ClientConnection } from '@/view/communication'
 import { genStyle } from '@/parser/style-codegen'
+import { addScope as addScopeToStyle } from '@/parser/style'
 
 interface ProjectState {
   document: VueFilePayload | undefined
@@ -73,6 +78,11 @@ export const project: DefineModule<
       connection.onMessage(data => {
         switch (data.type) {
           case 'InitDocument':
+            const vue = data.vueFile
+            if (vue.template) {
+              addScopeToTemplate(vue.template, vue.id)
+            }
+            addScopeToStyle(vue.styles, vue.id)
             commit('setDocument', data.vueFile)
             break
           default: // Do nothing

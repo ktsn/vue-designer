@@ -4,11 +4,13 @@ import { parseComponent } from 'vue-template-compiler'
 import { parse as eslintParse, AST } from 'vue-eslint-parser'
 import postcss from 'postcss'
 import postcssParse from 'postcss-safe-parser'
+import hashsum from 'hash-sum'
 import { templateToPayload } from './template'
 import { extractProps, extractData } from './script'
 import { Style, transformStyle } from './style'
 
 export interface VueFilePayload {
+  id: string
   template: Template | undefined
   props: Prop[]
   data: Data[]
@@ -16,6 +18,7 @@ export interface VueFilePayload {
 }
 
 export interface VueFile {
+  id: string
   template: (AST.VElement & AST.HasConcreteInfo) | undefined
   script: (AST.ESLintStatement | AST.ESLintModuleDeclaration)[]
   style: postcss.Root
@@ -26,6 +29,7 @@ export function parseVueFile(
   code: string,
   uri: string
 ): { payload: VueFilePayload; vueFile: VueFile } {
+  const id = hashsum(uri)
   const stylesCode: string = parseComponent(code)
     .styles.map((s: any) => s.content)
     .join('\n')
@@ -37,6 +41,7 @@ export function parseVueFile(
   const styleBody = postcssParse(stylesCode)
 
   const vueFile = {
+    id,
     template: templateBody,
     script: scriptBody,
     style: styleBody,
@@ -51,6 +56,7 @@ export function parseVueFile(
   const styles = transformStyle(styleBody)
 
   const payload = {
+    id,
     template,
     props,
     data,

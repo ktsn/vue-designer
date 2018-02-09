@@ -6,7 +6,7 @@ import { getNode } from './parser/template'
 
 export function activate(context: vscode.ExtensionContext) {
   const highlight = vscode.window.createTextEditorDecorationType({
-    backgroundColor: 'rgba(200, 200, 200, 0.35)'
+    backgroundColor: 'rgba(200, 200, 200, 0.2)'
   })
   let lastActiveTextEditor = vscode.window.activeTextEditor
   let vueFile: VueFile | undefined

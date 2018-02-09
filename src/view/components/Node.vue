@@ -196,6 +196,8 @@ function createVNodeData(
     data.class.push('selected')
   }
 
+  data.attrs!.tabindex = '0'
+
   data.on = {
     click: (event: Event) => {
       event.stopPropagation()

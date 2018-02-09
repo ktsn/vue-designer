@@ -11,7 +11,8 @@ import {
   PseudoClass,
   PseudoElement,
   Attribute,
-  ChildNode
+  ChildNode,
+  addScope
 } from '@/parser/style'
 
 describe('Style AST transformer', () => {
@@ -157,6 +158,38 @@ describe('Style AST transformer', () => {
         rule([selector({ tag: 'h1' })], [declaration('font-size', '22px')])
       ])
     ])
+
+    expect(ast).toEqual(expected)
+  })
+})
+
+describe('Scoped selector', () => {
+  it('should add scope attribute on the last selector', () => {
+    const scope = 'abcdef'
+    const code = 'h1 > .foo .bar {}'
+
+    const ast = getAst(code)
+    addScope(ast, scope)
+
+    const expected: any = getAst(code)
+    expected.body[0].selectors[0].attributes.push(
+      attribute('data-scope-' + scope)
+    )
+
+    expect(ast).toEqual(expected)
+  })
+
+  it('should add scope attribute in at-rule', () => {
+    const scope = 'abcdef'
+    const code = '@media screen { .foo {} }'
+
+    const ast = getAst(code)
+    addScope(ast, scope)
+
+    const expected: any = getAst(code)
+    expected.body[0].children[0].selectors[0].attributes.push(
+      attribute('data-scope-' + scope)
+    )
 
     expect(ast).toEqual(expected)
   })

@@ -200,6 +200,31 @@ function transformChild(
   }
 }
 
+function visitLastSelectors(
+  node: Style,
+  fn: (selector: Selector) => void
+): void {
+  function loop(node: AtRule | Rule | Declaration): void {
+    switch (node.type) {
+      case 'AtRule':
+        return node.children.forEach(loop)
+      case 'Rule':
+        return node.selectors.forEach(fn)
+      default: // Do nothing
+    }
+  }
+  return node.body.forEach(loop)
+}
+
+export function addScope(node: Style, scope: string): void {
+  visitLastSelectors(node, selector => {
+    selector.attributes.push({
+      type: 'Attribute',
+      name: scopePrefix + scope
+    })
+  })
+}
+
 function emptySelector(): Selector {
   return {
     type: 'Selector',

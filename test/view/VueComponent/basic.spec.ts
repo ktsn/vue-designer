@@ -14,11 +14,11 @@ describe('VueComponent basic', () => {
 
   it('should render empty value attribute', () => {
     const template = createTemplate([
-      h('input', [a('type', 'checkbox'), a('checked', null)], [])
+      h('p', [a('data-scope-123456', null)], [])
     ])
 
-    const input = render(template).find('input')
-    expect(input.attributes()!.checked).not.toBe(undefined)
+    const p = render(template).find('p')
+    expect(p.attributes()!['data-scope-123456']).toBe('')
   })
 
   it('should render expression', () => {

@@ -202,4 +202,45 @@ describe('Style matcher', () => {
       expect(res[0]).toEqual(multiAttributes)
     })
   })
+
+  describe('for attribute selectors', () => {
+    it('should match with exact attribute value', () => {
+      const rules = [
+        rule([
+          selector({
+            attributes: [attribute('value', '=', 'abcdef')]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '=', 'abc')]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '=', 'abcdefg')]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '=', 'abcdef test')]
+          })
+        ])
+      ]
+
+      const matcher = createStyleMatcher(createStyle(rules))
+
+      // prettier-ignore
+      const template = createTemplate([
+        h('input', [a('value', 'abcdef')], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(rules[0])
+    })
+  })
 })

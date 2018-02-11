@@ -39,14 +39,14 @@ function matchSelector(
     return false
   }
 
-  const attrMap = node.attributes.reduce<Record<string, Attribute>>(
+  const attrMap = node.attributes.reduce<Map<string, Attribute>>(
     (map, attr) => {
-      if (attr.directive) return map
-
-      map[attr.name] = attr
+      if (!attr.directive) {
+        map.set(attr.name, attr)
+      }
       return map
     },
-    {}
+    new Map()
   )
 
   // TODO: resolve complex selector
@@ -64,26 +64,26 @@ function matchSelectorByTag(tag: string, selector: Selector): boolean {
 }
 
 function matchSelectorById(
-  attrs: Record<string, Attribute>,
+  attrs: Map<string, Attribute>,
   selector: Selector
 ): boolean {
   if (!selector.id) {
     return true
   }
 
-  const id = attrs.id
-  return Boolean(id) && id.value === selector.id
+  const id = attrs.get('id')
+  return !!id && id.value === selector.id
 }
 
 function matchSelectorByClass(
-  attrs: Record<string, Attribute>,
+  attrs: Map<string, Attribute>,
   selector: Selector
 ): boolean {
   if (selector.class.length === 0) {
     return true
   }
 
-  const classes = attrs.class
+  const classes = attrs.get('class')
   if (!classes) {
     return false
   }
@@ -93,18 +93,33 @@ function matchSelectorByClass(
 }
 
 function matchSelectorByAttribute(
-  attrs: Record<string, Attribute>,
+  attrs: Map<string, Attribute>,
   selector: Selector
 ): boolean {
   if (selector.attributes.length === 0) {
     return true
   }
 
-  // TODO: Resolve operator and value
-  return isSubset(
-    selector.attributes.map(attrSelector => attrSelector.name),
-    Object.keys(attrs)
-  )
+  return selector.attributes.reduce((acc, sel) => {
+    // If accumlated flag is already `false`
+    // the whole selector will be unmatched.
+    if (!acc) return false
+
+    // If it does not have operator, just check the attribute exists.
+    if (!sel.operator) {
+      return attrs.has(sel.name)
+    }
+
+    const attr = attrs.get(sel.name)
+    const value = attr && attr.value
+    switch (sel.operator) {
+      case '=':
+        return sel.value === value
+      default:
+        // Unknown operator, always unmatched.
+        return false
+    }
+  }, true)
 }
 
 function isSubset(target: string[], superSet: string[]): boolean {

@@ -123,6 +123,8 @@ function matchSelectorByAttribute(
         return value.split(/\s+/).indexOf(sel.value) >= 0
       case '|=':
         return sel.value === value || value.startsWith(sel.value + '-')
+      case '^=':
+        return value.startsWith(sel.value)
       default:
         // Unknown operator, always unmatched.
         return false

@@ -319,5 +319,39 @@ describe('Style matcher', () => {
       expect(res.length).toBe(1)
       expect(res[0]).toEqual(rules[0])
     })
+
+    it('should match the start of attribute value', () => {
+      const rules = [
+        rule([
+          selector({
+            attributes: [attribute('value', '^=', 'abc')]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '^=', 'ab')]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '^=', 'bc')]
+          })
+        ])
+      ]
+
+      const matcher = createStyleMatcher(createStyle(rules))
+
+      // prettier-ignore
+      const template = createTemplate([
+        h('input', [a('value', 'abc')], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(2)
+      expect(res[0]).toEqual(rules[0])
+      expect(res[1]).toEqual(rules[1])
+    })
   })
 })

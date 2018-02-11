@@ -281,5 +281,43 @@ describe('Style matcher', () => {
       expect(res.length).toBe(1)
       expect(res[0]).toEqual(rules[0])
     })
+
+    it('should match hyphen-splitted attribute value', () => {
+      const rules = [
+        rule([
+          selector({
+            attributes: [attribute('value', '|=', 'abc')]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '|=', 'ab')]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '|=', 'def')]
+          })
+        ])
+      ]
+
+      const matcher = createStyleMatcher(createStyle(rules))
+
+      // prettier-ignore
+      const template = createTemplate([
+        h('input', [a('value', 'abc-def-ghi')], []),
+        h('input', [a('value', 'abc')], [])
+      ])
+
+      let res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(rules[0])
+
+      res = matcher(template, [1])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(rules[0])
+    })
   })
 })

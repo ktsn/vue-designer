@@ -52,18 +52,29 @@ export function activate(context: vscode.ExtensionContext) {
         case 'SelectNode':
           if (!vueFile || !vueFile.template) break
 
-          const target = getNode(vueFile.template, payload.path)
-          if (!target) break
-
-          for (const editor of vscode.window.visibleTextEditors) {
-            const doc = editor.document
-            if (doc.uri.toString() === vueFile.uri) {
-              const start = doc.positionAt(target.range[0])
-              const end = doc.positionAt(target.range[1])
-
-              editor.setDecorations(highlight, [new vscode.Range(start, end)])
-            }
+          const element = getNode(vueFile.template, payload.path)
+          if (!element) {
+            break
           }
+          const styleRules = vueFile.matchSelector(
+            vueFile.template,
+            payload.path
+          )
+
+          const editor = vscode.window.visibleTextEditors.find(e => {
+            return e.document.uri.toString() === vueFile!.uri
+          })
+          if (!editor) {
+            break
+          }
+
+          const highlightList = [element, ...styleRules].map(node => {
+            const start = editor.document.positionAt(node.range[0])
+            const end = editor.document.positionAt(node.range[1])
+            return new vscode.Range(start, end)
+          })
+
+          editor.setDecorations(highlight, highlightList)
           break
         default:
           throw new Error('Unexpected client payload: ' + payload.type)

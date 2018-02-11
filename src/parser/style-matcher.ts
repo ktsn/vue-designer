@@ -112,9 +112,15 @@ function matchSelectorByAttribute(
 
     const attr = attrs.get(sel.name)
     const value = attr && attr.value
+    if (value == null || sel.value == null) {
+      return false
+    }
+
     switch (sel.operator) {
       case '=':
         return sel.value === value
+      case '~=':
+        return value.split(/\s+/).indexOf(sel.value) >= 0
       default:
         // Unknown operator, always unmatched.
         return false

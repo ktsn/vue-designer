@@ -1,4 +1,4 @@
-import { parse, AST } from 'vue-eslint-parser'
+import { parse } from 'vue-eslint-parser'
 import {
   transformTemplate,
   getNode,
@@ -7,6 +7,7 @@ import {
   addScope,
   Element
 } from '../../src/parser/template'
+import { createTemplate, h, exp, a, d } from './template-helpers'
 
 describe('Template AST transformer', () => {
   it('should transform element', () => {
@@ -14,43 +15,18 @@ describe('Template AST transformer', () => {
     const program = parse(code, {})
     const ast = program.templateBody!
 
-    expect(transformTemplate(ast, code)).toEqual({
-      type: 'Template',
-      attributes: [],
-      children: [
-        {
-          path: [0],
-          type: 'Element',
-          name: 'div',
-          attributes: [],
-          children: [
-            {
-              path: [0, 0],
-              type: 'TextNode',
-              text: 'Test '
-            },
-            {
-              path: [0, 1],
-              type: 'ExpressionNode',
-              expression: 'foo'
-            },
-            {
-              path: [0, 2],
-              type: 'Element',
-              name: 'p',
-              attributes: [],
-              children: [
-                {
-                  path: [0, 2, 0],
-                  type: 'TextNode',
-                  text: 'bar'
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    })
+    // prettier-ignore
+    const expected = createTemplate([
+      h('div', [], [
+        'Test ',
+        exp('foo'),
+        h('p', [], [
+          'bar'
+        ])
+      ])
+    ])
+
+    assertWithoutRange(transformTemplate(ast, code), expected)
   })
 
   it('should transform attributes', () => {
@@ -58,41 +34,20 @@ describe('Template AST transformer', () => {
     const program = parse(code, {})
     const ast = program.templateBody!
 
-    expect(transformTemplate(ast, code)).toEqual({
-      type: 'Template',
-      attributes: [],
-      children: [
-        {
-          path: [0],
-          type: 'Element',
-          name: 'h1',
-          attributes: [
-            {
-              index: 0,
-              directive: false,
-              type: 'Attribute',
-              name: 'id',
-              value: 'test'
-            },
-            {
-              index: 1,
-              directive: false,
-              type: 'Attribute',
-              name: 'title',
-              value: 'title'
-            },
-            {
-              index: 2,
-              directive: false,
-              type: 'Attribute',
-              name: 'foo',
-              value: null
-            }
-          ],
-          children: []
-        }
-      ]
-    })
+    // prettier-ignore
+    const expected = createTemplate([
+      h(
+        'h1',
+        [
+          a('id', 'test'),
+          a('title', 'title'),
+          a('foo', null)
+        ],
+        []
+      )
+    ])
+
+    assertWithoutRange(transformTemplate(ast, code), expected)
   })
 
   it('should transform directives', () => {
@@ -100,40 +55,19 @@ describe('Template AST transformer', () => {
     const program = parse(code, {})
     const ast = program.templateBody!
 
-    const expected: Template = {
-      type: 'Template',
-      attributes: [],
-      children: [
-        {
-          path: [0],
-          type: 'Element',
-          name: 'input',
-          attributes: [
-            {
-              index: 0,
-              directive: true,
-              type: 'Attribute',
-              name: 'bind',
-              argument: 'name',
-              modifiers: [],
-              expression: 'foo'
-            },
-            {
-              index: 1,
-              directive: true,
-              type: 'Attribute',
-              name: 'model',
-              argument: null,
-              modifiers: [],
-              expression: 'value'
-            }
-          ],
-          children: []
-        }
-      ]
-    }
+    // prettier-ignore
+    const expected = createTemplate([
+      h(
+        'input',
+        [
+          d('bind', { argument: 'name' }, 'foo'),
+          d('model', 'value')
+        ],
+        []
+      )
+    ])
 
-    expect(transformTemplate(ast, code)).toEqual(expected)
+    assertWithoutRange(transformTemplate(ast, code), expected)
   })
 
   it('should evaluate literal value of directives', () => {
@@ -141,37 +75,16 @@ describe('Template AST transformer', () => {
     const program = parse(code, {})
     const ast = program.templateBody!
 
-    const expected: Template = {
-      type: 'Template',
-      attributes: [],
-      children: [
-        {
-          path: [0],
-          type: 'Element',
-          name: 'p',
-          attributes: [
-            {
-              index: 0,
-              directive: true,
-              type: 'Attribute',
-              name: 'if',
-              argument: null,
-              modifiers: [],
-              expression: 'true',
-              value: true
-            }
-          ],
-          children: [
-            {
-              path: [0, 0],
-              type: 'TextNode',
-              text: 'test'
-            }
-          ]
-        }
-      ]
-    }
-    expect(transformTemplate(ast, code)).toEqual(expected)
+    // prettier-ignore
+    const expected = createTemplate([
+      h(
+        'p',
+        [d('if', 'true', true)],
+        ['test']
+      )
+    ])
+
+    assertWithoutRange(transformTemplate(ast, code), expected)
   })
 })
 
@@ -227,7 +140,8 @@ describe('Scope attribute', () => {
       directive: false,
       index: -1,
       name: 'data-scope-' + scope,
-      value: null
+      value: null,
+      range: [-1, -1]
     }
 
     const result = transformTemplate(ast, code)
@@ -241,3 +155,24 @@ describe('Scope attribute', () => {
     expect(result).toEqual(expected)
   })
 })
+
+function assertWithoutRange(result: Template, expected: Template): void {
+  expect(excludeRange(result)).toEqual(excludeRange(expected))
+}
+
+function excludeRange(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(excludeRange)
+  } else if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  const res: any = {}
+  Object.keys(obj).forEach(key => {
+    if (key !== 'range') {
+      const value = obj[key]
+      res[key] = excludeRange(value)
+    }
+  })
+  return res
+}

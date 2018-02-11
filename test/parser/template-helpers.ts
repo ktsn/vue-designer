@@ -41,7 +41,8 @@ function processRootChildren(
         ? {
             type: 'TextNode' as 'TextNode',
             path: [],
-            text: c
+            text: c,
+            range: [-1, -1] as [number, number]
           }
         : c
 
@@ -66,7 +67,8 @@ export function createTemplate(
   return {
     type: 'Template',
     attributes: [],
-    children: processRootChildren(children)
+    children: processRootChildren(children),
+    range: [-1, -1]
   }
 }
 
@@ -89,10 +91,12 @@ export function h(
         ? {
             type: 'TextNode' as 'TextNode',
             path: [],
-            text: c
+            text: c,
+            range: [-1, -1] as [number, number]
           }
         : c
-    })
+    }),
+    range: [-1, -1]
   }
 }
 
@@ -102,7 +106,8 @@ export function a(name: string, value: string | null): Attribute {
     directive: false,
     index: 0,
     name,
-    value
+    value,
+    range: [-1, -1]
   }
 }
 
@@ -132,7 +137,8 @@ export function d(
     argument: options.argument || null,
     modifiers: options.modifiers || [],
     expression: expression || null,
-    value
+    value,
+    range: [-1, -1]
   }
 }
 
@@ -140,6 +146,7 @@ export function exp(expression: string): ExpressionNode {
   return {
     type: 'ExpressionNode',
     path: [],
-    expression
+    expression,
+    range: [-1, -1]
   }
 }

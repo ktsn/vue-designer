@@ -7,11 +7,12 @@ type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
 export function transformTemplate(body: RootElement, code: string): Template {
   return {
     type: 'Template',
+    range: body.range,
     attributes: body.startTag.attributes
       .filter(attr => !attr.directive)
       .map((attr, i) => {
         const a = attr as AST.VAttribute
-        return attribute(i, a.key.name, a.value && a.value.value)
+        return attribute(i, a.key.name, a.value && a.value.value, attr.range)
       }),
     children: body.children.map((child, i) => transformChild(child, code, [i]))
   }
@@ -26,7 +27,8 @@ function transformElement(
     path,
     el.name,
     el.startTag.attributes.map((attr, i) => transformAttribute(attr, i, code)),
-    el.children.map((child, i) => transformChild(child, code, path.concat(i)))
+    el.children.map((child, i) => transformChild(child, code, path.concat(i))),
+    el.range
   )
 }
 
@@ -44,10 +46,16 @@ function transformAttribute(
       attr.key.argument,
       attr.key.modifiers,
       expStr,
-      exp && evalExpression(exp)
+      exp && evalExpression(exp),
+      attr.range
     )
   } else {
-    return attribute(index, attr.key.name, attr.value && attr.value.value)
+    return attribute(
+      index,
+      attr.key.name,
+      attr.value && attr.value.value,
+      attr.range
+    )
   }
 }
 
@@ -60,10 +68,14 @@ function transformChild(
     case 'VElement':
       return transformElement(child, code, path)
     case 'VText':
-      return textNode(path, child.value)
+      return textNode(path, child.value, child.range)
     case 'VExpressionContainer':
       const exp = child.expression
-      return expressionNode(path, exp ? extractExpression(exp, code) : '')
+      return expressionNode(
+        path,
+        exp ? extractExpression(exp, code) : '',
+        child.range
+      )
   }
 }
 
@@ -128,7 +140,8 @@ export function addScope(node: Template, scope: string): void {
       directive: false,
       index: -1,
       name: scopePrefix + scope,
-      value: null
+      value: null,
+      range: [-1, -1]
     })
   })
 }
@@ -143,13 +156,18 @@ export type ExpressionValue =
 
 export type ElementChild = Element | TextNode | ExpressionNode
 
-export interface Template {
+interface BaseNode {
+  type: string
+  range: [number, number]
+}
+
+export interface Template extends BaseNode {
   type: 'Template'
   attributes: Attribute[]
   children: ElementChild[]
 }
 
-export interface Element {
+export interface Element extends BaseNode {
   type: 'Element'
   path: number[]
   name: string
@@ -157,19 +175,19 @@ export interface Element {
   children: ElementChild[]
 }
 
-export interface TextNode {
+export interface TextNode extends BaseNode {
   type: 'TextNode'
   path: number[]
   text: string
 }
 
-export interface ExpressionNode {
+export interface ExpressionNode extends BaseNode {
   type: 'ExpressionNode'
   path: number[]
   expression: string
 }
 
-export interface Attribute {
+export interface Attribute extends BaseNode {
   type: 'Attribute'
   directive: false
   index: number
@@ -177,7 +195,7 @@ export interface Attribute {
   value: string | null
 }
 
-export interface Directive {
+export interface Directive extends BaseNode {
   type: 'Attribute'
   directive: true
   index: number
@@ -192,47 +210,58 @@ export function element(
   path: number[],
   name: string,
   attributes: (Attribute | Directive)[],
-  children: ElementChild[]
+  children: ElementChild[],
+  range: [number, number]
 ): Element {
   return {
     type: 'Element',
     path,
     name,
     attributes,
-    children
+    children,
+    range
   }
 }
 
-export function textNode(path: number[], text: string): TextNode {
+export function textNode(
+  path: number[],
+  text: string,
+  range: [number, number]
+): TextNode {
   return {
     type: 'TextNode',
     path,
-    text
+    text,
+    range
   }
 }
 
 export function expressionNode(
   path: number[],
-  expression: string
+  expression: string,
+  range: [number, number]
 ): ExpressionNode {
   return {
     type: 'ExpressionNode',
     path,
-    expression
+    expression,
+    range
   }
 }
 
 export function attribute(
   index: number,
   name: string,
-  value: string | null
+  value: string | null,
+  range: [number, number]
 ): Attribute {
   return {
     type: 'Attribute',
     directive: false,
     index,
     name,
-    value
+    value,
+    range
   }
 }
 
@@ -242,7 +271,8 @@ export function directive(
   argument: string | null,
   modifiers: string[],
   expression: string | null,
-  value: ExpressionValue
+  value: ExpressionValue,
+  range: [number, number]
 ): Directive {
   return {
     type: 'Attribute',
@@ -252,6 +282,7 @@ export function directive(
     argument,
     modifiers,
     expression,
-    value
+    value,
+    range
   }
 }

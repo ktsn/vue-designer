@@ -12,7 +12,7 @@ import {
   ChildNode
 } from '@/parser/style'
 
-export function style(body: (AtRule | Rule)[]): Style {
+export function createStyle(body: (AtRule | Rule)[]): Style {
   modifyPath(body)
   return {
     body,

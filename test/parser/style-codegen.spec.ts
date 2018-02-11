@@ -1,5 +1,5 @@
 import {
-  style,
+  createStyle,
   rule,
   selector,
   attribute,
@@ -13,14 +13,14 @@ import { genStyle } from '@/parser/style-codegen'
 
 describe('Style codegen', () => {
   it('should generate simple selector', () => {
-    const ast = style([rule([selector({ tag: 'a' })])])
+    const ast = createStyle([rule([selector({ tag: 'a' })])])
     const expected = 'a {}'
 
     expect(genStyle(ast)).toBe(expected)
   })
 
   it('should generate compound selector', () => {
-    const ast = style([
+    const ast = createStyle([
       rule([
         selector({
           universal: true,
@@ -38,7 +38,7 @@ describe('Style codegen', () => {
   })
 
   it('should generate complex selector', () => {
-    const ast = style([
+    const ast = createStyle([
       rule([
         selector({ tag: 'h1' }, combinator('>', selector({ class: ['test'] })))
       ])
@@ -49,7 +49,7 @@ describe('Style codegen', () => {
   })
 
   it('should generate selector list', () => {
-    const ast = style([
+    const ast = createStyle([
       rule([selector({ tag: 'p' }), selector({ tag: 'strong' })])
     ])
     const expected = 'p, strong {}'
@@ -58,7 +58,7 @@ describe('Style codegen', () => {
   })
 
   it('should generate pseudo class params: selectors', () => {
-    const ast = style([
+    const ast = createStyle([
       rule([
         selector({
           pseudoClass: [
@@ -76,7 +76,7 @@ describe('Style codegen', () => {
   })
 
   it('should generate pseudo class params: string', () => {
-    const ast = style([
+    const ast = createStyle([
       rule([
         selector({
           pseudoClass: [pClass('nth-child', [selector({ tag: '2n' })])]
@@ -89,7 +89,7 @@ describe('Style codegen', () => {
   })
 
   it('should generate pseudo class follows pseudo element', () => {
-    const ast = style([
+    const ast = createStyle([
       rule([
         selector({
           pseudoElement: pElement('after', [pClass('hover')])
@@ -102,7 +102,7 @@ describe('Style codegen', () => {
   })
 
   it('should generate declarations', () => {
-    const ast = style([
+    const ast = createStyle([
       rule(
         [selector({ tag: 'h1' })],
         [
@@ -117,14 +117,14 @@ describe('Style codegen', () => {
   })
 
   it('should generate at-rule: without children', () => {
-    const ast = style([atRule('import', '"foo"')])
+    const ast = createStyle([atRule('import', '"foo"')])
     const expected = '@import "foo";'
 
     expect(genStyle(ast)).toBe(expected)
   })
 
   it('should generate at-rule: with children', () => {
-    const ast = style([
+    const ast = createStyle([
       atRule('media', 'screen and (max-width: 767px)', [
         rule([selector({ tag: 'p' })], [declaration('color', 'red')])
       ])

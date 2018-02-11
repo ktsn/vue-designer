@@ -1,7 +1,7 @@
 import parse from 'postcss-safe-parser'
 import { transformStyle, Style, Rule, addScope } from '@/parser/style'
 import {
-  style,
+  createStyle,
   atRule,
   rule,
   selector,
@@ -16,7 +16,7 @@ describe('Style AST transformer', () => {
   it('should transform rules', () => {
     const ast = getAst(`a { color: cyan; }`)
 
-    const expected: Style = style([
+    const expected: Style = createStyle([
       rule([selector({ tag: 'a' })], [declaration('color', 'cyan')])
     ])
 
@@ -26,7 +26,7 @@ describe('Style AST transformer', () => {
   it('should transform combinators', () => {
     const ast = getAst(`div > a strong + span {}`)
 
-    const expected = style([
+    const expected = createStyle([
       rule([
         selector(
           { tag: 'span' },
@@ -53,7 +53,7 @@ describe('Style AST transformer', () => {
   it('should transform compound selector', () => {
     const ast = getAst(`a.foo > *#bar.baz.qux:hover[value*="name"]::before {}`)
 
-    const expected = style([
+    const expected = createStyle([
       rule([
         selector(
           {
@@ -75,7 +75,7 @@ describe('Style AST transformer', () => {
   it('should transform pseudo class', () => {
     const ast = getAst(`.foo:not(.bar) {}`)
 
-    const expected = style([
+    const expected = createStyle([
       rule([
         selector({
           class: ['foo'],
@@ -90,7 +90,7 @@ describe('Style AST transformer', () => {
   it('should transform pseudo element', () => {
     const ast = getAst(`.foo::after {}`)
 
-    const expected = style([
+    const expected = createStyle([
       rule([
         selector({
           class: ['foo'],
@@ -105,7 +105,7 @@ describe('Style AST transformer', () => {
   it('should transform pseudo class belongs to pseudo element', () => {
     const ast = getAst(`.foo::after:hover {}`)
 
-    const expected = style([
+    const expected = createStyle([
       rule([
         selector({
           class: ['foo'],
@@ -125,7 +125,7 @@ describe('Style AST transformer', () => {
     }
     `)
 
-    const expected = style([
+    const expected = createStyle([
       rule(
         [selector({ tag: 'a' })],
         [
@@ -149,7 +149,7 @@ describe('Style AST transformer', () => {
     }
     `)
 
-    const expected = style([
+    const expected = createStyle([
       atRule('import', "'foo'"),
       atRule('media', 'screen and (max-width: 767px)', [
         rule([selector({ tag: 'h1' })], [declaration('font-size', '22px')])

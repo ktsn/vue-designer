@@ -239,16 +239,16 @@ function toOffset(line: number, column: number, code: string): number {
   return beforeLength + column - 1
 }
 
-function visitLastSelectors(
+export function visitLastSelectors(
   node: Style,
-  fn: (selector: Selector) => void
+  fn: (selector: Selector, rule: Rule) => void
 ): void {
   function loop(node: AtRule | Rule | Declaration): void {
     switch (node.type) {
       case 'AtRule':
         return node.children.forEach(loop)
       case 'Rule':
-        return node.selectors.forEach(fn)
+        return node.selectors.forEach(s => fn(s, node))
       default: // Do nothing
     }
   }

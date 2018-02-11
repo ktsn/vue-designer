@@ -87,4 +87,73 @@ describe('Style matcher', () => {
       expect(res[0]).toEqual(attr)
     })
   })
+
+  describe('for compound selectors', () => {
+    const idWithTag = rule([
+      selector({
+        id: 'foo',
+        tag: 'a'
+      })
+    ])
+
+    const idWithClass = rule([
+      selector({
+        id: 'foo',
+        class: ['bar']
+      })
+    ])
+
+    const idWithAttribute = rule([
+      selector({
+        id: 'foo',
+        attributes: [attribute('value')]
+      })
+    ])
+
+    const style = createStyle([idWithTag, idWithClass, idWithAttribute])
+    const matcher = createStyleMatcher(style)
+
+    it('should not match if it is not supply compound selector', () => {
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [a('id', 'foo')], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(0)
+    })
+
+    it('should match with id and tag', () => {
+      // prettier-ignore
+      const template = createTemplate([
+        h('a', [a('id', 'foo')], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(idWithTag)
+    })
+
+    it('should match with id and class', () => {
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [a('id', 'foo'), a('class', 'bar')], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(idWithClass)
+    })
+
+    it('should match with id and attribute', () => {
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [a('id', 'foo'), a('value', null)], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(idWithAttribute)
+    })
+  })
 })

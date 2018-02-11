@@ -1,6 +1,6 @@
 import assert from 'assert'
-import { Style, Rule, visitLastSelectors } from './style'
-import { Template, Element, getNode } from './template'
+import { Style, Rule, visitLastSelectors, Selector } from './style'
+import { Template, Element, getNode, Attribute } from './template'
 
 export function createStyleMatcher(style: Style) {
   const map = new StyleMap(style)
@@ -17,11 +17,100 @@ export function createStyleMatcher(style: Style) {
       `[style matcher] Target node has unexpected type '${target.type}'`
     )
 
-    const candidates = map.getCandidateRules(target)
-
-    // TODO: narrow candidate rules
-    return candidates
+    return map.getCandidateRules(target).filter(rule => {
+      return rule.selectors.reduce((acc, s) => {
+        return acc || matchSelector(template, targetPath, s)
+      }, false)
+    })
   }
+}
+
+function matchSelector(
+  template: Template,
+  path: number[],
+  selector: Selector
+): boolean {
+  if (path.length === 0) {
+    return false
+  }
+
+  const node = getNode(template, path)
+  if (!node || node.type !== 'Element') {
+    return false
+  }
+
+  const attrMap = node.attributes.reduce<Record<string, Attribute>>(
+    (map, attr) => {
+      if (attr.directive) return map
+
+      map[attr.name] = attr
+      return map
+    },
+    {}
+  )
+
+  // TODO: resolve complex selector
+  // TODO: resolve :not and :matches
+  return (
+    matchSelectorByTag(node.name, selector) &&
+    matchSelectorByClass(attrMap, selector) &&
+    matchSelectorByAttribute(attrMap, selector) &&
+    matchSelectorById(attrMap, selector)
+  )
+}
+
+function matchSelectorByTag(tag: string, selector: Selector): boolean {
+  return !selector.tag || tag === selector.tag
+}
+
+function matchSelectorById(
+  attrs: Record<string, Attribute>,
+  selector: Selector
+): boolean {
+  if (!selector.id) {
+    return true
+  }
+
+  const id = attrs.id
+  return Boolean(id) && id.value === selector.id
+}
+
+function matchSelectorByClass(
+  attrs: Record<string, Attribute>,
+  selector: Selector
+): boolean {
+  if (selector.class.length === 0) {
+    return true
+  }
+
+  const classes = attrs.class
+  if (!classes) {
+    return false
+  }
+
+  const splittedClass = classes.value ? classes.value.split(/\s+/) : []
+  return isSubset(selector.class, splittedClass)
+}
+
+function matchSelectorByAttribute(
+  attrs: Record<string, Attribute>,
+  selector: Selector
+): boolean {
+  if (selector.attributes.length === 0) {
+    return true
+  }
+
+  // TODO: Resolve operator and value
+  return isSubset(
+    selector.attributes.map(attrSelector => attrSelector.name),
+    Object.keys(attrs)
+  )
+}
+
+function isSubset(target: string[], superSet: string[]): boolean {
+  return target.reduce((acc, item) => {
+    return acc && superSet.indexOf(item) >= 0
+  }, true)
 }
 
 class StyleMap {

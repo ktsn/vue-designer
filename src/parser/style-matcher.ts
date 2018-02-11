@@ -129,13 +129,14 @@ class StyleMap {
       if (selector.id) {
         this.registerRule(this.idMap, selector.id, rule)
       } else if (selector.class.length > 0) {
-        selector.class.forEach(c => {
-          this.registerRule(this.classMap, c, rule)
-        })
+        // It should register only one class as key because the class map is
+        // traversed by all class names on element when matching phase.
+        const first = selector.class[0]
+        this.registerRule(this.classMap, first, rule)
       } else if (selector.attributes.length > 0) {
-        selector.attributes.forEach(attr => {
-          this.registerRule(this.attributeMap, attr.name, rule)
-        })
+        // It should register only one attribute name as key as same reason as class.
+        const first = selector.attributes[0]
+        this.registerRule(this.attributeMap, first.name, rule)
       } else if (selector.tag) {
         this.registerRule(this.tagMap, selector.tag, rule)
       } else {
@@ -149,17 +150,19 @@ class StyleMap {
     const tagMatched = this.tagMap.get(el.name) || []
 
     const attrsMatched = el.attributes.reduce<Rule[]>((acc, attr) => {
-      if (attr.directive || !attr.value) return acc
+      if (attr.directive) return acc
 
-      if (attr.name === 'id') {
-        acc = acc.concat(this.idMap.get(attr.value) || [])
-      }
+      if (attr.value) {
+        if (attr.name === 'id') {
+          acc = acc.concat(this.idMap.get(attr.value) || [])
+        }
 
-      if (attr.name === 'class') {
-        const matched = attr.value.split(/\s+/).reduce<Rule[]>((acc, c) => {
-          return acc.concat(this.classMap.get(c) || [])
-        }, [])
-        acc = acc.concat(matched)
+        if (attr.name === 'class') {
+          const matched = attr.value.split(/\s+/).reduce<Rule[]>((acc, c) => {
+            return acc.concat(this.classMap.get(c) || [])
+          }, [])
+          acc = acc.concat(matched)
+        }
       }
 
       return acc.concat(this.attributeMap.get(attr.name) || [])

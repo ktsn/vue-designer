@@ -110,7 +110,25 @@ describe('Style matcher', () => {
       })
     ])
 
-    const style = createStyle([idWithTag, idWithClass, idWithAttribute])
+    const multiClass = rule([
+      selector({
+        class: ['foo', 'bar']
+      })
+    ])
+
+    const multiAttributes = rule([
+      selector({
+        attributes: [attribute('title'), attribute('value')]
+      })
+    ])
+
+    const style = createStyle([
+      idWithTag,
+      idWithClass,
+      idWithAttribute,
+      multiClass,
+      multiAttributes
+    ])
     const matcher = createStyleMatcher(style)
 
     it('should not match if it is not supply compound selector', () => {
@@ -154,6 +172,34 @@ describe('Style matcher', () => {
       const res = matcher(template, [0])
       expect(res.length).toBe(1)
       expect(res[0]).toEqual(idWithAttribute)
+    })
+
+    it('should match with multi classes', () => {
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [
+          a('class', 'foo bar')
+        ], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(multiClass)
+    })
+
+    it('should match with multi attributes', () => {
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [
+          a('title', null),
+          a('value', null)
+        ], [])
+      ])
+
+      debugger
+      const res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(multiAttributes)
     })
   })
 })

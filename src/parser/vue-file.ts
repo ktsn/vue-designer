@@ -45,7 +45,7 @@ export function parseVueFile(
     : undefined
   const props = extractProps(scriptBody)
   const data = extractData(scriptBody)
-  const styles = transformStyle(styleBody)
+  const styles = transformStyle(styleBody, stylesCode)
 
   const vueFile = {
     id,

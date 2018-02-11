@@ -4,17 +4,20 @@ import selectorParser from 'postcss-selector-parser'
 
 export const scopePrefix = 'data-scope-'
 
-export function transformStyle(root: postcss.Root): Style {
+export function transformStyle(root: postcss.Root, code: string): Style {
   if (!root.nodes) {
-    return { body: [] }
+    return {
+      body: [],
+      range: [-1, -1]
+    }
   }
   const body = root.nodes
     .map((node, i) => {
       switch (node.type) {
         case 'atrule':
-          return transformAtRule(node, [i])
+          return transformAtRule(node, [i], code)
         case 'rule':
-          return transformRule(node, [i])
+          return transformRule(node, [i], code)
         default:
           return undefined
       }
@@ -23,10 +26,17 @@ export function transformStyle(root: postcss.Root): Style {
       return node !== undefined
     })
 
-  return { body }
+  return {
+    body,
+    range: toRange(root.source, code)
+  }
 }
 
-function transformAtRule(atRule: postcss.AtRule, path: number[]): AtRule {
+function transformAtRule(
+  atRule: postcss.AtRule,
+  path: number[],
+  code: string
+): AtRule {
   const isNotComment = <T extends postcss.Node>(
     node: T | postcss.Comment
   ): node is T => {
@@ -41,12 +51,13 @@ function transformAtRule(atRule: postcss.AtRule, path: number[]): AtRule {
     name: atRule.name,
     params: atRule.params,
     children: children.map((child, i) => {
-      return transformChild(child, path.concat(i))
-    })
+      return transformChild(child, path.concat(i), code)
+    }),
+    range: toRange(atRule.source, code)
   }
 }
 
-function transformRule(rule: postcss.Rule, path: number[]): Rule {
+function transformRule(rule: postcss.Rule, path: number[], code: string): Rule {
   const decls = rule.nodes ? rule.nodes.filter(isDeclaration) : []
   const root = selectorParser().astSync(rule.selector)
 
@@ -59,8 +70,9 @@ function transformRule(rule: postcss.Rule, path: number[]): Rule {
       return transformSelector(selectors)
     }),
     declarations: decls.map((decl, i) => {
-      return transformDeclaration(decl, path.concat(i))
-    })
+      return transformDeclaration(decl, path.concat(i), code)
+    }),
+    range: toRange(rule.source, code)
   }
 }
 
@@ -171,33 +183,60 @@ function transformCombinator(
 
 function transformDeclaration(
   decl: postcss.Declaration,
-  path: number[]
+  path: number[],
+  code: string
 ): Declaration {
   return {
     type: 'Declaration',
     path,
     prop: decl.prop,
     value: decl.value,
-    important: decl.important || false // decl.import is possibly undefined
+    important: decl.important || false, // decl.import is possibly undefined
+    range: toRange(decl.source, code)
   }
 }
 
 function transformChild(
   child: postcss.AtRule | postcss.Rule | postcss.Declaration,
-  path: number[]
+  path: number[],
+  code: string
 ): ChildNode {
   switch (child.type) {
     case 'atrule':
-      return transformAtRule(child, path)
+      return transformAtRule(child, path, code)
     case 'rule':
-      return transformRule(child, path)
+      return transformRule(child, path, code)
     case 'decl':
-      return transformDeclaration(child, path)
+      return transformDeclaration(child, path, code)
     default:
       return assert.fail(
         '[style] Unexpected child node type: ' + (child as any).type
       ) as never
   }
+}
+
+function toRange(source: postcss.NodeSource, code: string): [number, number] {
+  const start = source.start
+    ? toOffset(source.start.line, source.start.column, code)
+    : 0
+
+  // The postcss end position is short by one
+  const end = source.end
+    ? toOffset(source.end.line, source.end.column, code) + 1
+    : code.length
+
+  return [start, end]
+}
+
+function toOffset(line: number, column: number, code: string): number {
+  const codeLines = code.split('\n')
+  const beforeLines = codeLines.slice(0, line - 1)
+
+  const beforeLength = beforeLines.reduce((acc, line) => {
+    // +1 to include line break
+    return acc + line.length + 1
+  }, 0)
+  return beforeLength + column - 1
 }
 
 function visitLastSelectors(
@@ -290,29 +329,32 @@ function dropWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
   return list.slice(skip.length)
 }
 
-export interface Style {
+interface HasRange {
+  range: [number, number]
+}
+
+export interface Style extends HasRange {
   body: (AtRule | Rule)[]
 }
 
-interface Traversable {
-  path: number[]
-}
-
-export interface Rule extends Traversable {
+export interface Rule extends HasRange {
   type: 'Rule'
+  path: number[]
   selectors: Selector[]
   declarations: Declaration[]
 }
 
-export interface Declaration extends Traversable {
+export interface Declaration extends HasRange {
   type: 'Declaration'
+  path: number[]
   prop: string
   value: string
   important: boolean
 }
 
-export interface AtRule extends Traversable {
+export interface AtRule extends HasRange {
   type: 'AtRule'
+  path: number[]
   name: string
   params: string
   children: ChildNode[]

@@ -23,7 +23,7 @@ describe('Style AST transformer', () => {
       rule([selector({ tag: 'a' })], [declaration('color', 'cyan')])
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should transform combinators', () => {
@@ -50,7 +50,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should transform compound selector', () => {
@@ -72,7 +72,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should transform pseudo class', () => {
@@ -87,7 +87,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should transform pseudo element', () => {
@@ -102,7 +102,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should transform pseudo class belongs to pseudo element', () => {
@@ -117,7 +117,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should transform declarations', () => {
@@ -138,7 +138,7 @@ describe('Style AST transformer', () => {
       )
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should transform at-rules', () => {
@@ -159,7 +159,16 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
+  })
+
+  it('should transform node position', () => {
+    const ast = getAst('.foo {\n  color: red;\n}\n.bar {}')
+    const rule = ast.body[0] as Rule
+
+    expect(ast.range).toEqual([0, 30])
+    expect(rule.range).toEqual([0, 22])
+    expect(rule.declarations[0].range).toEqual([9, 20])
   })
 })
 
@@ -176,7 +185,7 @@ describe('Scoped selector', () => {
       attribute('data-scope-' + scope)
     )
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 
   it('should add scope attribute in at-rule', () => {
@@ -191,19 +200,20 @@ describe('Scoped selector', () => {
       attribute('data-scope-' + scope)
     )
 
-    expect(ast).toEqual(expected)
+    assertWithoutRange(ast, expected)
   })
 })
 
 function getAst(code: string): Style {
   const root = parse(code)
-  return transformStyle(root)
+  return transformStyle(root, code)
 }
 
 export function style(body: (AtRule | Rule)[]): Style {
   modifyPath(body)
   return {
-    body
+    body,
+    range: [-1, -1]
   }
 }
 
@@ -232,7 +242,8 @@ export function atRule(
     path: [],
     name,
     params,
-    children
+    children,
+    range: [-1, -1]
   }
 }
 
@@ -244,7 +255,8 @@ export function rule(
     type: 'Rule',
     path: [],
     selectors,
-    declarations
+    declarations,
+    range: [-1, -1]
   }
 }
 
@@ -310,7 +322,8 @@ export function declaration(
     path: [],
     prop,
     value,
-    important
+    important,
+    range: [-1, -1]
   }
 }
 
@@ -331,4 +344,25 @@ export function pElement(
     value,
     pseudoClass
   }
+}
+
+function assertWithoutRange(result: Style, expected: Style): void {
+  expect(excludeRange(result)).toEqual(excludeRange(expected))
+}
+
+function excludeRange(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(excludeRange)
+  } else if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  const res: any = {}
+  Object.keys(obj).forEach(key => {
+    if (key !== 'range') {
+      const value = obj[key]
+      res[key] = excludeRange(value)
+    }
+  })
+  return res
 }

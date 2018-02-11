@@ -8,7 +8,7 @@ import {
   combinator,
   declaration,
   atRule
-} from './style.spec'
+} from './style-helpers'
 import { genStyle } from '@/parser/style-codegen'
 
 describe('Style codegen', () => {

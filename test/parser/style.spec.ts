@@ -1,19 +1,16 @@
 import parse from 'postcss-safe-parser'
-import { AttributeOperator } from 'postcss-selector-parser'
+import { transformStyle, Style, Rule, addScope } from '@/parser/style'
 import {
-  transformStyle,
-  Style,
-  Declaration,
-  Rule,
-  Combinator,
-  Selector,
-  AtRule,
-  PseudoClass,
-  PseudoElement,
-  Attribute,
-  ChildNode,
-  addScope
-} from '@/parser/style'
+  style,
+  atRule,
+  rule,
+  selector,
+  declaration,
+  combinator,
+  attribute,
+  pClass,
+  pElement
+} from './style-helpers'
 
 describe('Style AST transformer', () => {
   it('should transform rules', () => {
@@ -207,143 +204,6 @@ describe('Scoped selector', () => {
 function getAst(code: string): Style {
   const root = parse(code)
   return transformStyle(root, code)
-}
-
-export function style(body: (AtRule | Rule)[]): Style {
-  modifyPath(body)
-  return {
-    body,
-    range: [-1, -1]
-  }
-}
-
-function modifyPath(nodes: (AtRule | Rule | Declaration)[]): void {
-  function loop(nodes: (AtRule | Rule | Declaration)[], path: number[]): void {
-    nodes.forEach((node, i) => {
-      const nextPath = path.concat(i)
-      node.path = nextPath
-      if (node.type === 'AtRule') {
-        loop(node.children, nextPath)
-      } else if (node.type === 'Rule') {
-        loop(node.declarations, nextPath)
-      }
-    })
-  }
-  loop(nodes, [])
-}
-
-export function atRule(
-  name: string,
-  params: string,
-  children: ChildNode[] = []
-): AtRule {
-  return {
-    type: 'AtRule',
-    path: [],
-    name,
-    params,
-    children,
-    range: [-1, -1]
-  }
-}
-
-export function rule(
-  selectors: Selector[],
-  declarations: Declaration[] = []
-): Rule {
-  return {
-    type: 'Rule',
-    path: [],
-    selectors,
-    declarations,
-    range: [-1, -1]
-  }
-}
-
-export function selector(
-  options: Partial<Selector>,
-  next?: Combinator
-): Selector {
-  const s: Selector = {
-    type: 'Selector',
-    universal: options.universal || false,
-    class: options.class || [],
-    attributes: options.attributes || [],
-    pseudoClass: options.pseudoClass || []
-  }
-
-  if (options.tag) {
-    s.tag = options.tag
-  }
-
-  if (options.id) {
-    s.id = options.id
-  }
-
-  if (options.pseudoElement) {
-    s.pseudoElement = options.pseudoElement
-  }
-
-  if (next) {
-    s.leftCombinator = next
-  }
-
-  return s
-}
-
-export function attribute(
-  name: string,
-  operator?: AttributeOperator,
-  value?: string
-): Attribute {
-  return {
-    type: 'Attribute',
-    name,
-    operator,
-    value
-  }
-}
-
-export function combinator(operator: string, next: Selector): Combinator {
-  return {
-    type: 'Combinator',
-    operator,
-    left: next
-  }
-}
-
-export function declaration(
-  prop: string,
-  value: string,
-  important: boolean = false
-): Declaration {
-  return {
-    type: 'Declaration',
-    path: [],
-    prop,
-    value,
-    important,
-    range: [-1, -1]
-  }
-}
-
-export function pClass(value: string, params: Selector[] = []): PseudoClass {
-  return {
-    type: 'PseudoClass',
-    value,
-    params
-  }
-}
-
-export function pElement(
-  value: string,
-  pseudoClass: PseudoClass[] = []
-): PseudoElement {
-  return {
-    type: 'PseudoElement',
-    value,
-    pseudoClass
-  }
 }
 
 function assertWithoutRange(result: Style, expected: Style): void {

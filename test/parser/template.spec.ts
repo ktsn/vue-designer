@@ -98,10 +98,10 @@ describe('AST traversal', () => {
       </div>
     </template>`
     const program = parse(code, {})
-    const ast = program.templateBody!
+    const ast = transformTemplate(program.templateBody!, code)
 
-    const res = getNode(ast, [1, 3])! as AST.VElement
-    expect(res.type === 'VElement')
+    const res = getNode(ast, [1, 3])! as Element
+    expect(res.type === 'Element')
     expect(res.name === 'input')
   })
 
@@ -114,7 +114,7 @@ describe('AST traversal', () => {
       </div>
     </template>`
     const program = parse(code, {})
-    const ast = program.templateBody!
+    const ast = transformTemplate(program.templateBody!, code)
 
     const res = getNode(ast, [1, 5])
     expect(res === undefined)

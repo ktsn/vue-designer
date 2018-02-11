@@ -48,7 +48,8 @@ export default Vue.extend({
         path: [],
         name: 'div',
         attributes: [],
-        children: this.template.children
+        children: this.template.children,
+        range: [-1, -1] as [number, number]
       }
 
       children.push(

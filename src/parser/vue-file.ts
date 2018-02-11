@@ -19,7 +19,7 @@ export interface VueFilePayload {
 
 export interface VueFile {
   id: string
-  template: (AST.VElement & AST.HasConcreteInfo) | undefined
+  template: Template | undefined
   script: (AST.ESLintStatement | AST.ESLintModuleDeclaration)[]
   style: postcss.Root
   uri: string
@@ -40,20 +40,20 @@ export function parseVueFile(
 
   const styleBody = postcssParse(stylesCode)
 
-  const vueFile = {
-    id,
-    template: templateBody,
-    script: scriptBody,
-    style: styleBody,
-    uri
-  }
-
-  const template = vueFile.template
-    ? transformTemplate(vueFile.template, code)
+  const template = templateBody
+    ? transformTemplate(templateBody, code)
     : undefined
   const props = extractProps(scriptBody)
   const data = extractData(scriptBody)
   const styles = transformStyle(styleBody)
+
+  const vueFile = {
+    id,
+    template,
+    script: scriptBody,
+    style: styleBody,
+    uri
+  }
 
   const payload = {
     id,

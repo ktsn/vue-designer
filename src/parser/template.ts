@@ -95,10 +95,13 @@ function evalExpression(
 }
 
 export function getNode(
-  root: RootElement,
+  root: Template,
   path: number[]
-): ChildNode | undefined {
-  function loop(current: ChildNode, rest: number[]): ChildNode | undefined {
+): ElementChild | undefined {
+  function loop(
+    current: ElementChild,
+    rest: number[]
+  ): ElementChild | undefined {
     // If `rest` does not have any items,
     // `current` is the node we are looking for.
     if (rest.length === 0) {
@@ -107,7 +110,7 @@ export function getNode(
 
     // The current node does not have children,
     // then we cannot traverse any more.
-    if (current.type !== 'VElement') {
+    if (current.type !== 'Element') {
       return undefined
     }
 
@@ -118,7 +121,9 @@ export function getNode(
       return loop(next, rest.slice(1))
     }
   }
-  return loop(root, path)
+  const [index, ...rest] = path
+  const el = root.children[index]
+  return el && loop(el, rest)
 }
 
 export function visitElements(node: Template, fn: (el: Element) => void): void {

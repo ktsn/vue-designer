@@ -125,6 +125,8 @@ function matchSelectorByAttribute(
         return sel.value === value || value.startsWith(sel.value + '-')
       case '^=':
         return value.startsWith(sel.value)
+      case '$=':
+        return value.endsWith(sel.value)
       default:
         // Unknown operator, always unmatched.
         return false

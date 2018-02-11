@@ -57,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
 
           for (const editor of vscode.window.visibleTextEditors) {
             const doc = editor.document
-            if (doc.uri.toString() === vueFile.uri.toString()) {
+            if (doc.uri.toString() === vueFile.uri) {
               const start = doc.positionAt(target.range[0])
               const end = doc.positionAt(target.range[1])
 

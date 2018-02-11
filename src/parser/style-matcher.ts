@@ -127,6 +127,8 @@ function matchSelectorByAttribute(
         return value.startsWith(sel.value)
       case '$=':
         return value.endsWith(sel.value)
+      case '*=':
+        return value.includes(sel.value)
       default:
         // Unknown operator, always unmatched.
         return false

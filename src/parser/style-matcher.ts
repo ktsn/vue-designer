@@ -138,15 +138,32 @@ function matchCombinator(
     return true
   }
 
+  const { path } = origin
+  const parentPath = path.slice(0, -1)
   switch (comb.operator) {
-    case '>':
-      const parentPath = origin.path.slice(0, -1)
+    case '>': {
       const next = getNode(template, parentPath) as Element | undefined
       return next ? matchSelector(next, comb.left, template) : false
+    }
+    case '+': {
+      const last = path[path.length - 1]
+      const next = range(1, last).reduce<Element | undefined>((acc, offset) => {
+        if (acc) return acc
+        const node = getNode(template, parentPath.concat(last - offset))
+        return !node || node.type !== 'Element' ? undefined : node
+      }, undefined)
+      return next ? matchSelector(next, comb.left, template) : false
+    }
     default:
       // Unknown combinator will always be unmatched.
       return false
   }
+}
+
+function range(min: number, max: number): number[] {
+  return Array.apply(null, Array(max - min + 1)).map(
+    (_: any, i: number) => min + i
+  )
 }
 
 function isSubset(target: string[], superSet: string[]): boolean {

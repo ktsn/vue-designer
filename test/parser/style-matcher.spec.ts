@@ -265,6 +265,30 @@ describe('Style matcher', () => {
       expect(res.length).toBe(0)
     })
 
+    it('should skip text node during resolving adjacent sibling combinator', () => {
+      const sibling = rule([
+        selector(
+          { class: ['bar'] },
+          combinator('+', selector({ class: ['foo'] }))
+        )
+      ])
+
+      const matcher = createStyleMatcher(createStyle([sibling]))
+
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [], [
+          h('div', [a('class', 'foo')], []),
+          'Test',
+          h('div', [a('class', 'bar')], []),
+        ])
+      ])
+
+      let res = matcher(template, [0, 2])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(sibling)
+    })
+
     it('should match with descendant combinator', () => {
       const descendant = rule([
         selector(

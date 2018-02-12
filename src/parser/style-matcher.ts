@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { Style, Rule, visitLastSelectors, Selector } from './style'
+import { Style, Rule, visitLastSelectors, Selector, Combinator } from './style'
 import { Template, Element, getNode, Attribute } from './template'
 
 export function createStyleMatcher(style: Style) {
@@ -19,27 +19,18 @@ export function createStyleMatcher(style: Style) {
 
     return map.getCandidateRules(target).filter(rule => {
       return rule.selectors.reduce((acc, s) => {
-        return acc || matchSelector(template, targetPath, s)
+        return acc || matchSelector(target, s, template)
       }, false)
     })
   }
 }
 
 function matchSelector(
-  template: Template,
-  path: number[],
-  selector: Selector
+  target: Element,
+  selector: Selector,
+  template: Template
 ): boolean {
-  if (path.length === 0) {
-    return false
-  }
-
-  const node = getNode(template, path)
-  if (!node || node.type !== 'Element') {
-    return false
-  }
-
-  const attrMap = node.attributes.reduce<Map<string, Attribute>>(
+  const attrMap = target.attributes.reduce<Map<string, Attribute>>(
     (map, attr) => {
       if (!attr.directive) {
         map.set(attr.name, attr)
@@ -49,13 +40,13 @@ function matchSelector(
     new Map()
   )
 
-  // TODO: resolve complex selector
-  // TODO: resolve :not and :matches
+  // TODO: resolve some pseudo class (e.g. :nth-child, :not and :matches)
   return (
-    matchSelectorByTag(node.name, selector) &&
+    matchSelectorByTag(target.name, selector) &&
     matchSelectorByClass(attrMap, selector) &&
     matchSelectorByAttribute(attrMap, selector) &&
-    matchSelectorById(attrMap, selector)
+    matchSelectorById(attrMap, selector) &&
+    matchCombinator(target, selector, template)
   )
 }
 
@@ -134,6 +125,28 @@ function matchSelectorByAttribute(
         return false
     }
   }, true)
+}
+
+function matchCombinator(
+  origin: Element,
+  selector: Selector,
+  template: Template
+): boolean {
+  const comb = selector.leftCombinator
+  if (!comb) {
+    // If `leftCombinator` does not exist, the whole selector should be matched.
+    return true
+  }
+
+  switch (comb.operator) {
+    case '>':
+      const parentPath = origin.path.slice(0, -1)
+      const next = getNode(template, parentPath) as Element | undefined
+      return next ? matchSelector(next, comb.left, template) : false
+    default:
+      // Unknown combinator will always be unmatched.
+      return false
+  }
 }
 
 function isSubset(target: string[], superSet: string[]): boolean {

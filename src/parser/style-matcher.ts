@@ -145,8 +145,8 @@ function matchCombinator(
 
   switch (comb.operator) {
     case '>': {
-      const next = getNode(template, parentPath) as Element | undefined
-      return next ? matchSelector(next, comb.left, template) : false
+      const next = getNode(template, parentPath)
+      return isElement(next) && matchSelector(next, comb.left, template)
     }
     case '+': {
       const next = range(1, last).reduce<Element | undefined>((acc, offset) => {

@@ -1,5 +1,5 @@
 import assert from 'assert'
-import { Style, Rule, visitLastSelectors, Selector, Combinator } from './style'
+import { Style, Rule, visitLastSelectors, Selector } from './style'
 import { Template, Element, getNode, Attribute } from './template'
 
 export function createStyleMatcher(style: Style) {

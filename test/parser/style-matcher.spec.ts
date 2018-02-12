@@ -264,6 +264,34 @@ describe('Style matcher', () => {
       res = matcher(template, [0, 2])
       expect(res.length).toBe(0)
     })
+
+    it('should match with descendant combinator', () => {
+      const descendant = rule([
+        selector(
+          { class: ['bar'] },
+          combinator(' ', selector({ class: ['foo'] }))
+        )
+      ])
+
+      const matcher = createStyleMatcher(createStyle([descendant]))
+
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [a('class', 'foo')], [
+          h('div', [], [
+            h('div', [a('class', 'bar')], [])
+          ])
+        ]),
+        h('div', [a('class', 'bar')], [])
+      ])
+
+      let res = matcher(template, [0, 0, 0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(descendant)
+
+      res = matcher(template, [1])
+      expect(res.length).toBe(0)
+    })
   })
 
   describe('for attribute selectors', () => {

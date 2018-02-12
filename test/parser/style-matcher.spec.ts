@@ -292,6 +292,35 @@ describe('Style matcher', () => {
       res = matcher(template, [1])
       expect(res.length).toBe(0)
     })
+
+    it('should match with general sibling combinator', () => {
+      const sibling = rule([
+        selector(
+          { class: ['bar'] },
+          combinator('~', selector({ class: ['foo'] }))
+        )
+      ])
+
+      const matcher = createStyleMatcher(createStyle([sibling]))
+
+      // prettier-ignore
+      const template = createTemplate([
+        h('div', [], [
+          h('div', [a('class', 'foo')], [
+            h('div', [a('class', 'bar')], [])
+          ]),
+          h('div', [], []),
+          h('div', [a('class', 'bar')], [])
+        ])
+      ])
+
+      let res = matcher(template, [0, 2])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(sibling)
+
+      res = matcher(template, [0, 0, 0])
+      expect(res.length).toBe(0)
+    })
   })
 
   describe('for attribute selectors', () => {

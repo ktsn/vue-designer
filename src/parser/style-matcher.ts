@@ -140,6 +140,7 @@ function matchCombinator(
 
   const { path } = origin
   const parentPath = path.slice(0, -1)
+  const last = path[path.length - 1]
   const isElement = (el: any): el is Element => el && el.type === 'Element'
 
   switch (comb.operator) {
@@ -148,7 +149,6 @@ function matchCombinator(
       return next ? matchSelector(next, comb.left, template) : false
     }
     case '+': {
-      const last = path[path.length - 1]
       const next = range(1, last).reduce<Element | undefined>((acc, offset) => {
         if (acc) return acc
         const node = getNode(template, parentPath.concat(last - offset))
@@ -160,6 +160,13 @@ function matchCombinator(
       return range(1, path.length - 1).reduce((acc, offset) => {
         if (acc) return acc
         const next = getNode(template, path.slice(0, -offset))
+        return isElement(next) && matchSelector(next, comb.left, template)
+      }, false)
+    }
+    case '~': {
+      return range(1, last).reduce((acc, offset) => {
+        if (acc) return acc
+        const next = getNode(template, parentPath.concat(last - offset))
         return isElement(next) && matchSelector(next, comb.left, template)
       }, false)
     }

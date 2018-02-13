@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
     backgroundColor: 'rgba(200, 200, 200, 0.2)'
   })
   let lastActiveTextEditor = vscode.window.activeTextEditor
-  let vueFile: VueFile | undefined
+  const vueFiles = new Map<string, VueFile>()
 
   vscode.window.onDidChangeActiveTextEditor(() => {
     const editor = vscode.window.activeTextEditor
@@ -27,7 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
         const code = document.getText()
         const uri = document.uri.toString()
         const parsed = parseVueFile(code, uri)
-        vueFile = parsed.vueFile
+        vueFiles.set(parsed.vueFile.id, parsed.vueFile)
         initDocument(ws, parsed.payload)
       }
 
@@ -50,6 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
     (_ws, payload) => {
       switch (payload.type) {
         case 'SelectNode':
+          const vueFile = vueFiles.get(payload.id)
           if (!vueFile || !vueFile.template) break
 
           const element = getNode(vueFile.template, payload.path)

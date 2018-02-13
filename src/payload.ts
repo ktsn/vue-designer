@@ -10,5 +10,6 @@ export interface InitDocument {
 
 export interface SelectNode {
   type: 'SelectNode'
+  id: string
   path: number[]
 }

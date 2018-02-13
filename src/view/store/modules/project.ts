@@ -90,9 +90,12 @@ export const project: DefineModule<
       })
     },
 
-    select({ commit }, node) {
+    select({ commit, state }, node) {
+      if (!state.document) return
+
       connection.send({
         type: 'SelectNode',
+        id: state.document.id,
         path: node.path
       })
       commit('select', node)

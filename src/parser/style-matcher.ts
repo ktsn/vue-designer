@@ -1,6 +1,7 @@
 import assert from 'assert'
 import { Style, Rule, visitLastSelectors, Selector } from './style'
 import { Template, Element, getNode, Attribute } from './template'
+import { range } from '../utils'
 
 export function createStyleMatcher(style: Style) {
   const map = new StyleMap(style)
@@ -174,12 +175,6 @@ function matchCombinator(
       // Unknown combinator will always be unmatched.
       return false
   }
-}
-
-function range(min: number, max: number): number[] {
-  return Array.apply(null, Array(max - min + 1)).map(
-    (_: any, i: number) => min + i
-  )
 }
 
 function isSubset(target: string[], superSet: string[]): boolean {

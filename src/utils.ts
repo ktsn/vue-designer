@@ -9,6 +9,12 @@ export function mapValues<T, R>(
   return res
 }
 
+export function range(min: number, max: number): number[] {
+  return Array.apply(null, Array(max - min + 1)).map(
+    (_: any, i: number) => min + i
+  )
+}
+
 export function isObject(value: any): boolean {
   return value !== null && typeof value === 'object'
 }

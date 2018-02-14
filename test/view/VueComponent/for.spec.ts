@@ -59,6 +59,19 @@ describe('VueComponent v-for', () => {
     expect(list.at(2).text()).toBe('third - baz - 2')
   })
 
+  it('should iterate range', () => {
+    const template = createTemplate([
+      h('ul', [], [h('li', [vFor(['i'], '3')], [exp('i')])])
+    ])
+
+    const wrapper = render(template)
+    const list = wrapper.findAll('li')
+    expect(list.length).toBe(3)
+    expect(list.at(0).text()).toBe('1')
+    expect(list.at(1).text()).toBe('2')
+    expect(list.at(2).text()).toBe('3')
+  })
+
   it('should be removed if v-for is invalid', () => {
     // prettier-ignore
     const template = createTemplate([

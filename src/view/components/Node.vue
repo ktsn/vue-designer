@@ -10,7 +10,7 @@ import {
 } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
 import { evalWithScope } from '@/view/eval'
-import { isObject } from '@/utils'
+import { isObject, range } from '@/utils'
 
 function findDirective(
   attrs: (Attribute | Directive)[],
@@ -96,7 +96,14 @@ function resolveControlDirectives(
     if (vFor) {
       // Remove if v-for expression is invalid or iteratee type looks cannot iterate.
       const iteratee = vFor.right && evalWithScope(vFor.right, scope)
-      if (!iteratee || !iteratee.isSuccess || !isObject(iteratee.value)) {
+      const isValidIteratee = (value: any) => {
+        return isObject(value) || typeof value === 'number'
+      }
+      if (
+        !iteratee ||
+        !iteratee.isSuccess ||
+        !isValidIteratee(iteratee.value)
+      ) {
         return acc
       }
 
@@ -160,15 +167,22 @@ function resolveControlDirectives(
  * Helper function to handle v-for iteration.
  */
 function reduceVFor<T, U>(
-  value: Record<string, T> | T[],
-  fn: (acc: U, item: T, keyOrIndex: string | number, index?: number) => U,
+  value: number | Record<string, T> | T[],
+  fn: (acc: U, ...args: any[]) => U,
   initial: U
 ): U {
-  if (Array.isArray(value)) {
+  if (typeof value === 'number') {
+    // Range
+    return range(1, value).reduce((acc, i) => {
+      return fn(acc, i)
+    }, initial)
+  } else if (Array.isArray(value)) {
+    // Array
     return value.reduce((acc, item, index) => {
       return fn(acc, item, index)
     }, initial)
   } else {
+    // Object
     return Object.keys(value).reduce((acc, key, index) => {
       return fn(acc, value[key], key, index)
     }, initial)

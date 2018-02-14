@@ -15,4 +15,11 @@ describe('Expression evaluation', () => {
     const res = evalWithScope('foo + bar', { foo: 'Test' })
     expect(res.error!.message).toBe('bar is not defined')
   })
+
+  it('should not mutate scope object', () => {
+    const scope = { foo: 'initial' }
+    const res = evalWithScope('foo = "mutated"', scope)
+    expect(res.value).toBe('mutated')
+    expect(scope.foo).toBe('initial')
+  })
 })

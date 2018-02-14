@@ -126,28 +126,42 @@ export function getNode(
   return el && loop(el, rest)
 }
 
-export function visitElements(node: Template, fn: (el: Element) => void): void {
-  function loop(node: ElementChild): void {
+export function visitElements(
+  node: Template,
+  fn: (el: Element) => Element | void
+): Template {
+  function loop(node: ElementChild): ElementChild {
     switch (node.type) {
       case 'Element':
-        fn(node)
-        return node.children.forEach(loop)
-      default: // Do nothing
+        const newNode = {
+          ...node,
+          children: node.children.map(loop)
+        }
+        return fn(newNode) || newNode
+      default:
+        // Do nothing
+        return node
     }
   }
-  return node.children.forEach(loop)
+  return {
+    ...node,
+    children: node.children.map(loop)
+  }
 }
 
-export function addScope(node: Template, scope: string): void {
-  visitElements(node, el => {
-    el.attributes.push({
-      type: 'Attribute',
-      directive: false,
-      index: -1,
-      name: scopePrefix + scope,
-      value: null,
-      range: [-1, -1]
-    })
+export function addScope(node: Template, scope: string): Template {
+  return visitElements(node, el => {
+    return {
+      ...el,
+      attributes: el.attributes.concat({
+        type: 'Attribute',
+        directive: false,
+        index: -1,
+        name: scopePrefix + scope,
+        value: null,
+        range: [-1, -1]
+      })
+    }
   })
 }
 

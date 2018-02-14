@@ -132,7 +132,7 @@ describe('Scope attribute', () => {
     </template>
     `
     const program = parse(code, {})
-    const ast = program.templateBody!
+    const ast = transformTemplate(program.templateBody!, code)
 
     const scope = '1a2s3d'
     const scopeAttr: Attribute = {
@@ -144,10 +144,9 @@ describe('Scope attribute', () => {
       range: [-1, -1]
     }
 
-    const result = transformTemplate(ast, code)
-    addScope(result, scope)
+    const result = addScope(ast, scope)
 
-    const expected: any = transformTemplate(ast, code)
+    const expected: any = ast
     expected.children[1].attributes.push(scopeAttr) // #foo
     expected.children[1].children[1].attributes.push(scopeAttr) // .bar
     expected.children[1].children[3].attributes.push(scopeAttr) // [data-v-abcde]

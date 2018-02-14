@@ -22,7 +22,7 @@ export default Vue.extend({
   render(h, { props }): VNode {
     const { expression: exp, scope } = props
     const result = evalWithScope(exp, scope)
-    const str = !result.error
+    const str = result.isSuccess
       ? toStringForPrint(result.value)
       : '{{ ' + exp + ' }}'
 
@@ -30,7 +30,7 @@ export default Vue.extend({
       'span',
       {
         class: {
-          unresolved: !!result.error
+          unresolved: !result.isSuccess
         }
       },
       [str]

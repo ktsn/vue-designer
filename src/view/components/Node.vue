@@ -29,7 +29,7 @@ function directiveValue(
   }
 
   const result = evalWithScope(exp, scope)
-  if (!result.error) {
+  if (result.isSuccess) {
     return result.value
   } else {
     return undefined

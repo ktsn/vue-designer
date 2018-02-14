@@ -1,23 +1,27 @@
 export type EvalResult = EvalSuccess | EvalError
 
-interface EvalSuccess {
-  error?: undefined
+export interface EvalSuccess {
+  isSuccess: true
   value: any
 }
 
-interface EvalError {
+export interface EvalError {
+  isSuccess: false
   error: Error
-  value?: any
 }
 
 export function evalWithScope(expression: string, scope: object): EvalResult {
   try {
     const proxy = createScopeProxy(scope)
     return {
+      isSuccess: true,
       value: new Function(`with (this) { return ${expression} }`).call(proxy)
     }
   } catch (error) {
-    return { error }
+    return {
+      isSuccess: false,
+      error
+    }
   }
 }
 

@@ -6,6 +6,7 @@ import {
   ExpressionNode,
   Attribute,
   Directive,
+  VForDirective,
   ElementChild
 } from '@/parser/template'
 import { Prop, Data } from '@/parser/script'
@@ -136,6 +137,13 @@ export function d(
     expression: expression || null,
     range: [-1, -1]
   }
+}
+
+export function vFor(left: string[], right: string): VForDirective {
+  const dir = d('for') as VForDirective
+  dir.left = left
+  dir.right = right
+  return dir
 }
 
 export function exp(expression: string): ExpressionNode {

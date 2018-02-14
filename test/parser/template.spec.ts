@@ -7,7 +7,7 @@ import {
   addScope,
   Element
 } from '../../src/parser/template'
-import { createTemplate, h, exp, a, d } from './template-helpers'
+import { createTemplate, h, exp, a, d, vFor } from './template-helpers'
 
 describe('Template AST transformer', () => {
   it('should transform element', () => {
@@ -82,6 +82,22 @@ describe('Template AST transformer', () => {
         [d('if', 'true')],
         ['test']
       )
+    ])
+
+    assertWithoutRange(transformTemplate(ast, code), expected)
+  })
+
+  it('should extract v-for directive', () => {
+    const code =
+      '<template><ul><li v-for="({ name }, key, i) in obj"></li></ul></template>'
+    const program = parse(code, {})
+    const ast = program.templateBody!
+
+    // prettier-ignore
+    const expected = createTemplate([
+      h('ul', [], [
+        h('li', [vFor(['{ name }', 'key', 'i'], 'obj')], []),
+      ])
     ])
 
     assertWithoutRange(transformTemplate(ast, code), expected)

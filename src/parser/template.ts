@@ -23,10 +23,12 @@ function transformElement(
   code: string,
   path: number[]
 ): Element {
+  const attrs = el.startTag.attributes
+
   return element(
     path,
     el.name,
-    el.startTag.attributes.map((attr, i) => transformAttribute(attr, i, code)),
+    attrs.map((attr, i) => transformAttribute(attr, i, code)),
     el.children.map((child, i) => transformChild(child, code, path.concat(i))),
     el.range
   )
@@ -38,16 +40,11 @@ function transformAttribute(
   code: string
 ): Attribute | Directive {
   if (attr.directive) {
-    const exp = attr.value && attr.value.expression
-    const expStr = exp ? extractExpression(exp, code) : null
-    return directive(
-      index,
-      attr.key.name,
-      attr.key.argument,
-      attr.key.modifiers,
-      expStr,
-      attr.range
-    )
+    if (attr.key.name === 'for') {
+      return transformVForDirective(attr, index, code)
+    } else {
+      return transformDirective(attr, index, code)
+    }
   } else {
     return attribute(
       index,
@@ -56,6 +53,43 @@ function transformAttribute(
       attr.range
     )
   }
+}
+
+function transformDirective(
+  node: AST.VDirective,
+  index: number,
+  code: string
+): Directive {
+  const exp = node.value && node.value.expression
+  const expStr = exp ? extractExpression(exp, code) : null
+  return directive(
+    index,
+    node.key.name,
+    node.key.argument,
+    node.key.modifiers,
+    expStr,
+    node.range
+  )
+}
+
+function transformVForDirective(
+  node: AST.VDirective,
+  index: number,
+  code: string
+): VForDirective {
+  const exp =
+    node.value &&
+    node.value.expression &&
+    node.value.expression.type === 'VForExpression'
+      ? node.value.expression
+      : null
+
+  return vForDirective(
+    index,
+    exp ? exp.left.map(l => extractExpression(l, code)) : [],
+    exp && extractExpression(exp.right, code),
+    node.range
+  )
 }
 
 function transformChild(
@@ -205,6 +239,12 @@ export interface Directive extends BaseNode {
   value?: any
 }
 
+export interface VForDirective extends Directive {
+  name: 'for'
+  left: string[]
+  right: string | null
+}
+
 export function element(
   path: number[],
   name: string,
@@ -280,6 +320,26 @@ export function directive(
     argument,
     modifiers,
     expression,
+    range
+  }
+}
+
+function vForDirective(
+  index: number,
+  left: string[],
+  right: string | null,
+  range: [number, number]
+): VForDirective {
+  return {
+    type: 'Attribute',
+    directive: true,
+    index,
+    name: 'for',
+    argument: null,
+    modifiers: [],
+    expression: null,
+    left,
+    right,
     range
   }
 }

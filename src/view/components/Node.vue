@@ -72,7 +72,7 @@ function shouldAppearVElse(
   return loop(true, scope, stack)
 }
 
-interface ChildContext {
+interface ResolvedChild {
   el: ElementChild
   scope: Record<string, DefaultValue>
 }
@@ -82,9 +82,9 @@ interface ChildContext {
  * so that add or remove AST node from final output.
  */
 function resolveControlDirectives(
-  acc: ChildContext[],
-  item: ChildContext
-): ChildContext[] {
+  acc: ResolvedChild[],
+  item: ResolvedChild
+): ResolvedChild[] {
   const { el: child, scope } = item
   if (child.type === 'Element') {
     const attrs = child.attributes
@@ -308,7 +308,7 @@ export default Vue.extend({
   render(h, { props, listeners }): VNode {
     const { data, scope, selected } = props
 
-    const filteredChildren = data.children.reduce<ChildContext[]>(
+    const resolvedChildren = data.children.reduce<ResolvedChild[]>(
       (acc, child) => {
         return resolveControlDirectives(acc, {
           el: child,
@@ -321,7 +321,7 @@ export default Vue.extend({
     return h(
       data.name,
       createVNodeData(data, scope, selected, listeners),
-      filteredChildren.map(c => {
+      resolvedChildren.map(c => {
         return h(Child, {
           props: {
             data: c.el,

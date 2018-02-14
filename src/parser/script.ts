@@ -187,11 +187,34 @@ function getReturnedExpression(
 }
 
 function getLiteralValue(node: AST.ESLintNode): DefaultValue {
+  // Simple literals like number, string and boolean
   if (node.type === 'Literal' && !(node.value instanceof RegExp)) {
     return node.value
-  } else {
-    return undefined
   }
+
+  // Object literal
+  if (node.type === 'ObjectExpression') {
+    const obj: Record<string, DefaultValue> = {}
+    node.properties.forEach(p => {
+      if (p.type !== 'Property') {
+        return
+      }
+
+      if (p.computed || p.key.type !== 'Identifier') {
+        return
+      }
+
+      obj[p.key.name] = getLiteralValue(p.value)
+    })
+    return obj
+  }
+
+  // Array literal
+  if (node.type === 'ArrayExpression') {
+    return node.elements.map(getLiteralValue)
+  }
+
+  return undefined
 }
 
 function findComponentOptions(
@@ -220,7 +243,17 @@ function findComponentOptions(
   return undefined
 }
 
-export type DefaultValue = boolean | number | string | null | undefined
+interface RecordDefaultValue extends Record<string, DefaultValue> {}
+interface ArrayDefaultValue extends Array<DefaultValue> {}
+
+export type DefaultValue =
+  | RecordDefaultValue
+  | ArrayDefaultValue
+  | boolean
+  | number
+  | string
+  | null
+  | undefined
 
 export interface Prop {
   name: string

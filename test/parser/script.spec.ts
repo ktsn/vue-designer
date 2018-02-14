@@ -134,4 +134,50 @@ describe('Script parser', () => {
     ]
     expect(extracted).toEqual(expected)
   })
+
+  it('should extract array data', () => {
+    const code = `<script>
+    export default {
+      data: () => ({
+        foo: ['test', 123]
+      })
+    }
+    </script>`
+
+    const program = parse(code, { sourceType: 'module' })
+    const extracted = extractData(program.body)
+    const expected: Data[] = [
+      {
+        name: 'foo',
+        default: ['test', 123]
+      }
+    ]
+    expect(extracted).toEqual(expected)
+  })
+
+  it('should extract object data', () => {
+    const code = `<script>
+    export default {
+      data: () => ({
+        obj: {
+          foo: 'test',
+          bar: 123
+        }
+      })
+    }
+    </script>`
+
+    const program = parse(code, { sourceType: 'module' })
+    const extracted = extractData(program.body)
+    const expected: Data[] = [
+      {
+        name: 'obj',
+        default: {
+          foo: 'test',
+          bar: 123
+        }
+      }
+    ]
+    expect(extracted).toEqual(expected)
+  })
 })

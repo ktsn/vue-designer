@@ -89,14 +89,14 @@ describe('Template AST transformer', () => {
 
   it('should extract v-for directive', () => {
     const code =
-      '<template><ul><li v-for="({ name }, key, i) in obj"></li></ul></template>'
+      '<template><ul><li v-for="(item, key, i) in obj"></li></ul></template>'
     const program = parse(code, {})
     const ast = program.templateBody!
 
     // prettier-ignore
     const expected = createTemplate([
       h('ul', [], [
-        h('li', [vFor(['{ name }', 'key', 'i'], 'obj')], []),
+        h('li', [vFor(['item', 'key', 'i'], 'obj')], []),
       ])
     ])
 

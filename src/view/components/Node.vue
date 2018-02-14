@@ -5,10 +5,12 @@ import {
   Element,
   Attribute,
   Directive,
-  ElementChild
+  ElementChild,
+  VForDirective
 } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
 import { evalWithScope } from '@/view/eval'
+import { isObject } from '@/utils'
 
 function findDirective(
   attrs: (Attribute | Directive)[],
@@ -70,39 +72,107 @@ function shouldAppearVElse(
   return loop(true, scope, stack)
 }
 
-function resolveVIf(
-  acc: ElementChild[],
-  child: ElementChild,
+interface ChildContext {
+  el: ElementChild
   scope: Record<string, DefaultValue>
-): ElementChild[] {
+}
+
+/**
+ * Resolve v-if/-else/-else-if and v-for,
+ * so that add or remove AST node from final output.
+ */
+function resolveControlDirectives(
+  acc: ChildContext[],
+  item: ChildContext
+): ChildContext[] {
+  const { el: child, scope } = item
   if (child.type === 'Element') {
-    const vIf = findDirective(child.attributes, d => d.name === 'if')
-    if (vIf) {
-      return directiveValue(vIf, scope) ? acc.concat(child) : acc
+    const attrs = child.attributes
+
+    // v-for
+    const vFor = findDirective(attrs, d => d.name === 'for') as
+      | VForDirective
+      | undefined
+    if (vFor) {
+      // Remove if v-for expression is invalid or iteratee type looks cannot iterate.
+      const iteratee = vFor.right && evalWithScope(vFor.right, scope)
+      if (!iteratee || !iteratee.isSuccess || !isObject(iteratee.value)) {
+        return acc
+      }
+
+      const vForIndex = attrs.indexOf(vFor)
+      const clone = {
+        ...child,
+        // Need to remove v-for directive to avoid infinite loop.
+        attributes: [
+          ...attrs.slice(0, vForIndex),
+          ...attrs.slice(vForIndex + 1)
+        ]
+      }
+      return reduceVFor(
+        iteratee.value,
+        (acc, ...iteraterValues: any[]) => {
+          const newScope = { ...scope }
+          vFor.left.forEach((name, i) => {
+            newScope[name] = iteraterValues[i]
+          })
+          return resolveControlDirectives(acc, {
+            el: clone,
+            scope: newScope
+          })
+        },
+        acc
+      )
     }
 
-    const vElse = findDirective(child.attributes, d => {
+    // v-if
+    const vIf = findDirective(attrs, d => d.name === 'if')
+    if (vIf) {
+      return directiveValue(vIf, scope) ? acc.concat(item) : acc
+    }
+
+    // v-else or v-else-if
+    const vElse = findDirective(attrs, d => {
       return d.name === 'else' || d.name === 'else-if'
     })
     if (vElse) {
       const isElement = (node: ElementChild): node is Element => {
         return node.type === 'Element'
       }
-      const elements = acc.filter(isElement)
+      const elements = acc.map(({ el }) => el).filter(isElement)
 
       if (!shouldAppearVElse(scope, elements)) {
         return acc
       }
 
       if (vElse.name === 'else') {
-        return acc.concat(child)
+        return acc.concat(item)
       }
 
-      return directiveValue(vElse, scope) ? acc.concat(child) : acc
+      return directiveValue(vElse, scope) ? acc.concat(item) : acc
     }
   }
 
-  return acc.concat(child)
+  return acc.concat(item)
+}
+
+/**
+ * Helper function to handle v-for iteration.
+ */
+function reduceVFor<T, U>(
+  value: Record<string, T> | T[],
+  fn: (acc: U, item: T, keyOrIndex: string | number, index?: number) => U,
+  initial: U
+): U {
+  if (Array.isArray(value)) {
+    return value.reduce((acc, item, index) => {
+      return fn(acc, item, index)
+    }, initial)
+  } else {
+    return Object.keys(value).reduce((acc, key, index) => {
+      return fn(acc, value[key], key, index)
+    }, initial)
+  }
 }
 
 // Borrowed from Vue.js style parser
@@ -224,8 +294,13 @@ export default Vue.extend({
   render(h, { props, listeners }): VNode {
     const { data, scope, selected } = props
 
-    const filteredChildren = data.children.reduce<ElementChild[]>(
-      (acc, child) => resolveVIf(acc, child, scope),
+    const filteredChildren = data.children.reduce<ChildContext[]>(
+      (acc, child) => {
+        return resolveControlDirectives(acc, {
+          el: child,
+          scope
+        })
+      },
       []
     )
 
@@ -235,8 +310,8 @@ export default Vue.extend({
       filteredChildren.map(c => {
         return h(Child, {
           props: {
-            data: c,
-            scope
+            data: c.el,
+            scope: c.scope
           }
         })
       })

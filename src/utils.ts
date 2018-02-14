@@ -8,3 +8,7 @@ export function mapValues<T, R>(
   })
   return res
 }
+
+export function isObject(value: any): boolean {
+  return value !== null && typeof value === 'object'
+}

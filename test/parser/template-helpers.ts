@@ -139,7 +139,7 @@ export function d(
   }
 }
 
-export function vFor(left: string[], right: string): VForDirective {
+export function vFor(left: string[], right: string | null): VForDirective {
   const dir = d('for') as VForDirective
   dir.left = left
   dir.right = right

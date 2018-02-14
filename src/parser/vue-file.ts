@@ -4,13 +4,18 @@ import { parseComponent } from 'vue-template-compiler'
 import { parse as eslintParse, AST } from 'vue-eslint-parser'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
-import { transformTemplate } from './template'
+import { transformTemplate, addScope as addScopeToTemplate } from './template'
 import { extractProps, extractData } from './script'
-import { Style, transformStyle, Rule } from './style'
+import {
+  Style,
+  transformStyle,
+  Rule,
+  addScope as addScopeToStyle
+} from './style'
 import { createStyleMatcher } from './style-matcher'
 
 export interface VueFilePayload {
-  id: string
+  uri: string
   template: Template | undefined
   props: Prop[]
   data: Data[]
@@ -18,19 +23,14 @@ export interface VueFilePayload {
 }
 
 export interface VueFile {
-  id: string
+  uri: string
   template: Template | undefined
   script: (AST.ESLintStatement | AST.ESLintModuleDeclaration)[]
   styles: Style
   matchSelector: (template: Template, targetPath: number[]) => Rule[]
-  uri: string
 }
 
-export function parseVueFile(
-  code: string,
-  uri: string
-): { payload: VueFilePayload; vueFile: VueFile } {
-  const id = hashsum(uri)
+export function parseVueFile(code: string, uri: string): VueFile {
   const stylesCode: string = parseComponent(code, { pad: 'space' })
     .styles.map((s: any) => s.content)
     .join('\n')
@@ -44,29 +44,32 @@ export function parseVueFile(
   const template = templateBody
     ? transformTemplate(templateBody, code)
     : undefined
-  const props = extractProps(scriptBody)
-  const data = extractData(scriptBody)
   const styles = transformStyle(styleBody, stylesCode)
 
-  const vueFile = {
-    id,
+  return {
+    uri,
     template,
     script: scriptBody,
     styles,
-    matchSelector: createStyleMatcher(styles),
-    uri
+    matchSelector: createStyleMatcher(styles)
   }
+}
 
-  const payload = {
-    id,
-    template,
-    props,
-    data,
-    styles
+export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
+  const props = extractProps(vueFile.script)
+  const data = extractData(vueFile.script)
+
+  const id = hashsum(vueFile.uri)
+  if (vueFile.template) {
+    addScopeToTemplate(vueFile.template, id)
   }
+  addScopeToStyle(vueFile.styles, id)
 
   return {
-    payload,
-    vueFile
+    uri: vueFile.uri,
+    template: vueFile.template,
+    props,
+    data,
+    styles: vueFile.styles
   }
 }

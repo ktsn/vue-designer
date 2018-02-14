@@ -241,26 +241,44 @@ function toOffset(line: number, column: number, code: string): number {
 
 export function visitLastSelectors(
   node: Style,
-  fn: (selector: Selector, rule: Rule) => void
-): void {
-  function loop(node: AtRule | Rule | Declaration): void {
+  fn: (selector: Selector, rule: Rule) => Selector | void
+): Style {
+  function loop(node: AtRule | Rule): AtRule | Rule
+  function loop(node: AtRule | Rule | Declaration): AtRule | Rule | Declaration
+  function loop(
+    node: AtRule | Rule | Declaration
+  ): AtRule | Rule | Declaration {
     switch (node.type) {
       case 'AtRule':
-        return node.children.forEach(loop)
+        return {
+          ...node,
+          children: node.children.map(loop)
+        }
       case 'Rule':
-        return node.selectors.forEach(s => fn(s, node))
-      default: // Do nothing
+        return {
+          ...node,
+          selectors: node.selectors.map(s => fn(s, node) || s)
+        }
+      default:
+        // Do nothing
+        return node
     }
   }
-  return node.body.forEach(loop)
+  return {
+    ...node,
+    body: node.body.map(b => loop(b))
+  }
 }
 
-export function addScope(node: Style, scope: string): void {
-  visitLastSelectors(node, selector => {
-    selector.attributes.push({
-      type: 'Attribute',
-      name: scopePrefix + scope
-    })
+export function addScope(node: Style, scope: string): Style {
+  return visitLastSelectors(node, selector => {
+    return {
+      ...selector,
+      attributes: selector.attributes.concat({
+        type: 'Attribute',
+        name: scopePrefix + scope
+      })
+    }
   })
 }
 

@@ -175,14 +175,14 @@ describe('Scoped selector', () => {
     const code = 'h1 > .foo .bar {}'
 
     const ast = getAst(code)
-    addScope(ast, scope)
+    const result = addScope(ast, scope)
 
-    const expected: any = getAst(code)
+    const expected: any = ast
     expected.body[0].selectors[0].attributes.push(
       attribute('data-scope-' + scope)
     )
 
-    assertWithoutRange(ast, expected)
+    assertWithoutRange(result, expected)
   })
 
   it('should add scope attribute in at-rule', () => {
@@ -190,14 +190,14 @@ describe('Scoped selector', () => {
     const code = '@media screen { .foo {} }'
 
     const ast = getAst(code)
-    addScope(ast, scope)
+    const result = addScope(ast, scope)
 
-    const expected: any = getAst(code)
+    const expected: any = ast
     expected.body[0].children[0].selectors[0].attributes.push(
       attribute('data-scope-' + scope)
     )
 
-    assertWithoutRange(ast, expected)
+    assertWithoutRange(result, expected)
   })
 })
 

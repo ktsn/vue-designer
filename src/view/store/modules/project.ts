@@ -1,20 +1,25 @@
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
-import { Template, Element } from '@/parser/template'
-import { Prop, Data } from '@/parser/script'
+import {
+  Template,
+  Element,
+  addScope as addScopeToTemplate
+} from '@/parser/template'
 import { ClientConnection } from '@/view/communication'
+import { mapValues } from '@/utils'
+import { addScope as addScopeToStyle } from '@/parser/style'
 import { genStyle } from '@/parser/style-codegen'
 
 interface ProjectState {
-  document: VueFilePayload | undefined
+  documents: Record<string, VueFilePayload>
+  currentUri: string | undefined
   selectedPath: number[]
 }
 
 interface ProjectGetters {
-  template: Template | undefined
-  props: Prop[]
-  data: Data[]
-  styles: string
+  currentDocument: VueFilePayload | undefined
+  scopedTemplates: Record<string, Template | undefined>
+  scopedStyles: Record<string, string>
 }
 
 interface ProjectActions {
@@ -23,7 +28,8 @@ interface ProjectActions {
 }
 
 interface ProjectMutations {
-  setDocument: VueFilePayload
+  setDocuments: Record<string, VueFilePayload>
+  changeDocument: string
   select: Element
 }
 
@@ -45,25 +51,30 @@ export const project: DefineModule<
   namespaced: true,
 
   state: () => ({
-    document: undefined,
+    documents: {},
+    currentUri: undefined,
     selectedPath: []
   }),
 
   getters: {
-    template(state) {
-      return state.document && state.document.template
+    currentDocument(state) {
+      if (!state.currentUri) {
+        return undefined
+      }
+      return state.documents[state.currentUri]
     },
 
-    props(state) {
-      return state.document ? state.document.props : []
+    scopedTemplates(state) {
+      return mapValues(state.documents, doc => {
+        if (!doc.template) return undefined
+        return addScopeToTemplate(doc.template, doc.scopeId)
+      })
     },
 
-    data(state) {
-      return state.document ? state.document.data : []
-    },
-
-    styles(state) {
-      return state.document ? genStyle(state.document.styles) : ''
+    scopedStyles(state) {
+      return mapValues(state.documents, doc => {
+        return genStyle(addScopeToStyle(doc.styles, doc.scopeId))
+      })
     }
   },
 
@@ -72,20 +83,24 @@ export const project: DefineModule<
       connection = conn
       connection.onMessage(data => {
         switch (data.type) {
-          case 'InitDocument':
-            commit('setDocument', data.vueFile)
+          case 'InitProject':
+            commit('setDocuments', data.vueFiles)
+            break
+          case 'ChangeDocument':
+            commit('changeDocument', data.uri)
             break
           default: // Do nothing
         }
       })
     },
 
-    select({ commit, state }, node) {
-      if (!state.document) return
+    select({ commit, getters }, node) {
+      const current = getters.currentDocument
+      if (!current) return
 
       connection.send({
         type: 'SelectNode',
-        uri: state.document.uri,
+        uri: current.uri,
         path: node.path
       })
       commit('select', node)
@@ -93,8 +108,13 @@ export const project: DefineModule<
   },
 
   mutations: {
-    setDocument(state, vueFile) {
-      state.document = vueFile
+    setDocuments(state, vueFiles) {
+      state.documents = vueFiles
+    },
+
+    changeDocument(state, uri) {
+      state.currentUri = uri
+      state.selectedPath = []
     },
 
     select(state, node) {

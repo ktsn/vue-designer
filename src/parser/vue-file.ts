@@ -4,14 +4,9 @@ import { parseComponent } from 'vue-template-compiler'
 import { parse as eslintParse, AST } from 'vue-eslint-parser'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
-import { transformTemplate, addScope as addScopeToTemplate } from './template'
+import { transformTemplate } from './template'
 import { extractProps, extractData } from './script'
-import {
-  Style,
-  transformStyle,
-  Rule,
-  addScope as addScopeToStyle
-} from './style'
+import { Style, transformStyle, Rule } from './style'
 import { createStyleMatcher } from './style-matcher'
 
 export interface VueFilePayload {
@@ -20,6 +15,7 @@ export interface VueFilePayload {
   props: Prop[]
   data: Data[]
   styles: Style
+  scopeId: string
 }
 
 export interface VueFile {
@@ -58,15 +54,11 @@ export function parseVueFile(code: string, uri: string): VueFile {
 export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
   const props = extractProps(vueFile.script)
   const data = extractData(vueFile.script)
-
-  const id = hashsum(vueFile.uri)
-  if (vueFile.template) {
-    addScopeToTemplate(vueFile.template, id)
-  }
-  addScopeToStyle(vueFile.styles, id)
+  const scopeId = hashsum(vueFile.uri)
 
   return {
     uri: vueFile.uri,
+    scopeId,
     template: vueFile.template,
     props,
     data,

@@ -1,8 +1,13 @@
 <template>
-  <div>
-    <Renderer :template="template" :styles="styles" :props="props" :data="data" />
+  <div v-if="document">
+    <Renderer
+      :template="templates[document.uri]"
+      :styles="styles[document.uri]"
+      :props="document.props"
+      :data="document.data"
+    />
     <div class="information-pane" :class="{ open: openPane }">
-      <ScopeInformation :props="props" :data="data" />
+      <ScopeInformation :props="document.props" :data="document.data" />
 
       <button
         class="information-pane-toggle"
@@ -33,7 +38,11 @@ export default Vue.extend({
     }
   },
 
-  computed: projectHelpers.mapGetters(['template', 'props', 'data', 'styles'])
+  computed: projectHelpers.mapGetters({
+    document: 'currentDocument',
+    templates: 'scopedTemplates',
+    styles: 'scopedStyles'
+  })
 })
 </script>
 

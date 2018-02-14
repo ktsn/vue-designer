@@ -1,15 +1,16 @@
 import * as vscode from 'vscode'
 import { startServer } from './server/main'
-import { initDocument } from './server/communication'
+import { initProject, changeDocument } from './server/communication'
 import { parseVueFile, vueFileToPayload, VueFile } from './parser/vue-file'
 import { getNode } from './parser/template'
+import { mapValues } from './utils'
 
 export function activate(context: vscode.ExtensionContext) {
   const highlight = vscode.window.createTextEditorDecorationType({
     backgroundColor: 'rgba(200, 200, 200, 0.2)'
   })
   let lastActiveTextEditor = vscode.window.activeTextEditor
-  const vueFiles = new Map<string, VueFile>()
+  const vueFiles: Record<string, VueFile> = {}
 
   vscode.window.onDidChangeActiveTextEditor(() => {
     const editor = vscode.window.activeTextEditor
@@ -18,7 +19,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   })
 
-  initVueFilesWatcher(vueFiles)
+  const fsWatcher = initVueFilesWatcher(vueFiles)
 
   const previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer')
   const server = startServer(
@@ -26,21 +27,24 @@ export function activate(context: vscode.ExtensionContext) {
       console.log('Client connected')
 
       function initCurrentDocument(document: vscode.TextDocument): void {
+        const code = document.getText()
         const uri = document.uri.toString()
-        const parsed = vueFiles.get(uri)
-        if (parsed) {
-          const payload = vueFileToPayload(parsed)
-          initDocument(ws, payload)
-        }
+        vueFiles[uri] = parseVueFile(code, uri)
+        initProject(ws, mapValues(vueFiles, vueFileToPayload))
       }
 
+      initProject(ws, mapValues(vueFiles, vueFileToPayload))
+      fsWatcher.onDidChange(() => {
+        initProject(ws, mapValues(vueFiles, vueFileToPayload))
+      })
+
       if (lastActiveTextEditor) {
-        initCurrentDocument(lastActiveTextEditor.document)
+        changeDocument(ws, lastActiveTextEditor.document.uri.toString())
       }
 
       vscode.window.onDidChangeActiveTextEditor(editor => {
         if (editor) {
-          initCurrentDocument(editor.document)
+          changeDocument(ws, editor.document.uri.toString())
         }
       })
 
@@ -53,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
     (_ws, payload) => {
       switch (payload.type) {
         case 'SelectNode':
-          const vueFile = vueFiles.get(payload.uri)
+          const vueFile = vueFiles[payload.uri]
           if (!vueFile || !vueFile.template) break
 
           const element = getNode(vueFile.template, payload.path)
@@ -133,12 +137,14 @@ export function activate(context: vscode.ExtensionContext) {
     }
   )
 
-  context.subscriptions.push(disposable, registration, {
+  context.subscriptions.push(fsWatcher, disposable, registration, {
     dispose: () => server.close()
   })
 }
 
-function initVueFilesWatcher(store: Map<string, VueFile>): void {
+function initVueFilesWatcher(
+  store: Record<string, VueFile>
+): vscode.FileSystemWatcher {
   const watcher = vscode.workspace.createFileSystemWatcher('**/*.vue')
 
   function storeParsedVueFile(uri: vscode.Uri): void {
@@ -146,17 +152,19 @@ function initVueFilesWatcher(store: Map<string, VueFile>): void {
       const uriStr = uri.toString()
       const code = document.getText()
       const parsed = parseVueFile(code, uriStr)
-      store.set(uriStr, parsed)
+      store[uriStr] = parsed
     })
   }
 
   watcher.onDidCreate(storeParsedVueFile)
   watcher.onDidChange(storeParsedVueFile)
   watcher.onDidDelete(uri => {
-    store.delete(uri.toString())
+    delete store[uri.toString()]
   })
 
   vscode.workspace.findFiles('**/*.vue', '**/node_modules/**').then(uris => {
     uris.forEach(storeParsedVueFile)
   })
+
+  return watcher
 }

@@ -4,7 +4,7 @@ describe('VueComponent v-show', () => {
   it('should show if v-show="true"', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [d('show', 'true', true)], [
+      h('p', [d('show', 'true')], [
         'test'
       ])
     ])
@@ -16,7 +16,7 @@ describe('VueComponent v-show', () => {
   it('should hide if v-show="false"', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [d('show', 'false', false)], [
+      h('p', [d('show', 'false')], [
         'test'
       ])
     ])

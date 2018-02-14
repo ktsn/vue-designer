@@ -8,6 +8,7 @@ import {
   ElementChild
 } from '../../parser/template'
 import { DefaultValue } from '../../parser/script'
+import { evalWithScope } from '@/view/eval'
 
 function findDirective(
   attrs: (Attribute | Directive)[],
@@ -18,23 +19,18 @@ function findDirective(
   })
 }
 
-function inScope(
-  exp: string | null,
-  scope: Record<string, DefaultValue>
-): exp is string {
-  return Boolean(exp && exp in scope)
-}
-
 function directiveValue(
   dir: Directive,
   scope: Record<string, DefaultValue>
 ): DefaultValue {
   const exp = dir.expression
+  if (exp === null) {
+    return undefined
+  }
 
-  if (dir.value !== undefined) {
-    return dir.value
-  } else if (inScope(exp, scope)) {
-    return scope[exp]
+  const result = evalWithScope(exp, scope)
+  if (!result.error) {
+    return result.value
   } else {
     return undefined
   }

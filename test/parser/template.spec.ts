@@ -79,7 +79,7 @@ describe('Template AST transformer', () => {
     const expected = createTemplate([
       h(
         'p',
-        [d('if', 'true', true)],
+        [d('if', 'true')],
         ['test']
       )
     ])

@@ -4,7 +4,7 @@ describe('VueComponent v-if', () => {
   it('should appear if v-if="true"', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [d('if', 'true', true)], [
+      h('p', [d('if', 'true')], [
         'test'
       ])
     ])
@@ -16,7 +16,7 @@ describe('VueComponent v-if', () => {
   it('should be removed if v-if="false"', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [d('if', 'true', false)], [
+      h('p', [d('if', 'false')], [
         'test'
       ])
     ])

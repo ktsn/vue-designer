@@ -4,10 +4,10 @@ describe('VueComponent v-else-if', () => {
   it('should be removeod if corresponding v-if appears', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [a('id', 'foo'), d('if', 'true', true)], [
+      h('p', [a('id', 'foo'), d('if', 'true')], [
         'Foo'
       ]),
-      h('p', [a('id', 'bar'), d('else-if', 'true', true)], [
+      h('p', [a('id', 'bar'), d('else-if', 'true')], [
         'Bar'
       ])
     ])
@@ -22,10 +22,10 @@ describe('VueComponent v-else-if', () => {
   it('should appear if the expression is truthy and previous v-if is falsy', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [a('id', 'foo'), d('if', 'false', false)], [
+      h('p', [a('id', 'foo'), d('if', 'false')], [
         'Foo'
       ]),
-      h('p', [a('id', 'bar'), d('else-if', 'true', true)], [
+      h('p', [a('id', 'bar'), d('else-if', 'true')], [
         'Bar'
       ])
     ])
@@ -40,16 +40,16 @@ describe('VueComponent v-else-if', () => {
   it('should appear only first truthy v-else-if', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [d('if', 'false', false)], [
+      h('p', [d('if', 'false')], [
         'Foo'
       ]),
-      h('p', [d('else-if', 'true', true)], [
+      h('p', [d('else-if', 'true')], [
         'Bar'
       ]),
-      h('p', [d('else-if', 'false', false)], [
+      h('p', [d('else-if', 'false')], [
         'Baz'
       ]),
-      h('p', [d('else-if', 'true', true)], [
+      h('p', [d('else-if', 'true')], [
         'Qux'
       ])
     ])

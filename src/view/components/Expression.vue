@@ -1,6 +1,7 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import { DefaultValue } from '../../parser/script'
+import { evalWithScope } from '../eval'
 
 export default Vue.extend({
   name: 'Expression',
@@ -20,14 +21,16 @@ export default Vue.extend({
 
   render(h, { props }): VNode {
     const { expression: exp, scope } = props
-    const inScope = exp in scope
-    const str = inScope ? toStringForPrint(scope[exp]) : '{{ ' + exp + ' }}'
+    const result = evalWithScope(exp, scope)
+    const str = !result.error
+      ? toStringForPrint(result.value)
+      : '{{ ' + exp + ' }}'
 
     return h(
       'span',
       {
         class: {
-          unresolved: !inScope
+          unresolved: !!result.error
         }
       },
       [str]

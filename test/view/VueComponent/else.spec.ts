@@ -4,7 +4,7 @@ describe('VueComponent v-else', () => {
   it('should be removeod if corresponding v-if appears', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [a('id', 'foo'), d('if', 'true', true)], [
+      h('p', [a('id', 'foo'), d('if', 'true')], [
         'Foo'
       ]),
       h('p', [a('id', 'bar'), d('else')], [
@@ -22,7 +22,7 @@ describe('VueComponent v-else', () => {
   it('should appear if corrsponding v-if is removed', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [a('id', 'foo'), d('if', 'false', false)], [
+      h('p', [a('id', 'foo'), d('if', 'false')], [
         'Foo'
       ]),
       h('p', [a('id', 'bar'), d('else')], [
@@ -40,7 +40,7 @@ describe('VueComponent v-else', () => {
   it('should ignore empty text between v-if and v-else', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [a('id', 'foo'), d('if', 'true', true)], [
+      h('p', [a('id', 'foo'), d('if', 'true')], [
         'Foo'
       ]),
       '\n    ',
@@ -65,7 +65,7 @@ describe('VueComponent v-else', () => {
       h('p', [a('id', 'bar'), d('else')], [
         'Bar'
       ]),
-      h('p', [a('id', 'foo'), d('if', 'true', true)], [
+      h('p', [a('id', 'foo'), d('if', 'true')], [
         'Foo'
       ])
     ])
@@ -80,7 +80,7 @@ describe('VueComponent v-else', () => {
   it('should be ignored if there is another element between if and else', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [a('id', 'foo'), d('if', 'true', true)], [
+      h('p', [a('id', 'foo'), d('if', 'true')], [
         'Foo'
       ]),
       h('div', [], [
@@ -101,13 +101,13 @@ describe('VueComponent v-else', () => {
   it('should be removed if at least one of v-else-if is true', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('p', [a('id', 'foo'), d('if', 'false', false)], [
+      h('p', [a('id', 'foo'), d('if', 'false')], [
         'Foo'
       ]),
-      h('p', [a('id', 'bar'), d('else-if', 'true', true)], [
+      h('p', [a('id', 'bar'), d('else-if', 'true')], [
         'Bar'
       ]),
-      h('p', [a('id', 'baz'), d('else-if', 'false', false)], [
+      h('p', [a('id', 'baz'), d('else-if', 'false')], [
         'Baz'
       ]),
       h('p', [a('id', 'qux'), d('else')], [

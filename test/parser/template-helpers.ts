@@ -111,21 +111,18 @@ export function a(name: string, value: string | null): Attribute {
   }
 }
 
-export function d(name: string, expression: string, value?: any): Directive
+export function d(name: string, expression: string): Directive
 export function d(
   name: string,
   options?: { argument?: string; modifiers?: string[] },
-  expression?: string,
-  value?: any
+  expression?: string
 ): Directive
 export function d(
   name: string,
   options: { argument?: string; modifiers?: string[] } | string = {},
-  expression?: any,
-  value?: any
+  expression?: any
 ): Directive {
   if (typeof options === 'string') {
-    value = expression
     expression = options
     options = {}
   }
@@ -137,7 +134,6 @@ export function d(
     argument: options.argument || null,
     modifiers: options.modifiers || [],
     expression: expression || null,
-    value,
     range: [-1, -1]
   }
 }

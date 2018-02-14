@@ -123,6 +123,7 @@ function getPropDefault(
   value: AST.ESLintExpression | AST.ESLintPattern
 ): DefaultValue {
   if (value.type === 'ObjectExpression') {
+    // Find `default` property in the prop option.
     const def = value.properties.find(p => {
       return (
         isStaticProperty(p) &&
@@ -131,7 +132,17 @@ function getPropDefault(
     }) as AST.ESLintProperty | undefined
 
     if (def) {
-      return getLiteralValue(def.value)
+      // If it is a function, extract default value from it,
+      // otherwise just use the value.
+      if (
+        def.value.type === 'FunctionExpression' ||
+        def.value.type === 'ArrowFunctionExpression'
+      ) {
+        const exp = getReturnedExpression(def.value.body)
+        return exp && getLiteralValue(exp)
+      } else {
+        return getLiteralValue(def.value)
+      }
     }
   }
   return undefined
@@ -146,27 +157,33 @@ function getDataObject(
     node.type === 'FunctionExpression' ||
     node.type === 'ArrowFunctionExpression'
   ) {
-    // `node.body` should be `BlockStatement` in the declared type
-    // but it can be other expressions if it forms like `() => ({ foo: 'bar' })`
-    const body = node.body as AST.ESLintBlockStatement | AST.ESLintExpression
-
-    if (body.type === 'ObjectExpression') {
-      return body
-    } else if (body.type === 'BlockStatement') {
-      const statements = node.body.body.slice().reverse()
-      for (const s of statements) {
-        if (
-          s.type === 'ReturnStatement' &&
-          s.argument &&
-          s.argument.type === 'ObjectExpression'
-        ) {
-          return s.argument
-        }
-      }
+    const exp = getReturnedExpression(node.body)
+    if (exp && exp.type === 'ObjectExpression') {
+      return exp
     }
   }
 
   return undefined
+}
+
+/**
+ * Extract returned expression in function body.
+ * The function `body` should be `BlockStatement` in the declared type
+ * but it can be other expressions if it forms like `() => ({ foo: 'bar' })`
+ */
+function getReturnedExpression(
+  block: AST.ESLintBlockStatement | AST.ESLintExpression
+): AST.ESLintExpression | undefined {
+  if (block.type === 'BlockStatement') {
+    const statements = block.body.slice().reverse()
+    for (const s of statements) {
+      if (s.type === 'ReturnStatement') {
+        return s.argument || undefined
+      }
+    }
+  } else {
+    return block
+  }
 }
 
 function getLiteralValue(node: AST.ESLintNode): DefaultValue {

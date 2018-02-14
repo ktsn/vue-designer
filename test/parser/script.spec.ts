@@ -66,6 +66,30 @@ describe('Script parser', () => {
     expect(extracted).toEqual(expected)
   })
 
+  it('should extract default props from function', () => {
+    const code = `<script>
+    export default {
+      props: {
+        foo: {
+          type: String,
+          default: () => 'test'
+        }
+      }
+    }
+    </script>`
+
+    const program = parse(code, { sourceType: 'module' })
+    const extracted = extractProps(program.body)
+    const expected: Prop[] = [
+      {
+        name: 'foo',
+        type: 'String',
+        default: 'test'
+      }
+    ]
+    expect(extracted).toEqual(expected)
+  })
+
   it('should extract data', () => {
     const code = `<script>
     export default {

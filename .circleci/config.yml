@@ -1,7 +1,7 @@
 version: 2
 
 defaults: &defaults
-  working_directory: ~/repo
+  working_directory: ~/repo/vue-designer
   docker:
     - image: circleci/node:7.10
 
@@ -25,14 +25,23 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
+      - persist_to_workspace:
+          root: ~/repo
+          paths:
+            - vue-designer
+
   build:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ~/repo
       - run: npm run build
 
   test:
     <<: *defaults
     steps:
+      - attach_workspace:
+          at: ~/repo
       - run: npm run test
 
 workflows:
@@ -41,8 +50,8 @@ workflows:
     jobs:
       - install
       - build:
-        requires:
-          - install
+          requires:
+            - install
       - test:
-        requires:
-          - install
+          requires:
+            - install

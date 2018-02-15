@@ -3,7 +3,7 @@ version: 2
 defaults: &defaults
   working_directory: ~/repo/vue-designer
   docker:
-    - image: circleci/node:7.10
+    - image: circleci/node:8.9.4
 
 jobs:
   install:

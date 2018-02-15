@@ -1,0 +1,48 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: circleci/node:7.10
+
+jobs:
+  install:
+    <<: *defaults
+    steps:
+      - checkout
+
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-dependencies-{{ checksum "package.json" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-dependencies-
+
+      - run: npm install
+
+      - save_cache:
+          paths:
+            - node_modules
+          key: v1-dependencies-{{ checksum "package.json" }}
+
+  build:
+    <<: *defaults
+    steps:
+      - run: npm run build
+
+  test:
+    <<: *defaults
+    steps:
+      - run: npm run test
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - install
+      - build:
+        requires:
+          - install
+      - test:
+        requires:
+          - install

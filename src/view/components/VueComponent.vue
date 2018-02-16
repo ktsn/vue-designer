@@ -1,8 +1,9 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import Node from './Node.vue'
-import { Template, Element } from '../../parser/template'
-import { DefaultValue, Prop, Data } from '../../parser/script'
+import Child from './Child.vue'
+import { Template } from '@/parser/template'
+import { DefaultValue, Prop, Data } from '@/parser/script'
+import { resolveControlDirectives, ResolvedChild } from '../rendering'
 
 export default Vue.extend({
   name: 'VueComponent',
@@ -43,24 +44,20 @@ export default Vue.extend({
     const children = [h('style', { domProps: { textContent: this.styles } })]
 
     if (this.template) {
-      const rootEl: Element = {
-        type: 'Element',
-        path: [],
-        name: 'div',
-        attributes: [],
-        children: this.template.children,
-        range: [-1, -1] as [number, number]
-      }
-
-      children.push(
-        h(Node, {
-          props: {
-            data: rootEl,
-            scope: this.scope,
-            selected: false
-          }
+      this.template.children
+        .reduce<ResolvedChild[]>((acc, child) => {
+          return resolveControlDirectives(acc, { el: child, scope: this.scope })
+        }, [])
+        .forEach(child => {
+          return children.push(
+            h(Child, {
+              props: {
+                data: child.el,
+                scope: child.scope
+              }
+            })
+          )
         })
-      )
     }
 
     return h('div', children)

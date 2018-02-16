@@ -1,13 +1,13 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import VueComponent from './VueComponent.vue'
+import ContainerVueComponent from './ContainerVueComponent.vue'
 
 export default Vue.extend({
   name: 'Renderer',
   functional: true,
 
   render(h, { data }): VNode {
-    return h('div', { class: 'renderer' }, [h(VueComponent, data)])
+    return h('div', { class: 'renderer' }, [h(ContainerVueComponent, data)])
   }
 })
 </script>

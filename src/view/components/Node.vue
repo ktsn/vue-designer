@@ -2,7 +2,7 @@
 import Vue, { VNode, VNodeData } from 'vue'
 import Child from './Child.vue'
 import { Element } from '@/parser/template'
-import { DefaultValue } from '@/parser/script'
+import { DefaultValue, ChildComponent } from '@/parser/script'
 import {
   convertToVNodeData,
   resolveControlDirectives,
@@ -46,12 +46,16 @@ export default Vue.extend({
       type: Object as { (): Record<string, DefaultValue> },
       required: true
     },
+    childComponents: {
+      type: Array as { (): ChildComponent[] },
+      required: true
+    },
     selected: Boolean
   },
 
   // @ts-ignore
   render(h, { props, listeners }): VNode {
-    const { data, scope, selected } = props
+    const { data, scope, childComponents, selected } = props
 
     const resolvedChildren = data.children.reduce<ResolvedChild[]>(
       (acc, child) => {
@@ -70,7 +74,8 @@ export default Vue.extend({
         return h(Child, {
           props: {
             data: c.el,
-            scope: c.scope
+            scope: c.scope,
+            childComponents
           }
         })
       })

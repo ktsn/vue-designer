@@ -3,7 +3,7 @@ import Vue, { VNode } from 'vue'
 import ContainerNode from './ContainerNode.vue'
 import Expression from './Expression.vue'
 import { ElementChild } from '../../parser/template'
-import { DefaultValue } from '../../parser/script'
+import { DefaultValue, ChildComponent } from '../../parser/script'
 
 export default Vue.extend({
   name: 'Child',
@@ -18,14 +18,25 @@ export default Vue.extend({
     scope: {
       type: Object as { (): Record<string, DefaultValue> },
       required: true
+    },
+
+    childComponents: {
+      type: Array as { (): ChildComponent[] },
+      required: true
     }
   },
 
   render(h, { props }): VNode {
-    const { data, scope } = props
+    const { data, scope, childComponents } = props
     switch (data.type) {
       case 'Element':
-        return h(ContainerNode, { props: { data, scope } })
+        return h(ContainerNode, {
+          props: {
+            data,
+            scope,
+            childComponents
+          }
+        })
       case 'TextNode':
         return data.text as any
       case 'ExpressionNode':

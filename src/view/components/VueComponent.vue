@@ -2,7 +2,7 @@
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
 import { Template } from '@/parser/template'
-import { DefaultValue, Prop, Data } from '@/parser/script'
+import { DefaultValue, Prop, Data, ChildComponent } from '@/parser/script'
 import { resolveControlDirectives, ResolvedChild } from '../rendering'
 
 export default Vue.extend({
@@ -20,6 +20,10 @@ export default Vue.extend({
     },
     data: {
       type: Array as { (): Data[] },
+      required: true
+    },
+    childComponents: {
+      type: Array as { (): ChildComponent[] },
       required: true
     }
   },
@@ -53,7 +57,8 @@ export default Vue.extend({
             h(Child, {
               props: {
                 data: child.el,
-                scope: child.scope
+                scope: child.scope,
+                childComponents: this.childComponents
               }
             })
           )

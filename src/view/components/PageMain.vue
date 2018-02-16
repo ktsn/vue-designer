@@ -1,12 +1,7 @@
 <template>
-  <div v-if="document">
-    <Renderer
-      :template="document.template"
-      :styles="document.styleCode"
-      :props="document.props"
-      :data="document.data"
-    />
-    <div class="information-pane" :class="{ open: openPane }">
+  <div>
+    <Renderer v-if="uri" :uri="uri" />
+    <div v-if="document" class="information-pane" :class="{ open: openPane }">
       <ScopeInformation :props="document.props" :data="document.data" />
 
       <button
@@ -38,9 +33,15 @@ export default Vue.extend({
     }
   },
 
-  computed: projectHelpers.mapGetters({
-    document: 'currentScopedDocument'
-  })
+  computed: {
+    ...projectHelpers.mapState({
+      uri: 'currentUri'
+    }),
+
+    ...projectHelpers.mapGetters({
+      document: 'currentDocument'
+    })
+  }
 })
 </script>
 

@@ -7,26 +7,46 @@ import {
   Attribute,
   Directive,
   VForDirective,
-  ElementChild
+  ElementChild,
+  TextNode
 } from '@/parser/template'
-import { Prop, Data } from '@/parser/script'
+import { Prop, Data, ChildComponent } from '@/parser/script'
+import { VueFilePayload } from '@/parser/vue-file'
 import VueComponent from '@/view/components/VueComponent.vue'
 import { project as originalProject } from '@/view/store/modules/project'
+import { mapValues } from '@/utils'
 
 export function render(
   template: Template,
   props: Prop[] = [],
-  data: Data[] = []
+  data: Data[] = [],
+  childComponents: ChildComponent[] = [],
+  storeDocuments: Record<string, Partial<VueFilePayload>> = {}
 ): Wrapper<VueComponent> {
   const store = new Store({
     modules: { project: originalProject }
   })
+  store.commit(
+    'project/setDocuments',
+    mapValues(storeDocuments, (doc, uri) => {
+      return {
+        uri,
+        template: doc.template,
+        props: doc.props || [],
+        data: doc.data || [],
+        childComponents: doc.childComponents || [],
+        styles: doc.styles || { body: [] },
+        scopeId: doc.scopeId || 'scope-id'
+      }
+    })
+  )
 
   return mount(VueComponent, {
     propsData: {
       template,
       props,
       data,
+      childComponents,
       styles: ''
     },
     store
@@ -37,16 +57,7 @@ function processRootChildren(
   children: (Element | ExpressionNode | string)[]
 ): ElementChild[] {
   return children.map((c, i) => {
-    const node =
-      typeof c === 'string'
-        ? {
-            type: 'TextNode' as 'TextNode',
-            path: [],
-            text: c,
-            range: [-1, -1] as [number, number]
-          }
-        : c
-
+    const node = strToTextNode(c)
     modifyChildPath(node, [i])
     return node
   })
@@ -87,16 +98,7 @@ export function h(
     path: [],
     name: tag,
     attributes,
-    children: children.map(c => {
-      return typeof c === 'string'
-        ? {
-            type: 'TextNode' as 'TextNode',
-            path: [],
-            text: c,
-            range: [-1, -1] as [number, number]
-          }
-        : c
-    }),
+    children: children.map(strToTextNode),
     range: [-1, -1]
   }
 }
@@ -153,4 +155,15 @@ export function exp(expression: string): ExpressionNode {
     expression,
     range: [-1, -1]
   }
+}
+
+function strToTextNode<T>(str: T | string): T | TextNode {
+  return typeof str === 'string'
+    ? {
+        type: 'TextNode' as 'TextNode',
+        path: [],
+        text: str,
+        range: [-1, -1] as [number, number]
+      }
+    : str
 }

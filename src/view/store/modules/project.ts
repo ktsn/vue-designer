@@ -9,12 +9,13 @@ import { ClientConnection } from '@/view/communication'
 import { mapValues } from '@/utils'
 import { addScope as addScopeToStyle } from '@/parser/style'
 import { genStyle } from '@/parser/style-codegen'
-import { Prop, Data } from '@/parser/script'
+import { Prop, Data, ChildComponent } from '@/parser/script'
 
-interface ScopedDocument {
+export interface ScopedDocument {
   template: Template | undefined
   props: Prop[]
   data: Data[]
+  childComponents: ChildComponent[]
   styleCode: string
 }
 
@@ -72,6 +73,7 @@ export const project: DefineModule<
             doc.template && addScopeToTemplate(doc.template, doc.scopeId),
           props: doc.props,
           data: doc.data,
+          childComponents: doc.childComponents,
           styleCode: genStyle(addScopeToStyle(doc.styles, doc.scopeId))
         }
       })

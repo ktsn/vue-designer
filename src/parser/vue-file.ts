@@ -1,11 +1,18 @@
-import { Template } from './template'
-import { Prop, Data } from './script'
+import { URL } from 'url'
+import * as path from 'path'
 import { parseComponent } from 'vue-template-compiler'
-import { parse as eslintParse, AST } from 'vue-eslint-parser'
+import { parse as eslintParse } from 'vue-eslint-parser'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
-import { transformTemplate } from './template'
-import { extractProps, extractData } from './script'
+import { Template, transformTemplate } from './template'
+import {
+  Prop,
+  Data,
+  ChildComponent,
+  extractChildComponents,
+  extractProps,
+  extractData
+} from './script'
 import { Style, transformStyle, Rule } from './style'
 import { createStyleMatcher } from './style-matcher'
 
@@ -14,6 +21,7 @@ export interface VueFilePayload {
   template: Template | undefined
   props: Prop[]
   data: Data[]
+  childComponents: ChildComponent[]
   styles: Style
   scopeId: string
 }
@@ -21,7 +29,9 @@ export interface VueFilePayload {
 export interface VueFile {
   uri: string
   template: Template | undefined
-  script: (AST.ESLintStatement | AST.ESLintModuleDeclaration)[]
+  props: Prop[]
+  data: Data[]
+  childComponents: ChildComponent[]
   styles: Style
   matchSelector: (template: Template, targetPath: number[]) => Rule[]
 }
@@ -35,6 +45,18 @@ export function parseVueFile(code: string, uri: string): VueFile {
     sourceType: 'module'
   })
 
+  const props = extractProps(scriptBody)
+  const data = extractData(scriptBody)
+  const childComponents = extractChildComponents(scriptBody, childPath => {
+    const parsedUri = new URL(uri)
+    const dirPath = path.dirname(parsedUri.pathname)
+    parsedUri.pathname = path
+      .resolve(dirPath, childPath)
+      .split(path.sep)
+      .join('/')
+    return parsedUri.toString()
+  })
+
   const styleBody = postcssParse(stylesCode)
 
   const template = templateBody
@@ -45,23 +67,24 @@ export function parseVueFile(code: string, uri: string): VueFile {
   return {
     uri,
     template,
-    script: scriptBody,
+    props,
+    data,
+    childComponents,
     styles,
     matchSelector: createStyleMatcher(styles)
   }
 }
 
 export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
-  const props = extractProps(vueFile.script)
-  const data = extractData(vueFile.script)
   const scopeId = hashsum(vueFile.uri)
 
   return {
     uri: vueFile.uri,
     scopeId,
     template: vueFile.template,
-    props,
-    data,
+    props: vueFile.props,
+    data: vueFile.data,
+    childComponents: vueFile.childComponents,
     styles: vueFile.styles
   }
 }

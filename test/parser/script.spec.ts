@@ -1,7 +1,15 @@
+import * as path from 'path'
 import { parse } from 'vue-eslint-parser'
-import { extractProps, extractData, Prop, Data } from '../../src/parser/script'
+import {
+  extractProps,
+  extractData,
+  Prop,
+  Data,
+  extractChildComponents,
+  ChildComponent
+} from '../../src/parser/script'
 
-describe('Script parser', () => {
+describe('Script props parser', () => {
   it('should extract props', () => {
     const code = `<script>
     export default {
@@ -89,7 +97,9 @@ describe('Script parser', () => {
     ]
     expect(extracted).toEqual(expected)
   })
+})
 
+describe('Script data parser', () => {
   it('should extract data', () => {
     const code = `<script>
     export default {
@@ -179,5 +189,75 @@ describe('Script parser', () => {
       }
     ]
     expect(extracted).toEqual(expected)
+  })
+})
+
+describe('Script components parser', () => {
+  const hostPath = '/path/to/Component.vue'
+  const pathToUri = (filePath: string): string => {
+    const dir = path.dirname(hostPath)
+    return (
+      'file://' +
+      path.resolve(dir, filePath).replace(new RegExp(path.sep, 'g'), '/')
+    )
+  }
+
+  it('should extract component local name and uri', () => {
+    const code = `<script>
+    import Foo from './Foo.vue'
+    export default {
+      components: { Foo }
+    }
+    </script>`
+
+    const program = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program.body, pathToUri)
+    const expected: ChildComponent[] = [
+      {
+        name: 'Foo',
+        uri: 'file:///path/to/Foo.vue'
+      }
+    ]
+    expect(components).toEqual(expected)
+  })
+
+  it('should handle named import', () => {
+    const code = `<script>
+    import { Foo } from './Foo.ts'
+    export default {
+      components: { Foo }
+    }
+    </script>`
+
+    const program = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program.body, pathToUri)
+    const expected: ChildComponent[] = [
+      {
+        name: 'Foo',
+        uri: 'file:///path/to/Foo.ts'
+      }
+    ]
+    expect(components).toEqual(expected)
+  })
+
+  it('should handle non-shorthand syntax', () => {
+    const code = `<script>
+    import Foo from './Foo.vue'
+    export default {
+      components: {
+        LocalFoo: Foo
+      }
+    }
+    </script>`
+
+    const program = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program.body, pathToUri)
+    const expected: ChildComponent[] = [
+      {
+        name: 'LocalFoo',
+        uri: 'file:///path/to/Foo.vue'
+      }
+    ]
+    expect(components).toEqual(expected)
   })
 })

@@ -1,14 +1,15 @@
+import assert from 'assert'
 import { AST } from 'vue-eslint-parser'
 
 export function extractProps(body: AST.ESLintNode[]): Prop[] {
   const options = findComponentOptions(body)
   if (!options) return []
 
-  const props = options.properties.find(p => {
+  const props = options.properties.find((p): p is AST.ESLintProperty => {
     return (
       isStaticProperty(p) && (p.key as AST.ESLintIdentifier).name === 'props'
     )
-  }) as AST.ESLintProperty | undefined
+  })
 
   if (!props) return []
 
@@ -38,11 +39,11 @@ export function extractData(body: AST.ESLintNode[]): Data[] {
   const options = findComponentOptions(body)
   if (!options) return []
 
-  const data = options.properties.find(p => {
+  const data = options.properties.find((p): p is AST.ESLintProperty => {
     return (
       isStaticProperty(p) && (p.key as AST.ESLintIdentifier).name === 'data'
     )
-  }) as AST.ESLintProperty | undefined
+  })
 
   if (!data) return []
 
@@ -56,6 +57,70 @@ export function extractData(body: AST.ESLintNode[]): Data[] {
       default: getLiteralValue(p.value)
     }
   })
+}
+
+export function extractChildComponents(
+  body: AST.ESLintNode[],
+  localPathToUri: (localPath: string) => string
+): ChildComponent[] {
+  const imports = getImportDeclarations(body)
+  const options = findComponentOptions(body)
+  if (!options) return []
+
+  const components = options.properties.find((p): p is AST.ESLintProperty => {
+    return (
+      isStaticProperty(p) &&
+      (p.key as AST.ESLintIdentifier).name === 'components'
+    )
+  })
+
+  if (!components || components.value.type !== 'ObjectExpression') {
+    return []
+  }
+
+  return components.value.properties
+    .map((p): ChildComponent | undefined => {
+      if (
+        !isStaticProperty(p) ||
+        p.key.type !== 'Identifier' ||
+        p.value.type !== 'Identifier'
+      ) {
+        return undefined
+      }
+
+      const localName = p.key.name
+      const componentImport = imports[p.value.name]
+      if (!componentImport) return undefined
+
+      const sourcePath = componentImport.source.value as string
+      assert(
+        typeof sourcePath === 'string',
+        '[script] Import declaration unexpectedly has non-string literal: ' +
+          sourcePath
+      )
+
+      return {
+        name: localName,
+        uri: localPathToUri(sourcePath)
+      }
+    })
+    .filter(<T>(p: T | undefined): p is T => p !== undefined)
+}
+
+function getImportDeclarations(
+  body: AST.ESLintNode[]
+): Record<string, AST.ESLintImportDeclaration> {
+  const res: Record<string, AST.ESLintImportDeclaration> = {}
+  body.forEach(node => {
+    if (node.type !== 'ImportDeclaration') return
+
+    // Collect all declared local variables in import declaration into record
+    // to store all possible components.
+    node.specifiers.forEach(s => {
+      res[s.local.name] = node
+    })
+  })
+  return res
 }
 
 function isStringLiteral(node: AST.ESLintNode): node is AST.ESLintLiteral {
@@ -264,4 +329,9 @@ export interface Prop {
 export interface Data {
   name: string
   default?: DefaultValue
+}
+
+export interface ChildComponent {
+  name: string
+  uri: string
 }

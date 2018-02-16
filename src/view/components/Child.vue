@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import ContainerNode from './ContainerNode.vue'
+import NodeOrComponent from './NodeOrComponent.vue'
 import Expression from './Expression.vue'
 import { ElementChild } from '../../parser/template'
 import { DefaultValue, ChildComponent } from '../../parser/script'
@@ -30,7 +30,7 @@ export default Vue.extend({
     const { data, scope, childComponents } = props
     switch (data.type) {
       case 'Element':
-        return h(ContainerNode, {
+        return h(NodeOrComponent, {
           props: {
             data,
             scope,

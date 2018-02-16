@@ -76,7 +76,8 @@ export default Vue.extend({
             data: c.el,
             scope: c.scope,
             childComponents
-          }
+          },
+          on: listeners
         })
       })
     )

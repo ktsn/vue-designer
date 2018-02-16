@@ -2,7 +2,7 @@
   <Node
     v-bind="$props"
     :selected="selected"
-    @select="select"
+    v-on="$listeners"
   />
 </template>
 
@@ -51,8 +51,6 @@ export default Vue.extend({
         return acc && p === this.selectedPath[i]
       }, true)
     }
-  },
-
-  methods: projectHelpers.mapActions(['select'])
+  }
 })
 </script>

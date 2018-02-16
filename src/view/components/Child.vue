@@ -26,7 +26,8 @@ export default Vue.extend({
     }
   },
 
-  render(h, { props }): VNode {
+  // @ts-ignore
+  render(h, { props, listeners }): VNode {
     const { data, scope, childComponents } = props
     switch (data.type) {
       case 'Element':
@@ -35,7 +36,8 @@ export default Vue.extend({
             data,
             scope,
             childComponents
-          }
+          },
+          on: listeners
         })
       case 'TextNode':
         return data.text as any

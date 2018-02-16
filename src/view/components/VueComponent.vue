@@ -59,6 +59,11 @@ export default Vue.extend({
                 data: child.el,
                 scope: child.scope,
                 childComponents: this.childComponents
+              },
+              on: {
+                select: (path: number[]) => {
+                  this.$emit('select', path)
+                }
               }
             })
           )

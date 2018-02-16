@@ -2,10 +2,12 @@
   <ContainerVueComponent
     v-if="componentUri"
     :uri="componentUri"
+    v-on="$listeners"
   />
   <ContainerNode
     v-else
     v-bind="$props"
+    v-on="$listeners"
   />
 </template>
 

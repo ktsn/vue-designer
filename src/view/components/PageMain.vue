@@ -1,8 +1,8 @@
 <template>
   <div v-if="document">
     <Renderer
-      :template="templates[document.uri]"
-      :styles="styles[document.uri]"
+      :template="document.template"
+      :styles="document.styleCode"
       :props="document.props"
       :data="document.data"
     />
@@ -39,9 +39,7 @@ export default Vue.extend({
   },
 
   computed: projectHelpers.mapGetters({
-    document: 'currentDocument',
-    templates: 'scopedTemplates',
-    styles: 'scopedStyles'
+    document: 'currentScopedDocument'
   })
 })
 </script>

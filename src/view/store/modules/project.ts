@@ -9,6 +9,14 @@ import { ClientConnection } from '@/view/communication'
 import { mapValues } from '@/utils'
 import { addScope as addScopeToStyle } from '@/parser/style'
 import { genStyle } from '@/parser/style-codegen'
+import { Prop, Data } from '@/parser/script'
+
+interface ScopedDocument {
+  template: Template | undefined
+  props: Prop[]
+  data: Data[]
+  styleCode: string
+}
 
 interface ProjectState {
   documents: Record<string, VueFilePayload>
@@ -17,9 +25,9 @@ interface ProjectState {
 }
 
 interface ProjectGetters {
+  scopedDocuments: Record<string, ScopedDocument>
   currentDocument: VueFilePayload | undefined
-  scopedTemplates: Record<string, Template | undefined>
-  scopedStyles: Record<string, string>
+  currentScopedDocument: ScopedDocument | undefined
 }
 
 interface ProjectActions {
@@ -57,6 +65,18 @@ export const project: DefineModule<
   }),
 
   getters: {
+    scopedDocuments(state) {
+      return mapValues(state.documents, doc => {
+        return {
+          template:
+            doc.template && addScopeToTemplate(doc.template, doc.scopeId),
+          props: doc.props,
+          data: doc.data,
+          styleCode: genStyle(addScopeToStyle(doc.styles, doc.scopeId))
+        }
+      })
+    },
+
     currentDocument(state) {
       if (!state.currentUri) {
         return undefined
@@ -64,17 +84,11 @@ export const project: DefineModule<
       return state.documents[state.currentUri]
     },
 
-    scopedTemplates(state) {
-      return mapValues(state.documents, doc => {
-        if (!doc.template) return undefined
-        return addScopeToTemplate(doc.template, doc.scopeId)
-      })
-    },
-
-    scopedStyles(state) {
-      return mapValues(state.documents, doc => {
-        return genStyle(addScopeToStyle(doc.styles, doc.scopeId))
-      })
+    currentScopedDocument(state, getters) {
+      if (!state.currentUri) {
+        return undefined
+      }
+      return getters.scopedDocuments[state.currentUri]
     }
   },
 

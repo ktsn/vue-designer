@@ -1,21 +1,21 @@
 import assert from 'assert'
-import { AST } from 'vue-eslint-parser'
+import * as AST from 'babel-types'
 
-export function extractProps(body: AST.ESLintNode[]): Prop[] {
-  const options = findComponentOptions(body)
+export function extractProps(program: AST.Program): Prop[] {
+  const options = findComponentOptions(program.body)
   if (!options) return []
 
-  const props = options.properties.find((p): p is AST.ESLintProperty => {
-    return (
-      isStaticProperty(p) && (p.key as AST.ESLintIdentifier).name === 'props'
-    )
+  const props = options.properties.find((p): p is
+    | AST.ObjectProperty
+    | AST.ObjectMethod => {
+    return isStaticProperty(p) && (p.key as AST.Identifier).name === 'props'
   })
 
   if (!props) return []
 
   if (props.value.type === 'ObjectExpression') {
     return props.value.properties.filter(isStaticProperty).map(p => {
-      const key = p.key as AST.ESLintIdentifier
+      const key = p.key as AST.Identifier
       return {
         name: key.name,
         type: getPropType(p.value),
@@ -35,23 +35,23 @@ export function extractProps(body: AST.ESLintNode[]): Prop[] {
   }
 }
 
-export function extractData(body: AST.ESLintNode[]): Data[] {
-  const options = findComponentOptions(body)
+export function extractData(program: AST.Program): Data[] {
+  const options = findComponentOptions(program.body)
   if (!options) return []
 
-  const data = options.properties.find((p): p is AST.ESLintProperty => {
-    return (
-      isStaticProperty(p) && (p.key as AST.ESLintIdentifier).name === 'data'
-    )
+  const data = options.properties.find((p): p is
+    | AST.ObjectProperty
+    | AST.ObjectMethod => {
+    return isStaticProperty(p) && (p.key as AST.Identifier).name === 'data'
   })
 
   if (!data) return []
 
-  const obj = getDataObject(data.value)
+  const obj = getDataObject(data)
   if (!obj) return []
 
   return obj.properties.filter(isStaticProperty).map(p => {
-    const key = p.key as AST.ESLintIdentifier
+    const key = p.key as AST.Identifier
     return {
       name: key.name,
       default: getLiteralValue(p.value)
@@ -60,17 +60,18 @@ export function extractData(body: AST.ESLintNode[]): Data[] {
 }
 
 export function extractChildComponents(
-  body: AST.ESLintNode[],
+  program: AST.Program,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
-  const imports = getImportDeclarations(body)
-  const options = findComponentOptions(body)
+  const imports = getImportDeclarations(program.body)
+  const options = findComponentOptions(program.body)
   if (!options) return []
 
-  const components = options.properties.find((p): p is AST.ESLintProperty => {
+  const components = options.properties.find((p): p is
+    | AST.ObjectProperty
+    | AST.ObjectMethod => {
     return (
-      isStaticProperty(p) &&
-      (p.key as AST.ESLintIdentifier).name === 'components'
+      isStaticProperty(p) && (p.key as AST.Identifier).name === 'components'
     )
   })
 
@@ -108,9 +109,9 @@ export function extractChildComponents(
 }
 
 function getImportDeclarations(
-  body: AST.ESLintNode[]
-): Record<string, AST.ESLintImportDeclaration> {
-  const res: Record<string, AST.ESLintImportDeclaration> = {}
+  body: AST.Statement[]
+): Record<string, AST.ImportDeclaration> {
+  const res: Record<string, AST.ImportDeclaration> = {}
   body.forEach(node => {
     if (node.type !== 'ImportDeclaration') return
 
@@ -123,8 +124,8 @@ function getImportDeclarations(
   return res
 }
 
-function isStringLiteral(node: AST.ESLintNode): node is AST.ESLintLiteral {
-  return node.type === 'Literal' && typeof node.value === 'string'
+function isStringLiteral(node: AST.Node): node is AST.StringLiteral {
+  return node.type === 'StringLiteral'
 }
 
 /**
@@ -132,17 +133,20 @@ function isStringLiteral(node: AST.ESLintNode): node is AST.ESLintLiteral {
  * If it returns `true`, `node.key` should be `Identifier`.
  */
 function isStaticProperty(
-  node: AST.ESLintNode | AST.ESLintLegacySpreadProperty
-): node is AST.ESLintProperty {
-  return node.type === 'Property' && node.key.type === 'Identifier'
+  node: AST.ObjectProperty | AST.ObjectMethod | AST.SpreadProperty
+): node is AST.ObjectProperty | AST.ObjectMethod {
+  return (
+    (node.type === 'ObjectProperty' || node.type === 'ObjectMethod') &&
+    node.key.type === 'Identifier'
+  )
 }
 
 /**
  * Detect `Vue.extend(...)`
  */
 function isVueExtend(
-  node: AST.ESLintDeclaration | AST.ESLintExpression
-): node is AST.ESLintCallExpression {
+  node: AST.Declaration | AST.Expression
+): node is AST.CallExpression {
   if (
     node.type !== 'CallExpression' ||
     node.callee.type !== 'MemberExpression'
@@ -163,20 +167,20 @@ function isVueExtend(
   return true
 }
 
-function getPropType(value: AST.ESLintExpression | AST.ESLintPattern): string {
+function getPropType(value: AST.Expression | AST.Pattern): string {
   if (value.type === 'Identifier') {
     // Constructor
     return value.name
   } else if (value.type === 'ObjectExpression') {
     // Detailed prop definition
     // { type: ..., ... }
-    const type = value.properties.find(p => {
-      return (
-        isStaticProperty(p) && (p.key as AST.ESLintIdentifier).name === 'type'
-      )
-    }) as AST.ESLintProperty | undefined
+    const type = value.properties.find((p): p is
+      | AST.ObjectProperty
+      | AST.ObjectMethod => {
+      return isStaticProperty(p) && (p.key as AST.Identifier).name === 'type'
+    })
 
-    if (type && type.value.type === 'Identifier') {
+    if (type && type.value && type.value.type === 'Identifier') {
       return type.value.name
     }
   }
@@ -184,17 +188,14 @@ function getPropType(value: AST.ESLintExpression | AST.ESLintPattern): string {
   return 'any'
 }
 
-function getPropDefault(
-  value: AST.ESLintExpression | AST.ESLintPattern
-): DefaultValue {
+function getPropDefault(value: AST.Expression | AST.Pattern): DefaultValue {
   if (value.type === 'ObjectExpression') {
     // Find `default` property in the prop option.
-    const def = value.properties.find(p => {
-      return (
-        isStaticProperty(p) &&
-        (p.key as AST.ESLintIdentifier).name === 'default'
-      )
-    }) as AST.ESLintProperty | undefined
+    const def = value.properties.find((p): p is
+      | AST.ObjectProperty
+      | AST.ObjectMethod => {
+      return isStaticProperty(p) && (p.key as AST.Identifier).name === 'default'
+    })
 
     if (def) {
       // If it is a function, extract default value from it,
@@ -214,15 +215,24 @@ function getPropDefault(
 }
 
 function getDataObject(
-  node: AST.ESLintExpression | AST.ESLintPattern
-): AST.ESLintObjectExpression | undefined {
-  if (node.type === 'ObjectExpression') return node
+  prop: AST.ObjectProperty | AST.ObjectMethod
+): AST.ObjectExpression | undefined {
+  if (prop.type === 'ObjectProperty') {
+    const value = prop.value
 
-  if (
-    node.type === 'FunctionExpression' ||
-    node.type === 'ArrowFunctionExpression'
-  ) {
-    const exp = getReturnedExpression(node.body)
+    if (value.type === 'ObjectExpression') return value
+
+    if (
+      value.type === 'FunctionExpression' ||
+      value.type === 'ArrowFunctionExpression'
+    ) {
+      const exp = getReturnedExpression(value.body)
+      if (exp && exp.type === 'ObjectExpression') {
+        return exp
+      }
+    }
+  } else {
+    const exp = getReturnedExpression(prop.body)
     if (exp && exp.type === 'ObjectExpression') {
       return exp
     }
@@ -237,8 +247,8 @@ function getDataObject(
  * but it can be other expressions if it forms like `() => ({ foo: 'bar' })`
  */
 function getReturnedExpression(
-  block: AST.ESLintBlockStatement | AST.ESLintExpression
-): AST.ESLintExpression | undefined {
+  block: AST.BlockStatement | AST.Expression
+): AST.Expression | undefined {
   if (block.type === 'BlockStatement') {
     const statements = block.body.slice().reverse()
     for (const s of statements) {
@@ -251,17 +261,29 @@ function getReturnedExpression(
   }
 }
 
-function getLiteralValue(node: AST.ESLintNode): DefaultValue {
+function getLiteralValue(node: AST.Node): DefaultValue {
   // Simple literals like number, string and boolean
-  if (node.type === 'Literal' && !(node.value instanceof RegExp)) {
-    return node.value
+  if (node.type === 'StringLiteral') {
+    return (node as AST.StringLiteral).value
+  }
+
+  if (node.type === 'NumericLiteral') {
+    return (node as AST.NumericLiteral).value
+  }
+
+  if (node.type === 'BooleanLiteral') {
+    return (node as AST.BooleanLiteral).value
+  }
+
+  if (node.type === 'NullLiteral') {
+    return null
   }
 
   // Object literal
   if (node.type === 'ObjectExpression') {
     const obj: Record<string, DefaultValue> = {}
-    node.properties.forEach(p => {
-      if (p.type !== 'Property') {
+    ;(node as AST.ObjectExpression).properties.forEach(p => {
+      if (p.type !== 'ObjectProperty') {
         return
       }
 
@@ -276,17 +298,17 @@ function getLiteralValue(node: AST.ESLintNode): DefaultValue {
 
   // Array literal
   if (node.type === 'ArrayExpression') {
-    return node.elements.map(getLiteralValue)
+    return (node as AST.ArrayExpression).elements.map(getLiteralValue)
   }
 
   return undefined
 }
 
 function findComponentOptions(
-  body: AST.ESLintNode[]
-): AST.ESLintObjectExpression | undefined {
+  body: AST.Statement[]
+): AST.ObjectExpression | undefined {
   const exported = body.find(n => n.type === 'ExportDefaultDeclaration') as
-    | AST.ESLintExportDefaultDeclaration
+    | AST.ExportDefaultDeclaration
     | undefined
   if (!exported) return undefined
 
@@ -303,7 +325,7 @@ function findComponentOptions(
     // export default Vue.extend({
     //   ...
     // })
-    return dec.arguments[0] as AST.ESLintObjectExpression
+    return dec.arguments[0] as AST.ObjectExpression
   }
   return undefined
 }

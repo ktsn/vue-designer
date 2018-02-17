@@ -1,7 +1,8 @@
 import { URL } from 'url'
 import * as path from 'path'
 import { parseComponent } from 'vue-template-compiler'
-import { parse as eslintParse } from 'vue-eslint-parser'
+import { parse as parseTemplate } from 'vue-eslint-parser'
+import { parse as parseScript } from 'babylon'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
 import { Template, transformTemplate } from './template'
@@ -37,14 +38,12 @@ export interface VueFile {
 }
 
 export function parseVueFile(code: string, uri: string): VueFile {
-  const { styles } = parseComponent(code, { pad: 'space' })
+  const { script, styles } = parseComponent(code, { pad: 'space' })
 
-  const { templateBody, body: scriptBody } = eslintParse(code, {
+  const { program: scriptBody } = parseScript(script ? script.content : '', {
     sourceType: 'module'
   })
 
-  const props = extractProps(scriptBody)
-  const data = extractData(scriptBody)
   const childComponents = extractChildComponents(scriptBody, childPath => {
     const parsedUri = new URL(uri)
     const dirPath = path.dirname(parsedUri.pathname)
@@ -61,9 +60,9 @@ export function parseVueFile(code: string, uri: string): VueFile {
 
   return {
     uri,
-    template: templateBody && transformTemplate(templateBody, code),
-    props,
-    data,
+    template: parseTemplateBlock(code),
+    props: extractProps(scriptBody),
+    data: extractData(scriptBody),
     childComponents,
     styles: styleAsts,
     matchSelector: createStyleMatcher(styleAsts)
@@ -82,4 +81,16 @@ export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
     childComponents: vueFile.childComponents,
     styles: vueFile.styles
   }
+}
+
+function parseTemplateBlock(template: string): Template | undefined {
+  // TODO: Use parsed SFCBlock after it is fixed that the issue vue-template-compiler
+  // breaks original source position by deindent
+  const code = template.replace(/<script>[\s\S]*<\/script>/, matched => {
+    return matched.replace(/./g, ' ')
+  })
+
+  const { templateBody } = parseTemplate(code, {})
+
+  return templateBody && transformTemplate(templateBody, code)
 }

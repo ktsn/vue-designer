@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { parse } from 'vue-eslint-parser'
+import { parse } from 'babylon'
 import {
   extractProps,
   extractData,
@@ -11,7 +11,7 @@ import {
 
 describe('Script props parser', () => {
   it('should extract props', () => {
-    const code = `<script>
+    const code = `
     export default {
       props: {
         foo: String,
@@ -20,11 +20,10 @@ describe('Script props parser', () => {
           default: 42
         }
       }
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractProps(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractProps(program)
     const expected: Prop[] = [
       {
         name: 'foo',
@@ -41,12 +40,10 @@ describe('Script props parser', () => {
   })
 
   it('should extract props from array definition', () => {
-    const code = `<script>
-    export default { props: ['test'] }
-    </script>`
+    const code = `export default { props: ['test'] }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractProps(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractProps(program)
     const expected: Prop[] = [
       {
         name: 'test',
@@ -58,12 +55,10 @@ describe('Script props parser', () => {
   })
 
   it('should extract props from Vue.extend defintion', () => {
-    const code = `<script>
-    export default Vue.extend({ props: ['foo'] })
-    </script>`
+    const code = `export default Vue.extend({ props: ['foo'] })`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractProps(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractProps(program)
     const expected: Prop[] = [
       {
         name: 'foo',
@@ -75,7 +70,7 @@ describe('Script props parser', () => {
   })
 
   it('should extract default props from function', () => {
-    const code = `<script>
+    const code = `
     export default {
       props: {
         foo: {
@@ -83,11 +78,10 @@ describe('Script props parser', () => {
           default: () => 'test'
         }
       }
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractProps(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractProps(program)
     const expected: Prop[] = [
       {
         name: 'foo',
@@ -101,16 +95,15 @@ describe('Script props parser', () => {
 
 describe('Script data parser', () => {
   it('should extract data', () => {
-    const code = `<script>
+    const code = `
     export default {
       data () {
         return { foo: 'test' }
       }
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractData(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractData(program)
     const expected: Data[] = [
       {
         name: 'foo',
@@ -121,17 +114,16 @@ describe('Script data parser', () => {
   })
 
   it('should extract data from arrow function', () => {
-    const code = `<script>
+    const code = `
     export default {
       data: () => ({
         abc: 123,
         cde: true
       })
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractData(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractData(program)
     const expected: Data[] = [
       {
         name: 'abc',
@@ -146,16 +138,15 @@ describe('Script data parser', () => {
   })
 
   it('should extract array data', () => {
-    const code = `<script>
+    const code = `
     export default {
       data: () => ({
         foo: ['test', 123]
       })
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractData(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractData(program)
     const expected: Data[] = [
       {
         name: 'foo',
@@ -166,7 +157,7 @@ describe('Script data parser', () => {
   })
 
   it('should extract object data', () => {
-    const code = `<script>
+    const code = `
     export default {
       data: () => ({
         obj: {
@@ -174,11 +165,10 @@ describe('Script data parser', () => {
           bar: 123
         }
       })
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const extracted = extractData(program.body)
+    const { program } = parse(code, { sourceType: 'module' })
+    const extracted = extractData(program)
     const expected: Data[] = [
       {
         name: 'obj',
@@ -203,15 +193,14 @@ describe('Script components parser', () => {
   }
 
   it('should extract component local name and uri', () => {
-    const code = `<script>
+    const code = `
     import Foo from './Foo.vue'
     export default {
       components: { Foo }
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const components = extractChildComponents(program.body, pathToUri)
+    const { program } = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'Foo',
@@ -222,15 +211,14 @@ describe('Script components parser', () => {
   })
 
   it('should handle named import', () => {
-    const code = `<script>
+    const code = `
     import { Foo } from './Foo.ts'
     export default {
       components: { Foo }
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const components = extractChildComponents(program.body, pathToUri)
+    const { program } = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'Foo',
@@ -241,17 +229,16 @@ describe('Script components parser', () => {
   })
 
   it('should handle non-shorthand syntax', () => {
-    const code = `<script>
+    const code = `
     import Foo from './Foo.vue'
     export default {
       components: {
         LocalFoo: Foo
       }
-    }
-    </script>`
+    }`
 
-    const program = parse(code, { sourceType: 'module' })
-    const components = extractChildComponents(program.body, pathToUri)
+    const { program } = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'LocalFoo',

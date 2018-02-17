@@ -38,7 +38,7 @@ export function render(
         props: doc.props || [],
         data: doc.data || [],
         childComponents: doc.childComponents || [],
-        styles: doc.styles || { body: [] },
+        styles: doc.styles || [],
         scopeId: doc.scopeId || 'scope-id'
       }
     })

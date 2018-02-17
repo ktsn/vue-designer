@@ -22,7 +22,7 @@ export interface VueFilePayload {
   props: Prop[]
   data: Data[]
   childComponents: ChildComponent[]
-  styles: Style
+  styles: Style[]
   scopeId: string
 }
 
@@ -32,14 +32,12 @@ export interface VueFile {
   props: Prop[]
   data: Data[]
   childComponents: ChildComponent[]
-  styles: Style
+  styles: Style[]
   matchSelector: (template: Template, targetPath: number[]) => Rule[]
 }
 
 export function parseVueFile(code: string, uri: string): VueFile {
-  const stylesCode: string = parseComponent(code, { pad: 'space' })
-    .styles.map((s: any) => s.content)
-    .join('\n')
+  const { styles } = parseComponent(code, { pad: 'space' })
 
   const { templateBody, body: scriptBody } = eslintParse(code, {
     sourceType: 'module'
@@ -57,21 +55,18 @@ export function parseVueFile(code: string, uri: string): VueFile {
     return parsedUri.toString()
   })
 
-  const styleBody = postcssParse(stylesCode)
-
-  const template = templateBody
-    ? transformTemplate(templateBody, code)
-    : undefined
-  const styles = transformStyle(styleBody, stylesCode)
+  const styleAsts = styles.map(s => {
+    return transformStyle(postcssParse(s.content), s.content)
+  })
 
   return {
     uri,
-    template,
+    template: templateBody && transformTemplate(templateBody, code),
     props,
     data,
     childComponents,
-    styles,
-    matchSelector: createStyleMatcher(styles)
+    styles: styleAsts,
+    matchSelector: createStyleMatcher(styleAsts)
   }
 }
 

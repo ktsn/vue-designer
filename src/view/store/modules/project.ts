@@ -74,7 +74,9 @@ export const project: DefineModule<
           props: doc.props,
           data: doc.data,
           childComponents: doc.childComponents,
-          styleCode: genStyle(addScopeToStyle(doc.styles, doc.scopeId))
+          styleCode: doc.styles.reduce((acc, style) => {
+            return acc + '\n' + genStyle(addScopeToStyle(style, doc.scopeId))
+          }, '')
         }
       })
     },

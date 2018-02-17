@@ -25,7 +25,7 @@ describe('Style matcher', () => {
     ])
 
     const style = createStyle([universal, pseudoClass, pseudoElement])
-    const matcher = createStyleMatcher(style)
+    const matcher = createStyleMatcher([style])
 
     // prettier-ignore
     const template = createTemplate([
@@ -52,7 +52,7 @@ describe('Style matcher', () => {
     ])
 
     const style = createStyle([tag, id, classes, attr])
-    const matcher = createStyleMatcher(style)
+    const matcher = createStyleMatcher([style])
 
     // prettier-ignore
     const template = createTemplate([
@@ -130,7 +130,7 @@ describe('Style matcher', () => {
       multiClass,
       multiAttributes
     ])
-    const matcher = createStyleMatcher(style)
+    const matcher = createStyleMatcher([style])
 
     it('should not match if it is not supply compound selector', () => {
       // prettier-ignore
@@ -213,7 +213,7 @@ describe('Style matcher', () => {
         )
       ])
 
-      const matcher = createStyleMatcher(createStyle([child]))
+      const matcher = createStyleMatcher([createStyle([child])])
 
       // prettier-ignore
       const template = createTemplate([
@@ -241,7 +241,7 @@ describe('Style matcher', () => {
         )
       ])
 
-      const matcher = createStyleMatcher(createStyle([sibling]))
+      const matcher = createStyleMatcher([createStyle([sibling])])
 
       // prettier-ignore
       const template = createTemplate([
@@ -273,7 +273,7 @@ describe('Style matcher', () => {
         )
       ])
 
-      const matcher = createStyleMatcher(createStyle([sibling]))
+      const matcher = createStyleMatcher([createStyle([sibling])])
 
       // prettier-ignore
       const template = createTemplate([
@@ -297,7 +297,7 @@ describe('Style matcher', () => {
         )
       ])
 
-      const matcher = createStyleMatcher(createStyle([descendant]))
+      const matcher = createStyleMatcher([createStyle([descendant])])
 
       // prettier-ignore
       const template = createTemplate([
@@ -325,7 +325,7 @@ describe('Style matcher', () => {
         )
       ])
 
-      const matcher = createStyleMatcher(createStyle([sibling]))
+      const matcher = createStyleMatcher([createStyle([sibling])])
 
       // prettier-ignore
       const template = createTemplate([
@@ -375,7 +375,7 @@ describe('Style matcher', () => {
         ])
       ]
 
-      const matcher = createStyleMatcher(createStyle(rules))
+      const matcher = createStyleMatcher([createStyle(rules)])
 
       // prettier-ignore
       const template = createTemplate([
@@ -408,7 +408,7 @@ describe('Style matcher', () => {
         ])
       ]
 
-      const matcher = createStyleMatcher(createStyle(rules))
+      const matcher = createStyleMatcher([createStyle(rules)])
 
       // prettier-ignore
       const template = createTemplate([
@@ -447,7 +447,7 @@ describe('Style matcher', () => {
         ])
       ]
 
-      const matcher = createStyleMatcher(createStyle(rules))
+      const matcher = createStyleMatcher([createStyle(rules)])
 
       // prettier-ignore
       const template = createTemplate([
@@ -485,7 +485,7 @@ describe('Style matcher', () => {
         ])
       ]
 
-      const matcher = createStyleMatcher(createStyle(rules))
+      const matcher = createStyleMatcher([createStyle(rules)])
 
       // prettier-ignore
       const template = createTemplate([
@@ -519,7 +519,7 @@ describe('Style matcher', () => {
         ])
       ]
 
-      const matcher = createStyleMatcher(createStyle(rules))
+      const matcher = createStyleMatcher([createStyle(rules)])
 
       // prettier-ignore
       const template = createTemplate([
@@ -559,7 +559,7 @@ describe('Style matcher', () => {
         ])
       ]
 
-      const matcher = createStyleMatcher(createStyle(rules))
+      const matcher = createStyleMatcher([createStyle(rules)])
 
       // prettier-ignore
       const template = createTemplate([

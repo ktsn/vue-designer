@@ -3,8 +3,8 @@ import { Style, Rule, visitLastSelectors, Selector } from './style'
 import { Template, Element, getNode, Attribute } from './template'
 import { range } from '../utils'
 
-export function createStyleMatcher(style: Style) {
-  const map = new StyleMap(style)
+export function createStyleMatcher(styles: Style[]) {
+  const map = new StyleMap(styles)
 
   return function matchStyle(template: Template, targetPath: number[]): Rule[] {
     const target = getNode(template, targetPath) as Element
@@ -190,29 +190,31 @@ class StyleMap {
   private tagMap = new Map<string, Rule[]>()
   private universals: Rule[] = []
 
-  constructor(style: Style) {
-    visitLastSelectors(style, (selector, rule) => {
-      // Register each rule to map keyed by the most right selector string.
-      // The priority is: id > class > attribute name > tag > universal
-      // e.g, if the selector is `a.link:hover`, the corresponding rule
-      // will be registered into the class map keyed by "link".
-      if (selector.id) {
-        this.registerRule(this.idMap, selector.id, rule)
-      } else if (selector.class.length > 0) {
-        // It should register only one class as key because the class map is
-        // traversed by all class names on element when matching phase.
-        const first = selector.class[0]
-        this.registerRule(this.classMap, first, rule)
-      } else if (selector.attributes.length > 0) {
-        // It should register only one attribute name as key as same reason as class.
-        const first = selector.attributes[0]
-        this.registerRule(this.attributeMap, first.name, rule)
-      } else if (selector.tag) {
-        this.registerRule(this.tagMap, selector.tag, rule)
-      } else {
-        // All other selectors should be universal
-        this.universals.push(rule)
-      }
+  constructor(styles: Style[]) {
+    styles.forEach(style => {
+      visitLastSelectors(style, (selector, rule) => {
+        // Register each rule to map keyed by the most right selector string.
+        // The priority is: id > class > attribute name > tag > universal
+        // e.g, if the selector is `a.link:hover`, the corresponding rule
+        // will be registered into the class map keyed by "link".
+        if (selector.id) {
+          this.registerRule(this.idMap, selector.id, rule)
+        } else if (selector.class.length > 0) {
+          // It should register only one class as key because the class map is
+          // traversed by all class names on element when matching phase.
+          const first = selector.class[0]
+          this.registerRule(this.classMap, first, rule)
+        } else if (selector.attributes.length > 0) {
+          // It should register only one attribute name as key as same reason as class.
+          const first = selector.attributes[0]
+          this.registerRule(this.attributeMap, first.name, rule)
+        } else if (selector.tag) {
+          this.registerRule(this.tagMap, selector.tag, rule)
+        } else {
+          // All other selectors should be universal
+          this.universals.push(rule)
+        }
+      })
     })
   }
 

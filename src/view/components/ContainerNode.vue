@@ -1,6 +1,7 @@
 <template>
   <Node
     v-bind="$props"
+    :selectable="currentUri === uri"
     :selected="selected"
     v-on="$listeners"
   />
@@ -21,6 +22,11 @@ export default Vue.extend({
   },
 
   props: {
+    uri: {
+      type: String,
+      required: true
+    },
+
     data: {
       type: Object as { (): Element },
       required: true
@@ -38,7 +44,7 @@ export default Vue.extend({
   },
 
   computed: {
-    ...projectHelpers.mapState(['selectedPath']),
+    ...projectHelpers.mapState(['selectedPath', 'currentUri']),
 
     selected(): boolean {
       const path = this.data.path

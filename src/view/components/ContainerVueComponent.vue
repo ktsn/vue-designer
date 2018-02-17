@@ -1,6 +1,7 @@
 <template>
   <VueComponent
     v-if="document"
+    :uri="uri"
     :template="document.template"
     :props="document.props"
     :data="document.data"

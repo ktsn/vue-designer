@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import NodeOrComponent from './NodeOrComponent.vue'
+import ContainerNode from './ContainerNode.vue'
 import Expression from './Expression.vue'
 import { ElementChild } from '../../parser/template'
 import { DefaultValue, ChildComponent } from '../../parser/script'
@@ -10,6 +10,11 @@ export default Vue.extend({
   functional: true,
 
   props: {
+    uri: {
+      type: String,
+      required: true
+    },
+
     data: {
       type: Object as { (): ElementChild },
       required: true
@@ -28,11 +33,12 @@ export default Vue.extend({
 
   // @ts-ignore
   render(h, { props, listeners }): VNode {
-    const { data, scope, childComponents } = props
+    const { uri, data, scope, childComponents } = props
     switch (data.type) {
       case 'Element':
-        return h(NodeOrComponent, {
+        return h(ContainerNode, {
           props: {
+            uri,
             data,
             scope,
             childComponents

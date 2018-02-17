@@ -26,6 +26,9 @@ export function render(
   const store = new Store({
     modules: { project: originalProject }
   })
+
+  store.commit('project/changeDocument', 'file:///Test.vue')
+
   store.commit(
     'project/setDocuments',
     mapValues(storeDocuments, (doc, uri) => {
@@ -43,6 +46,7 @@ export function render(
 
   return mount(VueComponent, {
     propsData: {
+      uri: 'file:///Test.vue',
       template,
       props,
       data,

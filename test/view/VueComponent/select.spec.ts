@@ -1,5 +1,12 @@
 import * as td from 'testdouble'
-import { createTemplate, h, a, render } from '../../parser/template-helpers'
+import Expression from '@/view/components/Expression.vue'
+import {
+  createTemplate,
+  h,
+  a,
+  render,
+  exp
+} from '../../parser/template-helpers'
 
 describe('VueComponent select event', () => {
   it('should catch select event from descendant nodes', () => {
@@ -30,5 +37,44 @@ describe('VueComponent select event', () => {
     td.verify(spy(first), { times: 1 })
     td.verify(spy(second), { times: 1 })
     td.verify(spy(third), { times: 1 })
+  })
+
+  it('should catch select event of child component', () => {
+    const comp = h('Foo', [], [])
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        comp
+      ])
+    ])
+
+    const components = {
+      'file:///Foo.vue': {
+        // prettier-ignore
+        template: createTemplate([
+          h('div', [], [
+            h('button', [a('id', 'child-button')], [])
+          ])
+        ])
+      }
+    }
+
+    const spy = td.function()
+    const wrapper = render(
+      template,
+      [],
+      [],
+      [
+        {
+          name: 'Foo',
+          uri: 'file:///Foo.vue'
+        }
+      ],
+      components
+    )
+
+    wrapper.vm.$on('select', spy)
+    wrapper.find('#child-button').trigger('click')
+    td.verify(spy(comp), { times: 1 })
   })
 })

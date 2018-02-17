@@ -9,6 +9,10 @@ export default Vue.extend({
   name: 'VueComponent',
 
   props: {
+    uri: {
+      type: String,
+      required: true
+    },
     template: Object as { (): Template | undefined },
     styles: {
       type: String,
@@ -56,6 +60,7 @@ export default Vue.extend({
           return children.push(
             h(Child, {
               props: {
+                uri: this.uri,
                 data: child.el,
                 scope: child.scope,
                 childComponents: this.childComponents

@@ -37,6 +37,19 @@ describe('Style codegen', () => {
     expect(genStyle(ast)).toBe(expected)
   })
 
+  it('should combine attribute selectors', () => {
+    const ast = createStyle([
+      rule([
+        selector({
+          attributes: [attribute('v-cloak'), attribute('data-scope-123456')]
+        })
+      ])
+    ])
+    const expected = '[v-cloak][data-scope-123456] {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
+
   it('should generate complex selector', () => {
     const ast = createStyle([
       rule([

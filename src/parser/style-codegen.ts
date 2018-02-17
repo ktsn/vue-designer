@@ -80,14 +80,14 @@ function genSelector(s: Selector): string {
   }
 
   if (s.attributes.length > 0) {
-    const attrsCode = s.attributes.map(attr => {
+    const attrsCodes = s.attributes.map(attr => {
       if (attr.operator != null && attr.value != null) {
         return `[${attr.name}${attr.operator}"${attr.value}"]`
       } else {
         return `[${attr.name}]`
       }
     })
-    buf += attrsCode
+    buf += attrsCodes.join('')
   }
 
   if (s.pseudoClass.length > 0) {

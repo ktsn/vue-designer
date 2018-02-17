@@ -3,12 +3,12 @@
   "compilerOptions": {
     "module": "commonjs",
     "outDir": "lib",
-    "paths": {}
+    "paths": {
+      "*": ["types/*"]
+    }
   },
-  "include": [
-    "src/**/*.ts"
-  ],
   "exclude": [
-    "src/view/**"
+    "src/view/**",
+    "test/**"
   ]
 }

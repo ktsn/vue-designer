@@ -16,14 +16,14 @@
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "src/*"
-      ]
+      "@/*": ["src/*"],
+      "*": ["types/*"]
     }
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.vue",
+    "types/**/*.d.ts",
     "test/**/*.ts"
   ]
 }

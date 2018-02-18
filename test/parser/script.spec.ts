@@ -184,6 +184,7 @@ describe('Script data parser', () => {
 
 describe('Script components parser', () => {
   const hostPath = '/path/to/Component.vue'
+  const hostUri = 'file://' + hostPath
   const pathToUri = (filePath: string): string => {
     const dir = path.dirname(hostPath)
     return (
@@ -200,7 +201,7 @@ describe('Script components parser', () => {
     }`
 
     const { program } = parse(code, { sourceType: 'module' })
-    const components = extractChildComponents(program, pathToUri)
+    const components = extractChildComponents(program, hostUri, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'Foo',
@@ -218,7 +219,7 @@ describe('Script components parser', () => {
     }`
 
     const { program } = parse(code, { sourceType: 'module' })
-    const components = extractChildComponents(program, pathToUri)
+    const components = extractChildComponents(program, hostUri, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'Foo',
@@ -238,11 +239,26 @@ describe('Script components parser', () => {
     }`
 
     const { program } = parse(code, { sourceType: 'module' })
-    const components = extractChildComponents(program, pathToUri)
+    const components = extractChildComponents(program, hostUri, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'LocalFoo',
         uri: 'file:///path/to/Foo.vue'
+      }
+    ]
+    expect(components).toEqual(expected)
+  })
+
+  // https://vuejs.org/v2/guide/components.html#Recursive-Components
+  it('should handle self recursive component', () => {
+    const code = `export default { name: 'Self' }`
+
+    const { program } = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program, hostUri, pathToUri)
+    const expected: ChildComponent[] = [
+      {
+        name: 'Self',
+        uri: hostUri
       }
     ]
     expect(components).toEqual(expected)
@@ -260,7 +276,7 @@ describe('Script components parser', () => {
     `
 
     const { program } = parse(code, { sourceType: 'module' })
-    const components = extractChildComponents(program, pathToUri)
+    const components = extractChildComponents(program, hostUri, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'Recursive',

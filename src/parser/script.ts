@@ -51,26 +51,46 @@ export function extractData(program: AST.Program): Data[] {
 
 export function extractChildComponents(
   program: AST.Program,
+  uri: string,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
   const imports = getImportDeclarations(program.body)
   const options = findComponentOptions(program.body)
   if (!options) return []
 
+  const childComponents = []
+
+  const selfName = findProperty(options.properties, 'name')
+  if (selfName && selfName.value && isStringLiteral(selfName.value)) {
+    childComponents.push({
+      name: selfName.value.value,
+      uri
+    })
+  }
+
   const components = findProperty(options.properties, 'components')
+  if (components) {
+    childComponents.push(
+      ...extractComponents(components, imports, localPathToUri)
+    )
+  }
+
   const lifecycle = findProperty(options.properties, 'beforeCreate')
-  return [
-    ...extractComponents(components, imports, localPathToUri),
-    ...extractLazyAddComponents(lifecycle, imports, localPathToUri)
-  ]
+  if (lifecycle) {
+    childComponents.push(
+      ...extractLazyAddComponents(lifecycle, imports, localPathToUri)
+    )
+  }
+
+  return childComponents
 }
 
 function extractComponents(
-  prop: AST.ObjectProperty | AST.ObjectMethod | undefined,
+  prop: AST.ObjectProperty | AST.ObjectMethod,
   imports: Record<string, AST.ImportDeclaration>,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
-  if (!prop || !prop.value || prop.value.type !== 'ObjectExpression') {
+  if (!prop.value || prop.value.type !== 'ObjectExpression') {
     return []
   }
 
@@ -95,12 +115,10 @@ function extractComponents(
 }
 
 function extractLazyAddComponents(
-  prop: AST.ObjectProperty | AST.ObjectMethod | undefined,
+  prop: AST.ObjectProperty | AST.ObjectMethod,
   imports: Record<string, AST.ImportDeclaration>,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
-  if (!prop) return []
-
   const func = normalizeMethod(prop)
   if (!func || func.body.type !== 'BlockStatement') {
     return []

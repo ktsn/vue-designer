@@ -58,11 +58,23 @@ export function extractChildComponents(
   if (!options) return []
 
   const components = findProperty(options.properties, 'components')
-  if (!components || components.value.type !== 'ObjectExpression') {
+  const lifecycle = findProperty(options.properties, 'beforeCreate')
+  return [
+    ...extractComponents(components, imports, localPathToUri),
+    ...extractLazyAddComponents(lifecycle, imports, localPathToUri)
+  ]
+}
+
+function extractComponents(
+  prop: AST.ObjectProperty | AST.ObjectMethod | undefined,
+  imports: Record<string, AST.ImportDeclaration>,
+  localPathToUri: (localPath: string) => string
+): ChildComponent[] {
+  if (!prop || !prop.value || prop.value.type !== 'ObjectExpression') {
     return []
   }
 
-  return components.value.properties
+  return prop.value.properties
     .map((p): ChildComponent | undefined => {
       if (
         !isStaticProperty(p) ||
@@ -72,21 +84,50 @@ export function extractChildComponents(
         return undefined
       }
 
-      const localName = p.key.name
-      const componentImport = imports[p.value.name]
-      if (!componentImport) return undefined
-
-      const sourcePath = componentImport.source.value as string
-      assert(
-        typeof sourcePath === 'string',
-        '[script] Import declaration unexpectedly has non-string literal: ' +
-          sourcePath
+      return findMatchingComponent(
+        p.key.name,
+        p.value.name,
+        imports,
+        localPathToUri
       )
+    })
+    .filter(<T>(p: T | undefined): p is T => p !== undefined)
+}
 
-      return {
-        name: localName,
-        uri: localPathToUri(sourcePath)
+function extractLazyAddComponents(
+  prop: AST.ObjectProperty | AST.ObjectMethod | undefined,
+  imports: Record<string, AST.ImportDeclaration>,
+  localPathToUri: (localPath: string) => string
+): ChildComponent[] {
+  if (!prop) return []
+
+  const func = normalizeMethod(prop)
+  if (!func || func.body.type !== 'BlockStatement') {
+    return []
+  }
+
+  // Extract all `this.$options.components.LocalComponentName = ComponentName`
+  return func.body.body
+    .map((st): ChildComponent | undefined => {
+      if (
+        st.type !== 'ExpressionStatement' ||
+        st.expression.type !== 'AssignmentExpression' ||
+        st.expression.right.type !== 'Identifier' || // = ComponentName
+        st.expression.left.type !== 'MemberExpression' ||
+        st.expression.left.property.type !== 'Identifier' || // .LocalComponentName
+        st.expression.left.object.type !== 'MemberExpression' || // .components
+        st.expression.left.object.object.type !== 'MemberExpression' || // .$options
+        st.expression.left.object.object.object.type !== 'ThisExpression' // this
+      ) {
+        return undefined
       }
+
+      return findMatchingComponent(
+        st.expression.right.name,
+        st.expression.left.property.name,
+        imports,
+        localPathToUri
+      )
     })
     .filter(<T>(p: T | undefined): p is T => p !== undefined)
 }
@@ -105,6 +146,28 @@ function getImportDeclarations(
     })
   })
   return res
+}
+
+function findMatchingComponent(
+  localName: string,
+  importedName: string,
+  imports: Record<string, AST.ImportDeclaration>,
+  localPathToUri: (localPath: string) => string
+): ChildComponent | undefined {
+  const componentImport = imports[importedName]
+  if (!componentImport) return undefined
+
+  const sourcePath = componentImport.source.value as string
+  assert(
+    typeof sourcePath === 'string',
+    '[script] Import declaration unexpectedly has non-string literal: ' +
+      sourcePath
+  )
+
+  return {
+    name: localName,
+    uri: localPathToUri(sourcePath)
+  }
 }
 
 function isStringLiteral(node: AST.Node): node is AST.StringLiteral {

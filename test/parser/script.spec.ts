@@ -247,4 +247,26 @@ describe('Script components parser', () => {
     ]
     expect(components).toEqual(expected)
   })
+
+  // https://vuejs.org/v2/guide/components.html#Circular-References-Between-Components
+  it('should collect recursively referred component in beforeCreate hook', () => {
+    const code = `
+    import Recursive from './Recursive.vue'
+    export default {
+      beforeCreate() {
+        this.options.components.Recursive = Recursive
+      }
+    }
+    `
+
+    const { program } = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program, pathToUri)
+    const expected: ChildComponent[] = [
+      {
+        name: 'Recursive',
+        uri: 'file:///path/to/Recursive.vue'
+      }
+    ]
+    expect(components).toEqual(expected)
+  })
 })

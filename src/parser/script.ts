@@ -20,7 +20,7 @@ export function extractProps(program: AST.Program): Prop[] {
   } else if (props.value.type === 'ArrayExpression') {
     return props.value.elements.filter(isStringLiteral).map(el => {
       return {
-        name: el.value as string,
+        name: el.value,
         type: 'any',
         default: undefined
       }
@@ -124,6 +124,9 @@ function isStaticProperty(
   )
 }
 
+/**
+ * Find a property name that matches the specified property name.
+ */
 function findProperty(
   props: (AST.ObjectProperty | AST.ObjectMethod | AST.SpreadProperty)[],
   name: string
@@ -131,6 +134,26 @@ function findProperty(
   return props.filter(isStaticProperty).find(p => {
     return (p.key as AST.Identifier).name === name
   })
+}
+
+/**
+ * Return function-like node if object property has
+ * function value or it is a method.
+ * Return undefined if it does not have a function value.
+ */
+function normalizeMethod(
+  prop: AST.ObjectProperty | AST.ObjectMethod
+): AST.Function | undefined {
+  if (prop.type === 'ObjectMethod') {
+    return prop
+  }
+  if (
+    prop.value.type === 'FunctionExpression' ||
+    prop.value.type === 'ArrowFunctionExpression'
+  ) {
+    return prop.value
+  }
+  return undefined
 }
 
 /**
@@ -184,11 +207,9 @@ function getPropDefault(value: AST.Expression | AST.Pattern): DefaultValue {
     if (def) {
       // If it is a function, extract default value from it,
       // otherwise just use the value.
-      if (
-        def.value.type === 'FunctionExpression' ||
-        def.value.type === 'ArrowFunctionExpression'
-      ) {
-        const exp = getReturnedExpression(def.value.body)
+      const func = normalizeMethod(def)
+      if (func) {
+        const exp = getReturnedExpression(func.body)
         return exp && getLiteralValue(exp)
       } else {
         return getLiteralValue(def.value)
@@ -201,22 +222,18 @@ function getPropDefault(value: AST.Expression | AST.Pattern): DefaultValue {
 function getDataObject(
   prop: AST.ObjectProperty | AST.ObjectMethod
 ): AST.ObjectExpression | undefined {
+  // If the value is an object expression, just return it.
   if (prop.type === 'ObjectProperty') {
     const value = prop.value
-
-    if (value.type === 'ObjectExpression') return value
-
-    if (
-      value.type === 'FunctionExpression' ||
-      value.type === 'ArrowFunctionExpression'
-    ) {
-      const exp = getReturnedExpression(value.body)
-      if (exp && exp.type === 'ObjectExpression') {
-        return exp
-      }
+    if (value.type === 'ObjectExpression') {
+      return value
     }
-  } else {
-    const exp = getReturnedExpression(prop.body)
+  }
+
+  // If the value is a function, return the returned object expression
+  const func = normalizeMethod(prop)
+  if (func) {
+    const exp = getReturnedExpression(func.body)
     if (exp && exp.type === 'ObjectExpression') {
       return exp
     }

@@ -127,15 +127,17 @@ function extractLazyAddComponents(
   // Extract all `this.$options.components.LocalComponentName = ComponentName`
   return func.body.body
     .map((st): ChildComponent | undefined => {
+      // We leave this chack as loosely since the user may not write
+      // `this.$options.components.LocalComponentName = ComponentName`
+      // but assign `components` to another variable to save key types.
+      // If there are false positive in this check, they probably be
+      // proned by maching with imported components in later.
       if (
         st.type !== 'ExpressionStatement' ||
         st.expression.type !== 'AssignmentExpression' ||
         st.expression.right.type !== 'Identifier' || // = ComponentName
         st.expression.left.type !== 'MemberExpression' ||
-        st.expression.left.property.type !== 'Identifier' || // .LocalComponentName
-        st.expression.left.object.type !== 'MemberExpression' || // .components
-        st.expression.left.object.object.type !== 'MemberExpression' || // .$options
-        st.expression.left.object.object.object.type !== 'ThisExpression' // this
+        st.expression.left.property.type !== 'Identifier' // .LocalComponentName
       ) {
         return undefined
       }

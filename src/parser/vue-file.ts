@@ -45,7 +45,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
     plugins: ['typescript', 'objectRestSpread'] as any[]
   })
 
-  const childComponents = extractChildComponents(scriptBody, childPath => {
+  const childComponents = extractChildComponents(scriptBody, uri, childPath => {
     const parsedUri = new URL(uri)
     const dirPath = path.dirname(parsedUri.pathname)
     parsedUri.pathname = path

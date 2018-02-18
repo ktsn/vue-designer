@@ -285,4 +285,29 @@ describe('Script components parser', () => {
     ]
     expect(components).toEqual(expected)
   })
+
+  it('should collect recursively referred component in TypeScript', () => {
+    const code = `
+    import Vue from 'vue'
+    import Recursive from './Recursive.vue'
+    export default Vue.extend({
+      beforeCreate() {
+        this.options.components!.Recursive = Recursive
+      }
+    })
+    `
+
+    const { program } = parse(code, {
+      sourceType: 'module',
+      plugins: ['typescript'] as any[]
+    })
+    const components = extractChildComponents(program, hostUri, pathToUri)
+    const expected: ChildComponent[] = [
+      {
+        name: 'Recursive',
+        uri: 'file:///path/to/Recursive.vue'
+      }
+    ]
+    expect(components).toEqual(expected)
+  })
 })

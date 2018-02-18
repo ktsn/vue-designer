@@ -41,7 +41,8 @@ export function parseVueFile(code: string, uri: string): VueFile {
   const { script, styles } = parseComponent(code, { pad: 'space' })
 
   const { program: scriptBody } = parseScript(script ? script.content : '', {
-    sourceType: 'module'
+    sourceType: 'module',
+    plugins: ['typescript', 'objectRestSpread'] as any[]
   })
 
   const childComponents = extractChildComponents(scriptBody, childPath => {
@@ -86,7 +87,7 @@ export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
 function parseTemplateBlock(template: string): Template | undefined {
   // TODO: Use parsed SFCBlock after it is fixed that the issue vue-template-compiler
   // breaks original source position by deindent
-  const code = template.replace(/<script>[\s\S]*<\/script>/, matched => {
+  const code = template.replace(/<script.*>[\s\S]*<\/script>/, matched => {
     return matched.replace(/./g, ' ')
   })
 

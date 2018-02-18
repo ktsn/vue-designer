@@ -65,8 +65,7 @@
     }
   },
   "dependencies": {
-    "@types/babylon": "^6.16.2",
-    "babylon": "^6.18.0",
+    "babylon": "^7.0.0-beta.40",
     "eslint": "^4.17.0",
     "hash-sum": "^1.0.2",
     "postcss": "^6.0.17",
@@ -77,7 +76,8 @@
     "ws": "^4.0.0"
   },
   "devDependencies": {
-    "@types/babel-types": "^6.25.2",
+    "@types/babylon": "^6.16.2",
+    "@types/babel-types": "^7.0.0",
     "@types/jest": "^22.1.1",
     "@types/ws": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.11",

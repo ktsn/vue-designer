@@ -98,6 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
     public provideTextDocumentContent(): string {
       return `<style>
       html, body, iframe {
+        overflow: hidden;
         margin: 0;
         padding: 0;
         height: 100%;

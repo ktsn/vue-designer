@@ -26,6 +26,7 @@ body {
 
 <style lang="scss" scoped>
 .app {
+  font-family: sans-serif;
   font-size: rem(16);
   color: #333;
 }

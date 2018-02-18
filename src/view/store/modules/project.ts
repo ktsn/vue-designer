@@ -12,6 +12,8 @@ import { genStyle } from '@/parser/style-codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script'
 
 export interface ScopedDocument {
+  uri: string
+  displayName: string
   template: Template | undefined
   props: Prop[]
   data: Data[]
@@ -68,7 +70,10 @@ export const project: DefineModule<
   getters: {
     scopedDocuments(state) {
       return mapValues(state.documents, doc => {
+        const pathEls = doc.uri.split('/')
         return {
+          uri: doc.uri,
+          displayName: pathEls[pathEls.length - 1],
           template:
             doc.template && addScopeToTemplate(doc.template, doc.scopeId),
           props: doc.props,

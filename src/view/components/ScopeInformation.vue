@@ -54,41 +54,40 @@ export default Vue.extend({
   overflow-y: auto;
   max-height: 100%;
   padding: 13px 15px;
+}
 
-  &-group {
-    &:not(:first-child) {
-      margin-top: 16px;
-    }
+.information-group {
+  &:not(:first-child) {
+    margin-top: 16px;
   }
+}
 
-  &-title {
-    margin-top: 0;
-    margin-bottom: 6px;
-    font-weight: bold;
-    font-size: inherit;
-  }
+.information-title {
+  margin-top: 0;
+  margin-bottom: 6px;
+  font-weight: bold;
+  font-size: inherit;
+}
 
-  &-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+.information-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
 
-    &-item {
-      padding-bottom: 1px;
-      border-bottom: 1px solid #333;
+.information-list-item {
+  margin-top: 8px;
+}
 
-      &:not(:first-child) {
-        margin-top: 8px;
-      }
-    }
-  }
+.information-list-item:first-child {
+  margin-top: 0;
+}
 
-  &-placeholder {
-    color: #999;
-  }
+.information-placeholder {
+  color: #999;
+}
 
-  &-text {
-    margin-left: 0.5em;
-  }
+.information-text {
+  margin-left: 0.5em;
 }
 </style>

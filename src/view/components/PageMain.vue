@@ -1,8 +1,19 @@
 <template>
   <div>
     <Renderer v-if="uri" :uri="uri" />
+
     <div v-if="document" class="information-pane" :class="{ open: openPane }">
-      <ScopeInformation :props="document.props" :data="document.data" />
+      <div class="information-pane-scroller">
+        <div class="scope-information">
+          <ScopeInformation :props="document.props" :data="document.data" />
+        </div>
+
+        <div class="component-catalog">
+          <ComponentCatalog
+            :components="catalog"
+          />
+        </div>
+      </div>
 
       <button
         class="information-pane-toggle"
@@ -17,14 +28,16 @@
 import Vue from 'vue'
 import Renderer from './Renderer.vue'
 import ScopeInformation from './ScopeInformation.vue'
-import { projectHelpers } from '../store/modules/project'
+import ComponentCatalog from './ComponentCatalog.vue'
+import { projectHelpers, ScopedDocument } from '../store/modules/project'
 
 export default Vue.extend({
   name: 'PageMain',
 
   components: {
     Renderer,
-    ScopeInformation
+    ScopeInformation,
+    ComponentCatalog
   },
 
   data() {
@@ -39,8 +52,15 @@ export default Vue.extend({
     }),
 
     ...projectHelpers.mapGetters({
-      document: 'currentDocument'
-    })
+      document: 'currentDocument',
+      scopedDocuments: 'scopedDocuments'
+    }),
+
+    catalog(): ScopedDocument[] {
+      return Object.keys(this.scopedDocuments).map(
+        key => this.scopedDocuments[key]
+      )
+    }
   }
 })
 </script>
@@ -60,15 +80,24 @@ export default Vue.extend({
   &.open {
     transform: translateX(0);
   }
+}
 
-  &-toggle {
-    position: absolute;
-    right: 100%;
-    bottom: 0;
-    padding: 0;
-    border-width: 0;
-    background: none;
-    font-size: inherit;
-  }
+.information-pane-scroller {
+  overflow-y: scroll;
+  height: 100%;
+}
+
+.information-pane-toggle {
+  position: absolute;
+  right: 100%;
+  bottom: 0;
+  padding: 0;
+  border-width: 0;
+  background: none;
+  font-size: inherit;
+}
+
+.component-catalog {
+  border-top: 1px solid #ccc;
 }
 </style>

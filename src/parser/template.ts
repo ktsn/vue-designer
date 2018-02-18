@@ -1,3 +1,4 @@
+import assert from 'assert'
 import { AST } from 'vue-eslint-parser'
 import { scopePrefix } from './style'
 
@@ -148,6 +149,63 @@ export function getNode(
   return el && loop(el, rest)
 }
 
+export function insertNode(
+  root: Template,
+  path: number[],
+  el: ElementChild
+): Template {
+  function loop<T extends Element | Template>(
+    parent: T,
+    index: number,
+    rest: number[]
+  ): T {
+    assert(index != null, '[template] index should not be null or undefined')
+
+    const cs = parent.children
+
+    // If `rest` is empty, insert the node to `index`
+    if (rest.length === 0) {
+      assert(
+        0 <= index && index <= cs.length,
+        "[template] cannot insert the node to '" +
+          path.join('->') +
+          "' as the last index is out of possible range: " +
+          `0 <= ${index} <= ${cs.length}`
+      )
+
+      return {
+        ...(parent as any),
+        children: [...cs.slice(0, index), el, ...cs.slice(index)]
+      }
+    }
+
+    const child = parent.children[index] as Element
+    assert(
+      child,
+      "[template] cannot reach to the path '" +
+        path.join('->') +
+        "' as there is no node on the way"
+    )
+    assert(
+      child.type === 'Element',
+      "[template] cannot reach to the path '" +
+        path.join('->') +
+        "' as there is text or expression node on the way"
+    )
+
+    const [head, ...tail] = rest
+    return {
+      ...(parent as any),
+      children: [
+        ...cs.slice(0, index),
+        loop(child, head, tail),
+        ...cs.slice(index + 1)
+      ]
+    }
+  }
+  return loop(root, path[0], path.slice(1))
+}
+
 export function visitElements(
   node: Template,
   fn: (el: Element) => Element | void
@@ -245,7 +303,7 @@ export interface VForDirective extends Directive {
   right: string | null
 }
 
-export function element(
+function element(
   path: number[],
   name: string,
   attributes: (Attribute | Directive)[],
@@ -262,7 +320,7 @@ export function element(
   }
 }
 
-export function textNode(
+function textNode(
   path: number[],
   text: string,
   range: [number, number]
@@ -275,7 +333,7 @@ export function textNode(
   }
 }
 
-export function expressionNode(
+function expressionNode(
   path: number[],
   expression: string,
   range: [number, number]
@@ -288,7 +346,7 @@ export function expressionNode(
   }
 }
 
-export function attribute(
+function attribute(
   index: number,
   name: string,
   value: string | null,
@@ -304,7 +362,7 @@ export function attribute(
   }
 }
 
-export function directive(
+function directive(
   index: number,
   name: string,
   argument: string | null,

@@ -5,12 +5,7 @@ export function extractProps(program: AST.Program): Prop[] {
   const options = findComponentOptions(program.body)
   if (!options) return []
 
-  const props = options.properties.find((p): p is
-    | AST.ObjectProperty
-    | AST.ObjectMethod => {
-    return isStaticProperty(p) && (p.key as AST.Identifier).name === 'props'
-  })
-
+  const props = findProperty(options.properties, 'props')
   if (!props) return []
 
   if (props.value.type === 'ObjectExpression') {
@@ -39,12 +34,7 @@ export function extractData(program: AST.Program): Data[] {
   const options = findComponentOptions(program.body)
   if (!options) return []
 
-  const data = options.properties.find((p): p is
-    | AST.ObjectProperty
-    | AST.ObjectMethod => {
-    return isStaticProperty(p) && (p.key as AST.Identifier).name === 'data'
-  })
-
+  const data = findProperty(options.properties, 'data')
   if (!data) return []
 
   const obj = getDataObject(data)
@@ -67,14 +57,7 @@ export function extractChildComponents(
   const options = findComponentOptions(program.body)
   if (!options) return []
 
-  const components = options.properties.find((p): p is
-    | AST.ObjectProperty
-    | AST.ObjectMethod => {
-    return (
-      isStaticProperty(p) && (p.key as AST.Identifier).name === 'components'
-    )
-  })
-
+  const components = findProperty(options.properties, 'components')
   if (!components || components.value.type !== 'ObjectExpression') {
     return []
   }
@@ -141,6 +124,15 @@ function isStaticProperty(
   )
 }
 
+function findProperty(
+  props: (AST.ObjectProperty | AST.ObjectMethod | AST.SpreadProperty)[],
+  name: string
+): AST.ObjectProperty | AST.ObjectMethod | undefined {
+  return props.filter(isStaticProperty).find(p => {
+    return (p.key as AST.Identifier).name === name
+  })
+}
+
 /**
  * Detect `Vue.extend(...)`
  */
@@ -174,11 +166,7 @@ function getPropType(value: AST.Expression | AST.Pattern): string {
   } else if (value.type === 'ObjectExpression') {
     // Detailed prop definition
     // { type: ..., ... }
-    const type = value.properties.find((p): p is
-      | AST.ObjectProperty
-      | AST.ObjectMethod => {
-      return isStaticProperty(p) && (p.key as AST.Identifier).name === 'type'
-    })
+    const type = findProperty(value.properties, 'type')
 
     if (type && type.value && type.value.type === 'Identifier') {
       return type.value.name
@@ -191,11 +179,7 @@ function getPropType(value: AST.Expression | AST.Pattern): string {
 function getPropDefault(value: AST.Expression | AST.Pattern): DefaultValue {
   if (value.type === 'ObjectExpression') {
     // Find `default` property in the prop option.
-    const def = value.properties.find((p): p is
-      | AST.ObjectProperty
-      | AST.ObjectMethod => {
-      return isStaticProperty(p) && (p.key as AST.Identifier).name === 'default'
-    })
+    const def = findProperty(value.properties, 'default')
 
     if (def) {
       // If it is a function, extract default value from it,

@@ -158,14 +158,12 @@ var DragDropTouch;
                     return true;
                 }
             });
-            // listen to touch events
-            if ('ontouchstart' in document) {
-                var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this), opt = supportsPassive ? { passive: false, capture: false } : false;
-                d.addEventListener('touchstart', ts, opt);
-                d.addEventListener('touchmove', tm, opt);
-                d.addEventListener('touchend', te);
-                d.addEventListener('touchcancel', te);
-            }
+            // listen to mouse events
+            var d = document, ts = this._touchstart.bind(this), tm = this._touchmove.bind(this), te = this._touchend.bind(this), opt = supportsPassive ? { passive: false, capture: false } : false;
+            d.addEventListener('mousedown', ts, opt);
+            d.addEventListener('mousemove', tm, opt);
+            d.addEventListener('mouseup', te);
+            d.addEventListener('mouseleave', te);
         }
         /**
          * Gets a reference to the @see:DragDropTouch singleton.
@@ -177,48 +175,30 @@ var DragDropTouch;
         DragDropTouch.prototype._touchstart = function (e) {
             var _this = this;
             if (this._shouldHandle(e)) {
-                // raise double-click and prevent zooming
-                if (Date.now() - this._lastClick < DragDropTouch._DBLCLICK) {
-                    if (this._dispatchEvent(e, 'dblclick', e.target)) {
-                        e.preventDefault();
-                        this._reset();
-                        return;
-                    }
-                }
                 // clear all variables
                 this._reset();
                 // get nearest draggable element
                 var src = this._closestDraggable(e.target);
                 if (src) {
-                    // give caller a chance to handle the hover/move events
-                    if (!this._dispatchEvent(e, 'mousemove', e.target) &&
-                        !this._dispatchEvent(e, 'mousedown', e.target)) {
-                        // get ready to start dragging
-                        this._dragSource = src;
-                        this._ptDown = this._getPoint(e);
-                        this._lastTouch = e;
-                        e.preventDefault();
-                        // show context menu if the user hasn't started dragging after a while
-                        setTimeout(function () {
-                            if (_this._dragSource == src && _this._img == null) {
-                                if (_this._dispatchEvent(e, 'contextmenu', src)) {
-                                    _this._reset();
-                                }
+                    // get ready to start dragging
+                    this._dragSource = src;
+                    this._ptDown = this._getPoint(e);
+                    this._lastTouch = e;
+                    e.preventDefault();
+                    // show context menu if the user hasn't started dragging after a while
+                    setTimeout(function () {
+                        if (_this._dragSource == src && _this._img == null) {
+                            if (_this._dispatchEvent(e, 'contextmenu', src)) {
+                                _this._reset();
                             }
-                        }, DragDropTouch._CTXMENU);
-                    }
+                        }
+                    }, DragDropTouch._CTXMENU);
                 }
             }
         };
         DragDropTouch.prototype._touchmove = function (e) {
             if (this._shouldHandle(e)) {
-                // see if target wants to handle move
                 var target = this._getTarget(e);
-                if (this._dispatchEvent(e, 'mousemove', target)) {
-                    this._lastTouch = e;
-                    e.preventDefault();
-                    return;
-                }
                 // start dragging
                 if (this._dragSource && !this._img) {
                     var delta = this._getDelta(e);
@@ -244,21 +224,15 @@ var DragDropTouch;
         };
         DragDropTouch.prototype._touchend = function (e) {
             if (this._shouldHandle(e)) {
-                // see if target wants to handle up
-                if (this._dispatchEvent(this._lastTouch, 'mouseup', e.target)) {
-                    e.preventDefault();
-                    return;
-                }
-                // user clicked the element but didn't drag, so clear the source and simulate a click
+                // user clicked the element but didn't drag, so clear the source
                 if (!this._img) {
                     this._dragSource = null;
-                    this._dispatchEvent(this._lastTouch, 'click', e.target);
                     this._lastClick = Date.now();
                 }
                 // finish dragging
                 this._destroyImage();
                 if (this._dragSource) {
-                    if (e.type.indexOf('cancel') < 0) {
+                    if (e.type.indexOf('leave') < 0) {
                         this._dispatchEvent(this._lastTouch, 'drop', this._lastTarget);
                     }
                     this._dispatchEvent(this._lastTouch, 'dragend', this._dragSource);
@@ -267,11 +241,10 @@ var DragDropTouch;
             }
         };
         // ** utilities
-        // ignore events that have been handled or that involve more than one touch
+        // ignore events that have been handled
         DragDropTouch.prototype._shouldHandle = function (e) {
             return e &&
-                !e.defaultPrevented &&
-                e.touches && e.touches.length < 2;
+                !e.defaultPrevented;
         };
         // clear all members
         DragDropTouch.prototype._reset = function () {

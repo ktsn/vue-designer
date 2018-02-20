@@ -10,51 +10,8 @@ import {
   ResolvedChild
 } from '../rendering'
 
-function createVNodeData(
-  node: Element,
-  scope: Record<string, DefaultValue>,
-  selectable: boolean,
-  selected: boolean,
-  listeners: Record<string, Function>
-): VNodeData {
-  const data = convertToVNodeData(node.attributes, scope)
-
-  if (selectable) {
-    if (selected) {
-      data.class.push('selected')
-    }
-
-    data.attrs!.tabindex = '0'
-
-    // The vnode may be a native element or ContainerVueComponent,
-    // so we should set both `on` and `nativeOn` here.
-    data.on = data.nativeOn = {
-      click: (event: Event) => {
-        event.stopPropagation()
-        if (typeof listeners.select === 'function') {
-          listeners.select(node)
-        }
-      }
-    }
-  }
-
-  return data
-}
-
-function findChildComponentUri(
-  node: Element,
-  childComponents: ChildComponent[]
-): string | undefined {
-  const comp = childComponents.find(child => {
-    // Convert to lower case since vue-eslint-parser ignores tag name case.
-    return child.name.toLowerCase() === node.name.toLowerCase()
-  })
-  return comp && comp.uri
-}
-
 export default Vue.extend({
   name: 'Node',
-  functional: true,
 
   props: {
     uri: {
@@ -77,36 +34,67 @@ export default Vue.extend({
     selected: Boolean
   },
 
-  // @ts-ignore
-  render(h, { props, listeners }): VNode {
-    const { uri, data, scope, childComponents, selectable, selected } = props
+  computed: {
+    vnodeData(): VNodeData {
+      const { data: node, scope, selectable, selected } = this
+      const data = convertToVNodeData(node.attributes, scope)
 
-    const resolvedChildren = data.children.reduce<ResolvedChild[]>(
-      (acc, child) => {
+      if (selectable) {
+        if (selected) {
+          data.class.push('selected')
+        }
+
+        data.attrs!.tabindex = '0'
+
+        // The vnode may be a native element or ContainerVueComponent,
+        // so we should set both `on` and `nativeOn` here.
+        data.on = data.nativeOn = {
+          click: (event: Event) => {
+            event.stopPropagation()
+            this.$emit('select', node)
+          }
+        }
+      }
+
+      if (this.nodeUri) {
+        data.props = { uri: this.nodeUri }
+      }
+
+      return data
+    },
+
+    /**
+     * Get corresponding component URI of this node.
+     * If it has a URI, is treated as a component rather than native element.
+     */
+    nodeUri(): string | undefined {
+      const comp = this.childComponents.find(child => {
+        // Convert to lower case since vue-eslint-parser ignores tag name case.
+        return child.name.toLowerCase() === this.data.name.toLowerCase()
+      })
+      return comp && comp.uri
+    },
+
+    /**
+     * Returns children which is resolved v-for, v-if and its family.
+     */
+    resolvedChildren(): ResolvedChild[] {
+      return this.data.children.reduce<ResolvedChild[]>((acc, child) => {
         return resolveControlDirectives(acc, {
           el: child,
-          scope
+          scope: this.scope
         })
-      },
-      []
-    )
-
-    const componentUri = findChildComponentUri(data, childComponents)
-    const vnodeData = createVNodeData(
-      data,
-      scope,
-      selectable,
-      selected,
-      listeners
-    )
-    if (componentUri) {
-      vnodeData.props = { uri: componentUri }
+      }, [])
     }
+  },
+
+  render(h): VNode {
+    const { uri, data, childComponents } = this
 
     return h(
-      componentUri ? ContainerVueComponent : data.name,
-      vnodeData,
-      resolvedChildren.map(c => {
+      this.nodeUri ? ContainerVueComponent : data.name,
+      this.vnodeData,
+      this.resolvedChildren.map(c => {
         return h(Child, {
           props: {
             uri,
@@ -114,7 +102,7 @@ export default Vue.extend({
             scope: c.scope,
             childComponents
           },
-          on: listeners
+          on: this.$listeners
         })
       })
     )

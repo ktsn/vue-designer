@@ -1,13 +1,35 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import ContainerVueComponent from './ContainerVueComponent.vue'
+import VueComponent from './VueComponent.vue'
+import { ScopedDocument } from '../store/modules/project'
 
 export default Vue.extend({
   name: 'Renderer',
   functional: true,
 
-  render(h, { data }): VNode {
-    return h('div', { class: 'renderer' }, [h(ContainerVueComponent, data)])
+  props: {
+    document: {
+      type: Object as () => ScopedDocument,
+      required: true
+    }
+  },
+
+  // @ts-ignore
+  render(h, { props, listeners }): VNode {
+    const { document: d } = props
+    return h('div', { class: 'renderer' }, [
+      h(VueComponent, {
+        props: {
+          uri: d.uri,
+          template: d.template,
+          props: d.props,
+          data: d.data,
+          childComponents: d.childComponents,
+          styles: d.styleCode
+        },
+        on: listeners
+      })
+    ])
   }
 })
 </script>

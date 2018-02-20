@@ -1,6 +1,12 @@
 <template>
   <ul class="catalog-list">
-    <li class="catalog-item" v-for="c in components" :key="c.uri">
+    <li
+      class="catalog-item"
+      v-for="c in components" :key="c.uri"
+      draggable="true"
+      @dragstart="onDragStart($event, c)"
+      @dragend="onDragEnd()"
+    >
       <div class="catalog-item-inner">
         <div class="catalog-item-layout">
           <div class="catalog-preview">
@@ -29,6 +35,18 @@ export default Vue.extend({
     components: {
       type: Array as () => ScopedDocument[],
       required: true
+    }
+  },
+
+  methods: {
+    onDragStart(event: DragEvent, component: ScopedDocument): void {
+      const dt = event.dataTransfer
+      dt.effectAllowed = 'copy'
+      this.$emit('dragstart', component.uri)
+    },
+
+    onDragEnd(): void {
+      this.$emit('dragend')
     }
   }
 })

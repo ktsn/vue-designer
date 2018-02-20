@@ -49,10 +49,9 @@ export default Vue.extend({
         // The vnode may be a native element or ContainerVueComponent,
         // so we should set both `on` and `nativeOn` here.
         data.on = data.nativeOn = {
-          click: (event: Event) => {
-            event.stopPropagation()
-            this.$emit('select', node)
-          }
+          click: this.onClick,
+          dragover: this.onDragOver,
+          drop: this.onDrop
         }
       }
 
@@ -85,6 +84,47 @@ export default Vue.extend({
           scope: this.scope
         })
       }, [])
+    }
+  },
+
+  methods: {
+    onClick(event: Event): void {
+      event.stopPropagation()
+      this.$emit('select', this.data)
+    },
+
+    onDragOver(event: DragEvent): void {
+      event.preventDefault()
+      event.stopPropagation()
+      event.dataTransfer.dropEffect = 'copy'
+
+      // Detect where the dragging node will be put
+      const outRatio = 0.15
+      const bounds = (event.target as HTMLElement).getBoundingClientRect()
+      const h = bounds.height
+      const posY = event.pageY - bounds.top
+      const ratioY = posY / h
+
+      let path: number[]
+      if (ratioY <= outRatio) {
+        path = this.data.path
+      } else if (ratioY < 0.5) {
+        path = this.data.path.concat(0)
+      } else if (ratioY < 1 - outRatio) {
+        const last = this.data.children.length
+        path = this.data.path.concat(last)
+      } else {
+        const parentPath = this.data.path.slice(0, -1)
+        const last = this.data.path[parentPath.length]
+        path = parentPath.concat(last + 1)
+      }
+
+      this.$emit('dragenter', path)
+    },
+
+    onDrop(event: DragEvent): void {
+      event.stopPropagation()
+      this.$emit('add')
     }
   },
 

@@ -1,6 +1,12 @@
 <template>
   <div>
-    <Renderer v-if="uri" :uri="uri" />
+    <Renderer
+      v-if="renderingDocument"
+      :document="renderingDocument"
+      @select="select"
+      @dragenter="setDraggingPath"
+      @add="addElement"
+    />
 
     <div v-if="document" class="information-pane" :class="{ open: openPane }">
       <div class="information-pane-scroller">
@@ -11,6 +17,8 @@
         <div class="component-catalog">
           <ComponentCatalog
             :components="catalog"
+            @dragstart="startDragging"
+            @dragend="endDragging"
           />
         </div>
       </div>
@@ -53,6 +61,7 @@ export default Vue.extend({
 
     ...projectHelpers.mapGetters({
       document: 'currentDocument',
+      renderingDocument: 'currentRenderingDocument',
       scopedDocuments: 'scopedDocuments'
     }),
 
@@ -61,7 +70,15 @@ export default Vue.extend({
         key => this.scopedDocuments[key]
       )
     }
-  }
+  },
+
+  methods: projectHelpers.mapActions([
+    'startDragging',
+    'endDragging',
+    'setDraggingPath',
+    'select',
+    'addElement'
+  ])
 })
 </script>
 

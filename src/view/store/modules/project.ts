@@ -3,7 +3,8 @@ import { VueFilePayload } from '@/parser/vue-file'
 import {
   Template,
   Element,
-  addScope as addScopeToTemplate
+  addScope as addScopeToTemplate,
+  insertNode
 } from '@/parser/template'
 import { ClientConnection } from '@/view/communication'
 import { mapValues } from '@/utils'
@@ -21,27 +22,37 @@ export interface ScopedDocument {
   styleCode: string
 }
 
-interface ProjectState {
+export interface ProjectState {
   documents: Record<string, VueFilePayload>
   currentUri: string | undefined
+  draggingUri: string | undefined
   selectedPath: number[]
+  draggingPath: number[]
 }
 
 interface ProjectGetters {
   scopedDocuments: Record<string, ScopedDocument>
   currentDocument: VueFilePayload | undefined
-  currentScopedDocument: ScopedDocument | undefined
+  currentRenderingDocument: ScopedDocument | undefined
+  draggingScopedDocument: ScopedDocument | undefined
 }
 
 interface ProjectActions {
   init: ClientConnection
   select: Element
+  addElement: number[]
+  startDragging: string
+  endDragging: undefined
+  setDraggingPath: number[]
 }
 
 interface ProjectMutations {
   setDocuments: Record<string, VueFilePayload>
   changeDocument: string
   select: Element
+  addElement: { path: number[]; node: Element }
+  setDraggingUri: string | undefined
+  setDraggingPath: number[]
 }
 
 export const projectHelpers = createNamespacedHelpers<
@@ -52,6 +63,8 @@ export const projectHelpers = createNamespacedHelpers<
 >('project')
 
 let connection: ClientConnection
+let draggingTimer: any
+const draggingInterval = 200
 
 export const project: DefineModule<
   ProjectState,
@@ -64,7 +77,9 @@ export const project: DefineModule<
   state: () => ({
     documents: {},
     currentUri: undefined,
-    selectedPath: []
+    draggingUri: undefined,
+    selectedPath: [],
+    draggingPath: []
   }),
 
   getters: {
@@ -97,11 +112,56 @@ export const project: DefineModule<
       return state.documents[state.currentUri]
     },
 
-    currentScopedDocument(state, getters) {
+    currentRenderingDocument(state, getters) {
       if (!state.currentUri) {
         return undefined
       }
-      return getters.scopedDocuments[state.currentUri]
+
+      const doc = getters.scopedDocuments[state.currentUri]
+      if (!doc) {
+        return undefined
+      }
+
+      const dragging = getters.draggingScopedDocument
+      if (!doc.template || state.draggingPath.length === 0 || !dragging) {
+        return doc
+      }
+
+      const localNameOfDragging = doc.childComponents.reduce<
+        string | undefined
+      >((acc, comp) => {
+        if (acc) return acc
+
+        if (comp.uri === dragging.uri) {
+          return comp.name
+        }
+      }, undefined)
+
+      const newChildComponents = localNameOfDragging
+        ? doc.childComponents
+        : doc.childComponents.concat({
+            name: dragging.displayName,
+            uri: dragging.uri
+          })
+
+      return {
+        ...doc,
+        childComponents: newChildComponents,
+        template: insertNode(doc.template, state.draggingPath, {
+          type: 'Element',
+          path: [],
+          name: localNameOfDragging || dragging.displayName,
+          attributes: [],
+          children: [],
+          range: [-1, -1]
+        })
+      }
+    },
+
+    draggingScopedDocument(state, getters) {
+      return state.draggingUri
+        ? getters.scopedDocuments[state.draggingUri]
+        : undefined
     }
   },
 
@@ -131,6 +191,53 @@ export const project: DefineModule<
         path: node.path
       })
       commit('select', node)
+    },
+
+    addElement({ commit, state, getters }) {
+      const path = state.draggingPath
+      const dragging = getters.draggingScopedDocument
+      if (dragging) {
+        commit('addElement', {
+          path,
+          node: {
+            type: 'Element',
+            path,
+            name: dragging.displayName,
+            attributes: [],
+            children: [],
+            range: [-1, -1]
+          }
+        })
+      }
+    },
+
+    startDragging({ commit }, uri) {
+      commit('setDraggingUri', uri)
+    },
+
+    endDragging({ commit }) {
+      commit('setDraggingUri', undefined)
+      commit('setDraggingPath', [])
+    },
+
+    setDraggingPath({ state, commit }, path) {
+      // The dragging node has zero-length path
+      if (path.length === 0) {
+        return
+      }
+
+      clearTimeout(draggingTimer)
+      draggingTimer = setTimeout(() => {
+        const isUpdated =
+          state.draggingPath.length !== path.length ||
+          path.reduce((acc, el, i) => {
+            return acc || state.draggingPath[i] !== el
+          }, false)
+
+        if (isUpdated) {
+          commit('setDraggingPath', path)
+        }
+      }, draggingInterval)
     }
   },
 
@@ -146,6 +253,24 @@ export const project: DefineModule<
 
     select(state, node) {
       state.selectedPath = node.path
+    },
+
+    addElement(state, { path, node }) {
+      const uri = state.currentUri
+      if (uri) {
+        const doc = state.documents[uri]
+        if (doc && doc.template) {
+          doc.template = insertNode(doc.template, path, node)
+        }
+      }
+    },
+
+    setDraggingUri(state, uri) {
+      state.draggingUri = uri
+    },
+
+    setDraggingPath(state, path) {
+      state.draggingPath = path
     }
   }
 }

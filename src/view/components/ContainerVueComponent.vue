@@ -7,7 +7,6 @@
     :data="document.data"
     :child-components="document.childComponents"
     :styles="document.styleCode"
-    @select="select"
   />
 </template>
 
@@ -38,8 +37,6 @@ export default Vue.extend({
     document(): ScopedDocument | undefined {
       return this.documents[this.uri]
     }
-  },
-
-  methods: projectHelpers.mapActions(['select'])
+  }
 })
 </script>

@@ -111,7 +111,7 @@ export function a(name: string, value: string | null): Attribute {
   return {
     type: 'Attribute',
     directive: false,
-    index: 0,
+    index: -1,
     name,
     value,
     range: [-1, -1]

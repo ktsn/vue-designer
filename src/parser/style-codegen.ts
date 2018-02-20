@@ -22,7 +22,7 @@ export function genStyle(ast: Style): string {
           )
       }
     })
-    .join('\n\n')
+    .join('\n')
 }
 
 function genAtRule(atRule: AtRule): string {

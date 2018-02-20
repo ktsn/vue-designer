@@ -71,17 +71,21 @@ export const project: DefineModule<
     scopedDocuments(state) {
       return mapValues(state.documents, doc => {
         const pathEls = doc.uri.split('/')
+        const displayName = pathEls[pathEls.length - 1].replace(/\..*$/, '')
+
         return {
           uri: doc.uri,
-          displayName: pathEls[pathEls.length - 1],
+          displayName,
           template:
             doc.template && addScopeToTemplate(doc.template, doc.scopeId),
           props: doc.props,
           data: doc.data,
           childComponents: doc.childComponents,
-          styleCode: doc.styles.reduce((acc, style) => {
-            return acc + '\n' + genStyle(addScopeToStyle(style, doc.scopeId))
-          }, '')
+          styleCode: doc.styles
+            .reduce<string[]>((acc, style) => {
+              return acc.concat(genStyle(addScopeToStyle(style, doc.scopeId)))
+            }, [])
+            .join('\n')
         }
       })
     },

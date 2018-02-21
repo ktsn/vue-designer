@@ -12,6 +12,7 @@
     "build": "tsc -p tsconfig.main.json && webpack --config webpack.config.js",
     "test": "jest",
     "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "format": "prettier --write \"{src,test}/**/*.{ts,vue}\""
   },
   "repository": "https://github.com/ktsn/vue-designer",
@@ -58,6 +59,7 @@
       "json",
       "vue"
     ],
+    "collectCoverageFrom": ["src/**/*.{ts,vue}"],
     "globals": {
       "ts-jest": {
         "tsConfigFile": "tsconfig.test.json"
@@ -76,25 +78,25 @@
     "ws": "^4.0.0"
   },
   "devDependencies": {
-    "@types/babylon": "^6.16.2",
     "@types/babel-types": "^7.0.0",
+    "@types/babylon": "^6.16.2",
     "@types/jest": "^22.1.1",
     "@types/ws": "^4.0.0",
     "@vue/test-utils": "^1.0.0-beta.11",
     "css-loader": "^0.28.9",
-    "jest": "^22.1.4",
+    "jest": "^22.4.0",
     "node-sass": "^4.7.2",
     "npm-run-all": "^4.1.2",
     "prettier": "1.10.2",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.20.1",
     "testdouble": "^3.5.0",
-    "ts-jest": "^22.0.2",
+    "ts-jest": "^22.0.4",
     "ts-loader": "^3.4.0",
     "typescript": "^2.7.1",
     "vscode": "^1.1.10",
     "vue": "^2.5.13",
-    "vue-jest": "^2.0.0",
+    "vue-jest": "^2.1.0",
     "vue-loader": "^14.1.1",
     "vuex": "github:ktsn/vuex#fc1f29b",
     "webpack": "^3.10.0",

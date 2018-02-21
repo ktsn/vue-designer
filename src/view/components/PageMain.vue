@@ -5,7 +5,7 @@
       :document="renderingDocument"
       @select="select"
       @dragenter="setDraggingPath"
-      @add="addElement"
+      @add="applyDraggingElement"
     />
 
     <div v-if="document" class="information-pane" :class="{ open: openPane }">
@@ -77,7 +77,7 @@ export default Vue.extend({
     'endDragging',
     'setDraggingPath',
     'select',
-    'addElement'
+    'applyDraggingElement'
   ])
 })
 </script>

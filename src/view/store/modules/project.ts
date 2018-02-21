@@ -42,7 +42,7 @@ interface ProjectGetters {
 interface ProjectActions {
   init: ClientConnection
   select: Element
-  addElement: number[]
+  applyDraggingElement: undefined
   startDragging: string
   endDragging: undefined
   setDraggingPath: number[]
@@ -53,6 +53,7 @@ interface ProjectMutations {
   changeDocument: string
   select: Element
   addElement: { path: number[]; node: Element }
+  addChildComponent: ChildComponent
   setDraggingUri: string | undefined
   setDraggingPath: number[]
 }
@@ -214,20 +215,24 @@ export const project: DefineModule<
       commit('select', node)
     },
 
-    addElement({ commit, state, getters }) {
+    applyDraggingElement({ commit, state, getters }) {
       const path = state.draggingPath
-      const dragging = getters.draggingScopedDocument
-      if (dragging) {
-        commit('addElement', {
-          path,
-          node: {
-            type: 'Element',
-            path,
-            name: dragging.displayName,
-            attributes: [],
-            children: [],
-            range: [-1, -1]
-          }
+      const newNode = getters.nodeOfDragging
+
+      if (path.length === 0 || !newNode) {
+        return
+      }
+
+      commit('addElement', {
+        path,
+        node: newNode
+      })
+
+      const localName = getters.localNameOfDragging
+      if (!localName) {
+        commit('addChildComponent', {
+          name: newNode.name,
+          uri: state.draggingUri!
         })
       }
     },
@@ -282,6 +287,16 @@ export const project: DefineModule<
         const doc = state.documents[uri]
         if (doc && doc.template) {
           doc.template = insertNode(doc.template, path, node)
+        }
+      }
+    },
+
+    addChildComponent(state, childComponent) {
+      const uri = state.currentUri
+      if (uri) {
+        const doc = state.documents[uri]
+        if (doc) {
+          doc.childComponents = doc.childComponents.concat(childComponent)
         }
       }
     },

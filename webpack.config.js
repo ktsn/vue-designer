@@ -6,6 +6,8 @@ const base = path.resolve(__dirname)
 const plugins = []
 if (!process.env.DEV) {
   plugins.push(new webpack.optimize.ModuleConcatenationPlugin())
+} else {
+  plugins.push(new webpack.NamedModulesPlugin())
 }
 
 module.exports = {

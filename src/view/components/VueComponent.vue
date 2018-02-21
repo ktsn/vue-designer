@@ -70,8 +70,8 @@ export default Vue.extend({
                   this.$emit('select', path)
                 },
 
-                dragenter: (path: number[]) => {
-                  this.$emit('dragenter', path)
+                dragover: (path: number[]) => {
+                  this.$emit('dragover', path)
                 },
 
                 add: () => {

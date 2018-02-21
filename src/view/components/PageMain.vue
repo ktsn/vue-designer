@@ -4,7 +4,7 @@
       v-if="renderingDocument"
       :document="renderingDocument"
       @select="select"
-      @dragenter="setDraggingPlace"
+      @dragover="setDraggingPlace"
       @add="applyDraggingElement"
     />
 

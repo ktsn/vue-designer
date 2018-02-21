@@ -121,7 +121,7 @@ export default Vue.extend({
         place = 'after'
       }
 
-      this.$emit('dragenter', {
+      this.$emit('dragover', {
         path: this.data.path,
         place
       })

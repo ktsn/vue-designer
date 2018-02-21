@@ -35,6 +35,7 @@ interface ProjectGetters {
   currentDocument: VueFilePayload | undefined
   currentRenderingDocument: ScopedDocument | undefined
   draggingScopedDocument: ScopedDocument | undefined
+  localNameOfDragging: string | undefined
 }
 
 interface ProjectActions {
@@ -127,17 +128,7 @@ export const project: DefineModule<
         return doc
       }
 
-      const localNameOfDragging = doc.childComponents.reduce<
-        string | undefined
-      >((acc, comp) => {
-        if (acc) return acc
-
-        if (comp.uri === dragging.uri) {
-          return comp.name
-        }
-      }, undefined)
-
-      const newChildComponents = localNameOfDragging
+      const newChildComponents = getters.localNameOfDragging
         ? doc.childComponents
         : doc.childComponents.concat({
             name: dragging.displayName,
@@ -150,7 +141,7 @@ export const project: DefineModule<
         template: insertNode(doc.template, state.draggingPath, {
           type: 'Element',
           path: [],
-          name: localNameOfDragging || dragging.displayName,
+          name: getters.localNameOfDragging || dragging.displayName,
           attributes: [],
           children: [],
           range: [-1, -1]
@@ -162,6 +153,23 @@ export const project: DefineModule<
       return state.draggingUri
         ? getters.scopedDocuments[state.draggingUri]
         : undefined
+    },
+
+    localNameOfDragging(state, getters) {
+      const doc = state.currentUri && getters.scopedDocuments[state.currentUri]
+      const dragging = getters.draggingScopedDocument
+
+      if (!doc || !dragging) {
+        return undefined
+      }
+
+      return doc.childComponents.reduce<string | undefined>((acc, comp) => {
+        if (acc) return acc
+
+        if (comp.uri === dragging.uri) {
+          return comp.name
+        }
+      }, undefined)
     }
   },
 

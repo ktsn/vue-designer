@@ -33,6 +33,34 @@ describe('Store project getters', () => {
     })
   })
 
+  describe('localNameOfDragging', () => {
+    it('should return local binding name of dragging component', () => {
+      state.documents = documents()
+      state.currentUri = 'file:///HasLocalBar.vue'
+      state.draggingUri = 'file:///Bar.vue'
+
+      const actual = store.getters['project/localNameOfDragging']
+      expect(actual).toBe('LocalBar')
+    })
+
+    it('should return undefined if the current document does not have the dragging component', () => {
+      state.documents = documents()
+      state.currentUri = 'file:///Foo.vue'
+      state.draggingUri = 'file:///Bar.vue'
+
+      const actual = store.getters['project/localNameOfDragging']
+      expect(actual).toBe(undefined)
+    })
+
+    it('should return undefined if it is not dragging', () => {
+      state.documents = documents()
+      state.currentUri = 'file:///HasLocalBar.vue'
+
+      const actual = store.getters['project/localNameOfDragging']
+      expect(actual).toBe(undefined)
+    })
+  })
+
   describe('currentRenderingDocument', () => {
     it('should return a document that will be rendered in current', () => {
       state.documents = documents()

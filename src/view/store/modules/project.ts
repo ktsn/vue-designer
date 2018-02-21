@@ -36,6 +36,7 @@ interface ProjectGetters {
   currentRenderingDocument: ScopedDocument | undefined
   draggingScopedDocument: ScopedDocument | undefined
   localNameOfDragging: string | undefined
+  nodeOfDragging: Element | undefined
 }
 
 interface ProjectActions {
@@ -124,7 +125,9 @@ export const project: DefineModule<
       }
 
       const dragging = getters.draggingScopedDocument
-      if (!doc.template || state.draggingPath.length === 0 || !dragging) {
+      const insertInto = state.draggingPath
+      const newNode = getters.nodeOfDragging
+      if (!doc.template || !dragging || insertInto.length === 0 || !newNode) {
         return doc
       }
 
@@ -138,14 +141,7 @@ export const project: DefineModule<
       return {
         ...doc,
         childComponents: newChildComponents,
-        template: insertNode(doc.template, state.draggingPath, {
-          type: 'Element',
-          path: [],
-          name: getters.localNameOfDragging || dragging.displayName,
-          attributes: [],
-          children: [],
-          range: [-1, -1]
-        })
+        template: insertNode(doc.template, insertInto, newNode)
       }
     },
 
@@ -170,6 +166,23 @@ export const project: DefineModule<
           return comp.name
         }
       }, undefined)
+    },
+
+    nodeOfDragging(_state, getters) {
+      const dragging = getters.draggingScopedDocument
+      if (!dragging) {
+        return
+      }
+
+      const localName = getters.localNameOfDragging
+      return {
+        type: 'Element',
+        path: [],
+        name: localName || dragging.displayName,
+        attributes: [],
+        children: [],
+        range: [-1, -1]
+      }
     }
   },
 

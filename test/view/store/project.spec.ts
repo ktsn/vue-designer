@@ -61,6 +61,32 @@ describe('Store project getters', () => {
     })
   })
 
+  describe('nodeOfDragging', () => {
+    it('should return an AST element of dragging component', () => {
+      state.documents = documents()
+      state.draggingUri = 'file:///Foo.vue'
+
+      const actual = store.getters['project/nodeOfDragging']
+      expect(actual).toEqual(h('Foo', [], []))
+    })
+
+    it('should named as local alias if the current document has it', () => {
+      state.documents = documents()
+      state.currentUri = 'file:///HasLocalBar.vue'
+      state.draggingUri = 'file:///Bar.vue'
+
+      const actual = store.getters['project/nodeOfDragging']
+      expect(actual).toEqual(h('LocalBar', [], []))
+    })
+
+    it('should return undefined if there is no dragging', () => {
+      state.documents = documents()
+
+      const actual = store.getters['project/nodeOfDragging']
+      expect(actual).toBe(undefined)
+    })
+  })
+
   describe('currentRenderingDocument', () => {
     it('should return a document that will be rendered in current', () => {
       state.documents = documents()
@@ -69,6 +95,19 @@ describe('Store project getters', () => {
       const actual = store.getters['project/currentRenderingDocument']
       const expected =
         store.getters['project/scopedDocuments'][state.currentUri]
+      expect(actual).toEqual(expected)
+    })
+
+    it('should ignore if dragging path is empty', () => {
+      state.documents = documents()
+      state.currentUri = 'file:///Foo.vue'
+      state.draggingUri = 'file:///Bar.vue'
+      state.draggingPath = []
+
+      const actual = store.getters['project/currentRenderingDocument'].template
+      const expected =
+        store.getters['project/scopedDocuments'][state.currentUri].template
+
       expect(actual).toEqual(expected)
     })
 

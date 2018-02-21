@@ -104,7 +104,7 @@ export default Vue.extend({
       event.dataTransfer.dropEffect = 'copy'
 
       // Detect where the dragging node will be put
-      const outRatio = 0.15
+      const outRatio = 0.2
       const bounds = (event.target as HTMLElement).getBoundingClientRect()
       const h = bounds.height
       const posY = event.pageY - bounds.top

@@ -71,7 +71,7 @@ export const projectHelpers = createNamespacedHelpers<
 
 let connection: ClientConnection
 let draggingTimer: any
-const draggingInterval = 200
+const draggingInterval = 80
 
 export const project: DefineModule<
   ProjectState,

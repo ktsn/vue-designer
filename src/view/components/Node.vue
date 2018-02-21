@@ -9,6 +9,7 @@ import {
   resolveControlDirectives,
   ResolvedChild
 } from '../rendering'
+import { DraggingPlace } from '../store/modules/project'
 
 export default Vue.extend({
   name: 'Node',
@@ -94,6 +95,10 @@ export default Vue.extend({
     },
 
     onDragOver(event: DragEvent): void {
+      if (this.data.path.length === 0) {
+        return
+      }
+
       event.preventDefault()
       event.stopPropagation()
       event.dataTransfer.dropEffect = 'copy'
@@ -105,24 +110,28 @@ export default Vue.extend({
       const posY = event.pageY - bounds.top
       const ratioY = posY / h
 
-      let path: number[]
+      let place: DraggingPlace
       if (ratioY <= outRatio) {
-        path = this.data.path
+        place = 'before'
       } else if (ratioY < 0.5) {
-        path = this.data.path.concat(0)
+        place = 'first'
       } else if (ratioY < 1 - outRatio) {
-        const last = this.data.children.length
-        path = this.data.path.concat(last)
+        place = 'last'
       } else {
-        const parentPath = this.data.path.slice(0, -1)
-        const last = this.data.path[parentPath.length]
-        path = parentPath.concat(last + 1)
+        place = 'after'
       }
 
-      this.$emit('dragenter', path)
+      this.$emit('dragenter', {
+        path: this.data.path,
+        place
+      })
     },
 
     onDrop(event: DragEvent): void {
+      if (this.data.path.length === 0) {
+        return
+      }
+
       event.stopPropagation()
       this.$emit('add')
     }

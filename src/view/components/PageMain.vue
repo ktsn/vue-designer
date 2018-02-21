@@ -4,7 +4,7 @@
       v-if="renderingDocument"
       :document="renderingDocument"
       @select="select"
-      @dragenter="setDraggingPath"
+      @dragenter="setDraggingPlace"
       @add="applyDraggingElement"
     />
 
@@ -75,7 +75,7 @@ export default Vue.extend({
   methods: projectHelpers.mapActions([
     'startDragging',
     'endDragging',
-    'setDraggingPath',
+    'setDraggingPlace',
     'select',
     'applyDraggingElement'
   ])

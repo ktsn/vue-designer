@@ -1,10 +1,12 @@
+import assert from 'assert'
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
 import {
   Template,
   Element,
   addScope as addScopeToTemplate,
-  insertNode
+  insertNode,
+  getNode
 } from '@/parser/template'
 import { ClientConnection } from '@/view/communication'
 import { mapValues } from '@/utils'
@@ -21,6 +23,8 @@ export interface ScopedDocument {
   childComponents: ChildComponent[]
   styleCode: string
 }
+
+export type DraggingPlace = 'before' | 'after' | 'first' | 'last'
 
 export interface ProjectState {
   documents: Record<string, VueFilePayload>
@@ -45,7 +49,7 @@ interface ProjectActions {
   applyDraggingElement: undefined
   startDragging: string
   endDragging: undefined
-  setDraggingPath: number[]
+  setDraggingPlace: { path: number[]; place: DraggingPlace }
 }
 
 interface ProjectMutations {
@@ -246,22 +250,54 @@ export const project: DefineModule<
       commit('setDraggingPath', [])
     },
 
-    setDraggingPath({ state, commit }, path) {
-      // The dragging node has zero-length path
-      if (path.length === 0) {
-        return
-      }
-
+    setDraggingPlace({ state, getters, commit }, { path, place }) {
       clearTimeout(draggingTimer)
       draggingTimer = setTimeout(() => {
+        const doc = getters.currentDocument
+        if (!doc || !doc.template) {
+          return
+        }
+
+        const node = getNode(doc.template, path)
+        if (!node) {
+          return
+        }
+
+        let insertInto: number[]
+        if (place === 'before') {
+          insertInto = node.path
+        } else if (place === 'after') {
+          const last = node.path[node.path.length - 1]
+          insertInto = node.path.slice(0, -1).concat(last + 1)
+        } else if (place === 'first') {
+          const el = node as Element
+          assert(
+            el.type === 'Element',
+            `[store/project] node type must be 'Element' when place is 'first' but received '${
+              node.type
+            }'`
+          )
+          insertInto = el.path.concat(0)
+        } else {
+          const el = node as Element
+          assert(
+            el.type === 'Element',
+            `[store/project] node type must be 'Element' when place is 'last' but received '${
+              node.type
+            }'`
+          )
+          const len = el.children.length
+          insertInto = el.path.concat(len)
+        }
+
         const isUpdated =
-          state.draggingPath.length !== path.length ||
+          state.draggingPath.length !== insertInto.length ||
           path.reduce((acc, el, i) => {
             return acc || state.draggingPath[i] !== el
           }, false)
 
         if (isUpdated) {
-          commit('setDraggingPath', path)
+          commit('setDraggingPath', insertInto)
         }
       }, draggingInterval)
     }

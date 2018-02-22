@@ -1,6 +1,7 @@
 import assert from 'assert'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
+import { Range } from './modifier'
 
 export const scopePrefix = 'data-scope-'
 
@@ -347,22 +348,18 @@ function dropWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
   return list.slice(skip.length)
 }
 
-interface HasRange {
-  range: [number, number]
-}
-
-export interface Style extends HasRange {
+export interface Style extends Range {
   body: (AtRule | Rule)[]
 }
 
-export interface Rule extends HasRange {
+export interface Rule extends Range {
   type: 'Rule'
   path: number[]
   selectors: Selector[]
   declarations: Declaration[]
 }
 
-export interface Declaration extends HasRange {
+export interface Declaration extends Range {
   type: 'Declaration'
   path: number[]
   prop: string
@@ -370,7 +367,7 @@ export interface Declaration extends HasRange {
   important: boolean
 }
 
-export interface AtRule extends HasRange {
+export interface AtRule extends Range {
   type: 'AtRule'
   path: number[]
   name: string

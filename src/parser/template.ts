@@ -1,6 +1,7 @@
 import assert from 'assert'
 import { AST } from 'vue-eslint-parser'
 import { scopePrefix } from './style'
+import { Range } from './modifier'
 
 type RootElement = AST.VElement & AST.HasConcreteInfo
 type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
@@ -247,9 +248,8 @@ export function addScope(node: Template, scope: string): Template {
 
 export type ElementChild = Element | TextNode | ExpressionNode
 
-interface BaseNode {
+interface BaseNode extends Range {
   type: string
-  range: [number, number]
 }
 
 export interface Template extends BaseNode {

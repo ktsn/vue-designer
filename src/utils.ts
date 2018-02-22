@@ -9,6 +9,12 @@ export function mapValues<T, R>(
   return res
 }
 
+export function flatten<T>(list: (T | T[])[]): T[] {
+  return list.reduce<T[]>((acc, item) => {
+    return acc.concat(item)
+  }, [])
+}
+
 export function range(min: number, max: number): number[] {
   return Array.apply(null, Array(max - min + 1)).map(
     (_: any, i: number) => min + i

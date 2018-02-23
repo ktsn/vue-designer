@@ -60,4 +60,45 @@ describe('Modifier', () => {
 
     expect(actual).toBe(expected)
   })
+
+  it('should work when the modifiers does not ordered by pos', () => {
+    const code = 'let foo, bar;'
+    const actual = modify(code, [
+      remove({ range: [7, 12] }),
+      insertBefore({ range: [3, 7] }, ' baz,')
+    ])
+    const expected = 'let baz, foo;'
+    expect(actual).toBe(expected)
+  })
+
+  it('should work when modifier ranges are overwrapped: remove -> add', () => {
+    const code = 'let foo, bar;'
+    const actual = modify(code, [
+      remove({ range: [4, 12] }),
+      insertAfter({ range: [4, 8] }, 'baz')
+    ])
+    const expected = 'let baz;'
+    expect(actual).toBe(expected)
+  })
+
+  it('should work when modifier ranges are overwrapped: add -> remove', () => {
+    const code = 'let foo, bar;'
+    const actual = modify(code, [
+      insertAfter({ range: [4, 8] }, 'baz'),
+      remove({ range: [4, 12] })
+    ])
+    const expected = 'let baz;'
+    expect(actual).toBe(expected)
+  })
+
+  it('should work when modifier ranges are overwrapped: remove -> remove', () => {
+    const code = 'let foo, bar, baz;'
+    const actual = modify(code, [
+      remove({ range: [4, 17] }),
+      remove({ range: [9, 12] })
+    ])
+    const expected = 'let ;'
+    expect(actual).toBe(expected)
+  })
+})
 })

@@ -21,7 +21,7 @@ interface Remove {
 }
 
 export function modify(code: string, modfiers: Modifiers): string {
-  const ms = flatten(modfiers)
+  const ms = flatten(modfiers).sort(modifierComperator)
 
   function loop(
     acc: string,
@@ -33,12 +33,19 @@ export function modify(code: string, modfiers: Modifiers): string {
       return acc + code.slice(pos)
     }
 
-    const pre = code.slice(pos, cur.pos)
+    // Fix the current position to resolve overwraps of nodes.
+    // e.g.
+    //  remove: [4, 8] -> insert: 6
+    //  then insert position will be 8.
+    const fixedPos = pos <= cur.pos ? cur.pos : pos
+    const pre = code.slice(pos, fixedPos)
     switch (cur.type) {
       case 'Add':
-        return loop(acc + pre + cur.value, cur.pos, rest[0], rest.slice(1))
+        return loop(acc + pre + cur.value, fixedPos, rest[0], rest.slice(1))
       case 'Remove':
-        return loop(acc + pre, cur.pos + cur.length, rest[0], rest.slice(1))
+        const endPos = cur.pos + cur.length
+        const fixedEnd = pos <= endPos ? endPos : pos
+        return loop(acc + pre, fixedEnd, rest[0], rest.slice(1))
       default:
         throw new Error(
           '[modifier] Unexpected modifier type: ' + (cur as any).type
@@ -48,20 +55,30 @@ export function modify(code: string, modfiers: Modifiers): string {
   return loop('', 0, ms[0], ms.slice(1))
 }
 
-export function insertBefore(node: Range, value: string): Modifier {
+function modifierComperator(a: Modifier, b: Modifier): number {
+  if (a.pos < b.pos) {
+    return -1
+  } else if (a.pos > b.pos) {
+    return 1
+  } else {
+    return 0
+  }
+}
+
+export function insertAt(pos: number, value: string): Modifier {
   return {
     type: 'Add',
-    pos: node.range[0],
+    pos,
     value
   }
 }
 
+export function insertBefore(node: Range, value: string): Modifier {
+  return insertAt(node.range[0], value)
+}
+
 export function insertAfter(node: Range, value: string): Modifier {
-  return {
-    type: 'Add',
-    pos: node.range[1],
-    value
-  }
+  return insertAt(node.range[1], value)
 }
 
 export function remove(node: Range): Modifier {

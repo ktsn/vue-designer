@@ -4,7 +4,8 @@ import {
   insertBefore,
   insertAfter,
   remove,
-  replace
+  replace,
+  insertToTemplate
 } from '@/parser/modifier'
 import { transformTemplate } from '@/parser/template'
 
@@ -101,4 +102,80 @@ describe('Modifier', () => {
     expect(actual).toBe(expected)
   })
 })
+
+describe('Template modifier', () => {
+  it('should insert a node code', () => {
+    const code = `
+    <template>
+      <div>
+        <a href="#">Test</a>
+      </div>
+    </template>
+    `
+
+    const program = parse(code, {})
+    const ast = transformTemplate(program.templateBody!, code)
+
+    const actual = modify(code, [
+      insertToTemplate(ast, [1, 1], '<h1>Hello!</h1>')
+    ])
+    const expected = `
+    <template>
+      <div>
+        <h1>Hello!</h1>
+        <a href="#">Test</a>
+      </div>
+    </template>
+    `
+    expect(actual).toBe(expected)
+  })
+
+  it('should insert to the last children', () => {
+    const code = `
+    <template>
+      <div>
+        <a href="#">Test</a>
+      </div>
+    </template>
+    `
+
+    const program = parse(code, {})
+    const ast = transformTemplate(program.templateBody!, code)
+
+    const actual = modify(code, [
+      insertToTemplate(ast, [1, 3], '<p>Message</p>')
+    ])
+    const expected = `
+    <template>
+      <div>
+        <a href="#">Test</a>
+        <p>Message</p>
+      </div>
+    </template>
+    `
+    expect(actual).toBe(expected)
+  })
+
+  it('should insert into an empty element', () => {
+    const code = `
+    <template>
+      <div></div>
+    </template>
+    `
+
+    const program = parse(code, {})
+    const ast = transformTemplate(program.templateBody!, code)
+
+    const actual = modify(code, [
+      insertToTemplate(ast, [1, 0], '<p>Message</p>')
+    ])
+    const expected = `
+    <template>
+      <div>
+        <p>Message</p>
+      </div>
+    </template>
+    `
+    expect(actual).toBe(expected)
+  })
 })

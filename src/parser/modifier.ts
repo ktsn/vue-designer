@@ -1,4 +1,5 @@
 import { flatten } from '../utils'
+import { Template, getNode, TextNode, ElementChild, Element } from './template'
 
 export type Modifiers = (Modifier | Modifier[])[]
 
@@ -19,6 +20,8 @@ interface Remove {
   pos: number
   length: number
 }
+
+const empty = insertAt(0, '')
 
 export function modify(code: string, modfiers: Modifiers): string {
   const ms = flatten(modfiers).sort(modifierComperator)
@@ -91,4 +94,61 @@ export function remove(node: Range): Modifier {
 
 export function replace(node: Range, value: string): Modifier[] {
   return [remove(node), insertAfter(node, value)]
+}
+
+export function insertToTemplate(
+  template: Template,
+  path: number[],
+  value: string
+): Modifier {
+  const indent = calcIndentStringAt(template, path)
+  const target = getNode(template, path)
+  if (target) {
+    const post = '\n' + indent
+    return insertBefore(target, value + post)
+  }
+
+  const parentPath = path.slice(0, -1)
+  const last = path[path.length - 1]
+  const before = getNode(template, parentPath.concat(last - 1))
+  if (before) {
+    const pre = '  '
+    const post = '\n' + indent.slice(0, -2)
+    return insertAfter(before, pre + value + post)
+  }
+
+  const parent = getNode(template, parentPath) as Element | undefined
+  if (parent) {
+    const pre = '\n' + indent
+    const post = '\n' + indent.slice(0, -2)
+    return insertAfter(parent.startTag, pre + value + post)
+  }
+
+  return empty
+}
+
+function calcIndentStringAt(template: Template, path: number[]): string {
+  if (path.length === 0) {
+    return ''
+  }
+
+  const parentPath = path.slice(0, -1)
+
+  let node: TextNode | undefined, iterating: ElementChild | undefined
+  for (let i = 0; (iterating = getNode(template, parentPath.concat(i))); i++) {
+    if (iterating.type === 'TextNode') {
+      node = iterating
+      break
+    }
+  }
+
+  if (!node) {
+    return calcIndentStringAt(template, parentPath) + '  '
+  }
+
+  const match = /\n(\s+)/.exec(node.text)
+  if (!match) {
+    return ''
+  }
+  return match[1]
 }

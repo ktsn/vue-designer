@@ -8,7 +8,7 @@ import {
 } from '@/parser/template'
 import { DefaultValue } from '@/parser/script'
 import { evalWithScope } from './eval'
-import { isObject, range } from '@/utils'
+import { isObject, range, clone } from '@/utils'
 
 function findDirective(
   attrs: (Attribute | Directive)[],
@@ -51,7 +51,7 @@ function shouldAppearVElse(
     }
 
     const lastVIf = findDirective(
-      last.attributes,
+      last.startTag.attributes,
       dir => dir.name === 'if' || dir.name === 'else-if'
     )
 
@@ -85,7 +85,7 @@ export function resolveControlDirectives(
 ): ResolvedChild[] {
   const { el: child, scope } = item
   if (child.type === 'Element') {
-    const attrs = child.attributes
+    const attrs = child.startTag.attributes
 
     // v-for
     const vFor = findDirective(attrs, d => d.name === 'for') as
@@ -106,14 +106,15 @@ export function resolveControlDirectives(
       }
 
       const vForIndex = attrs.indexOf(vFor)
-      const clone = {
-        ...child,
-        // Need to remove v-for directive to avoid infinite loop.
-        attributes: [
-          ...attrs.slice(0, vForIndex),
-          ...attrs.slice(vForIndex + 1)
-        ]
-      }
+      const cloneNode = clone(child, {
+        startTag: clone(child.startTag, {
+          // Need to remove v-for directive to avoid infinite loop.
+          attributes: [
+            ...attrs.slice(0, vForIndex),
+            ...attrs.slice(vForIndex + 1)
+          ]
+        })
+      })
       return reduceVFor(
         iteratee.value,
         (acc, ...iteraterValues: any[]) => {
@@ -122,7 +123,7 @@ export function resolveControlDirectives(
             newScope[name] = iteraterValues[i]
           })
           return resolveControlDirectives(acc, {
-            el: clone,
+            el: cloneNode,
             scope: newScope
           })
         },

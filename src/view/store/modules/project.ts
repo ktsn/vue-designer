@@ -184,7 +184,16 @@ export const project: DefineModule<
         type: 'Element',
         path: [],
         name: localName || dragging.displayName,
-        attributes: [],
+        startTag: {
+          type: 'StartTag',
+          attributes: [],
+          selfClosing: false,
+          range: [-1, -1]
+        },
+        endTag: {
+          type: 'EndTag',
+          range: [-1, -1]
+        },
         children: [],
         range: [-1, -1]
       }

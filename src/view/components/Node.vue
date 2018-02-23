@@ -38,7 +38,7 @@ export default Vue.extend({
   computed: {
     vnodeData(): VNodeData {
       const { data: node, scope, selectable, selected } = this
-      const data = convertToVNodeData(node.attributes, scope)
+      const data = convertToVNodeData(node.startTag.attributes, scope)
 
       if (selectable) {
         if (selected) {

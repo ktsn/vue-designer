@@ -64,7 +64,8 @@ describe('Template AST transformer', () => {
           d('bind', { argument: 'name' }, 'foo'),
           d('model', 'value')
         ],
-        []
+        [],
+        { hasEndTag: false }
       )
     ])
 
@@ -274,9 +275,9 @@ describe('Scope attribute', () => {
     const result = addScope(ast, scope)
 
     const expected: any = ast
-    expected.children[1].attributes.push(scopeAttr) // #foo
-    expected.children[1].children[1].attributes.push(scopeAttr) // .bar
-    expected.children[1].children[3].attributes.push(scopeAttr) // [data-v-abcde]
+    expected.children[1].startTag.attributes.push(scopeAttr) // #foo
+    expected.children[1].children[1].startTag.attributes.push(scopeAttr) // .bar
+    expected.children[1].children[3].startTag.attributes.push(scopeAttr) // [data-v-abcde]
 
     expect(result).toEqual(expected)
   })

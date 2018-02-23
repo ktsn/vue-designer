@@ -31,7 +31,7 @@ function matchSelector(
   selector: Selector,
   template: Template
 ): boolean {
-  const attrMap = target.attributes.reduce<Map<string, Attribute>>(
+  const attrMap = target.startTag.attributes.reduce<Map<string, Attribute>>(
     (map, attr) => {
       if (!attr.directive) {
         map.set(attr.name, attr)
@@ -221,7 +221,7 @@ class StyleMap {
   getCandidateRules(el: Element): Rule[] {
     const tagMatched = this.tagMap.get(el.name) || []
 
-    const attrsMatched = el.attributes.reduce<Rule[]>((acc, attr) => {
+    const attrsMatched = el.startTag.attributes.reduce<Rule[]>((acc, attr) => {
       if (attr.directive) return acc
 
       if (attr.value) {

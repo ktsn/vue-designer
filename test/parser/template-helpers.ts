@@ -91,17 +91,32 @@ export function createTemplate(
 export function h(
   tag: string,
   attributes: (Attribute | Directive)[],
-  children: (Element | ExpressionNode | string)[]
+  children: (Element | ExpressionNode | string)[],
+  options: { selfClosing?: boolean; hasEndTag?: boolean } = {}
 ): Element {
   attributes.forEach((attr, i) => {
     attr.index = i
   })
 
+  const selfClosing = options.selfClosing || false
+  const hasEndTag = options.hasEndTag === undefined ? true : options.hasEndTag
+
   return {
     type: 'Element',
     path: [],
     name: tag,
-    attributes,
+    startTag: {
+      type: 'StartTag',
+      attributes,
+      selfClosing,
+      range: [-1, -1]
+    },
+    endTag: !hasEndTag
+      ? null
+      : {
+          type: 'EndTag',
+          range: [-1, -1]
+        },
     children: children.map(strToTextNode),
     range: [-1, -1]
   }

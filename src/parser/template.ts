@@ -28,10 +28,19 @@ function transformElement(
 ): Element {
   const attrs = el.startTag.attributes
 
+  const start = startTag(
+    attrs.map((attr, i) => transformAttribute(attr, i, code)),
+    el.startTag.selfClosing,
+    el.startTag.range
+  )
+
+  const end = el.endTag && endtag(el.endTag.range)
+
   return element(
     path,
     el.name,
-    attrs.map((attr, i) => transformAttribute(attr, i, code)),
+    start,
+    end,
     el.children.map((child, i) => transformChild(child, code, path.concat(i))),
     el.range
   )
@@ -229,17 +238,18 @@ export function visitElements(
 
 export function addScope(node: Template, scope: string): Template {
   return visitElements(node, el => {
-    return {
-      ...el,
-      attributes: el.attributes.concat({
-        type: 'Attribute',
-        directive: false,
-        index: -1,
-        name: scopePrefix + scope,
-        value: null,
-        range: [-1, -1]
+    return clone(el, {
+      startTag: clone(el.startTag, {
+        attributes: el.startTag.attributes.concat({
+          type: 'Attribute',
+          directive: false,
+          index: -1,
+          name: scopePrefix + scope,
+          value: null,
+          range: [-1, -1]
+        })
       })
-    }
+    })
   })
 }
 
@@ -259,8 +269,19 @@ export interface Element extends BaseNode {
   type: 'Element'
   path: number[]
   name: string
-  attributes: (Attribute | Directive)[]
+  startTag: StartTag
+  endTag: EndTag | null
   children: ElementChild[]
+}
+
+export interface StartTag extends BaseNode {
+  type: 'StartTag'
+  attributes: (Attribute | Directive)[]
+  selfClosing: boolean
+}
+
+export interface EndTag extends BaseNode {
+  type: 'EndTag'
 }
 
 export interface TextNode extends BaseNode {
@@ -303,7 +324,8 @@ export interface VForDirective extends Directive {
 function element(
   path: number[],
   name: string,
-  attributes: (Attribute | Directive)[],
+  startTag: StartTag,
+  endTag: EndTag | null,
   children: ElementChild[],
   range: [number, number]
 ): Element {
@@ -311,8 +333,29 @@ function element(
     type: 'Element',
     path,
     name,
-    attributes,
+    startTag,
+    endTag,
     children,
+    range
+  }
+}
+
+function startTag(
+  attributes: (Attribute | Directive)[],
+  selfClosing: boolean,
+  range: [number, number]
+): StartTag {
+  return {
+    type: 'StartTag',
+    attributes,
+    selfClosing,
+    range
+  }
+}
+
+function endtag(range: [number, number]): EndTag {
+  return {
+    type: 'EndTag',
     range
   }
 }

@@ -178,4 +178,31 @@ describe('Template modifier', () => {
     `
     expect(actual).toBe(expected)
   })
+
+  it('should insert into one line code', () => {
+    const code = `
+    <template>
+      <div>
+        <h1>Test</h1>
+      </div>
+    </template>
+    `
+
+    const program = parse(code, {})
+    const ast = transformTemplate(program.templateBody!, code)
+
+    const actual = modify(code, [
+      insertToTemplate(ast, [1, 1, 1], '<span>Message</span>')
+    ])
+    const expected = `
+    <template>
+      <div>
+        <h1>Test
+          <span>Message</span>
+        </h1>
+      </div>
+    </template>
+    `
+    expect(actual).toBe(expected)
+  })
 })

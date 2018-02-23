@@ -4,6 +4,7 @@ import { initProject, changeDocument } from './server/communication'
 import { parseVueFile, vueFileToPayload, VueFile } from './parser/vue-file'
 import { getNode } from './parser/template'
 import { mapValues } from './utils'
+import { modify, insertToTemplate } from './parser/modifier'
 
 export function activate(context: vscode.ExtensionContext) {
   const highlight = vscode.window.createTextEditorDecorationType({
@@ -56,7 +57,7 @@ export function activate(context: vscode.ExtensionContext) {
     },
     (_ws, payload) => {
       switch (payload.type) {
-        case 'SelectNode':
+        case 'SelectNode': {
           const vueFile = vueFiles[payload.uri]
           if (!vueFile || !vueFile.template) break
 
@@ -84,8 +85,41 @@ export function activate(context: vscode.ExtensionContext) {
 
           editor.setDecorations(highlight, highlightList)
           break
+        }
+        case 'AddNode': {
+          const vueFile = vueFiles[payload.currentUri]
+          if (!vueFile || !vueFile.template) break
+
+          const component = vueFile.childComponents.find(child => {
+            return child.uri === payload.nodeUri
+          })
+          if (!component) break
+
+          const uri = vscode.Uri.parse(vueFile.uri)
+          vscode.workspace.openTextDocument(uri).then(doc => {
+            const code = doc.getText()
+
+            const updated = modify(code, [
+              insertToTemplate(
+                vueFile.template!,
+                payload.path,
+                `<${component.name} />`
+              )
+            ])
+
+            const range = new vscode.Range(
+              doc.positionAt(0),
+              doc.positionAt(code.length)
+            )
+
+            const wsEdit = new vscode.WorkspaceEdit()
+            wsEdit.replace(uri, range, updated)
+            vscode.workspace.applyEdit(wsEdit)
+          })
+          break
+        }
         default:
-          throw new Error('Unexpected client payload: ' + payload.type)
+          throw new Error('Unexpected client payload: ' + (payload as any).type)
       }
     }
   )

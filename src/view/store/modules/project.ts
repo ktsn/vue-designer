@@ -229,12 +229,21 @@ export const project: DefineModule<
     },
 
     applyDraggingElement({ commit, state, getters }) {
+      const currentUri = state.currentUri
+      const nodeUri = state.draggingUri
       const path = state.draggingPath
       const newNode = getters.nodeOfDragging
 
-      if (path.length === 0 || !newNode) {
+      if (!currentUri || !nodeUri || path.length === 0 || !newNode) {
         return
       }
+
+      connection.send({
+        type: 'AddNode',
+        path,
+        currentUri,
+        nodeUri
+      })
 
       commit('addElement', {
         path,

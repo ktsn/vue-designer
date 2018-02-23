@@ -1,7 +1,7 @@
 import { VueFilePayload } from './parser/vue-file'
 
 export type ServerPayload = InitProject | ChangeDocument
-export type ClientPayload = SelectNode
+export type ClientPayload = SelectNode | AddNode
 
 export interface InitProject {
   type: 'InitProject'
@@ -16,5 +16,12 @@ export interface ChangeDocument {
 export interface SelectNode {
   type: 'SelectNode'
   uri: string
+  path: number[]
+}
+
+export interface AddNode {
+  type: 'AddNode'
+  currentUri: string
+  nodeUri: string
   path: number[]
 }

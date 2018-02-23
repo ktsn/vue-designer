@@ -2,6 +2,7 @@ import assert from 'assert'
 import { AST } from 'vue-eslint-parser'
 import { scopePrefix } from './style'
 import { Range } from './modifier'
+import { clone } from '../utils'
 
 type RootElement = AST.VElement & AST.HasConcreteInfo
 type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
@@ -174,10 +175,9 @@ export function insertNode(
           `0 <= ${index} <= ${cs.length}`
       )
 
-      return {
-        ...(parent as any),
+      return clone(parent, {
         children: [...cs.slice(0, index), el, ...cs.slice(index)]
-      }
+      })
     }
 
     const child = parent.children[index] as Element
@@ -195,14 +195,13 @@ export function insertNode(
     )
 
     const [head, ...tail] = rest
-    return {
-      ...(parent as any),
+    return clone(parent, {
       children: [
         ...cs.slice(0, index),
         loop(child, head, tail),
         ...cs.slice(index + 1)
       ]
-    }
+    })
   }
   return loop(root, path[0], path.slice(1))
 }
@@ -214,20 +213,18 @@ export function visitElements(
   function loop(node: ElementChild): ElementChild {
     switch (node.type) {
       case 'Element':
-        const newNode = {
-          ...node,
+        const newNode = clone(node, {
           children: node.children.map(loop)
-        }
+        })
         return fn(newNode) || newNode
       default:
         // Do nothing
         return node
     }
   }
-  return {
-    ...node,
+  return clone(node, {
     children: node.children.map(loop)
-  }
+  })
 }
 
 export function addScope(node: Template, scope: string): Template {

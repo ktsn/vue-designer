@@ -2,6 +2,7 @@ import assert from 'assert'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
 import { Range } from './modifier'
+import { clone } from '../utils'
 
 export const scopePrefix = 'data-scope-'
 
@@ -251,35 +252,31 @@ export function visitLastSelectors(
   ): AtRule | Rule | Declaration {
     switch (node.type) {
       case 'AtRule':
-        return {
-          ...node,
+        return clone(node, {
           children: node.children.map(loop)
-        }
+        })
       case 'Rule':
-        return {
-          ...node,
+        return clone(node, {
           selectors: node.selectors.map(s => fn(s, node) || s)
-        }
+        })
       default:
         // Do nothing
         return node
     }
   }
-  return {
-    ...node,
+  return clone(node, {
     body: node.body.map(b => loop(b))
-  }
+  })
 }
 
 export function addScope(node: Style, scope: string): Style {
   return visitLastSelectors(node, selector => {
-    return {
-      ...selector,
+    return clone(selector, {
       attributes: selector.attributes.concat({
         type: 'Attribute',
         name: scopePrefix + scope
       })
-    }
+    })
   })
 }
 

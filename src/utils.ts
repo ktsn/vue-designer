@@ -15,6 +15,13 @@ export function flatten<T>(list: (T | T[])[]): T[] {
   }, [])
 }
 
+export function clone<T>(value: T, changes: any): T {
+  return {
+    ...(value as any),
+    ...changes
+  }
+}
+
 export function range(min: number, max: number): number[] {
   return Array.apply(null, Array(max - min + 1)).map(
     (_: any, i: number) => min + i

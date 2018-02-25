@@ -59,7 +59,9 @@
       "json",
       "vue"
     ],
-    "collectCoverageFrom": ["src/**/*.{ts,vue}"],
+    "collectCoverageFrom": [
+      "src/**/*.{ts,vue}"
+    ],
     "globals": {
       "ts-jest": {
         "tsConfigFile": "tsconfig.test.json"
@@ -67,6 +69,7 @@
     }
   },
   "dependencies": {
+    "@babel/types": "^7.0.0-beta.40",
     "babylon": "^7.0.0-beta.40",
     "eslint": "^4.17.0",
     "hash-sum": "^1.0.2",

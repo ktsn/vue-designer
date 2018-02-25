@@ -1,23 +1,23 @@
 import assert from 'assert'
-import * as AST from 'babel-types'
+import * as t from 'babel-types'
 
-export function extractProps(program: AST.Program): Prop[] {
+export function extractProps(program: t.Program): Prop[] {
   const options = findComponentOptions(program.body)
   if (!options) return []
 
   const props = findProperty(options.properties, 'props')
   if (!props) return []
 
-  if (props.value.type === 'ObjectExpression') {
+  if (t.isObjectExpression(props.value)) {
     return props.value.properties.filter(isStaticProperty).map(p => {
-      const key = p.key as AST.Identifier
+      const key = p.key as t.Identifier
       return {
         name: key.name,
         type: getPropType(p.value),
         default: getPropDefault(p.value)
       }
     })
-  } else if (props.value.type === 'ArrayExpression') {
+  } else if (t.isArrayExpression(props.value)) {
     return props.value.elements.filter(isStringLiteral).map(el => {
       return {
         name: el.value,
@@ -30,7 +30,7 @@ export function extractProps(program: AST.Program): Prop[] {
   }
 }
 
-export function extractData(program: AST.Program): Data[] {
+export function extractData(program: t.Program): Data[] {
   const options = findComponentOptions(program.body)
   if (!options) return []
 
@@ -41,7 +41,7 @@ export function extractData(program: AST.Program): Data[] {
   if (!obj) return []
 
   return obj.properties.filter(isStaticProperty).map(p => {
-    const key = p.key as AST.Identifier
+    const key = p.key as t.Identifier
     return {
       name: key.name,
       default: getLiteralValue(p.value)
@@ -50,7 +50,7 @@ export function extractData(program: AST.Program): Data[] {
 }
 
 export function extractChildComponents(
-  program: AST.Program,
+  program: t.Program,
   uri: string,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
@@ -86,11 +86,11 @@ export function extractChildComponents(
 }
 
 function extractComponents(
-  prop: AST.ObjectProperty | AST.ObjectMethod,
-  imports: Record<string, AST.ImportDeclaration>,
+  prop: t.ObjectProperty | t.ObjectMethod,
+  imports: Record<string, t.ImportDeclaration>,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
-  if (!prop.value || prop.value.type !== 'ObjectExpression') {
+  if (!prop.value || !t.isObjectExpression(prop.value)) {
     return []
   }
 
@@ -98,8 +98,8 @@ function extractComponents(
     .map((p): ChildComponent | undefined => {
       if (
         !isStaticProperty(p) ||
-        p.key.type !== 'Identifier' ||
-        p.value.type !== 'Identifier'
+        !t.isIdentifier(p.key) ||
+        !t.isIdentifier(p.value)
       ) {
         return undefined
       }
@@ -115,12 +115,12 @@ function extractComponents(
 }
 
 function extractLazyAddComponents(
-  prop: AST.ObjectProperty | AST.ObjectMethod,
-  imports: Record<string, AST.ImportDeclaration>,
+  prop: t.ObjectProperty | t.ObjectMethod,
+  imports: Record<string, t.ImportDeclaration>,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
   const func = normalizeMethod(prop)
-  if (!func || func.body.type !== 'BlockStatement') {
+  if (!func || !t.isBlockStatement(func.body)) {
     return []
   }
 
@@ -133,11 +133,11 @@ function extractLazyAddComponents(
       // If there are false positive in this check, they probably be
       // proned by maching with imported components in later.
       if (
-        st.type !== 'ExpressionStatement' ||
-        st.expression.type !== 'AssignmentExpression' ||
-        st.expression.right.type !== 'Identifier' || // = ComponentName
-        st.expression.left.type !== 'MemberExpression' ||
-        st.expression.left.property.type !== 'Identifier' // .LocalComponentName
+        !t.isExpressionStatement(st) ||
+        !t.isAssignmentExpression(st.expression) ||
+        !t.isIdentifier(st.expression.right) || // = ComponentName
+        !t.isMemberExpression(st.expression.left) ||
+        !t.isIdentifier(st.expression.left.property) // .LocalComponentName
       ) {
         return undefined
       }
@@ -153,11 +153,11 @@ function extractLazyAddComponents(
 }
 
 function getImportDeclarations(
-  body: AST.Statement[]
-): Record<string, AST.ImportDeclaration> {
-  const res: Record<string, AST.ImportDeclaration> = {}
+  body: t.Statement[]
+): Record<string, t.ImportDeclaration> {
+  const res: Record<string, t.ImportDeclaration> = {}
   body.forEach(node => {
-    if (node.type !== 'ImportDeclaration') return
+    if (!t.isImportDeclaration(node)) return
 
     // Collect all declared local variables in import declaration into record
     // to store all possible components.
@@ -171,7 +171,7 @@ function getImportDeclarations(
 function findMatchingComponent(
   localName: string,
   importedName: string,
-  imports: Record<string, AST.ImportDeclaration>,
+  imports: Record<string, t.ImportDeclaration>,
   localPathToUri: (localPath: string) => string
 ): ChildComponent | undefined {
   const componentImport = imports[importedName]
@@ -190,8 +190,8 @@ function findMatchingComponent(
   }
 }
 
-function isStringLiteral(node: AST.Node): node is AST.StringLiteral {
-  return node.type === 'StringLiteral'
+function isStringLiteral(node: t.Node): node is t.StringLiteral {
+  return t.isStringLiteral(node)
 }
 
 /**
@@ -199,11 +199,12 @@ function isStringLiteral(node: AST.Node): node is AST.StringLiteral {
  * If it returns `true`, `node.key` should be `Identifier`.
  */
 function isStaticProperty(
-  node: AST.ObjectProperty | AST.ObjectMethod | AST.SpreadProperty
-): node is AST.ObjectProperty | AST.ObjectMethod {
+  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty
+): node is t.ObjectProperty | t.ObjectMethod {
   return (
-    (node.type === 'ObjectProperty' || node.type === 'ObjectMethod') &&
-    node.key.type === 'Identifier'
+    (t.isObjectProperty(node) || t.isObjectMethod(node)) &&
+    !node.computed &&
+    t.isIdentifier(node.key)
   )
 }
 
@@ -211,11 +212,11 @@ function isStaticProperty(
  * Find a property name that matches the specified property name.
  */
 function findProperty(
-  props: (AST.ObjectProperty | AST.ObjectMethod | AST.SpreadProperty)[],
+  props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
   name: string
-): AST.ObjectProperty | AST.ObjectMethod | undefined {
+): t.ObjectProperty | t.ObjectMethod | undefined {
   return props.filter(isStaticProperty).find(p => {
-    return (p.key as AST.Identifier).name === name
+    return (p.key as t.Identifier).name === name
   })
 }
 
@@ -225,15 +226,12 @@ function findProperty(
  * Return undefined if it does not have a function value.
  */
 function normalizeMethod(
-  prop: AST.ObjectProperty | AST.ObjectMethod
-): AST.Function | undefined {
-  if (prop.type === 'ObjectMethod') {
+  prop: t.ObjectProperty | t.ObjectMethod
+): t.Function | undefined {
+  if (t.isObjectMethod(prop)) {
     return prop
   }
-  if (
-    prop.value.type === 'FunctionExpression' ||
-    prop.value.type === 'ArrowFunctionExpression'
-  ) {
+  if (t.isFunction(prop.value)) {
     return prop.value
   }
   return undefined
@@ -243,38 +241,35 @@ function normalizeMethod(
  * Detect `Vue.extend(...)`
  */
 function isVueExtend(
-  node: AST.Declaration | AST.Expression
-): node is AST.CallExpression {
-  if (
-    node.type !== 'CallExpression' ||
-    node.callee.type !== 'MemberExpression'
-  ) {
+  node: t.Declaration | t.Expression
+): node is t.CallExpression {
+  if (!t.isCallExpression(node) || !t.isMemberExpression(node.callee)) {
     return false
   }
 
   const property = node.callee.property
-  if (property.type !== 'Identifier' || property.name !== 'extend') {
+  if (!t.isIdentifier(property, { name: 'extend' })) {
     return false
   }
 
   const object = node.callee.object
-  if (!object || object.type !== 'Identifier' || object.name !== 'Vue') {
+  if (!object || !t.isIdentifier(object, { name: 'Vue' })) {
     return false
   }
 
   return true
 }
 
-function getPropType(value: AST.Expression | AST.Pattern): string {
-  if (value.type === 'Identifier') {
+function getPropType(value: t.Expression | t.Pattern): string {
+  if (t.isIdentifier(value)) {
     // Constructor
     return value.name
-  } else if (value.type === 'ObjectExpression') {
+  } else if (t.isObjectExpression(value)) {
     // Detailed prop definition
     // { type: ..., ... }
     const type = findProperty(value.properties, 'type')
 
-    if (type && type.value && type.value.type === 'Identifier') {
+    if (type && type.value && t.isIdentifier(type.value)) {
       return type.value.name
     }
   }
@@ -282,8 +277,8 @@ function getPropType(value: AST.Expression | AST.Pattern): string {
   return 'any'
 }
 
-function getPropDefault(value: AST.Expression | AST.Pattern): DefaultValue {
-  if (value.type === 'ObjectExpression') {
+function getPropDefault(value: t.Expression | t.Pattern): DefaultValue {
+  if (t.isObjectExpression(value)) {
     // Find `default` property in the prop option.
     const def = findProperty(value.properties, 'default')
 
@@ -303,12 +298,12 @@ function getPropDefault(value: AST.Expression | AST.Pattern): DefaultValue {
 }
 
 function getDataObject(
-  prop: AST.ObjectProperty | AST.ObjectMethod
-): AST.ObjectExpression | undefined {
+  prop: t.ObjectProperty | t.ObjectMethod
+): t.ObjectExpression | undefined {
   // If the value is an object expression, just return it.
-  if (prop.type === 'ObjectProperty') {
+  if (t.isObjectProperty(prop)) {
     const value = prop.value
-    if (value.type === 'ObjectExpression') {
+    if (t.isObjectExpression(value)) {
       return value
     }
   }
@@ -317,7 +312,7 @@ function getDataObject(
   const func = normalizeMethod(prop)
   if (func) {
     const exp = getReturnedExpression(func.body)
-    if (exp && exp.type === 'ObjectExpression') {
+    if (exp && t.isObjectExpression(exp)) {
       return exp
     }
   }
@@ -331,12 +326,12 @@ function getDataObject(
  * but it can be other expressions if it forms like `() => ({ foo: 'bar' })`
  */
 function getReturnedExpression(
-  block: AST.BlockStatement | AST.Expression
-): AST.Expression | undefined {
-  if (block.type === 'BlockStatement') {
+  block: t.BlockStatement | t.Expression
+): t.Expression | undefined {
+  if (t.isBlockStatement(block)) {
     const statements = block.body.slice().reverse()
     for (const s of statements) {
-      if (s.type === 'ReturnStatement') {
+      if (t.isReturnStatement(s)) {
         return s.argument || undefined
       }
     }
@@ -345,33 +340,29 @@ function getReturnedExpression(
   }
 }
 
-function getLiteralValue(node: AST.Node): DefaultValue {
+function getLiteralValue(node: t.Node): DefaultValue {
   // Simple literals like number, string and boolean
-  if (node.type === 'StringLiteral') {
-    return (node as AST.StringLiteral).value
+  if (
+    t.isStringLiteral(node) ||
+    t.isNumericLiteral(node) ||
+    t.isBooleanLiteral(node)
+  ) {
+    return node.value
   }
 
-  if (node.type === 'NumericLiteral') {
-    return (node as AST.NumericLiteral).value
-  }
-
-  if (node.type === 'BooleanLiteral') {
-    return (node as AST.BooleanLiteral).value
-  }
-
-  if (node.type === 'NullLiteral') {
+  if (t.isNullLiteral(node)) {
     return null
   }
 
   // Object literal
-  if (node.type === 'ObjectExpression') {
+  if (t.isObjectExpression(node)) {
     const obj: Record<string, DefaultValue> = {}
-    ;(node as AST.ObjectExpression).properties.forEach(p => {
-      if (p.type !== 'ObjectProperty') {
+    node.properties.forEach(p => {
+      if (!t.isObjectProperty(p)) {
         return
       }
 
-      if (p.computed || p.key.type !== 'Identifier') {
+      if (p.computed || !t.isIdentifier(p.key)) {
         return
       }
 
@@ -381,35 +372,35 @@ function getLiteralValue(node: AST.Node): DefaultValue {
   }
 
   // Array literal
-  if (node.type === 'ArrayExpression') {
-    return (node as AST.ArrayExpression).elements.map(getLiteralValue)
+  if (t.isArrayExpression(node)) {
+    return node.elements.map(getLiteralValue)
   }
 
   return undefined
 }
 
 function findComponentOptions(
-  body: AST.Statement[]
-): AST.ObjectExpression | undefined {
-  const exported = body.find(n => n.type === 'ExportDefaultDeclaration') as
-    | AST.ExportDefaultDeclaration
-    | undefined
+  body: t.Statement[]
+): t.ObjectExpression | undefined {
+  const exported = body.find((n): n is t.ExportDefaultDeclaration =>
+    t.isExportDefaultDeclaration(n)
+  )
   if (!exported) return undefined
 
   // TODO: support class style component
   const dec = exported.declaration
-  if (dec.type === 'ObjectExpression') {
+  if (t.isObjectExpression(dec)) {
     // Using object literal definition
     // export default {
     //   ...
     // }
     return dec
-  } else if (isVueExtend(dec) && dec.arguments[0].type === 'ObjectExpression') {
+  } else if (isVueExtend(dec) && t.isObjectExpression(dec.arguments[0])) {
     // Using Vue.extend with object literal
     // export default Vue.extend({
     //   ...
     // })
-    return dec.arguments[0] as AST.ObjectExpression
+    return dec.arguments[0] as t.ObjectExpression
   }
   return undefined
 }

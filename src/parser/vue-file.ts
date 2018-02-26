@@ -53,12 +53,13 @@ export function parseVueFile(code: string, uri: string): VueFile {
   } as any)
 
   const childComponents = extractChildComponents(scriptBody, uri, childPath => {
-    const dirPath = path.dirname(parsedUri.pathname)
-    parsedUri.pathname = path
+    const resolved = new URL(parsedUri.toString())
+    const dirPath = path.dirname(resolved.pathname)
+    resolved.pathname = path
       .resolve(dirPath, childPath)
       .split(path.sep)
       .join('/')
-    return parsedUri.toString()
+    return resolved.toString()
   })
 
   const styleAsts = styles.map(s => {

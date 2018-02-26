@@ -205,9 +205,9 @@ function insertComponentImport(
     '\n' + indent + `import ${componentName} from '${componentPath}'`
 
   if (lastImport) {
-    return insertAfter(lastImport as any, insertedCode)
+    return insertAt(lastImport.end, insertedCode)
   } else {
-    return insertAt(ast as any, insertedCode)
+    return insertAt(ast.start, insertedCode)
   }
 }
 
@@ -217,7 +217,6 @@ function insertComponentOptions(
   componentName: string
 ): Modifier {
   const indent = inferScriptIndent(code, options) + singleIndentStr
-  const pos = (options as any).range[0]
   const comma = options.properties.length > 0 ? ',' : ''
 
   // prettier-ignore
@@ -229,7 +228,7 @@ function insertComponentOptions(
     ''
   ].join('\n')
 
-  return insertAt(pos + 1, value)
+  return insertAt(options.start + 1, value)
 }
 
 function insertComponentOptionItem(
@@ -238,8 +237,8 @@ function insertComponentOptionItem(
   componentName: string
 ): Modifier {
   const indent = inferScriptIndent(code, componentOptions) + singleIndentStr
-  const range = (componentOptions as any).range
-  const shouldAddComma = !/\{\s*\}$/.test(code.slice(range[0], range[1]))
+  const { start, end } = componentOptions
+  const shouldAddComma = !/\{\s*\}$/.test(code.slice(start, end))
   const comma = shouldAddComma ? ',' : ''
 
   const properties = componentOptions.properties
@@ -248,9 +247,9 @@ function insertComponentOptionItem(
   const insertedCode = comma + '\n' + indent + componentName
 
   if (lastProperty) {
-    return insertAfter(lastProperty as any, insertedCode)
+    return insertAt(lastProperty.end, insertedCode)
   } else {
-    return insertAt(range[0] + 1, insertedCode)
+    return insertAt(start + 1, insertedCode)
   }
 }
 
@@ -281,7 +280,7 @@ function inferTemplateIndentAt(template: Template, path: number[]): string {
 }
 
 function inferScriptIndent(code: string, node: t.Node): string {
-  const pre = code.slice(0, (node as any).range[1])
+  const pre = code.slice(0, node.end)
   const match = /[\^\n]([\t ]+).*$/.exec(pre)
   if (match) {
     return match[1]

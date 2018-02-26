@@ -48,8 +48,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
 
   const { program: scriptBody } = parseScript(script ? script.content : '', {
     sourceType: 'module',
-    plugins: ['typescript', 'objectRestSpread'],
-    ranges: true
+    plugins: ['typescript', 'objectRestSpread']
   } as any)
 
   const childComponents = extractChildComponents(scriptBody, uri, childPath => {

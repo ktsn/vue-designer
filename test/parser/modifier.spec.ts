@@ -212,9 +212,8 @@ describe('Template modifier', () => {
 describe('Script modifier', () => {
   function parseScript(code: string) {
     return _parseScript(code, {
-      sourceType: 'module',
-      ranges: true
-    } as any).program
+      sourceType: 'module'
+    }).program
   }
 
   it('should add child component', () => {

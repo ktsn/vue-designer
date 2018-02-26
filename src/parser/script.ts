@@ -211,7 +211,7 @@ function isStaticProperty(
 /**
  * Find a property name that matches the specified property name.
  */
-function findProperty(
+export function findProperty(
   props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
   name: string
 ): t.ObjectProperty | t.ObjectMethod | undefined {
@@ -379,7 +379,7 @@ function getLiteralValue(node: t.Node): DefaultValue {
   return undefined
 }
 
-function findComponentOptions(
+export function findComponentOptions(
   body: t.Statement[]
 ): t.ObjectExpression | undefined {
   const exported = body.find((n): n is t.ExportDefaultDeclaration =>

@@ -1,5 +1,7 @@
+import * as t from 'babel-types'
 import { flatten } from '../utils'
 import { Template, getNode, TextNode, ElementChild, Element } from './template'
+import { findComponentOptions, ChildComponent, findProperty } from './script'
 
 export type Modifiers = (Modifier | Modifier[])[]
 
@@ -22,6 +24,7 @@ interface Remove {
 }
 
 const empty = insertAt(0, '')
+const singleIndentStr = '  '
 
 export function modify(code: string, modfiers: Modifiers): string {
   const ms = flatten(modfiers).sort(modifierComperator)
@@ -102,11 +105,11 @@ export function insertToTemplate(
   value: string
 ): Modifier {
   const parentPath = path.slice(0, -1)
-  const indent = calcIndentStringAt(template, parentPath)
+  const indent = inferTemplateIndentAt(template, parentPath)
   const target = getNode(template, path)
   if (target) {
     // If target path points an existing node, we can insert a new string before it.
-    const post = '\n' + indent + '  '
+    const post = '\n' + indent + singleIndentStr
     return insertBefore(target, value + post)
   }
 
@@ -148,14 +151,14 @@ export function insertToTemplate(
     // </div>
     // ```
     const hasIndent = last.type === 'TextNode' && last.text.endsWith(indent)
-    const pre = (hasIndent ? '' : '\n' + indent) + '  '
+    const pre = (hasIndent ? '' : '\n' + indent) + singleIndentStr
     const post = '\n' + indent
     return insertAfter(last, pre + value + post)
   }
 
   const parent = getNode(template, parentPath) as Element | undefined
   if (parent) {
-    const pre = '\n' + indent + '  '
+    const pre = '\n' + indent + singleIndentStr
     const post = '\n' + indent
     return insertAfter(parent.startTag, pre + value + post)
   }
@@ -163,7 +166,67 @@ export function insertToTemplate(
   return empty
 }
 
-function calcIndentStringAt(template: Template, path: number[]): string {
+export function insertComponentScript(
+  ast: t.Program,
+  code: string,
+  component: ChildComponent
+): Modifier[] {
+  const options = findComponentOptions(ast.body)
+  if (!options) return []
+
+  const componentOptions = findProperty(options.properties, 'components')
+  if (!componentOptions) return []
+
+  const value = componentOptions.value
+  if (!t.isObjectExpression(value)) return []
+
+  return [
+    insertComponentImport(ast, code, component),
+    insertComponentOption(value, code, component)
+  ]
+}
+
+function insertComponentImport(
+  ast: t.Program,
+  code: string,
+  component: ChildComponent
+): Modifier {
+  const imports = ast.body.filter(el => t.isImportDeclaration(el))
+  const lastImport = imports[imports.length - 1]
+  const indent = inferScriptIndent(code, lastImport || ast)
+  const insertedCode =
+    '\n' + indent + `import ${component.name} from '${component.uri}'`
+
+  if (lastImport) {
+    return insertAfter(lastImport as any, insertedCode)
+  } else {
+    return insertAt(ast as any, insertedCode)
+  }
+}
+
+function insertComponentOption(
+  componentOptions: t.ObjectExpression,
+  code: string,
+  component: ChildComponent
+): Modifier {
+  const indent = inferScriptIndent(code, componentOptions) + singleIndentStr
+  const range = (componentOptions as any).range
+  const shouldAddComma = !/[{,]\s*\}$/.test(code.slice(range[0], range[1]))
+  const comma = shouldAddComma ? ',' : ''
+
+  const properties = componentOptions.properties
+  const lastProperty = properties[properties.length - 1]
+
+  const insertedCode = comma + '\n' + indent + component.name
+
+  if (lastProperty) {
+    return insertAfter(lastProperty as any, insertedCode)
+  } else {
+    return insertAt(range[0] + 1, insertedCode)
+  }
+}
+
+function inferTemplateIndentAt(template: Template, path: number[]): string {
   if (path.length === 0) {
     return ''
   }
@@ -179,7 +242,7 @@ function calcIndentStringAt(template: Template, path: number[]): string {
   }
 
   if (!node) {
-    return calcIndentStringAt(template, parentPath) + '  '
+    return inferTemplateIndentAt(template, parentPath) + singleIndentStr
   }
 
   const match = /\n(\s+)/.exec(node.text)
@@ -187,4 +250,14 @@ function calcIndentStringAt(template: Template, path: number[]): string {
     return ''
   }
   return match[1]
+}
+
+function inferScriptIndent(code: string, node: t.Node): string {
+  const pre = code.slice(0, (node as any).range[1])
+  const match = /[\^\n]([\t ]+).*$/.exec(pre)
+  if (match) {
+    return match[1]
+  } else {
+    return ''
+  }
 }

@@ -1,11 +1,13 @@
-import { parse } from 'vue-eslint-parser'
+import { parse as parseTemplate } from 'vue-eslint-parser'
+import { parse as _parseScript } from 'babylon'
 import {
   modify,
   insertBefore,
   insertAfter,
   remove,
   replace,
-  insertToTemplate
+  insertToTemplate,
+  insertComponentScript
 } from '@/parser/modifier'
 import { transformTemplate } from '@/parser/template'
 
@@ -48,7 +50,7 @@ describe('Modifier', () => {
 
   it('should work in complex case', () => {
     const code = `<template><div id="foo"><h1>Hello</h1><p>World</p></div></template>`
-    const template = parse(code, {}).templateBody!
+    const template = parseTemplate(code, {}).templateBody!
     const ast: any = transformTemplate(template, code)
 
     const actual = modify(code, [
@@ -113,7 +115,7 @@ describe('Template modifier', () => {
     </template>
     `
 
-    const program = parse(code, {})
+    const program = parseTemplate(code, {})
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
@@ -139,7 +141,7 @@ describe('Template modifier', () => {
     </template>
     `
 
-    const program = parse(code, {})
+    const program = parseTemplate(code, {})
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
@@ -163,7 +165,7 @@ describe('Template modifier', () => {
     </template>
     `
 
-    const program = parse(code, {})
+    const program = parseTemplate(code, {})
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
@@ -188,7 +190,7 @@ describe('Template modifier', () => {
     </template>
     `
 
-    const program = parse(code, {})
+    const program = parseTemplate(code, {})
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
@@ -202,6 +204,75 @@ describe('Template modifier', () => {
         </h1>
       </div>
     </template>
+    `
+    expect(actual).toBe(expected)
+  })
+})
+
+describe('Script modifier', () => {
+  function parseScript(code: string) {
+    return _parseScript(code, {
+      sourceType: 'module',
+      ranges: true
+    } as any).program
+  }
+
+  it('should add child component', () => {
+    const code = `
+    import Foo from './Foo.vue'
+
+    export default {
+      components: {
+        Foo
+      }
+    }
+    `
+
+    const program = parseScript(code)
+    const actual = modify(code, [
+      insertComponentScript(program, code, {
+        name: 'Bar',
+        uri: './Bar.vue'
+      })
+    ])
+
+    const expected = `
+    import Foo from './Foo.vue'
+    import Bar from './Bar.vue'
+
+    export default {
+      components: {
+        Foo,
+        Bar
+      }
+    }
+    `
+    expect(actual).toBe(expected)
+  })
+
+  it('should add into empty component options', () => {
+    const code = `
+    export default {
+      components: {
+      }
+    }
+    `
+
+    const program = parseScript(code)
+    const actual = modify(code, [
+      insertComponentScript(program, code, {
+        name: 'Foo',
+        uri: './Foo.vue'
+      })
+    ])
+
+    const expected = `
+    import Foo from './Foo.vue'
+    export default {
+      components: {
+        Foo
+      }
+    }
     `
     expect(actual).toBe(expected)
   })

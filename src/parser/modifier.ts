@@ -239,7 +239,7 @@ function insertComponentOptionItem(
 ): Modifier {
   const indent = inferScriptIndent(code, componentOptions) + singleIndentStr
   const range = (componentOptions as any).range
-  const shouldAddComma = !/[{,]\s*\}$/.test(code.slice(range[0], range[1]))
+  const shouldAddComma = !/\{\s*\}$/.test(code.slice(range[0], range[1]))
   const comma = shouldAddComma ? ',' : ''
 
   const properties = componentOptions.properties

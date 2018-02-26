@@ -247,6 +247,36 @@ describe('Script modifier', () => {
     expect(actual).toBe(expected)
   })
 
+  it('should handle the existing trailing comma', () => {
+    const code = `
+    import Foo from './Foo.vue'
+
+    export default {
+      components: {
+        Foo,
+      }
+    }
+    `
+
+    const program = parseScript(code)
+    const actual = modify(code, [
+      insertComponentScript(program, code, 'Bar', './Bar.vue')
+    ])
+
+    const expected = `
+    import Foo from './Foo.vue'
+    import Bar from './Bar.vue'
+
+    export default {
+      components: {
+        Foo,
+        Bar,
+      }
+    }
+    `
+    expect(actual).toBe(expected)
+  })
+
   it('should add into empty component options', () => {
     const code = `
     export default {

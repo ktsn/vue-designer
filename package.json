@@ -9,7 +9,7 @@
     "watch": "run-p watch:*",
     "watch:ts": "tsc --watch -p tsconfig.main.json",
     "watch:webpack": "webpack-dev-server --hot --config webpack.config.js --mode development",
-    "build": "tsc -p tsconfig.main.json && webpack --config webpack.config.js --mode production",
+    "build": "tsc --sourceMap false -p tsconfig.main.json && webpack --config webpack.config.js --mode production",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",

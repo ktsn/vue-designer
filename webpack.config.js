@@ -57,7 +57,7 @@ module.exports = function(_, argv) {
   }
 
   return merge(baseConfig, {
-    devtool: 'inline-source-map',
+    devtool: 'cheap-module-eval-source-map',
     devServer: {
       port: 50000,
       proxy: {

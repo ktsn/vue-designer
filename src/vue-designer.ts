@@ -1,10 +1,20 @@
 import * as vscode from 'vscode'
 import { startServer } from './server/main'
 import { initProject, changeDocument } from './server/communication'
-import { parseVueFile, vueFileToPayload, VueFile } from './parser/vue-file'
+import {
+  parseVueFile,
+  vueFileToPayload,
+  VueFile,
+  resolveImportPath
+} from './parser/vue-file'
 import { getNode } from './parser/template'
 import { mapValues } from './utils'
-import { modify, insertToTemplate } from './parser/modifier'
+import {
+  modify,
+  insertToTemplate,
+  insertComponentScript,
+  Modifiers
+} from './parser/modifier'
 
 export function activate(context: vscode.ExtensionContext) {
   const highlight = vscode.window.createTextEditorDecorationType({
@@ -71,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
           )
 
           const editor = vscode.window.visibleTextEditors.find(e => {
-            return e.document.uri.toString() === vueFile!.uri
+            return e.document.uri.toString() === vueFile!.uri.toString()
           })
           if (!editor) {
             break
@@ -90,22 +100,40 @@ export function activate(context: vscode.ExtensionContext) {
           const vueFile = vueFiles[payload.currentUri]
           if (!vueFile || !vueFile.template) break
 
-          const component = vueFile.childComponents.find(child => {
-            return child.uri === payload.nodeUri
-          })
+          const component = vueFiles[payload.nodeUri]
           if (!component) break
 
-          const uri = vscode.Uri.parse(vueFile.uri)
+          const existingComponent = vueFile.childComponents.find(child => {
+            return child.uri === component.uri.toString()
+          })
+
+          const uri = vscode.Uri.parse(vueFile.uri.toString())
           vscode.workspace.openTextDocument(uri).then(doc => {
             const code = doc.getText()
+            const componentName = existingComponent
+              ? existingComponent.name
+              : component.name
 
-            const updated = modify(code, [
+            const modifier: Modifiers = [
               insertToTemplate(
                 vueFile.template!,
                 payload.path,
-                `<${component.name} />`
+                `<${componentName} />`
               )
-            ])
+            ]
+
+            if (!existingComponent) {
+              modifier.push(
+                insertComponentScript(
+                  vueFile.script,
+                  code,
+                  componentName,
+                  resolveImportPath(vueFile, component)
+                )
+              )
+            }
+
+            const updated = modify(code, modifier)
 
             const range = new vscode.Range(
               doc.positionAt(0),

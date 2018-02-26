@@ -3,6 +3,7 @@ import * as path from 'path'
 import { parseComponent } from 'vue-template-compiler'
 import { parse as parseTemplate } from 'vue-eslint-parser'
 import { parse as parseScript } from 'babylon'
+import * as Babel from 'babel-types'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
 import { Template, transformTemplate } from './template'
@@ -28,8 +29,10 @@ export interface VueFilePayload {
 }
 
 export interface VueFile {
-  uri: string
+  uri: URL
+  name: string
   template: Template | undefined
+  script: Babel.Program
   props: Prop[]
   data: Data[]
   childComponents: ChildComponent[]
@@ -38,15 +41,18 @@ export interface VueFile {
 }
 
 export function parseVueFile(code: string, uri: string): VueFile {
+  const parsedUri = new URL(uri)
+  const name = path.basename(parsedUri.pathname).replace(/\..+$/, '')
+
   const { script, styles } = parseComponent(code, { pad: 'space' })
 
   const { program: scriptBody } = parseScript(script ? script.content : '', {
     sourceType: 'module',
-    plugins: ['typescript', 'objectRestSpread'] as any[]
-  })
+    plugins: ['typescript', 'objectRestSpread'],
+    ranges: true
+  } as any)
 
   const childComponents = extractChildComponents(scriptBody, uri, childPath => {
-    const parsedUri = new URL(uri)
     const dirPath = path.dirname(parsedUri.pathname)
     parsedUri.pathname = path
       .resolve(dirPath, childPath)
@@ -60,8 +66,10 @@ export function parseVueFile(code: string, uri: string): VueFile {
   })
 
   return {
-    uri,
+    uri: parsedUri,
+    name,
     template: parseTemplateBlock(code),
+    script: scriptBody,
     props: extractProps(scriptBody),
     data: extractData(scriptBody),
     childComponents,
@@ -74,7 +82,7 @@ export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
   const scopeId = hashsum(vueFile.uri)
 
   return {
-    uri: vueFile.uri,
+    uri: vueFile.uri.toString(),
     scopeId,
     template: vueFile.template,
     props: vueFile.props,
@@ -94,4 +102,11 @@ function parseTemplateBlock(template: string): Template | undefined {
   const { templateBody } = parseTemplate(code, {})
 
   return templateBody && transformTemplate(templateBody, code)
+}
+
+export function resolveImportPath(from: VueFile, to: VueFile): string {
+  const fromPath = path.dirname(from.uri.pathname)
+  const toPath = to.uri.pathname
+  const componentPath = path.relative(fromPath, toPath)
+  return componentPath.startsWith('.') ? componentPath : './' + componentPath
 }

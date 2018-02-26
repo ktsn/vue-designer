@@ -1,7 +1,7 @@
 import * as t from 'babel-types'
 import { flatten } from '../utils'
 import { Template, getNode, TextNode, ElementChild, Element } from './template'
-import { findComponentOptions, ChildComponent, findProperty } from './script'
+import { findComponentOptions, findProperty } from './script'
 
 export type Modifiers = (Modifier | Modifier[])[]
 
@@ -169,7 +169,8 @@ export function insertToTemplate(
 export function insertComponentScript(
   ast: t.Program,
   code: string,
-  component: ChildComponent
+  componentName: string,
+  componentPath: string
 ): Modifier[] {
   const options = findComponentOptions(ast.body)
   if (!options) return []
@@ -177,8 +178,8 @@ export function insertComponentScript(
   const componentOptions = findProperty(options.properties, 'components')
   if (!componentOptions) {
     return [
-      insertComponentImport(ast, code, component),
-      insertComponentOptions(options, code, component)
+      insertComponentImport(ast, code, componentName, componentPath),
+      insertComponentOptions(options, code, componentName)
     ]
   }
 
@@ -186,21 +187,22 @@ export function insertComponentScript(
   if (!t.isObjectExpression(value)) return []
 
   return [
-    insertComponentImport(ast, code, component),
-    insertComponentOptionItem(value, code, component)
+    insertComponentImport(ast, code, componentName, componentPath),
+    insertComponentOptionItem(value, code, componentName)
   ]
 }
 
 function insertComponentImport(
   ast: t.Program,
   code: string,
-  component: ChildComponent
+  componentName: string,
+  componentPath: string
 ): Modifier {
   const imports = ast.body.filter(el => t.isImportDeclaration(el))
   const lastImport = imports[imports.length - 1]
   const indent = inferScriptIndent(code, lastImport || ast)
   const insertedCode =
-    '\n' + indent + `import ${component.name} from '${component.uri}'`
+    '\n' + indent + `import ${componentName} from '${componentPath}'`
 
   if (lastImport) {
     return insertAfter(lastImport as any, insertedCode)
@@ -212,7 +214,7 @@ function insertComponentImport(
 function insertComponentOptions(
   options: t.ObjectExpression,
   code: string,
-  component: ChildComponent
+  componentName: string
 ): Modifier {
   const indent = inferScriptIndent(code, options) + singleIndentStr
   const pos = (options as any).range[0]
@@ -222,7 +224,7 @@ function insertComponentOptions(
   const value = [
     '',
     indent + 'components: {',
-    indent + singleIndentStr + component.name,
+    indent + singleIndentStr + componentName,
     indent + '}' + comma,
     ''
   ].join('\n')
@@ -233,7 +235,7 @@ function insertComponentOptions(
 function insertComponentOptionItem(
   componentOptions: t.ObjectExpression,
   code: string,
-  component: ChildComponent
+  componentName: string
 ): Modifier {
   const indent = inferScriptIndent(code, componentOptions) + singleIndentStr
   const range = (componentOptions as any).range
@@ -243,7 +245,7 @@ function insertComponentOptionItem(
   const properties = componentOptions.properties
   const lastProperty = properties[properties.length - 1]
 
-  const insertedCode = comma + '\n' + indent + component.name
+  const insertedCode = comma + '\n' + indent + componentName
 
   if (lastProperty) {
     return insertAfter(lastProperty as any, insertedCode)

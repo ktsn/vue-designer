@@ -230,10 +230,7 @@ describe('Script modifier', () => {
 
     const program = parseScript(code)
     const actual = modify(code, [
-      insertComponentScript(program, code, {
-        name: 'Bar',
-        uri: './Bar.vue'
-      })
+      insertComponentScript(program, code, 'Bar', './Bar.vue')
     ])
 
     const expected = `
@@ -260,10 +257,7 @@ describe('Script modifier', () => {
 
     const program = parseScript(code)
     const actual = modify(code, [
-      insertComponentScript(program, code, {
-        name: 'Foo',
-        uri: './Foo.vue'
-      })
+      insertComponentScript(program, code, 'Foo', './Foo.vue')
     ])
 
     const expected = `
@@ -285,10 +279,7 @@ describe('Script modifier', () => {
 
     const program = parseScript(code)
     const actual = modify(code, [
-      insertComponentScript(program, code, {
-        name: 'Foo',
-        uri: './Foo.vue'
-      })
+      insertComponentScript(program, code, 'Foo', './Foo.vue')
     ])
 
     const expected = `

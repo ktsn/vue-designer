@@ -1,25 +1,19 @@
 const path = require('path')
 const webpack = require('webpack')
+const merge = require('webpack-merge')
 
-const base = path.resolve(__dirname)
+const basePath = path.resolve(__dirname)
 
-const plugins = []
-if (!process.env.DEV) {
-  plugins.push(new webpack.optimize.ModuleConcatenationPlugin())
-} else {
-  plugins.push(new webpack.NamedModulesPlugin())
-}
-
-module.exports = {
-  context: path.join(base, 'src'),
+const baseConfig = {
+  context: path.join(basePath, 'src'),
   entry: './view/main.ts',
   output: {
-    path: path.join(base, 'lib'),
+    path: path.join(basePath, 'lib'),
     filename: 'vue-designer-view.js'
   },
   resolve: {
     alias: {
-      '@': path.join(base, 'src'),
+      '@': path.join(basePath, 'src'),
       vue$: 'vue/dist/vue.runtime.esm.js'
     },
     extensions: ['.js', '.json', '.ts']
@@ -46,7 +40,7 @@ module.exports = {
                 loader: 'sass-loader',
                 options: {
                   data: '@import "view/globals";',
-                  includePaths: [path.join(base, 'src')]
+                  includePaths: [path.join(basePath, 'src')]
                 }
               }
             ]
@@ -54,23 +48,31 @@ module.exports = {
         }
       }
     ]
-  },
-  plugins,
-  devtool: 'inline-source-map',
-  devServer: {
-    port: 50000,
-    proxy: {
-      '*': {
-        target: {
-          port: 50001
-        }
-      },
-      '/api': {
-        target: {
-          port: 50001
+  }
+}
+
+module.exports = function(_, argv) {
+  if (argv.mode === 'production') {
+    return baseConfig
+  }
+
+  return merge(baseConfig, {
+    devtool: 'inline-source-map',
+    devServer: {
+      port: 50000,
+      proxy: {
+        '*': {
+          target: {
+            port: 50001
+          }
         },
-        ws: true
+        '/api': {
+          target: {
+            port: 50001
+          },
+          ws: true
+        }
       }
     }
-  }
+  })
 }

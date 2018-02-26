@@ -65,7 +65,7 @@ export function activate(context: vscode.ExtensionContext) {
         }
       })
     },
-    (_ws, payload) => {
+    (ws, payload) => {
       switch (payload.type) {
         case 'SelectNode': {
           const vueFile = vueFiles[payload.uri]
@@ -107,7 +107,8 @@ export function activate(context: vscode.ExtensionContext) {
             return child.uri === component.uri.toString()
           })
 
-          const uri = vscode.Uri.parse(vueFile.uri.toString())
+          const uriStr = vueFile.uri.toString()
+          const uri = vscode.Uri.parse(uriStr)
           vscode.workspace.openTextDocument(uri).then(doc => {
             const code = doc.getText()
             const componentName = existingComponent
@@ -143,6 +144,9 @@ export function activate(context: vscode.ExtensionContext) {
             const wsEdit = new vscode.WorkspaceEdit()
             wsEdit.replace(uri, range, updated)
             vscode.workspace.applyEdit(wsEdit)
+
+            vueFiles[uriStr] = parseVueFile(updated, uriStr)
+            initProject(ws, mapValues(vueFiles, vueFileToPayload))
           })
           break
         }

@@ -276,4 +276,30 @@ describe('Script modifier', () => {
     `
     expect(actual).toBe(expected)
   })
+
+  it('should add component options if not exist', () => {
+    const code = `
+    export default {
+    }
+    `
+
+    const program = parseScript(code)
+    const actual = modify(code, [
+      insertComponentScript(program, code, {
+        name: 'Foo',
+        uri: './Foo.vue'
+      })
+    ])
+
+    const expected = `
+    import Foo from './Foo.vue'
+    export default {
+      components: {
+        Foo
+      }
+
+    }
+    `
+    expect(actual).toBe(expected)
+  })
 })

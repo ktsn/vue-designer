@@ -175,14 +175,19 @@ export function insertComponentScript(
   if (!options) return []
 
   const componentOptions = findProperty(options.properties, 'components')
-  if (!componentOptions) return []
+  if (!componentOptions) {
+    return [
+      insertComponentImport(ast, code, component),
+      insertComponentOptions(options, code, component)
+    ]
+  }
 
   const value = componentOptions.value
   if (!t.isObjectExpression(value)) return []
 
   return [
     insertComponentImport(ast, code, component),
-    insertComponentOption(value, code, component)
+    insertComponentOptionItem(value, code, component)
   ]
 }
 
@@ -204,7 +209,28 @@ function insertComponentImport(
   }
 }
 
-function insertComponentOption(
+function insertComponentOptions(
+  options: t.ObjectExpression,
+  code: string,
+  component: ChildComponent
+): Modifier {
+  const indent = inferScriptIndent(code, options) + singleIndentStr
+  const pos = (options as any).range[0]
+  const comma = options.properties.length > 0 ? ',' : ''
+
+  // prettier-ignore
+  const value = [
+    '',
+    indent + 'components: {',
+    indent + singleIndentStr + component.name,
+    indent + '}' + comma,
+    ''
+  ].join('\n')
+
+  return insertAt(pos + 1, value)
+}
+
+function insertComponentOptionItem(
   componentOptions: t.ObjectExpression,
   code: string,
   component: ChildComponent

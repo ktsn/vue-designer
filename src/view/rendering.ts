@@ -1,4 +1,5 @@
 import { VNodeData } from 'vue'
+import { name as validateName } from 'xml-name-validator'
 import {
   Directive,
   Attribute,
@@ -222,7 +223,7 @@ export function convertToVNodeData(
         acc.staticClass = attr.value || undefined
       } else if (attr.name === 'style') {
         acc.staticStyle = parseStyleText(attr.value || '')
-      } else {
+      } else if (isValidAttributeName(attr.name)) {
         acc.attrs![attr.name] = attr.value || ''
       }
       return acc
@@ -235,7 +236,7 @@ export function convertToVNodeData(
         acc.class.push(value)
       } else if (attr.argument === 'style') {
         acc.style = value as any
-      } else {
+      } else if (isValidAttributeName(attr.argument)) {
         acc.attrs![attr.argument] = value
       }
     } else if (attr.name === 'model') {
@@ -261,4 +262,8 @@ export function convertToVNodeData(
     }
     return acc
   }, initial)
+}
+
+function isValidAttributeName(name: string): boolean {
+  return validateName(name).success
 }

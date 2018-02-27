@@ -44,6 +44,15 @@ jobs:
           at: ~/repo
       - run: npm run test
 
+  coverage:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm i -g codecov
+      - run: npm run test:coverage
+      - run: codecov
+
 workflows:
   version: 2
   build_and_test:
@@ -53,5 +62,8 @@ workflows:
           requires:
             - install
       - test:
+          requires:
+            - install
+      - coverage:
           requires:
             - install

@@ -49,7 +49,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: npm i -g codecov
+      - run: npm i codecov
       - run: npm run test:coverage
       - run: codecov
 

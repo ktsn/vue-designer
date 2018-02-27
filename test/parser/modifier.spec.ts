@@ -1,3 +1,4 @@
+import { parseComponent } from 'vue-template-compiler'
 import { parse as parseTemplate } from 'vue-eslint-parser'
 import { parse as _parseScript } from 'babylon'
 import {
@@ -320,6 +321,45 @@ describe('Script modifier', () => {
 
     }
     `
+    expect(actual).toBe(expected)
+  })
+
+  it('should only insert into script block', () => {
+    const code = `
+<template>
+  <p>Hi</p>
+</template>
+
+<script>
+export default {
+}
+</script>
+`
+
+    const { script } = parseComponent(code, { pad: 'space' })
+    const scriptCode = script!.content
+    const program = parseScript(scriptCode)
+    const actual = modify(scriptCode, [
+      insertComponentScript(program, scriptCode, 'Foo', './Foo.vue')
+    ])
+
+    const spacify = (matched: string) => matched.replace(/./g, ' ')
+
+    const expected = `
+<template>
+  <p>Hi</p>
+</template>
+
+<script>
+import Foo from './Foo.vue'
+export default {
+  components: {
+    Foo
+  }
+
+}
+`.replace(/<template>[\S\s]+<script>/, spacify)
+
     expect(actual).toBe(expected)
   })
 })

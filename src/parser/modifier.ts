@@ -1,3 +1,4 @@
+import assert from 'assert'
 import * as t from 'babel-types'
 import { flatten } from '../utils'
 import { Template, getNode, TextNode, ElementChild, Element } from './template'
@@ -198,16 +199,21 @@ function insertComponentImport(
   componentName: string,
   componentPath: string
 ): Modifier {
+  assert(
+    ast.body[0],
+    '[modifier] script block should have at least one statement.'
+  )
+
   const imports = ast.body.filter(el => t.isImportDeclaration(el))
   const lastImport = imports[imports.length - 1]
-  const indent = inferScriptIndent(code, lastImport || ast)
-  const insertedCode =
-    '\n' + indent + `import ${componentName} from '${componentPath}'`
+
+  const indent = inferScriptIndent(code, lastImport || ast.body[0])
+  const insertedCode = `import ${componentName} from '${componentPath}'`
 
   if (lastImport) {
-    return insertAt(lastImport.end, insertedCode)
+    return insertAt(lastImport.end, '\n' + indent + insertedCode)
   } else {
-    return insertAt(ast.start, insertedCode)
+    return insertAt(ast.body[0].start, insertedCode + '\n' + indent)
   }
 }
 

@@ -24,14 +24,14 @@
   "contributes": {
     "commands": [
       {
-        "command": "extension.showVueComponentPreview",
-        "title": "Show Vue Component Preview"
+        "command": "extension.openVueDesigner",
+        "title": "Open Vue Designer"
       }
     ],
     "menus": {
       "editor/title": [
         {
-          "command": "extension.showVueComponentPreview",
+          "command": "extension.openVueDesigner",
           "when": "resourceLangId == vue-html"
         }
       ]

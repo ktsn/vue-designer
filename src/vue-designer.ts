@@ -186,14 +186,14 @@ export function activate(context: vscode.ExtensionContext) {
   )
 
   const disposable = vscode.commands.registerCommand(
-    'extension.showVueComponentPreview',
+    'extension.openVueDesigner',
     () => {
       return vscode.commands
         .executeCommand(
           'vscode.previewHtml',
           previewUri,
           vscode.ViewColumn.Two,
-          'Vue component preview'
+          'Vue Designer'
         )
         .then(
           () => {},

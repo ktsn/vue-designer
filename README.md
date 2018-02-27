@@ -16,6 +16,24 @@ All codes should be formatted by [Prettier](https://prettier.io/).
 
 For typings of external packages that does not exist should be in `types/(package name)`.
 
+### Visual Studio Code Extension
+
+To debug on VSCode, follow the below steps:
+
+1. Run `npm run watch` to start dev server.
+2. Open VSCode and show debug pane on the left side of the editor.
+3. Run `Launch Extension` so that it opens a new window with enabling local Vue Designer.
+4. Select `Open Vue Designer` on command pallete.
+
+If you want to use dev tools for client code, add the following configuration in your `keybindings.json`.
+
+```js
+{
+  "key": "shift+cmd+i",
+  "command": "_webview.openDevTools"
+}
+```
+
 ### Commands
 
 ```sh

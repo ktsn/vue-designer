@@ -50,7 +50,7 @@ jobs:
       - attach_workspace:
           at: ~/repo
       - run: npm run test:coverage
-      - run: codecov
+      - run: ./node_modules/.bin/codecov
 
 workflows:
   version: 2

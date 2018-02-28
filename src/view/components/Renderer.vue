@@ -17,19 +17,32 @@ export default Vue.extend({
   // @ts-ignore
   render(h, { props, listeners }): VNode {
     const { document: d } = props
-    return h('div', { class: 'renderer' }, [
-      h(VueComponent, {
-        props: {
-          uri: d.uri,
-          template: d.template,
-          props: d.props,
-          data: d.data,
-          childComponents: d.childComponents,
-          styles: d.styleCode
-        },
-        on: listeners
-      })
-    ])
+    return h(
+      'div',
+      {
+        class: 'renderer',
+        on: {
+          click: () => {
+            if (listeners.select) {
+              listeners.select()
+            }
+          }
+        }
+      },
+      [
+        h(VueComponent, {
+          props: {
+            uri: d.uri,
+            template: d.template,
+            props: d.props,
+            data: d.data,
+            childComponents: d.childComponents,
+            styles: d.styleCode
+          },
+          on: listeners
+        })
+      ]
+    )
   }
 })
 </script>
@@ -39,5 +52,7 @@ export default Vue.extend({
   all: initial;
   display: block;
   position: relative;
+  height: 100%;
+  width: 100%;
 }
 </style>

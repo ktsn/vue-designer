@@ -17,10 +17,14 @@ import {
 } from './parser/modifier'
 import { transformRuleForPrint } from './parser/style'
 
-export function activate(context: vscode.ExtensionContext) {
-  const highlight = vscode.window.createTextEditorDecorationType({
+function createHighlight(): vscode.TextEditorDecorationType {
+  return vscode.window.createTextEditorDecorationType({
     backgroundColor: 'rgba(200, 200, 200, 0.2)'
   })
+}
+
+export function activate(context: vscode.ExtensionContext) {
+  let currentHighlight: vscode.TextEditorDecorationType | undefined
   let lastActiveTextEditor = vscode.window.activeTextEditor
   const vueFiles: Record<string, VueFile> = {}
 
@@ -69,8 +73,15 @@ export function activate(context: vscode.ExtensionContext) {
     (ws, payload) => {
       switch (payload.type) {
         case 'SelectNode': {
+          // Cancel highlight
+          if (currentHighlight) {
+            currentHighlight.dispose()
+          }
+
           const vueFile = vueFiles[payload.uri]
-          if (!vueFile || !vueFile.template) break
+          if (!vueFile || !vueFile.template || payload.path.length === 0) {
+            break
+          }
 
           const element = getNode(vueFile.template, payload.path)
           if (!element) {
@@ -84,9 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
           const editor = vscode.window.visibleTextEditors.find(e => {
             return e.document.uri.toString() === vueFile!.uri.toString()
           })
-          if (!editor) {
-            break
-          }
+          if (!editor) break
 
           const highlightList = [element, ...styleRules].map(node => {
             const start = editor.document.positionAt(node.range[0])
@@ -94,7 +103,8 @@ export function activate(context: vscode.ExtensionContext) {
             return new vscode.Range(start, end)
           })
 
-          editor.setDecorations(highlight, highlightList)
+          currentHighlight = createHighlight()
+          editor.setDecorations(currentHighlight, highlightList)
 
           // Notify matched rules to client
           matchRules(ws, styleRules.map(transformRuleForPrint))

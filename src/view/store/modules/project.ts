@@ -46,7 +46,7 @@ interface ProjectGetters {
 
 interface ProjectActions {
   init: ClientConnection
-  select: Element
+  select: Element | undefined
   applyDraggingElement: undefined
   startDragging: string
   endDragging: undefined
@@ -56,7 +56,7 @@ interface ProjectActions {
 interface ProjectMutations {
   setDocuments: Record<string, VueFilePayload>
   changeDocument: string
-  select: Element
+  select: number[]
   addElement: { path: number[]; node: Element }
   addChildComponent: ChildComponent
   setDraggingUri: string | undefined
@@ -226,12 +226,14 @@ export const project: DefineModule<
       const current = getters.currentDocument
       if (!current) return
 
+      const path = node ? node.path : []
+
       connection.send({
         type: 'SelectNode',
         uri: current.uri,
-        path: node.path
+        path
       })
-      commit('select', node)
+      commit('select', path)
     },
 
     applyDraggingElement({ commit, state, getters }) {
@@ -333,12 +335,16 @@ export const project: DefineModule<
     },
 
     changeDocument(state, uri) {
-      state.currentUri = uri
-      state.selectedPath = []
+      if (state.currentUri !== uri) {
+        state.currentUri = uri
+        state.selectedPath = []
+        state.matchedRules = []
+      }
     },
 
-    select(state, node) {
-      state.selectedPath = node.path
+    select(state, path) {
+      state.selectedPath = path
+      state.matchedRules = []
     },
 
     addElement(state, { path, node }) {

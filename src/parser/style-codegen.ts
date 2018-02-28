@@ -63,7 +63,7 @@ function genRule(rule: Rule): string {
   return `${selectors} {${declarations}}`
 }
 
-function genSelector(s: Selector): string {
+export function genSelector(s: Selector): string {
   let buf = ''
   if (s.universal) {
     buf += '*'

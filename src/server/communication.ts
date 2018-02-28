@@ -1,6 +1,7 @@
 import WebSocket from 'ws'
 import { ServerPayload } from '../payload'
 import { VueFilePayload } from '../parser/vue-file'
+import { RuleForPrint } from '../parser/style'
 
 export function initProject(
   ws: WebSocket,
@@ -16,6 +17,13 @@ export function changeDocument(ws: WebSocket, uri: string): void {
   send(ws, {
     type: 'ChangeDocument',
     uri
+  })
+}
+
+export function matchRules(ws: WebSocket, rules: RuleForPrint[]): void {
+  send(ws, {
+    type: 'MatchRules',
+    rules
   })
 }
 

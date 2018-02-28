@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { startServer } from './server/main'
-import { initProject, changeDocument } from './server/communication'
+import { initProject, changeDocument, matchRules } from './server/communication'
 import {
   parseVueFile,
   vueFileToPayload,
@@ -15,6 +15,7 @@ import {
   insertComponentScript,
   Modifiers
 } from './parser/modifier'
+import { transformRuleForPrint } from './parser/style'
 
 export function activate(context: vscode.ExtensionContext) {
   const highlight = vscode.window.createTextEditorDecorationType({
@@ -94,6 +95,9 @@ export function activate(context: vscode.ExtensionContext) {
           })
 
           editor.setDecorations(highlight, highlightList)
+
+          // Notify matched rules to client
+          matchRules(ws, styleRules.map(transformRuleForPrint))
           break
         }
         case 'AddNode': {

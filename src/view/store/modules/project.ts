@@ -10,7 +10,7 @@ import {
 } from '@/parser/template'
 import { ClientConnection } from '@/view/communication'
 import { mapValues } from '@/utils'
-import { addScope as addScopeToStyle } from '@/parser/style'
+import { addScope as addScopeToStyle, RuleForPrint } from '@/parser/style'
 import { genStyle } from '@/parser/style-codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script'
 
@@ -32,6 +32,7 @@ export interface ProjectState {
   draggingUri: string | undefined
   selectedPath: number[]
   draggingPath: number[]
+  matchedRules: RuleForPrint[]
 }
 
 interface ProjectGetters {
@@ -60,6 +61,7 @@ interface ProjectMutations {
   addChildComponent: ChildComponent
   setDraggingUri: string | undefined
   setDraggingPath: number[]
+  setMatchedRules: RuleForPrint[]
 }
 
 export const projectHelpers = createNamespacedHelpers<
@@ -86,7 +88,8 @@ export const project: DefineModule<
     currentUri: undefined,
     draggingUri: undefined,
     selectedPath: [],
-    draggingPath: []
+    draggingPath: [],
+    matchedRules: []
   }),
 
   getters: {
@@ -210,6 +213,9 @@ export const project: DefineModule<
             break
           case 'ChangeDocument':
             commit('changeDocument', data.uri)
+            break
+          case 'MatchRules':
+            commit('setMatchedRules', data.rules)
             break
           default: // Do nothing
         }
@@ -361,6 +367,10 @@ export const project: DefineModule<
 
     setDraggingPath(state, path) {
       state.draggingPath = path
+    },
+
+    setMatchedRules(state, rules) {
+      state.matchedRules = rules
     }
   }
 }

@@ -3,6 +3,7 @@ import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
 import { Range } from './modifier'
 import { clone } from '../utils'
+import { genSelector } from './style-codegen'
 
 export const scopePrefix = 'data-scope-'
 
@@ -280,6 +281,19 @@ export function addScope(node: Style, scope: string): Style {
   })
 }
 
+export function transformRuleForPrint(rule: Rule): RuleForPrint {
+  return {
+    path: rule.path,
+    selectors: rule.selectors.map(genSelector),
+    declarations: rule.declarations.map(decl => ({
+      path: decl.path,
+      prop: decl.prop,
+      value: decl.value,
+      important: decl.important
+    }))
+  }
+}
+
 function emptySelector(): Selector {
   return {
     type: 'Selector',
@@ -409,4 +423,20 @@ export interface Combinator {
   type: 'Combinator'
   operator: string
   left: Selector
+}
+
+/*
+ * Used to print in the preview
+ */
+export interface RuleForPrint {
+  path: number[]
+  selectors: string[]
+  declarations: DeclarationForPrint[]
+}
+
+export interface DeclarationForPrint {
+  path: number[]
+  prop: string
+  value: string
+  important: boolean
 }

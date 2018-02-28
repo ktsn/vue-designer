@@ -2,6 +2,12 @@
 
 Vue component design tool.
 
+## Usage
+
+Open the command pallete and select `Open Vue Designer`. Then you can see a preview pane of currently opened single file component (`.vue`).
+
+This extension is still work in progress. If you have some feedbacks for this extension, it would be really helpful!
+
 ## Development
 
 Vue designer is separated by two modules - server and client.

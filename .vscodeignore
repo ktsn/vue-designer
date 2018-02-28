@@ -1,0 +1,10 @@
+**/*.ts
+tsconfig.json
+tsconfig.main.json
+tsconfig.test.json
+tsconfig.view.json
+webpack.config.js
+.gitignore
+.prettierrc.yml
+.prettierignore
+.circleci

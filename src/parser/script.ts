@@ -10,9 +10,9 @@ export function extractProps(program: t.Program): Prop[] {
 
   if (t.isObjectExpression(props.value)) {
     return props.value.properties.filter(isStaticProperty).map(p => {
-      const key = p.key as t.Identifier
+      const key = p.key as StaticKey
       return {
-        name: key.name,
+        name: getStaticKeyName(key),
         type: getPropType(p.value),
         default: getPropDefault(p.value)
       }
@@ -41,9 +41,9 @@ export function extractData(program: t.Program): Data[] {
   if (!obj) return []
 
   return obj.properties.filter(isStaticProperty).map(p => {
-    const key = p.key as t.Identifier
+    const key = p.key as StaticKey
     return {
-      name: key.name,
+      name: getStaticKeyName(key),
       default: getLiteralValue(p.value)
     }
   })
@@ -96,16 +96,12 @@ function extractComponents(
 
   return prop.value.properties
     .map((p): ChildComponent | undefined => {
-      if (
-        !isStaticProperty(p) ||
-        !t.isIdentifier(p.key) ||
-        !t.isIdentifier(p.value)
-      ) {
+      if (!isStaticProperty(p) || !t.isIdentifier(p.value)) {
         return undefined
       }
 
       return findMatchingComponent(
-        p.key.name,
+        getStaticKeyName(p.key as StaticKey),
         p.value.name,
         imports,
         localPathToUri
@@ -196,16 +192,16 @@ function isStringLiteral(node: t.Node): node is t.StringLiteral {
 
 /**
  * Check if the property has a statically defined key
- * If it returns `true`, `node.key` should be `Identifier`.
+ * If it returns `true`, `node.key` should be `Identifier`, `StringLiteral` or `NumericLiteral`.
  */
 function isStaticProperty(
   node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty
 ): node is t.ObjectProperty | t.ObjectMethod {
-  return (
-    (t.isObjectProperty(node) || t.isObjectMethod(node)) &&
-    !node.computed &&
-    t.isIdentifier(node.key)
-  )
+  return (t.isObjectProperty(node) || t.isObjectMethod(node)) && !node.computed
+}
+
+function getStaticKeyName(key: StaticKey): string {
+  return t.isIdentifier(key) ? key.name : String(key.value)
 }
 
 /**
@@ -216,7 +212,8 @@ export function findProperty(
   name: string
 ): t.ObjectProperty | t.ObjectMethod | undefined {
   return props.filter(isStaticProperty).find(p => {
-    return (p.key as t.Identifier).name === name
+    const key = p.key as StaticKey
+    return getStaticKeyName(key) === name
   })
 }
 
@@ -404,6 +401,8 @@ export function findComponentOptions(
   }
   return undefined
 }
+
+type StaticKey = t.Identifier | t.StringLiteral | t.NumericLiteral
 
 interface RecordDefaultValue extends Record<string, DefaultValue> {}
 interface ArrayDefaultValue extends Array<DefaultValue> {}

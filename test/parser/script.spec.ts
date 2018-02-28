@@ -249,6 +249,26 @@ describe('Script components parser', () => {
     expect(components).toEqual(expected)
   })
 
+  it('should handle quited key', () => {
+    const code = `
+    import Foo from './Foo.vue'
+    export default {
+      components: {
+        "local-foo": Foo
+      }
+    }`
+
+    const { program } = parse(code, { sourceType: 'module' })
+    const components = extractChildComponents(program, hostUri, pathToUri)
+    const expected: ChildComponent[] = [
+      {
+        name: 'local-foo',
+        uri: 'file:///path/to/Foo.vue'
+      }
+    ]
+    expect(components).toEqual(expected)
+  })
+
   // https://vuejs.org/v2/guide/components.html#Recursive-Components
   it('should handle self recursive component', () => {
     const code = `export default { name: 'Self' }`

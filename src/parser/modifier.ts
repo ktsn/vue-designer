@@ -1,5 +1,5 @@
 import assert from 'assert'
-import * as t from 'babel-types'
+import * as t from '@babel/types'
 import { flatten } from '../utils'
 import { Template, getNode, TextNode, ElementChild, Element } from './template'
 import { findComponentOptions, findProperty } from './script'
@@ -211,9 +211,9 @@ function insertComponentImport(
   const insertedCode = `import ${componentName} from '${componentPath}'`
 
   if (lastImport) {
-    return insertAt(lastImport.end, '\n' + indent + insertedCode)
+    return insertAt(lastImport.end!, '\n' + indent + insertedCode)
   } else {
-    return insertAt(ast.body[0].start, insertedCode + '\n' + indent)
+    return insertAt(ast.body[0].start!, insertedCode + '\n' + indent)
   }
 }
 
@@ -234,7 +234,7 @@ function insertComponentOptions(
     ''
   ].join('\n')
 
-  return insertAt(options.start + 1, value)
+  return insertAt(options.start! + 1, value)
 }
 
 function insertComponentOptionItem(
@@ -244,7 +244,7 @@ function insertComponentOptionItem(
 ): Modifier {
   const indent = inferScriptIndent(code, componentOptions) + singleIndentStr
   const { start, end } = componentOptions
-  const shouldAddComma = !/\{\s*\}$/.test(code.slice(start, end))
+  const shouldAddComma = !/\{\s*\}$/.test(code.slice(start!, end!))
   const comma = shouldAddComma ? ',' : ''
 
   const properties = componentOptions.properties
@@ -253,9 +253,9 @@ function insertComponentOptionItem(
   const insertedCode = comma + '\n' + indent + componentName
 
   if (lastProperty) {
-    return insertAt(lastProperty.end, insertedCode)
+    return insertAt(lastProperty.end!, insertedCode)
   } else {
-    return insertAt(start + 1, insertedCode)
+    return insertAt(start! + 1, insertedCode)
   }
 }
 
@@ -286,7 +286,7 @@ function inferTemplateIndentAt(template: Template, path: number[]): string {
 }
 
 function inferScriptIndent(code: string, node: t.Node): string {
-  const pre = code.slice(0, node.end)
+  const pre = code.slice(0, node.end!)
   const match = /[\^\n]([\t ]+).*$/.exec(pre)
   if (match) {
     return match[1]

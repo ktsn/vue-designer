@@ -1,5 +1,5 @@
 import assert from 'assert'
-import * as t from 'babel-types'
+import * as t from '@babel/types'
 
 export function extractProps(program: t.Program): Prop[] {
   const options = findComponentOptions(program.body)
@@ -18,13 +18,15 @@ export function extractProps(program: t.Program): Prop[] {
       }
     })
   } else if (t.isArrayExpression(props.value)) {
-    return props.value.elements.filter(isStringLiteral).map(el => {
-      return {
-        name: el.value,
-        type: 'any',
-        default: undefined
-      }
-    })
+    return props.value.elements
+      .filter((el): el is t.StringLiteral => !!el && isStringLiteral(el))
+      .map(el => {
+        return {
+          name: el.value,
+          type: 'any',
+          default: undefined
+        }
+      })
   } else {
     return []
   }
@@ -34,7 +36,7 @@ export function extractData(program: t.Program): Data[] {
   const options = findComponentOptions(program.body)
   if (!options) return []
 
-  const data = findProperty(options.properties, 'data')
+  const data = findPropertyOrMethod(options.properties, 'data')
   if (!data) return []
 
   const obj = getDataObject(data)
@@ -61,7 +63,7 @@ export function extractChildComponents(
   const childComponents = []
 
   const selfName = findProperty(options.properties, 'name')
-  if (selfName && selfName.value && isStringLiteral(selfName.value)) {
+  if (selfName && isStringLiteral(selfName.value)) {
     childComponents.push({
       name: selfName.value.value,
       uri
@@ -75,7 +77,7 @@ export function extractChildComponents(
     )
   }
 
-  const lifecycle = findProperty(options.properties, 'beforeCreate')
+  const lifecycle = findPropertyOrMethod(options.properties, 'beforeCreate')
   if (lifecycle) {
     childComponents.push(
       ...extractLazyAddComponents(lifecycle, imports, localPathToUri)
@@ -86,11 +88,11 @@ export function extractChildComponents(
 }
 
 function extractComponents(
-  prop: t.ObjectProperty | t.ObjectMethod,
+  prop: t.ObjectProperty,
   imports: Record<string, t.ImportDeclaration>,
   localPathToUri: (localPath: string) => string
 ): ChildComponent[] {
-  if (!prop.value || !t.isObjectExpression(prop.value)) {
+  if (!t.isObjectExpression(prop.value)) {
     return []
   }
 
@@ -192,12 +194,18 @@ function isStringLiteral(node: t.Node): node is t.StringLiteral {
 
 /**
  * Check if the property has a statically defined key
- * If it returns `true`, `node.key` should be `Identifier`, `StringLiteral` or `NumericLiteral`.
+ * If it returns `true`, `node.key` should be `StaticKey`.
  */
 function isStaticProperty(
   node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty
+): node is t.ObjectProperty {
+  return t.isObjectProperty(node) && !node.computed
+}
+
+function isStaticPropertyOrMethod(
+  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty
 ): node is t.ObjectProperty | t.ObjectMethod {
-  return (t.isObjectProperty(node) || t.isObjectMethod(node)) && !node.computed
+  return isStaticProperty(node) || (t.isObjectMethod(node) && !node.computed)
 }
 
 function getStaticKeyName(key: StaticKey): string {
@@ -210,8 +218,18 @@ function getStaticKeyName(key: StaticKey): string {
 export function findProperty(
   props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
   name: string
-): t.ObjectProperty | t.ObjectMethod | undefined {
+): t.ObjectProperty | undefined {
   return props.filter(isStaticProperty).find(p => {
+    const key = p.key as StaticKey
+    return getStaticKeyName(key) === name
+  })
+}
+
+function findPropertyOrMethod(
+  props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
+  name: string
+): t.ObjectProperty | t.ObjectMethod | undefined {
+  return props.filter(isStaticPropertyOrMethod).find(p => {
     const key = p.key as StaticKey
     return getStaticKeyName(key) === name
   })
@@ -229,7 +247,7 @@ function normalizeMethod(
     return prop
   }
   if (t.isFunction(prop.value)) {
-    return prop.value
+    return prop.value as t.Function
   }
   return undefined
 }
@@ -257,7 +275,7 @@ function isVueExtend(
   return true
 }
 
-function getPropType(value: t.Expression | t.Pattern): string {
+function getPropType(value: t.Expression | t.PatternLike): string {
   if (t.isIdentifier(value)) {
     // Constructor
     return value.name
@@ -266,7 +284,7 @@ function getPropType(value: t.Expression | t.Pattern): string {
     // { type: ..., ... }
     const type = findProperty(value.properties, 'type')
 
-    if (type && type.value && t.isIdentifier(type.value)) {
+    if (type && t.isIdentifier(type.value)) {
       return type.value.name
     }
   }
@@ -274,10 +292,10 @@ function getPropType(value: t.Expression | t.Pattern): string {
   return 'any'
 }
 
-function getPropDefault(value: t.Expression | t.Pattern): DefaultValue {
+function getPropDefault(value: t.Expression | t.PatternLike): DefaultValue {
   if (t.isObjectExpression(value)) {
     // Find `default` property in the prop option.
-    const def = findProperty(value.properties, 'default')
+    const def = findPropertyOrMethod(value.properties, 'default')
 
     if (def) {
       // If it is a function, extract default value from it,
@@ -287,7 +305,7 @@ function getPropDefault(value: t.Expression | t.Pattern): DefaultValue {
         const exp = getReturnedExpression(func.body)
         return exp && getLiteralValue(exp)
       } else {
-        return getLiteralValue(def.value)
+        return getLiteralValue((def as t.ObjectProperty).value)
       }
     }
   }
@@ -370,7 +388,9 @@ function getLiteralValue(node: t.Node): DefaultValue {
 
   // Array literal
   if (t.isArrayExpression(node)) {
-    return node.elements.map(getLiteralValue)
+    return node.elements
+      .filter(<T>(x: T | null): x is T => !!x)
+      .map(getLiteralValue)
   }
 
   return undefined

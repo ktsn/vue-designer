@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
+import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
 import { ScopedDocument } from '../store/modules/project'
 
@@ -30,17 +31,19 @@ export default Vue.extend({
         }
       },
       [
-        h(VueComponent, {
-          props: {
-            uri: d.uri,
-            template: d.template,
-            props: d.props,
-            data: d.data,
-            childComponents: d.childComponents,
-            styles: d.styleCode
-          },
-          on: listeners
-        })
+        h(Viewport, [
+          h(VueComponent, {
+            props: {
+              uri: d.uri,
+              template: d.template,
+              props: d.props,
+              data: d.data,
+              childComponents: d.childComponents,
+              styles: d.styleCode
+            },
+            on: listeners
+          })
+        ])
       ]
     )
   }
@@ -52,7 +55,9 @@ export default Vue.extend({
   all: initial;
   display: block;
   position: relative;
+  box-sizing: border-box;
   height: 100%;
   width: 100%;
+  background-color: #ddd;
 }
 </style>

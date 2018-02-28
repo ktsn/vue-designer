@@ -2,7 +2,7 @@
   <div class="information">
     <section class="information-group">
       <h2 class="information-title">Props</h2>
-      <ul class="information-list">
+      <ul v-if="props.length > 0" class="information-list">
         <li v-for="prop in props" :key="prop.name" class="information-list-item">
           <strong class="information-label">{{ prop.name }}</strong>
           <span class="information-text">
@@ -13,11 +13,14 @@
           </span>
         </li>
       </ul>
+      <div v-else>
+        <slot name="not-found-prop" />
+      </div>
     </section>
 
     <section class="information-group">
       <h2 class="information-title">Data</h2>
-      <ul class="information-list">
+      <ul v-if="data.length > 0" class="information-list">
         <li v-for="d in data" :key="d.name" class="information-list-item">
           <strong class="information-label">{{ d.name }}</strong>
           <span class="information-text">
@@ -25,7 +28,10 @@
           </span>
         </li>
       </ul>
-      </section>
+      <div v-else>
+        <slot name="not-found-data" />
+      </div>
+    </section>
   </div>
 </template>
 
@@ -83,8 +89,12 @@ export default Vue.extend({
   margin-top: 0;
 }
 
+.information-label::after {
+  content: ':';
+}
+
 .information-placeholder {
-  color: #999;
+  color: #888;
 }
 
 .information-text {

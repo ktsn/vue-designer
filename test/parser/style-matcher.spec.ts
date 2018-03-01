@@ -7,7 +7,7 @@ import {
   pElement,
   combinator
 } from './style-helpers'
-import { createStyleMatcher } from '@/parser/style-matcher'
+import { createStyleMatcher } from '@/parser/style/match'
 import { createTemplate, h, a } from './template-helpers'
 
 describe('Style matcher', () => {

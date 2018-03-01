@@ -9,8 +9,8 @@ import {
   VForDirective,
   ElementChild,
   TextNode
-} from '@/parser/template'
-import { Prop, Data, ChildComponent } from '@/parser/script'
+} from '@/parser/template/types'
+import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { VueFilePayload } from '@/parser/vue-file'
 import VueComponent from '@/view/components/VueComponent.vue'
 import { project as originalProject } from '@/view/store/modules/project'

@@ -1,5 +1,7 @@
 import parse from 'postcss-safe-parser'
-import { transformStyle, Style, Rule, addScope } from '@/parser/style'
+import { Style, Rule } from '@/parser/style/types'
+import { transformStyle } from '@/parser/style/transform'
+import { addScope } from '@/parser/style/manipulate'
 import {
   createStyle,
   atRule,

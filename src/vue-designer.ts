@@ -7,15 +7,15 @@ import {
   VueFile,
   resolveImportPath
 } from './parser/vue-file'
-import { getNode } from './parser/template'
-import { mapValues } from './utils'
+import { getNode } from './parser/template/manipulate'
 import {
   modify,
   insertToTemplate,
   insertComponentScript,
   Modifiers
 } from './parser/modifier'
-import { transformRuleForPrint } from './parser/style'
+import { transformRuleForPrint } from './parser/style/transform'
+import { mapValues } from './utils'
 
 function createHighlight(): vscode.TextEditorDecorationType {
   return vscode.window.createTextEditorDecorationType({

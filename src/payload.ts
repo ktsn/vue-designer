@@ -1,5 +1,5 @@
 import { VueFilePayload } from './parser/vue-file'
-import { RuleForPrint } from './parser/style'
+import { RuleForPrint } from './parser/style/types'
 
 export type ServerPayload = InitProject | ChangeDocument | MatchRules
 export type ClientPayload = SelectNode | AddNode

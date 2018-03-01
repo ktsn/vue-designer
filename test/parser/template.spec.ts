@@ -1,13 +1,7 @@
 import { parse } from 'vue-eslint-parser'
-import {
-  transformTemplate,
-  getNode,
-  Template,
-  Attribute,
-  addScope,
-  Element,
-  insertNode
-} from '../../src/parser/template'
+import { Template, Attribute, Element } from '@/parser/template/types'
+import { transformTemplate } from '@/parser/template/transform'
+import { getNode, addScope, insertNode } from '@/parser/template/manipulate'
 import { createTemplate, h, exp, a, d, vFor } from './template-helpers'
 
 describe('Template AST transformer', () => {

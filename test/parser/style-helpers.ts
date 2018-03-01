@@ -10,7 +10,7 @@ import {
   PseudoElement,
   Attribute,
   ChildNode
-} from '@/parser/style'
+} from '@/parser/style/types'
 
 export function createStyle(body: (AtRule | Rule)[]): Style {
   modifyPath(body)

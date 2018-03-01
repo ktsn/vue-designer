@@ -9,7 +9,7 @@ import {
   declaration,
   atRule
 } from './style-helpers'
-import { genStyle } from '@/parser/style-codegen'
+import { genStyle } from '@/parser/style/codegen'
 
 describe('Style codegen', () => {
   it('should generate simple selector', () => {

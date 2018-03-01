@@ -37,7 +37,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Prop, Data } from '../../parser/script'
+import { Prop, Data } from '@/parser/script/types'
 
 export default Vue.extend({
   name: 'Information',

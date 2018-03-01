@@ -2,8 +2,8 @@
 import Vue, { VNode } from 'vue'
 import ContainerNode from './ContainerNode.vue'
 import Expression from './Expression.vue'
-import { ElementChild } from '../../parser/template'
-import { DefaultValue, ChildComponent } from '../../parser/script'
+import { ElementChild } from '@/parser/template/types'
+import { DefaultValue, ChildComponent } from '@/parser/script/types'
 
 export default Vue.extend({
   name: 'Child',

@@ -93,7 +93,6 @@
     "ws": "^4.1.0"
   },
   "devDependencies": {
-    "@types/babylon": "^6.16.2",
     "@types/eslint-scope": "^3.7.0",
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/jest": "^22.1.3",

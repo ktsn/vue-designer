@@ -1,13 +1,11 @@
 import * as path from 'path'
 import { parse } from 'babylon'
+import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import {
   extractProps,
   extractData,
-  Prop,
-  Data,
-  extractChildComponents,
-  ChildComponent
-} from '../../src/parser/script'
+  extractChildComponents
+} from '@/parser/script/manipulate'
 
 describe('Script props parser', () => {
   it('should extract props', () => {

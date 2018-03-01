@@ -2,8 +2,8 @@
 import Vue, { VNode, VNodeData } from 'vue'
 import ContainerVueComponent from './ContainerVueComponent.vue'
 import Child from './Child.vue'
-import { Element } from '@/parser/template'
-import { DefaultValue, ChildComponent } from '@/parser/script'
+import { Element } from '@/parser/template/types'
+import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import {
   convertToVNodeData,
   resolveControlDirectives,

@@ -1,18 +1,18 @@
 import assert from 'assert'
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
+import { Template, Element } from '@/parser/template/types'
 import {
-  Template,
-  Element,
   addScope as addScopeToTemplate,
   insertNode,
   getNode
-} from '@/parser/template'
+} from '@/parser/template/manipulate'
+import { RuleForPrint } from '@/parser/style/types'
+import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
+import { genStyle } from '@/parser/style/codegen'
+import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { ClientConnection } from '@/view/communication'
 import { mapValues } from '@/utils'
-import { addScope as addScopeToStyle, RuleForPrint } from '@/parser/style'
-import { genStyle } from '@/parser/style-codegen'
-import { Prop, Data, ChildComponent } from '@/parser/script'
 
 export interface ScopedDocument {
   uri: string

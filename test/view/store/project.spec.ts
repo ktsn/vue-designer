@@ -2,7 +2,7 @@ import { Store } from 'vuex'
 import { project, ProjectState } from '@/view/store/modules/project'
 import { createTemplate, h } from '../../parser/template-helpers'
 import { createStyle, rule, selector } from '../../parser/style-helpers'
-import { addScope as addScopeToTemplate } from '@/parser/template'
+import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
 
 describe('Store project getters', () => {
   let store: Store<any>, state: ProjectState

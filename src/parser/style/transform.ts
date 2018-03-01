@@ -1,13 +1,11 @@
 import assert from 'assert'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
-import { Range } from './modifier'
-import { clone } from '../utils'
-import { genSelector } from './style-codegen'
+import { genSelector } from './codegen'
+import * as t from './types'
+import { takeWhile, dropWhile } from '../../utils'
 
-export const scopePrefix = 'data-scope-'
-
-export function transformStyle(root: postcss.Root, code: string): Style {
+export function transformStyle(root: postcss.Root, code: string): t.Style {
   if (!root.nodes) {
     return {
       body: [],
@@ -25,7 +23,7 @@ export function transformStyle(root: postcss.Root, code: string): Style {
           return undefined
       }
     })
-    .filter((node): node is AtRule | Rule => {
+    .filter((node): node is t.AtRule | t.Rule => {
       return node !== undefined
     })
 
@@ -39,7 +37,7 @@ function transformAtRule(
   atRule: postcss.AtRule,
   path: number[],
   code: string
-): AtRule {
+): t.AtRule {
   const isNotComment = <T extends postcss.Node>(
     node: T | postcss.Comment
   ): node is T => {
@@ -60,7 +58,11 @@ function transformAtRule(
   }
 }
 
-function transformRule(rule: postcss.Rule, path: number[], code: string): Rule {
+function transformRule(
+  rule: postcss.Rule,
+  path: number[],
+  code: string
+): t.Rule {
   const decls = rule.nodes ? rule.nodes.filter(isDeclaration) : []
   const root = selectorParser().astSync(rule.selector)
 
@@ -79,16 +81,16 @@ function transformRule(rule: postcss.Rule, path: number[], code: string): Rule {
   }
 }
 
-function transformSelector(nodes: selectorParser.Node[]): Selector {
+function transformSelector(nodes: selectorParser.Node[]): t.Selector {
   const [first, ...tail] = nodes
   return transformSelectorElement(emptySelector(), first, tail)
 }
 
 function transformSelectorElement(
-  current: Selector,
+  current: t.Selector,
   el: selectorParser.Node | undefined,
   rest: selectorParser.Node[]
-): Selector {
+): t.Selector {
   if (!el) {
     return current
   }
@@ -132,7 +134,7 @@ function transformSelectorElement(
   return transformSelectorElement(current, first, tail)
 }
 
-function transformPseudoClass(node: selectorParser.Pseudo): PseudoClass {
+function transformPseudoClass(node: selectorParser.Pseudo): t.PseudoClass {
   const params = node.nodes as selectorParser.Selector[]
 
   return {
@@ -143,10 +145,10 @@ function transformPseudoClass(node: selectorParser.Pseudo): PseudoClass {
 }
 
 function transformPseudoElement(
-  parent: Selector,
+  parent: t.Selector,
   el: selectorParser.Pseudo,
   rest: selectorParser.Node[]
-): Selector {
+): t.Selector {
   const rawPseudoClass = takeWhile(rest, isPseudoClass)
 
   parent.pseudoElement = {
@@ -164,7 +166,7 @@ function transformPseudoElement(
   return transformSelectorElement(parent, first, tail)
 }
 
-function transformAttribute(attr: selectorParser.Attribute): Attribute {
+function transformAttribute(attr: selectorParser.Attribute): t.Attribute {
   return {
     type: 'Attribute',
     operator: attr.operator,
@@ -175,8 +177,8 @@ function transformAttribute(attr: selectorParser.Attribute): Attribute {
 
 function transformCombinator(
   comb: selectorParser.Combinator,
-  left: Selector
-): Combinator {
+  left: t.Selector
+): t.Combinator {
   return {
     type: 'Combinator',
     operator: comb.value,
@@ -188,7 +190,7 @@ function transformDeclaration(
   decl: postcss.Declaration,
   path: number[],
   code: string
-): Declaration {
+): t.Declaration {
   return {
     type: 'Declaration',
     path,
@@ -203,7 +205,7 @@ function transformChild(
   child: postcss.AtRule | postcss.Rule | postcss.Declaration,
   path: number[],
   code: string
-): ChildNode {
+): t.ChildNode {
   switch (child.type) {
     case 'atrule':
       return transformAtRule(child, path, code)
@@ -242,46 +244,7 @@ function toOffset(line: number, column: number, code: string): number {
   return beforeLength + column - 1
 }
 
-export function visitLastSelectors(
-  node: Style,
-  fn: (selector: Selector, rule: Rule) => Selector | void
-): Style {
-  function loop(node: AtRule | Rule): AtRule | Rule
-  function loop(node: AtRule | Rule | Declaration): AtRule | Rule | Declaration
-  function loop(
-    node: AtRule | Rule | Declaration
-  ): AtRule | Rule | Declaration {
-    switch (node.type) {
-      case 'AtRule':
-        return clone(node, {
-          children: node.children.map(loop)
-        })
-      case 'Rule':
-        return clone(node, {
-          selectors: node.selectors.map(s => fn(s, node) || s)
-        })
-      default:
-        // Do nothing
-        return node
-    }
-  }
-  return clone(node, {
-    body: node.body.map(b => loop(b))
-  })
-}
-
-export function addScope(node: Style, scope: string): Style {
-  return visitLastSelectors(node, selector => {
-    return clone(selector, {
-      attributes: selector.attributes.concat({
-        type: 'Attribute',
-        name: scopePrefix + scope
-      })
-    })
-  })
-}
-
-export function transformRuleForPrint(rule: Rule): RuleForPrint {
+export function transformRuleForPrint(rule: t.Rule): t.RuleForPrint {
   return {
     path: rule.path,
     selectors: rule.selectors.map(genSelector),
@@ -294,7 +257,7 @@ export function transformRuleForPrint(rule: Rule): RuleForPrint {
   }
 }
 
-function emptySelector(): Selector {
+function emptySelector(): t.Selector {
   return {
     type: 'Selector',
     universal: false,
@@ -338,105 +301,4 @@ function isPseudoClass(
   node: selectorParser.Node
 ): node is selectorParser.Pseudo {
   return isPseudo(node) && !isPseudoElement(node)
-}
-
-function takeWhile<T, R extends T>(list: T[], fn: (value: T) => value is R): R[]
-function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[]
-function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
-  const res = []
-  for (const item of list) {
-    if (fn(item)) {
-      res.push(item)
-    } else {
-      return res
-    }
-  }
-  return res
-}
-
-function dropWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
-  const skip = takeWhile(list, fn)
-  return list.slice(skip.length)
-}
-
-export interface Style extends Range {
-  body: (AtRule | Rule)[]
-}
-
-export interface Rule extends Range {
-  type: 'Rule'
-  path: number[]
-  selectors: Selector[]
-  declarations: Declaration[]
-}
-
-export interface Declaration extends Range {
-  type: 'Declaration'
-  path: number[]
-  prop: string
-  value: string
-  important: boolean
-}
-
-export interface AtRule extends Range {
-  type: 'AtRule'
-  path: number[]
-  name: string
-  params: string
-  children: ChildNode[]
-}
-
-export type ChildNode = AtRule | Rule | Declaration
-
-export interface Selector {
-  type: 'Selector'
-  universal: boolean
-  tag?: string
-  id?: string
-  class: string[]
-  attributes: Attribute[]
-  pseudoClass: PseudoClass[]
-  pseudoElement?: PseudoElement
-  leftCombinator?: Combinator
-}
-
-export interface PseudoClass {
-  type: 'PseudoClass'
-  value: string
-  params: Selector[]
-}
-
-export interface PseudoElement {
-  type: 'PseudoElement'
-  value: string
-  pseudoClass: PseudoClass[]
-}
-
-export interface Attribute {
-  type: 'Attribute'
-  operator?: selectorParser.AttributeOperator
-  name: string
-  value?: string
-}
-
-export interface Combinator {
-  type: 'Combinator'
-  operator: string
-  left: Selector
-}
-
-/*
- * Used to print in the preview
- */
-export interface RuleForPrint {
-  path: number[]
-  selectors: string[]
-  declarations: DeclarationForPrint[]
-}
-
-export interface DeclarationForPrint {
-  path: number[]
-  prop: string
-  value: string
-  important: boolean
 }

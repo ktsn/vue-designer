@@ -1,13 +1,18 @@
 import assert from 'assert'
-import { Style, Rule, visitLastSelectors, Selector } from './style'
-import { Template, Element, getNode, Attribute } from './template'
-import { range } from '../utils'
+import * as style from './types'
+import { visitLastSelectors } from './manipulate'
+import * as template from '../template/types'
+import { getNode } from '../template/manipulate'
+import { range } from '../../utils'
 
-export function createStyleMatcher(styles: Style[]) {
+export function createStyleMatcher(styles: style.Style[]) {
   const map = new StyleMap(styles)
 
-  return function matchStyle(template: Template, targetPath: number[]): Rule[] {
-    const target = getNode(template, targetPath) as Element
+  return function matchStyle(
+    template: template.Template,
+    targetPath: number[]
+  ): style.Rule[] {
+    const target = getNode(template, targetPath) as template.Element
     assert(
       target,
       '[style matcher] Target node is not found. path: ' +
@@ -27,19 +32,18 @@ export function createStyleMatcher(styles: Style[]) {
 }
 
 function matchSelector(
-  target: Element,
-  selector: Selector,
-  template: Template
+  target: template.Element,
+  selector: style.Selector,
+  template: template.Template
 ): boolean {
-  const attrMap = target.startTag.attributes.reduce<Map<string, Attribute>>(
-    (map, attr) => {
-      if (!attr.directive) {
-        map.set(attr.name, attr)
-      }
-      return map
-    },
-    new Map()
-  )
+  const attrMap = target.startTag.attributes.reduce<
+    Map<string, template.Attribute>
+  >((map, attr) => {
+    if (!attr.directive) {
+      map.set(attr.name, attr)
+    }
+    return map
+  }, new Map())
 
   // TODO: resolve some pseudo class (e.g. :nth-child, :not and :matches)
   return (
@@ -51,13 +55,13 @@ function matchSelector(
   )
 }
 
-function matchSelectorByTag(tag: string, selector: Selector): boolean {
+function matchSelectorByTag(tag: string, selector: style.Selector): boolean {
   return !selector.tag || tag === selector.tag
 }
 
 function matchSelectorById(
-  attrs: Map<string, Attribute>,
-  selector: Selector
+  attrs: Map<string, template.Attribute>,
+  selector: style.Selector
 ): boolean {
   if (!selector.id) {
     return true
@@ -68,8 +72,8 @@ function matchSelectorById(
 }
 
 function matchSelectorByClass(
-  attrs: Map<string, Attribute>,
-  selector: Selector
+  attrs: Map<string, template.Attribute>,
+  selector: style.Selector
 ): boolean {
   if (selector.class.length === 0) {
     return true
@@ -85,8 +89,8 @@ function matchSelectorByClass(
 }
 
 function matchSelectorByAttribute(
-  attrs: Map<string, Attribute>,
-  selector: Selector
+  attrs: Map<string, template.Attribute>,
+  selector: style.Selector
 ): boolean {
   if (selector.attributes.length === 0) {
     return true
@@ -129,9 +133,9 @@ function matchSelectorByAttribute(
 }
 
 function matchCombinator(
-  origin: Element,
-  selector: Selector,
-  template: Template
+  origin: template.Element,
+  selector: style.Selector,
+  template: template.Template
 ): boolean {
   const comb = selector.leftCombinator
   if (!comb) {
@@ -142,7 +146,8 @@ function matchCombinator(
   const { path } = origin
   const parentPath = path.slice(0, -1)
   const last = path[path.length - 1]
-  const isElement = (el: any): el is Element => el && el.type === 'Element'
+  const isElement = (el: any): el is template.Element =>
+    el && el.type === 'Element'
 
   switch (comb.operator) {
     case '>': {
@@ -150,11 +155,14 @@ function matchCombinator(
       return isElement(next) && matchSelector(next, comb.left, template)
     }
     case '+': {
-      const next = range(1, last).reduce<Element | undefined>((acc, offset) => {
-        if (acc) return acc
-        const node = getNode(template, parentPath.concat(last - offset))
-        return isElement(node) ? node : undefined
-      }, undefined)
+      const next = range(1, last).reduce<template.Element | undefined>(
+        (acc, offset) => {
+          if (acc) return acc
+          const node = getNode(template, parentPath.concat(last - offset))
+          return isElement(node) ? node : undefined
+        },
+        undefined
+      )
       return next ? matchSelector(next, comb.left, template) : false
     }
     case ' ': {
@@ -184,13 +192,13 @@ function isSubset(target: string[], superSet: string[]): boolean {
 }
 
 class StyleMap {
-  private idMap = new Map<string, Rule[]>()
-  private classMap = new Map<string, Rule[]>()
-  private attributeMap = new Map<string, Rule[]>()
-  private tagMap = new Map<string, Rule[]>()
-  private universals: Rule[] = []
+  private idMap = new Map<string, style.Rule[]>()
+  private classMap = new Map<string, style.Rule[]>()
+  private attributeMap = new Map<string, style.Rule[]>()
+  private tagMap = new Map<string, style.Rule[]>()
+  private universals: style.Rule[] = []
 
-  constructor(styles: Style[]) {
+  constructor(styles: style.Style[]) {
     styles.forEach(style => {
       visitLastSelectors(style, (selector, rule) => {
         // Register each rule to map keyed by the most right selector string.
@@ -218,35 +226,40 @@ class StyleMap {
     })
   }
 
-  getCandidateRules(el: Element): Rule[] {
+  getCandidateRules(el: template.Element): style.Rule[] {
     const tagMatched = this.tagMap.get(el.name) || []
 
-    const attrsMatched = el.startTag.attributes.reduce<Rule[]>((acc, attr) => {
-      if (attr.directive) return acc
+    const attrsMatched = el.startTag.attributes.reduce<style.Rule[]>(
+      (acc, attr) => {
+        if (attr.directive) return acc
 
-      if (attr.value) {
-        if (attr.name === 'id') {
-          acc = acc.concat(this.idMap.get(attr.value) || [])
+        if (attr.value) {
+          if (attr.name === 'id') {
+            acc = acc.concat(this.idMap.get(attr.value) || [])
+          }
+
+          if (attr.name === 'class') {
+            const matched = attr.value
+              .split(/\s+/)
+              .reduce<style.Rule[]>((acc, c) => {
+                return acc.concat(this.classMap.get(c) || [])
+              }, [])
+            acc = acc.concat(matched)
+          }
         }
 
-        if (attr.name === 'class') {
-          const matched = attr.value.split(/\s+/).reduce<Rule[]>((acc, c) => {
-            return acc.concat(this.classMap.get(c) || [])
-          }, [])
-          acc = acc.concat(matched)
-        }
-      }
-
-      return acc.concat(this.attributeMap.get(attr.name) || [])
-    }, [])
+        return acc.concat(this.attributeMap.get(attr.name) || [])
+      },
+      []
+    )
 
     return [...tagMatched, ...attrsMatched, ...this.universals]
   }
 
   private registerRule(
-    map: Map<string, Rule[]>,
+    map: Map<string, style.Rule[]>,
     key: string,
-    rule: Rule
+    rule: style.Rule
   ): void {
     const list = map.get(key) || []
     map.set(key, list.concat(rule))

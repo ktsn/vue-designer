@@ -6,8 +6,8 @@ import {
   ElementChild,
   VForDirective,
   Element
-} from '@/parser/template'
-import { DefaultValue } from '@/parser/script'
+} from '@/parser/template/types'
+import { DefaultValue } from '@/parser/script/types'
 import { evalWithScope } from './eval'
 import { isObject, range, clone } from '@/utils'
 

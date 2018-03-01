@@ -6,17 +6,17 @@ import { parse as parseScript } from 'babylon'
 import * as Babel from '@babel/types'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
-import { Template, transformTemplate } from './template'
+import { Template } from './template/types'
+import { transformTemplate } from './template/transform'
+import { Prop, Data, ChildComponent } from './script/types'
 import {
-  Prop,
-  Data,
-  ChildComponent,
   extractChildComponents,
   extractProps,
   extractData
-} from './script'
-import { Style, transformStyle, Rule } from './style'
-import { createStyleMatcher } from './style-matcher'
+} from './script/manipulate'
+import { Style, Rule } from './style/types'
+import { transformStyle } from './style/transform'
+import { createStyleMatcher } from './style/match'
 
 export interface VueFilePayload {
   uri: string
@@ -46,10 +46,10 @@ export function parseVueFile(code: string, uri: string): VueFile {
 
   const { script, styles } = parseComponent(code, { pad: 'space' })
 
-  const { program: scriptBody } = (parseScript(script ? script.content : '', {
+  const { program: scriptBody } = parseScript(script ? script.content : '', {
     sourceType: 'module',
     plugins: ['typescript', 'objectRestSpread']
-  } as any) as any) as Babel.File
+  })
 
   const childComponents = extractChildComponents(scriptBody, uri, childPath => {
     const resolved = new URL(parsedUri.toString())

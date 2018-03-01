@@ -1,8 +1,9 @@
 import assert from 'assert'
 import * as t from '@babel/types'
 import { flatten } from '../utils'
-import { Template, getNode, TextNode, ElementChild, Element } from './template'
-import { findComponentOptions, findProperty } from './script'
+import { Template, TextNode, ElementChild, Element } from './template/types'
+import { getNode } from './template/manipulate'
+import { findComponentOptions, findProperty } from './script/manipulate'
 
 export type Modifiers = (Modifier | Modifier[])[]
 

@@ -1,8 +1,8 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
-import { Template } from '@/parser/template'
-import { DefaultValue, Prop, Data, ChildComponent } from '@/parser/script'
+import { Template } from '@/parser/template/types'
+import { DefaultValue, Prop, Data, ChildComponent } from '@/parser/script/types'
 import { resolveControlDirectives, ResolvedChild } from '../rendering'
 
 export default Vue.extend({

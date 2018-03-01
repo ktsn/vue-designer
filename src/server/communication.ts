@@ -1,7 +1,7 @@
 import WebSocket from 'ws'
 import { ServerPayload } from '../payload'
 import { VueFilePayload } from '../parser/vue-file'
-import { RuleForPrint } from '../parser/style'
+import { RuleForPrint } from '../parser/style/types'
 
 export function initProject(
   ws: WebSocket,

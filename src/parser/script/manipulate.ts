@@ -1,5 +1,8 @@
 import assert from 'assert'
 import * as t from '@babel/types'
+import { Prop, Data, ChildComponent, DefaultValue } from './types'
+
+type StaticKey = t.Identifier | t.StringLiteral | t.NumericLiteral
 
 export function extractProps(program: t.Program): Prop[] {
   const options = findComponentOptions(program.body)
@@ -420,34 +423,4 @@ export function findComponentOptions(
     return dec.arguments[0] as t.ObjectExpression
   }
   return undefined
-}
-
-type StaticKey = t.Identifier | t.StringLiteral | t.NumericLiteral
-
-interface RecordDefaultValue extends Record<string, DefaultValue> {}
-interface ArrayDefaultValue extends Array<DefaultValue> {}
-
-export type DefaultValue =
-  | RecordDefaultValue
-  | ArrayDefaultValue
-  | boolean
-  | number
-  | string
-  | null
-  | undefined
-
-export interface Prop {
-  name: string
-  type: string
-  default?: DefaultValue
-}
-
-export interface Data {
-  name: string
-  default?: DefaultValue
-}
-
-export interface ChildComponent {
-  name: string
-  uri: string
 }

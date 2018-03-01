@@ -10,8 +10,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import Node from './Node.vue'
-import { Element } from '@/parser/template'
-import { DefaultValue, ChildComponent } from '@/parser/script'
+import { Element } from '@/parser/template/types'
+import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import { projectHelpers } from '../store/modules/project'
 
 export default Vue.extend({

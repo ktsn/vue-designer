@@ -9,6 +9,28 @@ export function mapValues<T, R>(
   return res
 }
 
+export function takeWhile<T, R extends T>(
+  list: T[],
+  fn: (value: T) => value is R
+): R[]
+export function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[]
+export function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
+  const res = []
+  for (const item of list) {
+    if (fn(item)) {
+      res.push(item)
+    } else {
+      return res
+    }
+  }
+  return res
+}
+
+export function dropWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
+  const skip = takeWhile(list, fn)
+  return list.slice(skip.length)
+}
+
 export function flatten<T>(list: (T | T[])[]): T[] {
   return list.reduce<T[]>((acc, item) => {
     return acc.concat(item)

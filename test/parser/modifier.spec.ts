@@ -10,7 +10,7 @@ import {
   insertToTemplate,
   insertComponentScript
 } from '@/parser/modifier'
-import { transformTemplate } from '@/parser/template'
+import { transformTemplate } from '@/parser/template/transform'
 
 describe('Modifier', () => {
   it('should insert string before specified range', () => {

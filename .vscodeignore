@@ -1,4 +1,7 @@
-**/*.ts
+src
+test
+types
+coverage
 tsconfig.json
 tsconfig.main.json
 tsconfig.test.json

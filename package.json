@@ -85,6 +85,7 @@
     "babylon": "^7.0.0-beta.40",
     "eslint": "github:eslint/eslint#6b71fd0",
     "hash-sum": "^1.0.2",
+    "meck": "^0.1.1",
     "postcss": "^6.0.19",
     "postcss-safe-parser": "^3.0.1",
     "postcss-selector-parser": "^3.1.1",

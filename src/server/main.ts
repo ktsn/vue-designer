@@ -3,7 +3,9 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as http from 'http'
 import WebSocket from 'ws'
-import { ClientPayload } from '../payload'
+import { EventObserver, CommandEmitter } from 'meck'
+import { ClientPayload, ServerPayload } from '../payload'
+import { Events, Commands } from '../message/types'
 
 function readContent(
   file: string,
@@ -21,7 +23,7 @@ const html = `<html>
 
 const allowedUrls = ['/vue-designer-view.js']
 
-function startStaticServer(): http.Server {
+export function startStaticServer(): http.Server {
   const server = http.createServer((req, res) => {
     if (req.headers.host && !/^localhost(:\d+)?$/.test(req.headers.host)) {
       res.statusCode = 403
@@ -52,35 +54,59 @@ function startStaticServer(): http.Server {
   return server
 }
 
-function startWebSocketServer(
-  http: http.Server,
-  onConnection: (ws: WebSocket) => void,
-  onMessage: (ws: WebSocket, payload: ClientPayload) => void
-): WebSocket.Server {
-  const wss = new WebSocket.Server({
+export function startWebSocketServer(http: http.Server): WebSocket.Server {
+  return new WebSocket.Server({
     host: 'localhost',
     server: http,
     path: '/api'
   })
-
-  wss.on('connection', ws => {
-    onConnection(ws)
-    ws.on('message', data => {
-      const payload = JSON.parse(data.toString())
-      console.log('[receive] ' + payload.type, payload)
-      onMessage(ws, payload)
-    })
-  })
-
-  return wss
 }
 
-export function startServer(
-  onConnection: (ws: WebSocket) => void,
-  onMessage: (ws: WebSocket, payload: ClientPayload) => void
-): http.Server {
-  const server = startStaticServer()
-  startWebSocketServer(server, onConnection, onMessage)
+export function wsEventObserver(
+  server: WebSocket.Server
+): EventObserver<Events> {
+  return new EventObserver(emit => {
+    server.on('connection', ws => {
+      ws.on('message', data => {
+        const payload: ClientPayload = JSON.parse(data.toString())
+        console.log('[receive] ' + payload.type, payload)
 
-  return server
+        switch (payload.type) {
+          case 'SelectNode':
+            return emit('selectNode', payload)
+          case 'AddNode':
+            return emit('addNode', payload)
+          default:
+            throw new Error(
+              'Unexpected client payload: ' + (payload as any).type
+            )
+        }
+      })
+    })
+  })
+}
+
+export function wsCommandEmiter(
+  server: WebSocket.Server
+): CommandEmitter<Commands> {
+  function send(payload: ServerPayload): void {
+    console.log('[send] ' + payload.type, payload)
+    server.clients.forEach(ws => {
+      ws.send(JSON.stringify(payload))
+    })
+  }
+
+  return new CommandEmitter(observe => {
+    observe('initProject', payload => {
+      send({ type: 'InitProject', vueFiles: payload })
+    })
+
+    observe('changeDocument', payload => {
+      send({ type: 'ChangeDocument', uri: payload })
+    })
+
+    observe('matchRules', payload => {
+      send({ type: 'MatchRules', rules: payload })
+    })
+  })
 }

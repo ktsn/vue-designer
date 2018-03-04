@@ -23,7 +23,7 @@ function createVSCodeCommandEmitter(): CommandEmitter<Commands> {
   return new CommandEmitter(observe => {
     observe('highlightEditor', ({ uri, ranges }) => {
       const editor = vscode.window.visibleTextEditors.find(e => {
-        return e.document.uri.toString() === uri.toString()
+        return e.document.uri.toString() === uri
       })
 
       if (!editor) {
@@ -46,14 +46,15 @@ function createVSCodeCommandEmitter(): CommandEmitter<Commands> {
     })
 
     observe('updateEditor', ({ uri, code }) => {
-      vscode.workspace.openTextDocument(vscode.Uri.parse(uri)).then(doc => {
+      const parsedUri = vscode.Uri.parse(uri)
+      vscode.workspace.openTextDocument(parsedUri).then(doc => {
         const range = new vscode.Range(
           doc.positionAt(0),
           doc.positionAt(doc.getText().length)
         )
 
         const wsEdit = new vscode.WorkspaceEdit()
-        wsEdit.replace(vscode.Uri.parse(uri), range, code)
+        wsEdit.replace(parsedUri, range, code)
         vscode.workspace.applyEdit(wsEdit)
       })
     })

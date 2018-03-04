@@ -1,21 +1,15 @@
 import * as vscode from 'vscode'
-import { startServer } from './server/main'
-import { initProject, changeDocument, matchRules } from './server/communication'
+import { CommandEmitter, MessageBus } from 'meck'
 import {
-  parseVueFile,
-  vueFileToPayload,
-  VueFile,
-  resolveImportPath
-} from './parser/vue-file'
-import { getNode } from './parser/template/manipulate'
-import {
-  modify,
-  insertToTemplate,
-  insertComponentScript,
-  Modifiers
-} from './parser/modifier'
-import { transformRuleForPrint } from './parser/style/transform'
+  startStaticServer,
+  startWebSocketServer,
+  wsEventObserver,
+  wsCommandEmiter
+} from './server/main'
+import { parseVueFile, vueFileToPayload, VueFile } from './parser/vue-file'
 import { mapValues } from './utils'
+import { Commands } from './message/types'
+import { observeServerEvents } from './message/bus'
 
 function createHighlight(): vscode.TextEditorDecorationType {
   return vscode.window.createTextEditorDecorationType({
@@ -23,8 +17,51 @@ function createHighlight(): vscode.TextEditorDecorationType {
   })
 }
 
-export function activate(context: vscode.ExtensionContext) {
+function createVSCodeCommandEmitter(): CommandEmitter<Commands> {
   let currentHighlight: vscode.TextEditorDecorationType | undefined
+
+  return new CommandEmitter(observe => {
+    observe('highlightEditor', ({ uri, ranges }) => {
+      const editor = vscode.window.visibleTextEditors.find(e => {
+        return e.document.uri.toString() === uri
+      })
+
+      if (!editor) {
+        return
+      }
+
+      // Cancel previous highlight
+      if (currentHighlight) {
+        currentHighlight.dispose()
+      }
+
+      const highlightList = ranges.map(range => {
+        const start = editor.document.positionAt(range[0])
+        const end = editor.document.positionAt(range[1])
+        return new vscode.Range(start, end)
+      })
+
+      currentHighlight = createHighlight()
+      editor.setDecorations(currentHighlight, highlightList)
+    })
+
+    observe('updateEditor', ({ uri, code }) => {
+      const parsedUri = vscode.Uri.parse(uri)
+      vscode.workspace.openTextDocument(parsedUri).then(doc => {
+        const range = new vscode.Range(
+          doc.positionAt(0),
+          doc.positionAt(doc.getText().length)
+        )
+
+        const wsEdit = new vscode.WorkspaceEdit()
+        wsEdit.replace(parsedUri, range, code)
+        vscode.workspace.applyEdit(wsEdit)
+      })
+    })
+  })
+}
+
+export function activate(context: vscode.ExtensionContext) {
   let lastActiveTextEditor = vscode.window.activeTextEditor
   const vueFiles: Record<string, VueFile> = {}
 
@@ -38,137 +75,42 @@ export function activate(context: vscode.ExtensionContext) {
   const fsWatcher = initVueFilesWatcher(vueFiles)
 
   const previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer')
-  const server = startServer(
-    ws => {
-      console.log('Client connected')
+  const server = startStaticServer()
+  const wsServer = startWebSocketServer(server)
 
-      function initCurrentDocument(document: vscode.TextDocument): void {
-        const code = document.getText()
-        const uri = document.uri.toString()
-        vueFiles[uri] = parseVueFile(code, uri)
-        initProject(ws, mapValues(vueFiles, vueFileToPayload))
-      }
-
-      initProject(ws, mapValues(vueFiles, vueFileToPayload))
-      fsWatcher.onDidChange(() => {
-        initProject(ws, mapValues(vueFiles, vueFileToPayload))
-      })
-
-      if (lastActiveTextEditor) {
-        changeDocument(ws, lastActiveTextEditor.document.uri.toString())
-      }
-
-      vscode.window.onDidChangeActiveTextEditor(editor => {
-        if (editor) {
-          changeDocument(ws, editor.document.uri.toString())
-        }
-      })
-
-      vscode.workspace.onDidChangeTextDocument(event => {
-        if (event.document === vscode.window.activeTextEditor!.document) {
-          initCurrentDocument(event.document)
-        }
-      })
-    },
-    (ws, payload) => {
-      switch (payload.type) {
-        case 'SelectNode': {
-          // Cancel highlight
-          if (currentHighlight) {
-            currentHighlight.dispose()
-          }
-
-          const vueFile = vueFiles[payload.uri]
-          if (!vueFile || !vueFile.template || payload.path.length === 0) {
-            break
-          }
-
-          const element = getNode(vueFile.template, payload.path)
-          if (!element) {
-            break
-          }
-          const styleRules = vueFile.matchSelector(
-            vueFile.template,
-            payload.path
-          )
-
-          const editor = vscode.window.visibleTextEditors.find(e => {
-            return e.document.uri.toString() === vueFile!.uri.toString()
-          })
-          if (!editor) break
-
-          const highlightList = [element, ...styleRules].map(node => {
-            const start = editor.document.positionAt(node.range[0])
-            const end = editor.document.positionAt(node.range[1])
-            return new vscode.Range(start, end)
-          })
-
-          currentHighlight = createHighlight()
-          editor.setDecorations(currentHighlight, highlightList)
-
-          // Notify matched rules to client
-          matchRules(ws, styleRules.map(transformRuleForPrint))
-          break
-        }
-        case 'AddNode': {
-          const vueFile = vueFiles[payload.currentUri]
-          if (!vueFile || !vueFile.template) break
-
-          const component = vueFiles[payload.nodeUri]
-          if (!component) break
-
-          const existingComponent = vueFile.childComponents.find(child => {
-            return child.uri === component.uri.toString()
-          })
-
-          const uriStr = vueFile.uri.toString()
-          const uri = vscode.Uri.parse(uriStr)
-          vscode.workspace.openTextDocument(uri).then(doc => {
-            const code = doc.getText()
-            const componentName = existingComponent
-              ? existingComponent.name
-              : component.name
-
-            const modifier: Modifiers = [
-              insertToTemplate(
-                vueFile.template!,
-                payload.path,
-                `<${componentName} />`
-              )
-            ]
-
-            if (!existingComponent) {
-              modifier.push(
-                insertComponentScript(
-                  vueFile.script,
-                  code,
-                  componentName,
-                  resolveImportPath(vueFile, component)
-                )
-              )
-            }
-
-            const updated = modify(code, modifier)
-
-            const range = new vscode.Range(
-              doc.positionAt(0),
-              doc.positionAt(code.length)
-            )
-
-            const wsEdit = new vscode.WorkspaceEdit()
-            wsEdit.replace(uri, range, updated)
-            vscode.workspace.applyEdit(wsEdit)
-
-            vueFiles[uriStr] = parseVueFile(updated, uriStr)
-            initProject(ws, mapValues(vueFiles, vueFileToPayload))
-          })
-          break
-        }
-        default:
-          throw new Error('Unexpected client payload: ' + (payload as any).type)
-      }
-    }
+  const bus = new MessageBus(
+    [wsEventObserver(wsServer)],
+    [wsCommandEmiter(wsServer), createVSCodeCommandEmitter()]
   )
+  observeServerEvents(bus, vueFiles)
+
+  wsServer.on('connection', () => {
+    console.log('Client connected')
+
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+    fsWatcher.onDidChange(() => {
+      bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+    })
+
+    if (lastActiveTextEditor) {
+      bus.emit('changeDocument', lastActiveTextEditor.document.uri.toString())
+    }
+
+    vscode.window.onDidChangeActiveTextEditor(editor => {
+      if (editor) {
+        bus.emit('changeDocument', editor.document.uri.toString())
+      }
+    })
+
+    vscode.workspace.onDidChangeTextDocument(event => {
+      if (event.document === vscode.window.activeTextEditor!.document) {
+        const code = event.document.getText()
+        const uri = event.document.uri.toString()
+        vueFiles[uri] = parseVueFile(code, uri)
+        bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+      }
+    })
+  })
 
   const serverPort = process.env.DEV ? 50000 : server.address().port
   console.log(`Vue Designer server listening at http://localhost:${serverPort}`)
@@ -218,7 +160,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   )
 
-  context.subscriptions.push(fsWatcher, disposable, registration, {
+  context.subscriptions.push(fsWatcher, disposable, registration, bus, {
     dispose: () => server.close()
   })
 }

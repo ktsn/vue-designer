@@ -31,6 +31,7 @@ export interface VueFilePayload {
 export interface VueFile {
   uri: URL
   name: string
+  code: string
   template: Template | undefined
   script: Babel.Program
   props: Prop[]
@@ -68,6 +69,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
   return {
     uri: parsedUri,
     name,
+    code,
     template: parseTemplateBlock(code),
     script: scriptBody,
     props: extractProps(scriptBody),

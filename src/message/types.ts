@@ -11,6 +11,11 @@ export interface Events {
     nodeUri: string
     path: number[]
   }
+  changeActiveEditor: string
+  updateEditor: {
+    uri: string
+    code: string
+  }
 }
 
 export interface Commands {

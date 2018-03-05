@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { CommandEmitter, MessageBus } from 'meck'
+import { CommandEmitter, MessageBus, EventObserver } from 'meck'
 import {
   startStaticServer,
   startWebSocketServer,
@@ -8,12 +8,33 @@ import {
 } from './server/main'
 import { parseVueFile, vueFileToPayload, VueFile } from './parser/vue-file'
 import { mapValues } from './utils'
-import { Commands } from './message/types'
+import { Commands, Events } from './message/types'
 import { observeServerEvents } from './message/bus'
 
 function createHighlight(): vscode.TextEditorDecorationType {
   return vscode.window.createTextEditorDecorationType({
     backgroundColor: 'rgba(200, 200, 200, 0.2)'
+  })
+}
+
+function createVSCodeEventObserver(): EventObserver<Events> {
+  return new EventObserver(emit => {
+    vscode.window.onDidChangeActiveTextEditor(editor => {
+      if (editor) {
+        emit('changeActiveEditor', editor.document.uri.toString())
+      }
+    })
+
+    vscode.workspace.onDidChangeTextDocument(event => {
+      if (event.document === vscode.window.activeTextEditor!.document) {
+        const code = event.document.getText()
+        const uri = event.document.uri.toString()
+        emit('updateEditor', {
+          uri,
+          code
+        })
+      }
+    })
   })
 }
 
@@ -79,7 +100,7 @@ export function activate(context: vscode.ExtensionContext) {
   const wsServer = startWebSocketServer(server)
 
   const bus = new MessageBus(
-    [wsEventObserver(wsServer)],
+    [wsEventObserver(wsServer), createVSCodeEventObserver()],
     [wsCommandEmiter(wsServer), createVSCodeCommandEmitter()]
   )
   observeServerEvents(bus, vueFiles)
@@ -95,21 +116,6 @@ export function activate(context: vscode.ExtensionContext) {
     if (lastActiveTextEditor) {
       bus.emit('changeDocument', lastActiveTextEditor.document.uri.toString())
     }
-
-    vscode.window.onDidChangeActiveTextEditor(editor => {
-      if (editor) {
-        bus.emit('changeDocument', editor.document.uri.toString())
-      }
-    })
-
-    vscode.workspace.onDidChangeTextDocument(event => {
-      if (event.document === vscode.window.activeTextEditor!.document) {
-        const code = event.document.getText()
-        const uri = event.document.uri.toString()
-        vueFiles[uri] = parseVueFile(code, uri)
-        bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
-      }
-    })
   })
 
   const serverPort = process.env.DEV ? 50000 : server.address().port

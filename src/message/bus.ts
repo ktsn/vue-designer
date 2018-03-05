@@ -90,4 +90,16 @@ export function observeServerEvents(
     // TODO: change this notification more clean and optimized way
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
   })
+
+  bus.on('changeActiveEditor', uri => {
+    bus.emit('changeDocument', uri)
+  })
+
+  bus.on('updateEditor', ({ uri, code }) => {
+    // TODO: move mutation to outside of this logic
+    vueFiles[uri] = parseVueFile(code, uri)
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
 }

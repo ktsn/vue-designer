@@ -2,6 +2,7 @@ import { RuleForPrint } from '../parser/style/types'
 import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {
+  initClient: undefined
   selectNode: {
     uri: string
     path: number[]
@@ -10,6 +11,11 @@ export interface Events {
     currentUri: string
     nodeUri: string
     path: number[]
+  }
+  changeActiveEditor: string
+  updateEditor: {
+    uri: string
+    code: string
   }
 }
 

@@ -18,8 +18,18 @@ import { mapValues } from '../utils'
 
 export function observeServerEvents(
   bus: MessageBus<Events, Commands>,
-  vueFiles: Record<string, VueFile>
+  vueFiles: Record<string, VueFile>,
+  activeUri: string | undefined
 ): void {
+  let lastActiveUri: string | undefined = activeUri
+
+  bus.on('initClient', () => {
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+    if (lastActiveUri) {
+      bus.emit('changeDocument', lastActiveUri)
+    }
+  })
+
   bus.on('selectNode', payload => {
     const vueFile = vueFiles[payload.uri]
     if (!vueFile || !vueFile.template || payload.path.length === 0) {
@@ -86,6 +96,19 @@ export function observeServerEvents(
 
     // TODO: move mutation to outside of this logic
     vueFiles[uri] = parseVueFile(updated, uri)
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
+
+  bus.on('changeActiveEditor', uri => {
+    lastActiveUri = uri
+    bus.emit('changeDocument', uri)
+  })
+
+  bus.on('updateEditor', ({ uri, code }) => {
+    // TODO: move mutation to outside of this logic
+    vueFiles[uri] = parseVueFile(code, uri)
 
     // TODO: change this notification more clean and optimized way
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))

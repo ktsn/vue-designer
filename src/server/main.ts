@@ -67,6 +67,9 @@ export function wsEventObserver(
 ): EventObserver<Events> {
   return new EventObserver(emit => {
     server.on('connection', ws => {
+      console.log('Client connected')
+      emit('initClient', undefined)
+
       ws.on('message', data => {
         const payload: ClientPayload = JSON.parse(data.toString())
         console.log('[receive] ' + payload.type, payload)

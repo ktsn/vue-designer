@@ -2,6 +2,7 @@ import { RuleForPrint } from '../parser/style/types'
 import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {
+  initClient: undefined
   selectNode: {
     uri: string
     path: number[]

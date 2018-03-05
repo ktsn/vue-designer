@@ -83,15 +83,7 @@ function createVSCodeCommandEmitter(): CommandEmitter<Commands> {
 }
 
 export function activate(context: vscode.ExtensionContext) {
-  let lastActiveTextEditor = vscode.window.activeTextEditor
   const vueFiles: Record<string, VueFile> = {}
-
-  vscode.window.onDidChangeActiveTextEditor(() => {
-    const editor = vscode.window.activeTextEditor
-    if (editor) {
-      lastActiveTextEditor = editor
-    }
-  })
 
   const fsWatcher = initVueFilesWatcher(vueFiles)
 
@@ -99,23 +91,17 @@ export function activate(context: vscode.ExtensionContext) {
   const server = startStaticServer()
   const wsServer = startWebSocketServer(server)
 
+  const editor = vscode.window.activeTextEditor
+  const activeUri = editor && editor.document.uri.toString()
+
   const bus = new MessageBus(
     [wsEventObserver(wsServer), createVSCodeEventObserver()],
     [wsCommandEmiter(wsServer), createVSCodeCommandEmitter()]
   )
-  observeServerEvents(bus, vueFiles)
+  observeServerEvents(bus, vueFiles, activeUri)
 
-  wsServer.on('connection', () => {
-    console.log('Client connected')
-
+  fsWatcher.onDidChange(() => {
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
-    fsWatcher.onDidChange(() => {
-      bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
-    })
-
-    if (lastActiveTextEditor) {
-      bus.emit('changeDocument', lastActiveTextEditor.document.uri.toString())
-    }
   })
 
   const serverPort = process.env.DEV ? 50000 : server.address().port

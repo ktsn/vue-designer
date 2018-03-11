@@ -6,8 +6,7 @@ import {
   wsEventObserver,
   wsCommandEmiter
 } from './server/main'
-import { parseVueFile, vueFileToPayload, VueFile } from './parser/vue-file'
-import { mapValues } from './utils'
+import { VueFile } from './parser/vue-file'
 import { Commands, Events } from './message/types'
 import { observeServerEvents } from './message/bus'
 
@@ -18,6 +17,10 @@ function createHighlight(): vscode.TextEditorDecorationType {
 }
 
 function createVSCodeEventObserver(): EventObserver<Events> {
+  const folders = vscode.workspace.workspaceFolders
+  const pattern = folders && new vscode.RelativePattern(folders[0], '**/*.vue')
+  const watcher = pattern && vscode.workspace.createFileSystemWatcher(pattern)
+
   return new EventObserver(emit => {
     vscode.window.onDidChangeActiveTextEditor(editor => {
       if (editor) {
@@ -34,6 +37,41 @@ function createVSCodeEventObserver(): EventObserver<Events> {
           code
         })
       }
+    })
+
+    if (watcher) {
+      watcher.onDidCreate(uri => {
+        vscode.workspace.openTextDocument(uri).then(document => {
+          emit('addDocument', {
+            uri: uri.toString(),
+            code: document.getText()
+          })
+        })
+      })
+
+      watcher.onDidChange(uri => {
+        vscode.workspace.openTextDocument(uri).then(document => {
+          emit('changeDocument', {
+            uri: uri.toString(),
+            code: document.getText()
+          })
+        })
+      })
+
+      watcher.onDidDelete(uri => {
+        emit('removeDocument', uri.toString())
+      })
+    }
+
+    vscode.workspace.findFiles('**/*.vue', '**/node_modules/**').then(uris => {
+      uris.forEach(uri => {
+        vscode.workspace.openTextDocument(uri).then(document => {
+          emit('addDocument', {
+            uri: uri.toString(),
+            code: document.getText()
+          })
+        })
+      })
     })
   })
 }
@@ -85,8 +123,6 @@ function createVSCodeCommandEmitter(): CommandEmitter<Commands> {
 export function activate(context: vscode.ExtensionContext) {
   const vueFiles: Record<string, VueFile> = {}
 
-  const fsWatcher = initVueFilesWatcher(vueFiles)
-
   const previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer')
   const server = startStaticServer()
   const wsServer = startWebSocketServer(server)
@@ -99,10 +135,6 @@ export function activate(context: vscode.ExtensionContext) {
     [wsCommandEmiter(wsServer), createVSCodeCommandEmitter()]
   )
   observeServerEvents(bus, vueFiles, activeUri)
-
-  fsWatcher.onDidChange(() => {
-    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
-  })
 
   const serverPort = process.env.DEV ? 50000 : server.address().port
   console.log(`Vue Designer server listening at http://localhost:${serverPort}`)
@@ -152,34 +184,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
   )
 
-  context.subscriptions.push(fsWatcher, disposable, registration, bus, {
+  context.subscriptions.push(disposable, registration, bus, {
     dispose: () => server.close()
   })
-}
-
-function initVueFilesWatcher(
-  store: Record<string, VueFile>
-): vscode.FileSystemWatcher {
-  const watcher = vscode.workspace.createFileSystemWatcher('**/*.vue')
-
-  function storeParsedVueFile(uri: vscode.Uri): void {
-    vscode.workspace.openTextDocument(uri).then(document => {
-      const uriStr = uri.toString()
-      const code = document.getText()
-      const parsed = parseVueFile(code, uriStr)
-      store[uriStr] = parsed
-    })
-  }
-
-  watcher.onDidCreate(storeParsedVueFile)
-  watcher.onDidChange(storeParsedVueFile)
-  watcher.onDidDelete(uri => {
-    delete store[uri.toString()]
-  })
-
-  vscode.workspace.findFiles('**/*.vue', '**/node_modules/**').then(uris => {
-    uris.forEach(storeParsedVueFile)
-  })
-
-  return watcher
 }

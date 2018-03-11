@@ -113,4 +113,27 @@ export function observeServerEvents(
     // TODO: change this notification more clean and optimized way
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
   })
+
+  bus.on('addDocument', ({ uri, code }) => {
+    // TODO: move mutation to outside of this logic
+    vueFiles[uri] = parseVueFile(code, uri)
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
+
+  bus.on('changeDocument', ({ uri, code }) => {
+    // TODO: move mutation to outside of this logic
+    vueFiles[uri] = parseVueFile(code, uri)
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
+
+  bus.on('removeDocument', uri => {
+    delete vueFiles[uri]
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
 }

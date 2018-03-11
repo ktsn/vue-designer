@@ -17,6 +17,15 @@ export interface Events {
     uri: string
     code: string
   }
+  addDocument: {
+    uri: string
+    code: string
+  }
+  changeDocument: {
+    uri: string
+    code: string
+  }
+  removeDocument: string
 }
 
 export interface Commands {

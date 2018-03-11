@@ -42,7 +42,7 @@ describe('StyleValue basic', () => {
     expect(wrapper.emitted('input')[0]).toEqual(['22px'])
   })
 
-  it('should cancel editing when blured', () => {
+  it('should end editing when blured', () => {
     const wrapper = mount(StyleValue, {
       propsData: {
         value: '20px'
@@ -52,6 +52,21 @@ describe('StyleValue basic', () => {
     expect(wrapper.attributes()!.contenteditable).toBe('true')
 
     wrapper.trigger('blur')
+    expect(wrapper.attributes()!.contenteditable).not.toBe('true')
+  })
+
+  it('should end editing when pushed enter', () => {
+    const wrapper = mount(StyleValue, {
+      propsData: {
+        value: '20px'
+      }
+    })
+    wrapper.trigger('click')
+    expect(wrapper.attributes()!.contenteditable).toBe('true')
+
+    wrapper.trigger('keypress', {
+      keyCode: 13
+    })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
   })
 })

@@ -11,6 +11,7 @@
     contenteditable="true"
     ref="input"
     @input="input"
+    @keypress.enter="endEdit"
     @blur="endEdit"
   >{{ value }}</div>
 </template>

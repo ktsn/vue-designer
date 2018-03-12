@@ -1,6 +1,7 @@
 import { Range } from '../modifier'
 
 export interface Style extends Range {
+  path: [number]
   body: (AtRule | Rule)[]
 }
 

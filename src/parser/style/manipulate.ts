@@ -43,3 +43,25 @@ export function addScope(node: t.Style, scope: string): t.Style {
     })
   })
 }
+
+export function getDeclaration(
+  styles: t.Style[],
+  path: number[]
+): t.Declaration | undefined {
+  const res = path.reduce<any | undefined>(
+    (acc, i) => {
+      if (!acc) return
+
+      if (acc.children) {
+        return acc.children[i]
+      } else if (acc.body) {
+        return acc.body[i]
+      } else if (acc.declarations) {
+        return acc.declarations[i]
+      }
+    },
+    { children: styles }
+  )
+
+  return res && res.type === 'Declaration' ? res : undefined
+}

@@ -62,8 +62,8 @@ export function parseVueFile(code: string, uri: string): VueFile {
     return resolved.toString()
   })
 
-  const styleAsts = styles.map(s => {
-    return transformStyle(postcssParse(s.content), s.content)
+  const styleAsts = styles.map((s, i) => {
+    return transformStyle(postcssParse(s.content), s.content, i)
   })
 
   return {

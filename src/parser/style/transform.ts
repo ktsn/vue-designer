@@ -5,9 +5,14 @@ import { genSelector } from './codegen'
 import * as t from './types'
 import { takeWhile, dropWhile } from '../../utils'
 
-export function transformStyle(root: postcss.Root, code: string): t.Style {
+export function transformStyle(
+  root: postcss.Root,
+  code: string,
+  index: number
+): t.Style {
   if (!root.nodes) {
     return {
+      path: [index],
       body: [],
       range: [-1, -1]
     }
@@ -16,9 +21,9 @@ export function transformStyle(root: postcss.Root, code: string): t.Style {
     .map((node, i) => {
       switch (node.type) {
         case 'atrule':
-          return transformAtRule(node, [i], code)
+          return transformAtRule(node, [index, i], code)
         case 'rule':
-          return transformRule(node, [i], code)
+          return transformRule(node, [index, i], code)
         default:
           return undefined
       }
@@ -28,6 +33,7 @@ export function transformStyle(root: postcss.Root, code: string): t.Style {
     })
 
   return {
+    path: [index],
     body,
     range: toRange(root.source, code)
   }

@@ -1,4 +1,5 @@
 import assert from 'assert'
+import Vue from 'vue'
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
 import { Template, Element } from '@/parser/template/types'
@@ -12,7 +13,7 @@ import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { ClientConnection } from '@/view/communication'
-import { mapValues } from '@/utils'
+import { mapValues, clone } from '@/utils'
 
 export interface ScopedDocument {
   uri: string
@@ -63,6 +64,7 @@ interface ProjectMutations {
   setDraggingUri: string | undefined
   setDraggingPath: number[]
   setMatchedRules: RuleForPrint[]
+  updateMachedRuleDeclaration: DeclarationUpdater
 }
 
 export const projectHelpers = createNamespacedHelpers<
@@ -329,7 +331,7 @@ export const project: DefineModule<
       }, draggingInterval)
     },
 
-    updateDeclaration({ state }, payload) {
+    updateDeclaration({ state, commit }, payload) {
       if (!state.currentUri) return
 
       connection.send({
@@ -337,6 +339,8 @@ export const project: DefineModule<
         uri: state.currentUri,
         declaration: payload
       })
+
+      commit('updateMachedRuleDeclaration', payload)
     }
   },
 
@@ -388,6 +392,25 @@ export const project: DefineModule<
 
     setMatchedRules(state, rules) {
       state.matchedRules = rules
+    },
+
+    // TODO: we should find better approach to update client declaration
+    updateMachedRuleDeclaration(state, declaration) {
+      const path = declaration.path
+      const parentPath = path.slice(0, -1)
+      const index = path[path.length - 1]
+
+      const targetRule = state.matchedRules.find(rule => {
+        if (parentPath.length !== rule.path.length) {
+          return false
+        }
+        return rule.path.reduce((acc, p, i) => acc && p === parentPath[i], true)
+      })
+
+      if (targetRule) {
+        const original = targetRule.declarations[index]
+        Vue.set(targetRule.declarations, index, clone(original, declaration))
+      }
     }
   }
 }

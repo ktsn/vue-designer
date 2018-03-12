@@ -13,7 +13,7 @@
     @input="input"
     @keypress.enter="endEdit"
     @blur="endEdit"
-  >{{ value }}</div>
+  ></div>
 </template>
 
 <script lang="ts">
@@ -35,19 +35,30 @@ export default Vue.extend({
     }
   },
 
+  watch: {
+    value(newValue: string): void {
+      const input = this.$refs.input as HTMLDivElement | undefined
+      if (input && newValue !== input.textContent) {
+        input.textContent = newValue
+      }
+    }
+  },
+
   methods: {
-    startEdit() {
+    startEdit(): void {
       this.editing = true
       this.$nextTick(() => {
-        ;(this.$refs.input as HTMLDivElement).focus()
+        const input = this.$refs.input as HTMLDivElement
+        input.textContent = this.value
+        input.focus()
       })
     },
 
-    endEdit() {
+    endEdit(): void {
       this.editing = false
     },
 
-    input(event: Event) {
+    input(event: Event): void {
       const el = event.target as HTMLDivElement
       this.$emit('input', el.textContent)
     }

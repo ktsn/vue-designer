@@ -68,5 +68,7 @@ export default Vue.extend({
 .style-value.editing {
   margin: -1px;
   border: 1px solid #aaa;
+  background-color: #fff;
+  outline: none;
 }
 </style>

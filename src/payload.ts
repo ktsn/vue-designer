@@ -1,8 +1,8 @@
 import { VueFilePayload } from './parser/vue-file'
-import { RuleForPrint } from './parser/style/types'
+import { RuleForPrint, DeclarationUpdater } from './parser/style/types'
 
 export type ServerPayload = InitProject | ChangeDocument | MatchRules
-export type ClientPayload = SelectNode | AddNode
+export type ClientPayload = SelectNode | AddNode | UpdateDeclaration
 
 export interface InitProject {
   type: 'InitProject'
@@ -30,4 +30,10 @@ export interface AddNode {
   currentUri: string
   nodeUri: string
   path: number[]
+}
+
+export interface UpdateDeclaration {
+  type: 'UpdateDeclaration'
+  uri: string
+  declaration: DeclarationUpdater
 }

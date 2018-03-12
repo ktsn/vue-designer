@@ -7,7 +7,7 @@ import {
   insertNode,
   getNode
 } from '@/parser/template/manipulate'
-import { RuleForPrint } from '@/parser/style/types'
+import { RuleForPrint, DeclarationUpdater } from '@/parser/style/types'
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
@@ -51,6 +51,7 @@ interface ProjectActions {
   startDragging: string
   endDragging: undefined
   setDraggingPlace: { path: number[]; place: DraggingPlace }
+  updateDeclaration: DeclarationUpdater
 }
 
 interface ProjectMutations {
@@ -326,6 +327,16 @@ export const project: DefineModule<
           commit('setDraggingPath', insertInto)
         }
       }, draggingInterval)
+    },
+
+    updateDeclaration({ state }, payload) {
+      if (!state.currentUri) return
+
+      connection.send({
+        type: 'UpdateDeclaration',
+        uri: state.currentUri,
+        declaration: payload
+      })
     }
   },
 

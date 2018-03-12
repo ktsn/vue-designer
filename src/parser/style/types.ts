@@ -84,3 +84,13 @@ export interface DeclarationForPrint {
   value: string
   important: boolean
 }
+
+/**
+ * Used to update ast
+ */
+export interface DeclarationUpdater {
+  path: number[]
+  prop?: string
+  value?: string
+  important?: boolean
+}

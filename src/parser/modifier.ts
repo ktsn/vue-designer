@@ -1,9 +1,12 @@
 import assert from 'assert'
 import * as t from '@babel/types'
-import { flatten } from '../utils'
+import { flatten, clone } from '../utils'
 import { Template, TextNode, ElementChild, Element } from './template/types'
 import { getNode } from './template/manipulate'
 import { findComponentOptions, findProperty } from './script/manipulate'
+import { DeclarationUpdater, Style } from './style/types'
+import { getDeclaration } from './style/manipulate'
+import { genDeclaration } from './style/codegen'
 
 export type Modifiers = (Modifier | Modifier[])[]
 
@@ -294,4 +297,17 @@ function inferScriptIndent(code: string, node: t.Node): string {
   } else {
     return ''
   }
+}
+
+export function updateDeclaration(
+  styles: Style[],
+  decl: DeclarationUpdater
+): Modifier[] {
+  const target = getDeclaration(styles, decl.path)
+
+  if (!target) {
+    return [empty]
+  }
+
+  return replace(target, genDeclaration(clone(target, decl)))
 }

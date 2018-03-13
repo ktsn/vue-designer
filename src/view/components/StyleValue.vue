@@ -18,6 +18,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { selectNodeContents } from '@/view/editing'
 
 export default Vue.extend({
   name: 'StyleValue',
@@ -50,7 +51,7 @@ export default Vue.extend({
       this.$nextTick(() => {
         const input = this.$refs.input as HTMLDivElement
         input.textContent = this.value
-        input.focus()
+        selectNodeContents(input)
       })
     },
 

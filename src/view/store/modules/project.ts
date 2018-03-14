@@ -8,11 +8,7 @@ import {
   insertNode,
   getNode
 } from '@/parser/template/manipulate'
-import {
-  RuleForPrint,
-  DeclarationUpdater,
-  DeclarationForPrint
-} from '@/parser/style/types'
+import { RuleForPrint, DeclarationUpdater } from '@/parser/style/types'
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'

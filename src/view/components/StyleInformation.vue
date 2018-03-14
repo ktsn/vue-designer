@@ -13,7 +13,7 @@
             @input="inputStyleProp(d.path, arguments[0])"
           /></span>
           <StyleValue
-            :value="getStyleValue(d)"
+            :value="d.value"
             @input="inputStyleValue(d.path, arguments[0])"
           />
         </li>
@@ -25,7 +25,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import StyleValue from './StyleValue.vue'
-import { RuleForPrint, Declaration } from '@/parser/style/types'
+import { RuleForPrint } from '@/parser/style/types'
 
 export default Vue.extend({
   name: 'StyleInformation',
@@ -45,30 +45,15 @@ export default Vue.extend({
     inputStyleProp(path: number[], prop: string): void {
       this.$emit('update-declaration', {
         path,
-        prop
+        prop: prop.trim()
       })
     },
 
-    getStyleValue(declaration: Declaration): string {
-      const important = declaration.important ? ' !important' : ''
-      return declaration.value + important
-    },
-
     inputStyleValue(path: number[], value: string): void {
-      const match = /^\s*(.*)\s+!important\s*$/.exec(value)
-      if (match) {
-        this.$emit('update-declaration', {
-          path,
-          value: match[1],
-          important: true
-        })
-      } else {
-        this.$emit('update-declaration', {
-          path,
-          value: value.trim(),
-          important: false
-        })
-      }
+      this.$emit('update-declaration', {
+        path,
+        value: value.trim()
+      })
     }
   }
 })

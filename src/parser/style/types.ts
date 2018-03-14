@@ -82,7 +82,6 @@ export interface DeclarationForPrint {
   path: number[]
   prop: string
   value: string
-  important: boolean
 }
 
 /**

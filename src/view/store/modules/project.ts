@@ -8,7 +8,11 @@ import {
   insertNode,
   getNode
 } from '@/parser/template/manipulate'
-import { RuleForPrint, DeclarationUpdater } from '@/parser/style/types'
+import {
+  RuleForPrint,
+  DeclarationUpdater,
+  DeclarationForPrint
+} from '@/parser/style/types'
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
@@ -52,7 +56,11 @@ interface ProjectActions {
   startDragging: string
   endDragging: undefined
   setDraggingPlace: { path: number[]; place: DraggingPlace }
-  updateDeclaration: DeclarationUpdater
+  updateDeclaration: {
+    path: number[]
+    prop?: string
+    value?: string
+  }
 }
 
 interface ProjectMutations {
@@ -334,13 +342,32 @@ export const project: DefineModule<
     updateDeclaration({ state, commit }, payload) {
       if (!state.currentUri) return
 
+      const updater: DeclarationUpdater = {
+        path: payload.path
+      }
+
+      if (payload.prop) {
+        updater.prop = payload.prop
+      }
+
+      if (payload.value) {
+        const match = /^\s*(.*)\s+!important\s*$/.exec(payload.value)
+        if (match) {
+          updater.value = match[1]
+          updater.important = true
+        } else {
+          updater.value = payload.value
+          updater.important = false
+        }
+      }
+
       connection.send({
         type: 'UpdateDeclaration',
         uri: state.currentUri,
-        declaration: payload
+        declaration: updater
       })
 
-      commit('updateMachedRuleDeclaration', payload)
+      commit('updateMachedRuleDeclaration', updater)
     }
   },
 

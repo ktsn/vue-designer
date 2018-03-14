@@ -1,6 +1,7 @@
 import { Range } from '../modifier'
 
 export interface Style extends Range {
+  path: [number]
   body: (AtRule | Rule)[]
 }
 
@@ -81,5 +82,14 @@ export interface DeclarationForPrint {
   path: number[]
   prop: string
   value: string
-  important: boolean
+}
+
+/**
+ * Used to update ast
+ */
+export interface DeclarationUpdater {
+  path: number[]
+  prop?: string
+  value?: string
+  important?: boolean
 }

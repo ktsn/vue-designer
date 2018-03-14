@@ -15,6 +15,7 @@ import {
 export function createStyle(body: (AtRule | Rule)[]): Style {
   modifyPath(body)
   return {
+    path: [0],
     body,
     range: [-1, -1]
   }
@@ -32,7 +33,7 @@ function modifyPath(nodes: (AtRule | Rule | Declaration)[]): void {
       }
     })
   }
-  loop(nodes, [])
+  loop(nodes, [0])
 }
 
 export function atRule(

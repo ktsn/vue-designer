@@ -1,4 +1,5 @@
 import assert from 'assert'
+import Vue from 'vue'
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
 import { Template, Element } from '@/parser/template/types'
@@ -7,12 +8,12 @@ import {
   insertNode,
   getNode
 } from '@/parser/template/manipulate'
-import { RuleForPrint } from '@/parser/style/types'
+import { RuleForPrint, DeclarationUpdater } from '@/parser/style/types'
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { ClientConnection } from '@/view/communication'
-import { mapValues } from '@/utils'
+import { mapValues, clone } from '@/utils'
 
 export interface ScopedDocument {
   uri: string
@@ -51,6 +52,11 @@ interface ProjectActions {
   startDragging: string
   endDragging: undefined
   setDraggingPlace: { path: number[]; place: DraggingPlace }
+  updateDeclaration: {
+    path: number[]
+    prop?: string
+    value?: string
+  }
 }
 
 interface ProjectMutations {
@@ -62,6 +68,7 @@ interface ProjectMutations {
   setDraggingUri: string | undefined
   setDraggingPath: number[]
   setMatchedRules: RuleForPrint[]
+  updateMachedRuleDeclaration: DeclarationUpdater
 }
 
 export const projectHelpers = createNamespacedHelpers<
@@ -326,6 +333,37 @@ export const project: DefineModule<
           commit('setDraggingPath', insertInto)
         }
       }, draggingInterval)
+    },
+
+    updateDeclaration({ state, commit }, payload) {
+      if (!state.currentUri) return
+
+      const updater: DeclarationUpdater = {
+        path: payload.path
+      }
+
+      if (payload.prop) {
+        updater.prop = payload.prop
+      }
+
+      if (payload.value) {
+        const match = /^\s*(.*)\s+!important\s*$/.exec(payload.value)
+        if (match) {
+          updater.value = match[1]
+          updater.important = true
+        } else {
+          updater.value = payload.value
+          updater.important = false
+        }
+      }
+
+      connection.send({
+        type: 'UpdateDeclaration',
+        uri: state.currentUri,
+        declaration: updater
+      })
+
+      commit('updateMachedRuleDeclaration', updater)
     }
   },
 
@@ -377,6 +415,25 @@ export const project: DefineModule<
 
     setMatchedRules(state, rules) {
       state.matchedRules = rules
+    },
+
+    // TODO: we should find better approach to update client declaration
+    updateMachedRuleDeclaration(state, declaration) {
+      const path = declaration.path
+      const parentPath = path.slice(0, -1)
+      const index = path[path.length - 1]
+
+      const targetRule = state.matchedRules.find(rule => {
+        if (parentPath.length !== rule.path.length) {
+          return false
+        }
+        return rule.path.reduce((acc, p, i) => acc && p === parentPath[i], true)
+      })
+
+      if (targetRule) {
+        const original = targetRule.declarations[index]
+        Vue.set(targetRule.declarations, index, clone(original, declaration))
+      }
     }
   }
 }

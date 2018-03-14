@@ -117,7 +117,7 @@ function genPseudoClass(node: t.PseudoClass): string {
   }
 }
 
-function genDeclaration(decl: t.Declaration): string {
+export function genDeclaration(decl: t.Declaration): string {
   let buf = decl.prop + ': ' + decl.value
 
   if (decl.important) {

@@ -7,9 +7,15 @@
 
       <ul class="declaration-list">
         <li class="declaration" v-for="d in rule.declarations" :key="d.path.join('.')">
-          <span class="declaration-prop"><span class="declaration-prop-text">{{ d.prop }}</span></span>
-          <span class="declaration-value">{{ d.value }}</span>
-          <span v-if="d.important" class="declaration-important">!important</span>
+          <span class="declaration-prop"><StyleValue
+            class="declaration-prop-text"
+            :value="d.prop"
+            @input="inputStyleProp(d.path, arguments[0])"
+          /></span>
+          <StyleValue
+            :value="d.value"
+            @input="inputStyleValue(d.path, arguments[0])"
+          />
         </li>
       </ul>
     </li>
@@ -18,15 +24,36 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import StyleValue from './StyleValue.vue'
 import { RuleForPrint } from '@/parser/style/types'
 
 export default Vue.extend({
   name: 'StyleInformation',
 
+  components: {
+    StyleValue
+  },
+
   props: {
     rules: {
       type: Array as () => RuleForPrint[],
       required: true
+    }
+  },
+
+  methods: {
+    inputStyleProp(path: number[], prop: string): void {
+      this.$emit('update-declaration', {
+        path,
+        prop: prop.trim()
+      })
+    },
+
+    inputStyleValue(path: number[], value: string): void {
+      this.$emit('update-declaration', {
+        path,
+        value: value.trim()
+      })
     }
   }
 })

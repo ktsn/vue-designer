@@ -79,6 +79,8 @@ export function wsEventObserver(
             return emit('selectNode', payload)
           case 'AddNode':
             return emit('addNode', payload)
+          case 'UpdateDeclaration':
+            return emit('updateDeclaration', payload)
           default:
             throw new Error(
               'Unexpected client payload: ' + (payload as any).type

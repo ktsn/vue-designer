@@ -12,7 +12,8 @@ import {
   Modifiers,
   insertToTemplate,
   insertComponentScript,
-  modify
+  modify,
+  updateDeclaration
 } from '../parser/modifier'
 import { mapValues } from '../utils'
 
@@ -132,6 +133,22 @@ export function observeServerEvents(
 
   bus.on('removeDocument', uri => {
     delete vueFiles[uri]
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
+
+  bus.on('updateDeclaration', ({ uri, declaration }) => {
+    const { code, styles } = vueFiles[uri]
+    const updated = modify(code, [updateDeclaration(styles, declaration)])
+
+    bus.emit('updateEditor', {
+      uri,
+      code: updated
+    })
+
+    // TODO: move mutation to outside of this logic
+    vueFiles[uri] = parseVueFile(updated, uri)
 
     // TODO: change this notification more clean and optimized way
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))

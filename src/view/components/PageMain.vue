@@ -20,7 +20,11 @@
         <div v-else class="style-information">
           <p class="style-information-title">Node Styles</p>
           <div class="style-information-list">
-            <StyleInformation v-if="matchedRules.length > 0" :rules="matchedRules" />
+            <StyleInformation
+              v-if="matchedRules.length > 0"
+              :rules="matchedRules"
+              @update-declaration="updateDeclaration"
+            />
             <p class="not-found" v-else>Not found</p>
           </div>
         </div>
@@ -94,7 +98,8 @@ export default Vue.extend({
     'endDragging',
     'setDraggingPlace',
     'select',
-    'applyDraggingElement'
+    'applyDraggingElement',
+    'updateDeclaration'
   ])
 })
 </script>

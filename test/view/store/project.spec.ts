@@ -3,6 +3,7 @@ import { project, ProjectState } from '@/view/store/modules/project'
 import { createTemplate, h } from '../../parser/template-helpers'
 import { createStyle, rule, selector } from '../../parser/style-helpers'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
+import { ClientConnection } from '@/view/communication'
 
 describe('Store project getters', () => {
   let store: Store<any>, state: ProjectState
@@ -179,6 +180,78 @@ describe('Store project getters', () => {
       const expected = docs[current].childComponents
 
       expect(actual).toEqual(expected)
+    })
+  })
+})
+
+describe('Store project actions', () => {
+  let store: Store<any>, state: ProjectState, mockConnection: ClientConnection
+  beforeEach(() => {
+    store = new Store({
+      modules: { project }
+    })
+    state = store.state.project
+
+    mockConnection = {
+      send: jest.fn(),
+      onMessage: jest.fn()
+    } as any
+    store.dispatch('project/init', mockConnection)
+  })
+
+  describe('updateDeclaration', () => {
+    it('should send to update declaration', () => {
+      state.currentUri = 'file:///Foo.vue'
+
+      store.dispatch('project/updateDeclaration', {
+        path: [0, 0, 0],
+        prop: 'color',
+        value: 'red'
+      })
+
+      expect(mockConnection.send).toHaveBeenCalledWith({
+        type: 'UpdateDeclaration',
+        uri: state.currentUri,
+        declaration: {
+          path: [0, 0, 0],
+          prop: 'color',
+          value: 'red',
+          important: false
+        }
+      })
+    })
+
+    it('should parse important annotation', () => {
+      state.currentUri = 'file:///Foo.vue'
+
+      store.dispatch('project/updateDeclaration', {
+        path: [0, 0, 0],
+        prop: 'color',
+        value: 'red !important'
+      })
+
+      expect(mockConnection.send).toHaveBeenCalledWith({
+        type: 'UpdateDeclaration',
+        uri: state.currentUri,
+        declaration: {
+          path: [0, 0, 0],
+          prop: 'color',
+          value: 'red',
+          important: true
+        }
+      })
+    })
+
+    it('should not send if the uri is not specified', () => {
+      state.currentUri = undefined
+
+      store.dispatch('project/updateDeclaration', {
+        path: [0, 0, 0],
+        prop: 'color',
+        value: 'red'
+      })
+
+      expect(mockConnection.send).not.toHaveBeenCalled()
     })
   })
 })

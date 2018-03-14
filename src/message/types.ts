@@ -1,4 +1,4 @@
-import { RuleForPrint } from '../parser/style/types'
+import { RuleForPrint, DeclarationUpdater } from '../parser/style/types'
 import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {
@@ -26,6 +26,10 @@ export interface Events {
     code: string
   }
   removeDocument: string
+  updateDeclaration: {
+    uri: string
+    declaration: DeclarationUpdater
+  }
 }
 
 export interface Commands {

@@ -7,7 +7,11 @@
 
       <ul class="declaration-list">
         <li class="declaration" v-for="d in rule.declarations" :key="d.path.join('.')">
-          <span class="declaration-prop"><span class="declaration-prop-text">{{ d.prop }}</span></span>
+          <span class="declaration-prop"><StyleValue
+            class="declaration-prop-text"
+            :value="d.prop"
+            @input="inputStyleProp(d.path, arguments[0])"
+          /></span>
           <StyleValue
             :value="getStyleValue(d)"
             @input="inputStyleValue(d.path, arguments[0])"
@@ -38,6 +42,13 @@ export default Vue.extend({
   },
 
   methods: {
+    inputStyleProp(path: number[], prop: string): void {
+      this.$emit('update-declaration', {
+        path,
+        prop
+      })
+    },
+
     getStyleValue(declaration: Declaration): string {
       const important = declaration.important ? ' !important' : ''
       return declaration.value + important

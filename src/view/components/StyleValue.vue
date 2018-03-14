@@ -49,9 +49,11 @@ export default Vue.extend({
     startEdit(): void {
       this.editing = true
       this.$nextTick(() => {
-        const input = this.$refs.input as HTMLDivElement
-        input.textContent = this.value
-        selectNodeContents(input)
+        const input = this.$refs.input as HTMLDivElement | undefined
+        if (input) {
+          input.textContent = this.value
+          selectNodeContents(input)
+        }
       })
     },
 

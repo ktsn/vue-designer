@@ -109,9 +109,5 @@ export function wsCommandEmiter(
     observe('changeDocument', payload => {
       send({ type: 'ChangeDocument', uri: payload })
     })
-
-    observe('matchRules', payload => {
-      send({ type: 'MatchRules', rules: payload })
-    })
   })
 }

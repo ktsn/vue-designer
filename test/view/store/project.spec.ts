@@ -196,7 +196,9 @@ describe('Store project actions', () => {
       send: jest.fn(),
       onMessage: jest.fn()
     } as any
-    store.dispatch('project/init', mockConnection)
+    store.dispatch('project/init', {
+      connection: mockConnection
+    })
   })
 
   describe('updateDeclaration', () => {

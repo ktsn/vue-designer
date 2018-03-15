@@ -14,9 +14,8 @@ import {
   extractProps,
   extractData
 } from './script/manipulate'
-import { Style, Rule } from './style/types'
+import { Style } from './style/types'
 import { transformStyle } from './style/transform'
-import { createStyleMatcher } from './style/match'
 
 export interface VueFilePayload {
   uri: string
@@ -38,7 +37,6 @@ export interface VueFile {
   data: Data[]
   childComponents: ChildComponent[]
   styles: Style[]
-  matchSelector: (template: Template, targetPath: number[]) => Rule[]
 }
 
 export function parseVueFile(code: string, uri: string): VueFile {
@@ -75,8 +73,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
     props: extractProps(scriptBody),
     data: extractData(scriptBody),
     childComponents,
-    styles: styleAsts,
-    matchSelector: createStyleMatcher(styleAsts)
+    styles: styleAsts
   }
 }
 

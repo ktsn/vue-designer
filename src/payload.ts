@@ -1,7 +1,7 @@
 import { VueFilePayload } from './parser/vue-file'
-import { RuleForPrint, DeclarationUpdater } from './parser/style/types'
+import { DeclarationUpdater } from './parser/style/types'
 
-export type ServerPayload = InitProject | ChangeDocument | MatchRules
+export type ServerPayload = InitProject | ChangeDocument
 export type ClientPayload = SelectNode | AddNode | UpdateDeclaration
 
 export interface InitProject {
@@ -14,15 +14,11 @@ export interface ChangeDocument {
   uri: string
 }
 
-export interface MatchRules {
-  type: 'MatchRules'
-  rules: RuleForPrint[]
-}
-
 export interface SelectNode {
   type: 'SelectNode'
   uri: string
-  path: number[]
+  templatePath: number[]
+  stylePaths: number[][]
 }
 
 export interface AddNode {

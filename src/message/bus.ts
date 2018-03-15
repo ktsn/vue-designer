@@ -6,8 +6,8 @@ import {
   parseVueFile,
   vueFileToPayload
 } from '../parser/vue-file'
-import { transformRuleForPrint } from '../parser/style/transform'
-import { getNode } from '../parser/template/manipulate'
+import { getNode as getTemplateNode } from '../parser/template/manipulate'
+import { getNode as getStyleNode } from '../parser/style/manipulate'
 import {
   Modifiers,
   insertToTemplate,
@@ -33,22 +33,22 @@ export function observeServerEvents(
 
   bus.on('selectNode', payload => {
     const vueFile = vueFiles[payload.uri]
-    if (!vueFile || !vueFile.template || payload.path.length === 0) {
+    if (!vueFile || !vueFile.template || payload.templatePath.length === 0) {
       return
     }
 
-    const element = getNode(vueFile.template, payload.path)
+    const element = getTemplateNode(vueFile.template, payload.templatePath)
     if (!element) {
       return
     }
 
-    const styleRules = vueFile.matchSelector(vueFile.template, payload.path)
+    const styleRules = payload.stylePaths
+      .map(path => getStyleNode(vueFile.styles, path))
+      .filter(<T>(n: T | undefined): n is T => n !== undefined)
+
     const highlightRanges = [element, ...styleRules].map(node => {
       return node.range
     })
-
-    // Notify matched rules to client
-    bus.emit('matchRules', styleRules.map(transformRuleForPrint))
 
     // Highlight matched ranges on editor
     bus.emit('highlightEditor', {

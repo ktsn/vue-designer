@@ -44,11 +44,11 @@ export function addScope(node: t.Style, scope: string): t.Style {
   })
 }
 
-export function getDeclaration(
+export function getNode(
   styles: t.Style[],
   path: number[]
-): t.Declaration | undefined {
-  const res = path.reduce<any | undefined>(
+): t.ChildNode | undefined {
+  return path.reduce<any | undefined>(
     (acc, i) => {
       if (!acc) return
 
@@ -62,6 +62,12 @@ export function getDeclaration(
     },
     { children: styles }
   )
+}
 
+export function getDeclaration(
+  styles: t.Style[],
+  path: number[]
+): t.Declaration | undefined {
+  const res = getNode(styles, path)
   return res && res.type === 'Declaration' ? res : undefined
 }

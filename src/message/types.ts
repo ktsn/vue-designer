@@ -1,11 +1,12 @@
-import { RuleForPrint, DeclarationUpdater } from '../parser/style/types'
+import { DeclarationUpdater } from '../parser/style/types'
 import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {
   initClient: undefined
   selectNode: {
     uri: string
-    path: number[]
+    templatePath: number[]
+    stylePaths: number[][]
   }
   addNode: {
     currentUri: string
@@ -35,7 +36,6 @@ export interface Events {
 export interface Commands {
   initProject: Record<string, VueFilePayload>
   changeDocument: string
-  matchRules: RuleForPrint[]
   highlightEditor: {
     uri: string
     ranges: [number, number][]

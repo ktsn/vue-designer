@@ -1,5 +1,4 @@
 import assert from 'assert'
-import Vue from 'vue'
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
 import { Template, Element } from '@/parser/template/types'
@@ -13,7 +12,9 @@ import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { ClientConnection } from '@/view/communication'
-import { mapValues, clone } from '@/utils'
+import { mapValues } from '@/utils'
+import { StyleMatcher } from '@/view/store/style-matcher'
+import { transformRuleForPrint } from '@/parser/style/transform'
 
 export interface ScopedDocument {
   uri: string
@@ -46,7 +47,10 @@ interface ProjectGetters {
 }
 
 interface ProjectActions {
-  init: ClientConnection
+  init: {
+    connection: ClientConnection
+    styleMatcher: StyleMatcher
+  }
   select: Element | undefined
   applyDraggingElement: undefined
   startDragging: string
@@ -57,6 +61,7 @@ interface ProjectActions {
     prop?: string
     value?: string
   }
+  matchSelectedNodeWithStyles: undefined
 }
 
 interface ProjectMutations {
@@ -68,7 +73,6 @@ interface ProjectMutations {
   setDraggingUri: string | undefined
   setDraggingPath: number[]
   setMatchedRules: RuleForPrint[]
-  updateMachedRuleDeclaration: DeclarationUpdater
 }
 
 export const projectHelpers = createNamespacedHelpers<
@@ -79,6 +83,7 @@ export const projectHelpers = createNamespacedHelpers<
 >('project')
 
 let connection: ClientConnection
+let styleMatcher: StyleMatcher
 let draggingTimer: any
 const draggingInterval = 80
 
@@ -211,36 +216,44 @@ export const project: DefineModule<
   },
 
   actions: {
-    init({ commit }, conn) {
-      connection = conn
+    init({ commit, dispatch }, payload) {
+      connection = payload.connection
+      styleMatcher = payload.styleMatcher
+
       connection.onMessage(data => {
         switch (data.type) {
           case 'InitProject':
             commit('setDocuments', data.vueFiles)
+            styleMatcher.clear()
+            Object.keys(data.vueFiles).forEach(key => {
+              const file = data.vueFiles[key]
+              styleMatcher.register(file.uri, file.styles)
+            })
+            dispatch('matchSelectedNodeWithStyles', undefined)
             break
           case 'ChangeDocument':
             commit('changeDocument', data.uri)
-            break
-          case 'MatchRules':
-            commit('setMatchedRules', data.rules)
             break
           default: // Do nothing
         }
       })
     },
 
-    select({ commit, getters }, node) {
+    select({ commit, dispatch, getters, state }, node) {
       const current = getters.currentDocument
       if (!current) return
 
       const path = node ? node.path : []
 
-      connection.send({
-        type: 'SelectNode',
-        uri: current.uri,
-        path
-      })
       commit('select', path)
+      dispatch('matchSelectedNodeWithStyles', undefined).then(() => {
+        connection.send({
+          type: 'SelectNode',
+          uri: current.uri,
+          templatePath: path,
+          stylePaths: state.matchedRules.map(r => r.path)
+        })
+      })
     },
 
     applyDraggingElement({ commit, state, getters }) {
@@ -335,7 +348,7 @@ export const project: DefineModule<
       }, draggingInterval)
     },
 
-    updateDeclaration({ state, commit }, payload) {
+    updateDeclaration({ state }, payload) {
       if (!state.currentUri) return
 
       const updater: DeclarationUpdater = {
@@ -362,8 +375,17 @@ export const project: DefineModule<
         uri: state.currentUri,
         declaration: updater
       })
+    },
 
-      commit('updateMachedRuleDeclaration', updater)
+    matchSelectedNodeWithStyles({ commit, getters, state }) {
+      const doc = getters.currentDocument
+      const selected = state.selectedPath
+      if (!doc || !doc.template || !selected) return
+
+      const matchedRules = styleMatcher.match(doc.uri, doc.template, selected)
+      const forPrint = matchedRules.map(transformRuleForPrint)
+
+      commit('setMatchedRules', forPrint)
     }
   },
 
@@ -415,25 +437,6 @@ export const project: DefineModule<
 
     setMatchedRules(state, rules) {
       state.matchedRules = rules
-    },
-
-    // TODO: we should find better approach to update client declaration
-    updateMachedRuleDeclaration(state, declaration) {
-      const path = declaration.path
-      const parentPath = path.slice(0, -1)
-      const index = path[path.length - 1]
-
-      const targetRule = state.matchedRules.find(rule => {
-        if (parentPath.length !== rule.path.length) {
-          return false
-        }
-        return rule.path.reduce((acc, p, i) => acc && p === parentPath[i], true)
-      })
-
-      if (targetRule) {
-        const original = targetRule.declarations[index]
-        Vue.set(targetRule.declarations, index, clone(original, declaration))
-      }
     }
   }
 }

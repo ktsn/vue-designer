@@ -8,13 +8,10 @@ import {
 } from '../parser/vue-file'
 import { getNode as getTemplateNode } from '../parser/template/manipulate'
 import { getNode as getStyleNode } from '../parser/style/manipulate'
-import {
-  Modifiers,
-  insertToTemplate,
-  insertComponentScript,
-  modify,
-  updateDeclaration
-} from '../parser/modifier'
+import { Modifiers, modify } from '../parser/modifier'
+import { insertComponentScript } from '../parser/script/modify'
+import { insertToTemplate } from '../parser/template/modify'
+import { updateDeclaration } from '../parser/style/modify'
 import { mapValues } from '../utils'
 
 export function observeServerEvents(

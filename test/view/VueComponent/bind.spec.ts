@@ -1,4 +1,4 @@
-import { createTemplate, render, h, a, d } from '../../parser/template-helpers'
+import { createTemplate, render, h, a, d } from '../../helpers/template'
 
 describe('VueComponent v-bind', () => {
   it('should bind attributes with v-bind', () => {

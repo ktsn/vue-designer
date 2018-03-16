@@ -186,3 +186,24 @@ function strToTextNode<T>(str: T | string): T | TextNode {
       }
     : str
 }
+
+export function assertWithoutRange(result: Template, expected: Template): void {
+  expect(excludeRange(result)).toEqual(excludeRange(expected))
+}
+
+function excludeRange(obj: any): any {
+  if (Array.isArray(obj)) {
+    return obj.map(excludeRange)
+  } else if (obj === null || typeof obj !== 'object') {
+    return obj
+  }
+
+  const res: any = {}
+  Object.keys(obj).forEach(key => {
+    if (key !== 'range') {
+      const value = obj[key]
+      res[key] = excludeRange(value)
+    }
+  })
+  return res
+}

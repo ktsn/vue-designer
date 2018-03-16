@@ -1,10 +1,4 @@
-import {
-  createTemplate,
-  h,
-  render,
-  exp,
-  a
-} from '../../parser/template-helpers'
+import { createTemplate, h, render, exp, a } from '../../helpers/template'
 
 describe('VueComponent child components', () => {
   it('should render child components in the store', () => {

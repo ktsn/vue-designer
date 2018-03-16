@@ -1,4 +1,4 @@
-import { createTemplate, render, h, d } from '../../parser/template-helpers'
+import { createTemplate, render, h, d } from '../../helpers/template'
 
 describe('VueComponent v-model', () => {
   it('should bind a value with v-model', () => {

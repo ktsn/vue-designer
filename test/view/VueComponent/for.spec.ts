@@ -1,10 +1,4 @@
-import {
-  render,
-  createTemplate,
-  h,
-  exp,
-  vFor
-} from '../../parser/template-helpers'
+import { render, createTemplate, h, exp, vFor } from '../../helpers/template'
 
 describe('VueComponent v-for', () => {
   it('should iterate array value', () => {

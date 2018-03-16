@@ -1,4 +1,4 @@
-import { createTemplate, h, a, render } from '../../parser/template-helpers'
+import { createTemplate, h, a, render } from '../../helpers/template'
 
 describe('VueComponent error handling', () => {
   it('should not throw when invalid attribute name is passed', () => {

@@ -6,9 +6,9 @@ import {
   pClass,
   pElement,
   combinator
-} from './style-helpers'
+} from '../../helpers/style'
+import { createTemplate, h, a } from '../../helpers/template'
 import { createStyleMatcher } from '@/parser/style/match'
-import { createTemplate, h, a } from './template-helpers'
 
 describe('Style matcher', () => {
   describe('for universal selector', () => {

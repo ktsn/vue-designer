@@ -1,6 +1,6 @@
-import { createStyle, rule, selector } from '../../parser/style-helpers'
+import { createStyle, rule, selector } from '../../helpers/style'
 import { StyleMatcher } from '@/view/store/style-matcher'
-import { createTemplate, h, a } from '../../parser/template-helpers'
+import { createTemplate, h, a } from '../../helpers/template'
 
 describe('StyleMatcher', () => {
   it('should match specified uri styles', () => {

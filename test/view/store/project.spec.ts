@@ -1,7 +1,7 @@
 import { Store } from 'vuex'
 import { project, ProjectState } from '@/view/store/modules/project'
-import { createTemplate, h } from '../../parser/template-helpers'
-import { createStyle, rule, selector } from '../../parser/style-helpers'
+import { createTemplate, h } from '../../helpers/template'
+import { createStyle, rule, selector } from '../../helpers/style'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
 import { ClientConnection } from '@/view/communication'
 

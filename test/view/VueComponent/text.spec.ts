@@ -1,4 +1,4 @@
-import { createTemplate, h, d, render } from '../../parser/template-helpers'
+import { createTemplate, h, d, render } from '../../helpers/template'
 
 describe('VueComponent v-text', () => {
   it('should render text into an element', () => {

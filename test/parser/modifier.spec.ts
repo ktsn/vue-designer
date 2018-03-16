@@ -7,11 +7,11 @@ import {
   insertBefore,
   insertAfter,
   remove,
-  replace,
-  insertToTemplate,
-  insertComponentScript,
-  updateDeclaration
+  replace
 } from '@/parser/modifier'
+import { insertToTemplate } from '@/parser/template/modify'
+import { insertComponentScript } from '@/parser/script/modify'
+import { updateDeclaration } from '@/parser/style/modify'
 import { transformTemplate } from '@/parser/template/transform'
 import { Style } from '@/parser/style/types'
 import { transformStyle } from '@/parser/style/transform'

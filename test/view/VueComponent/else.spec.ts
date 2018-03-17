@@ -1,4 +1,4 @@
-import { createTemplate, render, h, a, d } from '../../parser/template-helpers'
+import { createTemplate, render, h, a, d } from '../../helpers/template'
 
 describe('VueComponent v-else', () => {
   it('should be removeod if corresponding v-if appears', () => {

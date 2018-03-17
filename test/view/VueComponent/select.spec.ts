@@ -1,12 +1,5 @@
 import * as td from 'testdouble'
-import Expression from '@/view/components/Expression.vue'
-import {
-  createTemplate,
-  h,
-  a,
-  render,
-  exp
-} from '../../parser/template-helpers'
+import { createTemplate, h, a, render } from '../../helpers/template'
 
 describe('VueComponent select event', () => {
   it('should catch select event from descendant nodes', () => {

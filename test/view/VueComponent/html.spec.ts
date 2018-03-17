@@ -1,4 +1,4 @@
-import { createTemplate, h, d, render } from '../../parser/template-helpers'
+import { createTemplate, h, d, render } from '../../helpers/template'
 
 describe('VueComponent v-html', () => {
   it('should render html into an element', () => {

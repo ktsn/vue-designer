@@ -1,7 +1,4 @@
 import parse from 'postcss-safe-parser'
-import { Style, Rule } from '@/parser/style/types'
-import { transformStyle } from '@/parser/style/transform'
-import { addScope, getDeclaration } from '@/parser/style/manipulate'
 import {
   createStyle,
   atRule,
@@ -11,8 +8,16 @@ import {
   combinator,
   attribute,
   pClass,
-  pElement
-} from './style-helpers'
+  pElement,
+  assertWithoutRange
+} from '../../helpers/style'
+import { transformStyle } from '@/parser/style/transform'
+import { Style, Rule } from '@/parser/style/types'
+
+function getAst(code: string): Style {
+  const root = parse(code)
+  return transformStyle(root, code, 0)
+}
 
 describe('Style AST transformer', () => {
   it('should transform rules', () => {
@@ -170,113 +175,3 @@ describe('Style AST transformer', () => {
     expect(rule.declarations[0].range).toEqual([9, 20])
   })
 })
-
-describe('Scoped selector', () => {
-  it('should add scope attribute on the last selector', () => {
-    const scope = 'abcdef'
-    const code = 'h1 > .foo .bar {}'
-
-    const ast = getAst(code)
-    const result = addScope(ast, scope)
-
-    const expected: any = ast
-    expected.body[0].selectors[0].attributes.push(
-      attribute('data-scope-' + scope)
-    )
-
-    assertWithoutRange(result, expected)
-  })
-
-  it('should add scope attribute in at-rule', () => {
-    const scope = 'abcdef'
-    const code = '@media screen { .foo {} }'
-
-    const ast = getAst(code)
-    const result = addScope(ast, scope)
-
-    const expected: any = ast
-    expected.body[0].children[0].selectors[0].attributes.push(
-      attribute('data-scope-' + scope)
-    )
-
-    assertWithoutRange(result, expected)
-  })
-})
-
-describe('Get style node', () => {
-  it('should find declaration node', () => {
-    const styles = [
-      createStyle([]),
-      createStyle([
-        rule([selector({ tag: 'a' })], [declaration('color', 'red')]),
-        rule(
-          [selector({ class: ['foo'] })],
-          [declaration('color', 'blue'), declaration('font-size', '22px')]
-        )
-      ])
-    ]
-
-    const result = getDeclaration(styles, [1, 1, 1])!
-    expect(result).toBeTruthy()
-    expect(result.prop).toBe('font-size')
-    expect(result.value).toBe('22px')
-  })
-
-  it('should return undefined if the path does not indicate declaration', () => {
-    const styles = [
-      createStyle([]),
-      createStyle([
-        rule([selector({ tag: 'a' })], [declaration('color', 'red')]),
-        rule(
-          [selector({ class: ['foo'] })],
-          [declaration('color', 'blue'), declaration('font-size', '22px')]
-        )
-      ])
-    ]
-
-    const result = getDeclaration(styles, [1, 0])!
-    expect(result).toBeUndefined()
-  })
-
-  it('should return undefined if the path points nothing', () => {
-    const styles = [
-      createStyle([]),
-      createStyle([
-        rule([selector({ tag: 'a' })], [declaration('color', 'red')]),
-        rule(
-          [selector({ class: ['foo'] })],
-          [declaration('color', 'blue'), declaration('font-size', '22px')]
-        )
-      ])
-    ]
-
-    const result = getDeclaration(styles, [0, 1, 1])!
-    expect(result).toBeUndefined()
-  })
-})
-
-function getAst(code: string): Style {
-  const root = parse(code)
-  return transformStyle(root, code, 0)
-}
-
-function assertWithoutRange(result: Style, expected: Style): void {
-  expect(excludeRange(result)).toEqual(excludeRange(expected))
-}
-
-function excludeRange(obj: any): any {
-  if (Array.isArray(obj)) {
-    return obj.map(excludeRange)
-  } else if (obj === null || typeof obj !== 'object') {
-    return obj
-  }
-
-  const res: any = {}
-  Object.keys(obj).forEach(key => {
-    if (key !== 'range') {
-      const value = obj[key]
-      res[key] = excludeRange(value)
-    }
-  })
-  return res
-}

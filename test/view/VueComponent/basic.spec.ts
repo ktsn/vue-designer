@@ -1,10 +1,4 @@
-import {
-  createTemplate,
-  render,
-  h,
-  a,
-  exp
-} from '../../parser/template-helpers'
+import { createTemplate, render, h, a, exp } from '../../helpers/template'
 
 describe('VueComponent basic', () => {
   it('should render template', () => {

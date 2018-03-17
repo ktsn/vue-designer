@@ -7,7 +7,7 @@ import {
   insertNode,
   getNode
 } from '@/parser/template/manipulate'
-import { RuleForPrint, DeclarationUpdater } from '@/parser/style/types'
+import { RuleForPrint, DeclarationForUpdate } from '@/parser/style/types'
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
@@ -351,7 +351,7 @@ export const project: DefineModule<
     updateDeclaration({ state }, payload) {
       if (!state.currentUri) return
 
-      const updater: DeclarationUpdater = {
+      const updater: DeclarationForUpdate = {
         path: payload.path
       }
 

@@ -1,5 +1,5 @@
 import { VueFilePayload } from './parser/vue-file'
-import { DeclarationUpdater } from './parser/style/types'
+import { DeclarationForUpdate } from './parser/style/types'
 
 export type ServerPayload = InitProject | ChangeDocument
 export type ClientPayload = SelectNode | AddNode | UpdateDeclaration
@@ -31,5 +31,5 @@ export interface AddNode {
 export interface UpdateDeclaration {
   type: 'UpdateDeclaration'
   uri: string
-  declaration: DeclarationUpdater
+  declaration: DeclarationForUpdate
 }

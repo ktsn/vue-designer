@@ -87,7 +87,7 @@ export interface DeclarationForPrint {
 /**
  * Used to update ast
  */
-export interface DeclarationUpdater {
+export interface DeclarationForUpdate {
   path: number[]
   prop?: string
   value?: string

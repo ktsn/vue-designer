@@ -1,4 +1,4 @@
-import { Style, DeclarationUpdater } from './types'
+import { Style, DeclarationForUpdate } from './types'
 import { getDeclaration } from './manipulate'
 import { Modifier, empty, replace } from '../modifier'
 import { genDeclaration } from './codegen'
@@ -6,7 +6,7 @@ import { clone } from '../../utils'
 
 export function updateDeclaration(
   styles: Style[],
-  decl: DeclarationUpdater
+  decl: DeclarationForUpdate
 ): Modifier[] {
   const target = getDeclaration(styles, decl.path)
 

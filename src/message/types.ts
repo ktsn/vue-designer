@@ -1,4 +1,4 @@
-import { DeclarationUpdater } from '../parser/style/types'
+import { DeclarationForUpdate } from '../parser/style/types'
 import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {
@@ -29,7 +29,7 @@ export interface Events {
   removeDocument: string
   updateDeclaration: {
     uri: string
-    declaration: DeclarationUpdater
+    declaration: DeclarationForUpdate
   }
 }
 

@@ -49,7 +49,7 @@ function genAtRule(atRule: t.AtRule): string {
   return buf
 }
 
-function genRule(rule: t.Rule): string {
+export function genRule(rule: t.Rule): string {
   const selectors = rule.selectors.map(genSelector).join(', ')
   const declarations = rule.declarations.map(genDeclaration).join(' ')
 

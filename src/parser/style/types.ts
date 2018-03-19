@@ -93,6 +93,12 @@ export interface DeclarationForPrint {
 /**
  * Used to update ast
  */
+export interface DeclarationForAdd {
+  prop: string
+  value: string
+  important: boolean
+}
+
 export interface DeclarationForUpdate {
   path: number[]
   prop?: string

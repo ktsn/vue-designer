@@ -7,6 +7,8 @@ export interface Style extends Range {
 
 export interface Rule extends Range {
   type: 'Rule'
+  before: string
+  after: string
   path: number[]
   selectors: Selector[]
   declarations: Declaration[]
@@ -14,6 +16,8 @@ export interface Rule extends Range {
 
 export interface Declaration extends Range {
   type: 'Declaration'
+  before: string
+  after: string
   path: number[]
   prop: string
   value: string
@@ -22,6 +26,8 @@ export interface Declaration extends Range {
 
 export interface AtRule extends Range {
   type: 'AtRule'
+  before: string
+  after: string
   path: number[]
   name: string
   params: string

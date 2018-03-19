@@ -1,7 +1,7 @@
 import parse from 'postcss-safe-parser'
 import { transformStyle } from '@/parser/style/transform'
 import { addScope } from '@/parser/style/manipulate'
-import { attribute, assertWithoutRange } from '../../helpers/style'
+import { attribute, assertStyleNode } from '../../helpers/style'
 
 function getAst(code: string) {
   const root = parse(code)
@@ -21,7 +21,7 @@ describe('Scoped selector', () => {
       attribute('data-scope-' + scope)
     )
 
-    assertWithoutRange(result, expected)
+    assertStyleNode(result, expected)
   })
 
   it('should add scope attribute in at-rule', () => {
@@ -36,6 +36,6 @@ describe('Scoped selector', () => {
       attribute('data-scope-' + scope)
     )
 
-    assertWithoutRange(result, expected)
+    assertStyleNode(result, expected)
   })
 })

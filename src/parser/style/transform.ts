@@ -55,6 +55,8 @@ function transformAtRule(
   return {
     type: 'AtRule',
     path,
+    before: atRule.raws.before || '',
+    after: atRule.raws.after || '',
     name: atRule.name,
     params: atRule.params,
     children: children.map((child, i) => {
@@ -75,6 +77,8 @@ function transformRule(
   return {
     type: 'Rule',
     path,
+    before: rule.raws.before || '',
+    after: rule.raws.after || '',
     selectors: root.nodes.map(n => {
       // A child of root node is always selector
       const selectors = (n as selectorParser.Selector).nodes
@@ -200,6 +204,8 @@ function transformDeclaration(
   return {
     type: 'Declaration',
     path,
+    before: decl.raws.before || '',
+    after: decl.raws.after || '',
     prop: decl.prop,
     value: decl.value,
     important: decl.important || false, // decl.import is possibly undefined

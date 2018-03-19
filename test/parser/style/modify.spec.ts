@@ -1,5 +1,5 @@
 import _parse from 'postcss-safe-parser'
-import { updateDeclaration } from '@/parser/style/modify'
+import { updateDeclaration, removeDeclaration } from '@/parser/style/modify'
 import { Style } from '@/parser/style/types'
 import { transformStyle } from '@/parser/style/transform'
 import { modify } from '@/parser/modifier'
@@ -78,6 +78,24 @@ describe('Style modifier', () => {
     p {
       color: red;
       font-size: 22px;
+    }
+    `
+    expect(res).toBe(expected)
+  })
+
+  it('should remove declaration', () => {
+    const code = `
+    p {
+      color: red;
+      font-size: 22px;
+    }
+    `
+
+    const styles = parse(code)
+    const res = modify(code, [removeDeclaration(styles, [0, 0, 1])])
+    const expected = `
+    p {
+      color: red;
     }
     `
     expect(res).toBe(expected)

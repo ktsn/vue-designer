@@ -15,7 +15,9 @@
     "Other"
   ],
   "scripts": {
-    "vscode:prepublish": "npm run clean && npm run test && npm run build",
+    "vscode:prepublish": "npm run clean && npm run build",
+    "preversion": "npm run test",
+    "version": "conventional-changelog -p angular -r 1",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "clean": "rimraf lib",
     "watch": "run-p watch:*",
@@ -100,6 +102,7 @@
     "@types/ws": "^4.0.1",
     "@vue/test-utils": "^1.0.0-beta.12",
     "codecov": "^3.0.0",
+    "conventional-changelog": "^1.1.18",
     "css-loader": "^0.28.10",
     "jest": "^22.4.2",
     "node-sass": "^4.7.2",

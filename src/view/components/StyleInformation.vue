@@ -10,7 +10,7 @@
         <span class="selector" v-for="s in rule.selectors" :key="s">{{ s }}</span>
       </p>
 
-      <ul class="declaration-list">
+      <ul class="declaration-list" @click.stop>
         <li class="declaration" v-for="d in rule.declarations" :key="d.path.join('.')">
           <span class="declaration-prop"><StyleValue
             class="declaration-prop-text"

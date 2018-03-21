@@ -18,11 +18,11 @@
             @input="inputStyleProp(d.path, arguments[0])"
             @input-end="finishInputStyleProp(d.path, arguments[0])"
           /></span>
-          <StyleValue
+          <span class="declaration-value"><StyleValue
             :value="d.value"
             @input="inputStyleValue(d.path, arguments[0])"
             @input-end="finishInputStyleValue(d.path, arguments[0])"
-          />
+          /></span>
         </li>
       </ul>
     </li>
@@ -126,6 +126,10 @@ export default Vue.extend({
 
 .declaration-prop::after {
   content: ':';
+}
+
+.declaration-value::after {
+  content: ';';
 }
 
 .declaration-prop-text {

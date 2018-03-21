@@ -56,6 +56,9 @@ interface ProjectActions {
   startDragging: string
   endDragging: undefined
   setDraggingPlace: { path: number[]; place: DraggingPlace }
+  addDeclaration: {
+    path: number[]
+  }
   removeDeclaration: {
     path: number[]
   }
@@ -349,6 +352,22 @@ export const project: DefineModule<
           commit('setDraggingPath', insertInto)
         }
       }, draggingInterval)
+    },
+
+    addDeclaration({ state }, { path }) {
+      if (!state.currentUri) return
+
+      connection.send({
+        type: 'AddDeclaration',
+        uri: state.currentUri,
+        path,
+        declaration: {
+          // Currently, write the placeholder value to simplify the implementation.
+          prop: 'property',
+          value: 'value',
+          important: false
+        }
+      })
     },
 
     removeDeclaration({ state }, { path }) {

@@ -135,6 +135,24 @@ export function observeServerEvents(
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
   })
 
+  bus.on('addDeclaration', ({ uri, path, declaration }) => {
+    const { code, styles } = vueFiles[uri]
+    const added = modify(code, [
+      insertDeclaration(styles, declaration, path)
+    ])
+
+    bus.emit('updateEditor', {
+      uri,
+      code: added
+    })
+
+    // TODO: move mutation to outside of this logic
+    vueFiles[uri] = parseVueFile(added, uri)
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
+
   bus.on('removeDeclaration', ({ uri, path }) => {
     const { code, styles } = vueFiles[uri]
     const removed = modify(code, [

@@ -1,4 +1,4 @@
-import { DeclarationForUpdate } from '../parser/style/types'
+import { DeclarationForUpdate, DeclarationForAdd } from '../parser/style/types'
 import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {
@@ -27,6 +27,11 @@ export interface Events {
     code: string
   }
   removeDocument: string
+  addDeclaration: {
+    uri: string
+    path: number[]
+    declaration: DeclarationForAdd
+  }
   removeDeclaration: {
     uri: string
     path: number[]

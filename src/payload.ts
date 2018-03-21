@@ -1,10 +1,11 @@
 import { VueFilePayload } from './parser/vue-file'
-import { DeclarationForUpdate } from './parser/style/types'
+import { DeclarationForUpdate, DeclarationForAdd } from './parser/style/types'
 
 export type ServerPayload = InitProject | ChangeDocument
 export type ClientPayload =
   | SelectNode
   | AddNode
+  | AddDeclaration
   | RemoveDeclaration
   | UpdateDeclaration
 
@@ -29,6 +30,19 @@ export interface AddNode {
   type: 'AddNode'
   currentUri: string
   nodeUri: string
+  path: number[]
+}
+
+export interface AddDeclaration {
+  type: 'AddDeclaration'
+  uri: string
+  path: number[]
+  declaration: DeclarationForAdd
+}
+
+export interface RemoveDeclaration {
+  type: 'RemoveDeclaration'
+  uri: string
   path: number[]
 }
 

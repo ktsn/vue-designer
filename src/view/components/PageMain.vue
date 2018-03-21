@@ -23,6 +23,7 @@
             <StyleInformation
               v-if="matchedRules.length > 0"
               :rules="matchedRules"
+              @add-declaration="addDeclaration"
               @remove-declaration="removeDeclaration"
               @update-declaration="updateDeclaration"
             />
@@ -100,6 +101,7 @@ export default Vue.extend({
     'setDraggingPlace',
     'select',
     'applyDraggingElement',
+    'addDeclaration',
     'removeDeclaration',
     'updateDeclaration'
   ])

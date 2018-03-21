@@ -1,6 +1,11 @@
 <template>
   <ul class="style-information">
-    <li class="rule" v-for="rule in rules" :key="rule.path.join('.')">
+    <li
+      class="rule"
+      v-for="rule in rules"
+      :key="rule.path.join('.')"
+      @click="onClickRule(rule)"
+    >
       <p class="selector-list">
         <span class="selector" v-for="s in rule.selectors" :key="s">{{ s }}</span>
       </p>
@@ -74,6 +79,12 @@ export default Vue.extend({
           path
         })
       }
+    },
+
+    onClickRule(rule: RuleForPrint): void {
+      this.$emit('add-declaration', {
+        path: rule.path.concat(rule.declarations.length)
+      })
     }
   }
 })

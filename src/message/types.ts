@@ -27,6 +27,10 @@ export interface Events {
     code: string
   }
   removeDocument: string
+  removeDeclaration: {
+    uri: string
+    path: number[]
+  }
   updateDeclaration: {
     uri: string
     declaration: DeclarationForUpdate

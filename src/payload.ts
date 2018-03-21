@@ -2,7 +2,11 @@ import { VueFilePayload } from './parser/vue-file'
 import { DeclarationForUpdate } from './parser/style/types'
 
 export type ServerPayload = InitProject | ChangeDocument
-export type ClientPayload = SelectNode | AddNode | UpdateDeclaration
+export type ClientPayload =
+  | SelectNode
+  | AddNode
+  | RemoveDeclaration
+  | UpdateDeclaration
 
 export interface InitProject {
   type: 'InitProject'

@@ -11,10 +11,12 @@
             class="declaration-prop-text"
             :value="d.prop"
             @input="inputStyleProp(d.path, arguments[0])"
+            @input-end="finishInputStyleProp(d.path, arguments[0])"
           /></span>
           <StyleValue
             :value="d.value"
             @input="inputStyleValue(d.path, arguments[0])"
+            @input-end="finishInputStyleValue(d.path, arguments[0])"
           />
         </li>
       </ul>
@@ -42,18 +44,36 @@ export default Vue.extend({
   },
 
   methods: {
-    inputStyleProp(path: number[], prop: string): void {
+    inputStyleProp(path: number[], rawProp: string): void {
       this.$emit('update-declaration', {
         path,
-        prop: prop.trim()
+        prop: rawProp.trim()
       })
     },
 
-    inputStyleValue(path: number[], value: string): void {
+    inputStyleValue(path: number[], rawValue: string): void {
       this.$emit('update-declaration', {
         path,
-        value: value.trim()
+        value: rawValue.trim()
       })
+    },
+
+    finishInputStyleProp(path: number[], rawProp: string): void {
+      const prop = rawProp.trim()
+      if (!prop) {
+        this.$emit('remove-declaration', {
+          path
+        })
+      }
+    },
+
+    finishInputStyleValue(path: number[], rawValue: string): void {
+      const value = rawValue.trim()
+      if (!value) {
+        this.$emit('remove-declaration', {
+          path
+        })
+      }
     }
   }
 })

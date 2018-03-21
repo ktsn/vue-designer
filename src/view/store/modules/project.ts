@@ -56,6 +56,9 @@ interface ProjectActions {
   startDragging: string
   endDragging: undefined
   setDraggingPlace: { path: number[]; place: DraggingPlace }
+  removeDeclaration: {
+    path: number[]
+  }
   updateDeclaration: {
     path: number[]
     prop?: string
@@ -348,6 +351,16 @@ export const project: DefineModule<
       }, draggingInterval)
     },
 
+    removeDeclaration({ state }, { path }) {
+      if (!state.currentUri) return
+
+      connection.send({
+        type: 'RemoveDeclaration',
+        uri: state.currentUri,
+        path
+      })
+    },
+
     updateDeclaration({ state }, payload) {
       if (!state.currentUri) return
 
@@ -355,6 +368,9 @@ export const project: DefineModule<
         path: payload.path
       }
 
+      // This check does not pass if prop (and value) is an empty string.
+      // It is intentional since the css parser will go unexpected state
+      // if we update them to empty value.
       if (payload.prop) {
         updater.prop = payload.prop
       }

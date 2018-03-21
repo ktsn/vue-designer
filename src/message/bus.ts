@@ -11,7 +11,7 @@ import { getNode as getStyleNode } from '../parser/style/manipulate'
 import { Modifiers, modify } from '../parser/modifier'
 import { insertComponentScript } from '../parser/script/modify'
 import { insertToTemplate } from '../parser/template/modify'
-import { updateDeclaration } from '../parser/style/modify'
+import { updateDeclaration, insertDeclaration, removeDeclaration } from '../parser/style/modify'
 import { mapValues } from '../utils'
 
 export function observeServerEvents(
@@ -130,6 +130,24 @@ export function observeServerEvents(
 
   bus.on('removeDocument', uri => {
     delete vueFiles[uri]
+
+    // TODO: change this notification more clean and optimized way
+    bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+  })
+
+  bus.on('removeDeclaration', ({ uri, path }) => {
+    const { code, styles } = vueFiles[uri]
+    const removed = modify(code, [
+      removeDeclaration(styles, path)
+    ])
+
+    bus.emit('updateEditor', {
+      uri,
+      code: removed
+    })
+
+    // TODO: move mutation to outside of this logic
+    vueFiles[uri] = parseVueFile(removed, uri)
 
     // TODO: change this notification more clean and optimized way
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))

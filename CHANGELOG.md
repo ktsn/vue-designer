@@ -11,7 +11,7 @@
 
 
 <a name="0.2.0"></a>
-# [0.2.0](https://github.com/ktsn/vue-designer/compare/v0.1.0...v0.2.0) (2018-03-21)
+## [0.2.0](https://github.com/ktsn/vue-designer/compare/v0.1.0...v0.2.0) (2018-03-21)
 
 
 ### Bug Fixes
@@ -27,6 +27,6 @@
 
 
 <a name="0.1.0"></a>
-# 0.1.0 (2018-02-28)
+## 0.1.0 (2018-02-28)
 
 Initial release

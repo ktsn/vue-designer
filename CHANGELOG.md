@@ -1,3 +1,15 @@
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/ktsn/vue-designer/compare/v0.2.0...v0.2.1) (2018-03-21)
+
+
+### Bug Fixes
+
+* add semi-colon to each declaration ([#15](https://github.com/ktsn/vue-designer/issues/15)) ([e83fe23](https://github.com/ktsn/vue-designer/commit/e83fe23))
+* avoid to make input caret jump during editing declaration ([#16](https://github.com/ktsn/vue-designer/issues/16)) ([dd09ab6](https://github.com/ktsn/vue-designer/commit/dd09ab6))
+* prevent to add a declaration when clicking existing declaration values ([#14](https://github.com/ktsn/vue-designer/issues/14)) ([8c8de9f](https://github.com/ktsn/vue-designer/commit/8c8de9f))
+
+
+
 <a name="0.2.0"></a>
 # [0.2.0](https://github.com/ktsn/vue-designer/compare/v0.1.0...v0.2.0) (2018-03-21)
 

@@ -84,12 +84,16 @@ export function insertAfter(node: Range, value: string): Modifier {
   return insertAt(node.range[1], value)
 }
 
-export function remove(node: Range): Modifier {
+export function removeRange(from: number, to: number): Modifier {
   return {
     type: 'Remove',
-    pos: node.range[0],
-    length: node.range[1] - node.range[0]
+    pos: from,
+    length: to - from
   }
+}
+
+export function remove(node: Range): Modifier {
+  return removeRange(node.range[0], node.range[1])
 }
 
 export function replace(node: Range, value: string): Modifier[] {

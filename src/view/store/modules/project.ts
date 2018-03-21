@@ -7,7 +7,7 @@ import {
   insertNode,
   getNode
 } from '@/parser/template/manipulate'
-import { RuleForPrint, DeclarationUpdater } from '@/parser/style/types'
+import { RuleForPrint, DeclarationForUpdate } from '@/parser/style/types'
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
@@ -56,6 +56,12 @@ interface ProjectActions {
   startDragging: string
   endDragging: undefined
   setDraggingPlace: { path: number[]; place: DraggingPlace }
+  addDeclaration: {
+    path: number[]
+  }
+  removeDeclaration: {
+    path: number[]
+  }
   updateDeclaration: {
     path: number[]
     prop?: string
@@ -348,13 +354,42 @@ export const project: DefineModule<
       }, draggingInterval)
     },
 
+    addDeclaration({ state }, { path }) {
+      if (!state.currentUri) return
+
+      connection.send({
+        type: 'AddDeclaration',
+        uri: state.currentUri,
+        path,
+        declaration: {
+          // Currently, write the placeholder value to simplify the implementation.
+          prop: 'property',
+          value: 'value',
+          important: false
+        }
+      })
+    },
+
+    removeDeclaration({ state }, { path }) {
+      if (!state.currentUri) return
+
+      connection.send({
+        type: 'RemoveDeclaration',
+        uri: state.currentUri,
+        path
+      })
+    },
+
     updateDeclaration({ state }, payload) {
       if (!state.currentUri) return
 
-      const updater: DeclarationUpdater = {
+      const updater: DeclarationForUpdate = {
         path: payload.path
       }
 
+      // This check does not pass if prop (and value) is an empty string.
+      // It is intentional since the css parser will go unexpected state
+      // if we update them to empty value.
       if (payload.prop) {
         updater.prop = payload.prop
       }

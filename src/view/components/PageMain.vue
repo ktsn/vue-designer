@@ -23,6 +23,8 @@
             <StyleInformation
               v-if="matchedRules.length > 0"
               :rules="matchedRules"
+              @add-declaration="addDeclaration"
+              @remove-declaration="removeDeclaration"
               @update-declaration="updateDeclaration"
             />
             <p class="not-found" v-else>Not found</p>
@@ -99,6 +101,8 @@ export default Vue.extend({
     'setDraggingPlace',
     'select',
     'applyDraggingElement',
+    'addDeclaration',
+    'removeDeclaration',
     'updateDeclaration'
   ])
 })

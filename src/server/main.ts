@@ -79,6 +79,10 @@ export function wsEventObserver(
             return emit('selectNode', payload)
           case 'AddNode':
             return emit('addNode', payload)
+          case 'AddDeclaration':
+            return emit('addDeclaration', payload)
+          case 'RemoveDeclaration':
+            return emit('removeDeclaration', payload)
           case 'UpdateDeclaration':
             return emit('updateDeclaration', payload)
           default:

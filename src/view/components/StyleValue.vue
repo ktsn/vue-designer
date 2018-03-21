@@ -11,7 +11,7 @@
     contenteditable="true"
     ref="input"
     @input="input"
-    @keypress.enter="endEdit"
+    @keypress.prevent.enter="endEdit"
     @blur="endEdit"
   ></div>
 </template>
@@ -57,12 +57,17 @@ export default Vue.extend({
       })
     },
 
-    endEdit(): void {
-      this.editing = false
+    endEdit(event: Event): void {
+      if (this.editing) {
+        this.editing = false
+
+        const el = event.currentTarget as HTMLDivElement
+        this.$emit('input-end', el.textContent)
+      }
     },
 
     input(event: Event): void {
-      const el = event.target as HTMLDivElement
+      const el = event.currentTarget as HTMLDivElement
       this.$emit('input', el.textContent)
     }
   }

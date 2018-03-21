@@ -9,7 +9,7 @@ import {
   attribute,
   pClass,
   pElement,
-  assertWithoutRange
+  assertStyleNode
 } from '../../helpers/style'
 import { transformStyle } from '@/parser/style/transform'
 import { Style, Rule } from '@/parser/style/types'
@@ -27,7 +27,7 @@ describe('Style AST transformer', () => {
       rule([selector({ tag: 'a' })], [declaration('color', 'cyan')])
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform combinators', () => {
@@ -54,7 +54,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform compound selector', () => {
@@ -76,7 +76,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform pseudo class', () => {
@@ -91,7 +91,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform pseudo element', () => {
@@ -106,7 +106,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform pseudo class belongs to pseudo element', () => {
@@ -121,7 +121,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform declarations', () => {
@@ -142,7 +142,7 @@ describe('Style AST transformer', () => {
       )
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform at-rules', () => {
@@ -163,7 +163,7 @@ describe('Style AST transformer', () => {
       ])
     ])
 
-    assertWithoutRange(ast, expected)
+    assertStyleNode(ast, expected)
   })
 
   it('should transform node position', () => {

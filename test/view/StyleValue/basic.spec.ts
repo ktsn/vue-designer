@@ -61,7 +61,7 @@ describe('StyleValue basic', () => {
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
   })
 
-  it('should end editing when pushed enter', () => {
+  it('should end editing when pressed enter key', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
         value: '20px'
@@ -70,10 +70,13 @@ describe('StyleValue basic', () => {
     wrapper.trigger('click')
     expect(wrapper.attributes()!.contenteditable).toBe('true')
 
+    await wrapper.vm.$nextTick()
+
     wrapper.trigger('keypress', {
       keyCode: 13
     })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
+    expect(wrapper.emitted('input-end')[0]).toEqual(['20px'])
   })
 
   it('should update editing content when prop is updated', async () => {

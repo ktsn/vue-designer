@@ -44,6 +44,8 @@ export function atRule(
   return {
     type: 'AtRule',
     path: [],
+    before: '',
+    after: '',
     name,
     params,
     children,
@@ -58,6 +60,8 @@ export function rule(
   return {
     type: 'Rule',
     path: [],
+    before: '',
+    after: '',
     selectors,
     declarations,
     range: [-1, -1]
@@ -124,6 +128,8 @@ export function declaration(
   return {
     type: 'Declaration',
     path: [],
+    before: '',
+    after: '',
     prop,
     value,
     important,
@@ -150,22 +156,22 @@ export function pElement(
   }
 }
 
-export function assertWithoutRange(result: Style, expected: Style): void {
-  expect(excludeRange(result)).toEqual(excludeRange(expected))
+export function assertStyleNode(result: Style, expected: Style): void {
+  expect(exclude(result)).toEqual(exclude(expected))
 }
 
-function excludeRange(obj: any): any {
+function exclude(obj: any): any {
   if (Array.isArray(obj)) {
-    return obj.map(excludeRange)
+    return obj.map(exclude)
   } else if (obj === null || typeof obj !== 'object') {
     return obj
   }
 
   const res: any = {}
   Object.keys(obj).forEach(key => {
-    if (key !== 'range') {
+    if (key !== 'range' && key !== 'before' && key !== 'after') {
       const value = obj[key]
-      res[key] = excludeRange(value)
+      res[key] = exclude(value)
     }
   })
   return res

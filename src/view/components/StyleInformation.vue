@@ -49,17 +49,17 @@ export default Vue.extend({
   },
 
   methods: {
-    inputStyleProp(path: number[], rawProp: string): void {
+    inputStyleProp(path: number[], prop: string): void {
       this.$emit('update-declaration', {
         path,
-        prop: rawProp.trim()
+        prop
       })
     },
 
-    inputStyleValue(path: number[], rawValue: string): void {
+    inputStyleValue(path: number[], value: string): void {
       this.$emit('update-declaration', {
         path,
-        value: rawValue.trim()
+        value
       })
     },
 
@@ -69,6 +69,8 @@ export default Vue.extend({
         this.$emit('remove-declaration', {
           path
         })
+      } else {
+        this.inputStyleProp(path, prop)
       }
     },
 
@@ -78,6 +80,8 @@ export default Vue.extend({
         this.$emit('remove-declaration', {
           path
         })
+      } else {
+        this.inputStyleValue(path, value)
       }
     },
 

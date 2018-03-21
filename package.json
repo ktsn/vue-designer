@@ -26,7 +26,7 @@
     "build": "tsc --sourceMap false -p tsconfig.main.json && webpack --config webpack.config.js --mode production",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage -w 2",
     "format": "prettier --write \"{src,test}/**/*.{ts,vue}\""
   },
   "repository": "https://github.com/ktsn/vue-designer",

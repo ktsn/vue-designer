@@ -36,7 +36,7 @@ If you want to use dev tools for client code, add the following configuration in
 ```js
 {
   "key": "shift+cmd+i",
-  "command": "_webview.openDevTools"
+  "command": "workbench.action.webview.openDeveloperTools"
 }
 ```
 

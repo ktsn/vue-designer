@@ -97,4 +97,17 @@ describe('StyleValue basic', () => {
     expect(wrapper.attributes()!.contenteditable).toBe('true')
     expect(wrapper.text()).toBe('blue')
   })
+
+  it('should be editable when autoFocus is specified', async () => {
+    const wrapper = mount(StyleValue, {
+      propsData: {
+        value: 'red',
+        autoFocus: true
+      }
+    })
+
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.attributes()!.contenteditable).toBe('true')
+  })
 })

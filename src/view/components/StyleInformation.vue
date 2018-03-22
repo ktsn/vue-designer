@@ -15,6 +15,7 @@
           <StyleDeclaration
             :prop="d.prop"
             :value="d.value"
+            :auto-focus-prop="autoFocusOnNextRender"
             @update:prop="updateDeclarationProp(d.path, arguments[0])"
             @update:value="updateDeclarationValue(d.path, arguments[0])"
             @remove="removeDeclaration(d.path)"
@@ -46,6 +47,12 @@ export default Vue.extend({
     }
   },
 
+  data() {
+    return {
+      autoFocusOnNextRender: false
+    }
+  },
+
   methods: {
     updateDeclarationProp(path: number[], prop: string): void {
       this.$emit('update-declaration', {
@@ -68,6 +75,15 @@ export default Vue.extend({
     onClickRule(rule: RuleForPrint): void {
       this.$emit('add-declaration', {
         path: rule.path.concat(rule.declarations.length)
+      })
+      this.autoFocusOnNextRender = true
+    }
+  },
+
+  watch: {
+    rules(): void {
+      this.$nextTick(() => {
+        this.autoFocusOnNextRender = false
       })
     }
   }

@@ -2,6 +2,7 @@
   <div class="style-declaration">
     <span class="style-declaration-prop"><StyleValue
       class="style-declaration-prop-text"
+      :auto-focus="autoFocusProp"
       :value="prop"
       @input="inputProp"
       @input-end="finishInputProp"
@@ -33,7 +34,8 @@ export default Vue.extend({
     value: {
       type: String,
       required: true
-    }
+    },
+    autoFocusProp: Boolean
   },
 
   methods: {

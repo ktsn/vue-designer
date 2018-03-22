@@ -27,7 +27,9 @@ export default Vue.extend({
     value: {
       type: String,
       required: true
-    }
+    },
+
+    autoFocus: Boolean
   },
 
   data() {
@@ -69,6 +71,12 @@ export default Vue.extend({
     input(event: Event): void {
       const el = event.currentTarget as HTMLDivElement
       this.$emit('input', el.textContent)
+    }
+  },
+
+  mounted() {
+    if (this.autoFocus) {
+      this.startEdit()
     }
   }
 })

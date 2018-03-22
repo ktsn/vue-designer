@@ -12,17 +12,13 @@
 
       <ul class="declaration-list" @click.stop>
         <li class="declaration" v-for="d in rule.declarations" :key="d.path.join('.')">
-          <span class="declaration-prop"><StyleValue
-            class="declaration-prop-text"
-            :value="d.prop"
-            @input="inputStyleProp(d.path, arguments[0])"
-            @input-end="finishInputStyleProp(d.path, arguments[0])"
-          /></span>
-          <span class="declaration-value"><StyleValue
+          <StyleDeclaration
+            :prop="d.prop"
             :value="d.value"
-            @input="inputStyleValue(d.path, arguments[0])"
-            @input-end="finishInputStyleValue(d.path, arguments[0])"
-          /></span>
+            @update:prop="updateDeclarationProp(d.path, arguments[0])"
+            @update:value="updateDeclarationValue(d.path, arguments[0])"
+            @remove="removeDeclaration(d.path)"
+          />
         </li>
       </ul>
     </li>
@@ -32,13 +28,15 @@
 <script lang="ts">
 import Vue from 'vue'
 import StyleValue from './StyleValue.vue'
+import StyleDeclaration from './StyleDeclaration.vue'
 import { RuleForPrint } from '@/parser/style/types'
 
 export default Vue.extend({
   name: 'StyleInformation',
 
   components: {
-    StyleValue
+    StyleValue,
+    StyleDeclaration
   },
 
   props: {
@@ -49,40 +47,22 @@ export default Vue.extend({
   },
 
   methods: {
-    inputStyleProp(path: number[], prop: string): void {
+    updateDeclarationProp(path: number[], prop: string): void {
       this.$emit('update-declaration', {
         path,
         prop
       })
     },
 
-    inputStyleValue(path: number[], value: string): void {
+    updateDeclarationValue(path: number[], value: string): void {
       this.$emit('update-declaration', {
         path,
         value
       })
     },
 
-    finishInputStyleProp(path: number[], rawProp: string): void {
-      const prop = rawProp.trim()
-      if (!prop) {
-        this.$emit('remove-declaration', {
-          path
-        })
-      } else {
-        this.inputStyleProp(path, prop)
-      }
-    },
-
-    finishInputStyleValue(path: number[], rawValue: string): void {
-      const value = rawValue.trim()
-      if (!value) {
-        this.$emit('remove-declaration', {
-          path
-        })
-      } else {
-        this.inputStyleValue(path, value)
-      }
+    removeDeclaration(path: number[]): void {
+      this.$emit('remove-declaration', { path })
     },
 
     onClickRule(rule: RuleForPrint): void {
@@ -126,17 +106,5 @@ export default Vue.extend({
 
 .declaration-list {
   padding-left: 1em;
-}
-
-.declaration-prop::after {
-  content: ':';
-}
-
-.declaration-value::after {
-  content: ';';
-}
-
-.declaration-prop-text {
-  color: #24b600;
 }
 </style>

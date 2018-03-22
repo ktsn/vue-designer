@@ -1,3 +1,13 @@
+<a name="0.2.2"></a>
+## [0.2.2](https://github.com/ktsn/vue-designer/compare/v0.2.1...v0.2.2) (2018-03-22)
+
+
+### UI Improvements
+
+* focus a new declaration prop automatically ([#18](https://github.com/ktsn/vue-designer/issues/18)) ([0374aeb](https://github.com/ktsn/vue-designer/commit/0374aeb))
+
+
+
 <a name="0.2.1"></a>
 ## [0.2.1](https://github.com/ktsn/vue-designer/compare/v0.2.0...v0.2.1) (2018-03-21)
 

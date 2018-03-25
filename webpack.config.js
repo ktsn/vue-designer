@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const merge = require('webpack-merge')
+const { VueLoaderPlugin } = require('vue-loader')
 
 const basePath = path.resolve(__dirname)
 
@@ -29,26 +30,26 @@ const baseConfig = {
         }
       },
       {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            scss: [
-              'style-loader',
-              'css-loader',
-              {
-                loader: 'sass-loader',
-                options: {
-                  data: '@import "view/globals";',
-                  includePaths: [path.join(basePath, 'src')]
-                }
-              }
-            ]
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              data: '@import "view/globals";',
+              includePaths: [path.join(basePath, 'src')]
+            }
           }
-        }
+        ]
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
       }
     ]
-  }
+  },
+  plugins: [new VueLoaderPlugin()]
 }
 
 module.exports = function(_, argv) {

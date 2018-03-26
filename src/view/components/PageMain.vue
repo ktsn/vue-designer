@@ -3,9 +3,12 @@
     <Renderer
       v-if="renderingDocument"
       :document="renderingDocument"
+      :width="width"
+      :height="height"
       @select="select"
       @dragover="setDraggingPlace"
       @add="applyDraggingElement"
+      @resize="resize"
     />
 
     <div v-if="document" class="information-pane" :class="{ open: openPane }">
@@ -58,6 +61,7 @@ import ScopeInformation from './ScopeInformation.vue'
 import StyleInformation from './StyleInformation.vue'
 import ComponentCatalog from './ComponentCatalog.vue'
 import { projectHelpers, ScopedDocument } from '../store/modules/project'
+import { viewportHelpers } from '@/view/store/modules/viewport'
 
 export default Vue.extend({
   name: 'PageMain',
@@ -82,6 +86,8 @@ export default Vue.extend({
       matchedRules: 'matchedRules'
     }),
 
+    ...viewportHelpers.mapState(['width', 'height']),
+
     ...projectHelpers.mapGetters({
       document: 'currentDocument',
       renderingDocument: 'currentRenderingDocument',
@@ -95,16 +101,20 @@ export default Vue.extend({
     }
   },
 
-  methods: projectHelpers.mapActions([
-    'startDragging',
-    'endDragging',
-    'setDraggingPlace',
-    'select',
-    'applyDraggingElement',
-    'addDeclaration',
-    'removeDeclaration',
-    'updateDeclaration'
-  ])
+  methods: {
+    ...projectHelpers.mapActions([
+      'startDragging',
+      'endDragging',
+      'setDraggingPlace',
+      'select',
+      'applyDraggingElement',
+      'addDeclaration',
+      'removeDeclaration',
+      'updateDeclaration'
+    ]),
+
+    ...viewportHelpers.mapActions(['resize'])
+  }
 })
 </script>
 

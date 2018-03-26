@@ -12,12 +12,20 @@ export default Vue.extend({
     document: {
       type: Object as () => ScopedDocument,
       required: true
+    },
+    width: {
+      type: Number,
+      required: true
+    },
+    height: {
+      type: Number,
+      required: true
     }
   },
 
   // @ts-ignore
   render(h, { props, listeners }): VNode {
-    const { document: d } = props
+    const { document: d, width, height } = props
     return h(
       'div',
       {
@@ -31,19 +39,29 @@ export default Vue.extend({
         }
       },
       [
-        h(Viewport, [
-          h(VueComponent, {
+        h(
+          Viewport,
+          {
             props: {
-              uri: d.uri,
-              template: d.template,
-              props: d.props,
-              data: d.data,
-              childComponents: d.childComponents,
-              styles: d.styleCode
+              width,
+              height
             },
             on: listeners
-          })
-        ])
+          },
+          [
+            h(VueComponent, {
+              props: {
+                uri: d.uri,
+                template: d.template,
+                props: d.props,
+                data: d.data,
+                childComponents: d.childComponents,
+                styles: d.styleCode
+              },
+              on: listeners
+            })
+          ]
+        )
       ]
     )
   }
@@ -58,6 +76,5 @@ export default Vue.extend({
   box-sizing: border-box;
   height: 100%;
   width: 100%;
-  background-color: #ddd;
 }
 </style>

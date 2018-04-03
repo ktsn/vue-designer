@@ -1,12 +1,34 @@
+<template>
+  <div class="renderer" @click="$emit('select')">
+    <Viewport :width="width" :height="height" @resize="$emit('resize', arguments[0])">
+      <VueComponent
+        :uri="document.uri"
+        :template="document.template"
+        :props="document.props"
+        :data="document.data"
+        :child-components="document.childComponents"
+        :styles="document.styleCode"
+        @select="$emit('select', arguments[0])"
+        @dragover="$emit('dragover', arguments[0])"
+        @add="$emit('add')"
+      />
+    </Viewport>
+  </div>
+</template>
+
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import Vue from 'vue'
 import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
 import { ScopedDocument } from '../store/modules/project'
 
 export default Vue.extend({
   name: 'Renderer',
-  functional: true,
+
+  components: {
+    Viewport,
+    VueComponent
+  },
 
   props: {
     document: {
@@ -21,49 +43,6 @@ export default Vue.extend({
       type: Number,
       required: true
     }
-  },
-
-  // @ts-ignore
-  render(h, { props, listeners }): VNode {
-    const { document: d, width, height } = props
-    return h(
-      'div',
-      {
-        class: 'renderer',
-        on: {
-          click: () => {
-            if (listeners.select) {
-              listeners.select()
-            }
-          }
-        }
-      },
-      [
-        h(
-          Viewport,
-          {
-            props: {
-              width,
-              height
-            },
-            on: listeners
-          },
-          [
-            h(VueComponent, {
-              props: {
-                uri: d.uri,
-                template: d.template,
-                props: d.props,
-                data: d.data,
-                childComponents: d.childComponents,
-                styles: d.styleCode
-              },
-              on: listeners
-            })
-          ]
-        )
-      ]
-    )
   }
 })
 </script>

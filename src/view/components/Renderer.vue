@@ -50,6 +50,7 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .renderer {
   all: initial;
+  overflow: auto;
   display: block;
   position: relative;
   height: 100%;

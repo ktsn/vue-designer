@@ -4,8 +4,8 @@ import Toolbar from '@/view/components/Toolbar.vue'
 describe('Toolbar', () => {
   it('has initial size based on props', () => {
     const t = new ToolbarTest(300, 400)
-    expect((t.widthField().element as HTMLInputElement).value).toBe('300')
-    expect((t.heightField().element as HTMLInputElement).value).toBe('400')
+    expect(t.widthField().value).toBe('300')
+    expect(t.heightField().value).toBe('400')
   })
 
   it('submit resized value when pressed enter key', () => {
@@ -13,7 +13,7 @@ describe('Toolbar', () => {
     t.inputWidth(600)
     t.inputHeight(800)
     expect(t.wrapper.emitted('resize')).toBeFalsy()
-    t.widthField().trigger('keydown', {
+    t.widthWrapper().trigger('keydown', {
       keyCode: 13
     })
     expect(t.wrapper.emitted('resize')[0]).toEqual([
@@ -29,13 +29,34 @@ describe('Toolbar', () => {
     t.inputWidth(600)
     t.inputHeight('800abc')
 
-    t.widthField().trigger('keydown', {
+    t.widthWrapper().trigger('keydown', {
       keyCode: 13
     })
 
     expect(t.wrapper.emitted('resize')).toBeFalsy()
-    expect((t.widthField().element as HTMLInputElement).value).toBe('300')
-    expect((t.heightField().element as HTMLInputElement).value).toBe('400')
+    expect(t.widthField().value).toBe('300')
+    expect(t.heightField().value).toBe('400')
+  })
+
+  it('sync width and height field when the props are updated', () => {
+    const t = new ToolbarTest(300, 400)
+    t.wrapper.setProps({
+      height: 500
+    })
+
+    expect(t.widthField().value).toBe('300')
+    expect(t.heightField().value).toBe('500')
+  })
+
+  it('reset dirty value when props are updated', () => {
+    const t = new ToolbarTest(300, 400)
+    t.inputWidth(400)
+    t.wrapper.setProps({
+      height: 500
+    })
+
+    expect(t.widthField().value).toBe('300')
+    expect(t.heightField().value).toBe('500')
   })
 })
 
@@ -51,23 +72,31 @@ class ToolbarTest {
     })
   }
 
-  widthField(): Wrapper<any> {
+  widthWrapper(): Wrapper<any> {
     return this.wrapper.find('.viewport-size-input:first-of-type')
   }
 
-  heightField(): Wrapper<any> {
+  heightWrapper(): Wrapper<any> {
     return this.wrapper.find('.viewport-size-input:nth-of-type(2)')
+  }
+
+  widthField(): HTMLInputElement {
+    return this.widthWrapper().element as HTMLInputElement
+  }
+
+  heightField(): HTMLInputElement {
+    return this.heightWrapper().element as HTMLInputElement
   }
 
   inputWidth(width: number | string): void {
     const el = this.widthField()
-    ;(el.element as HTMLInputElement).value = String(width)
-    el.trigger('input')
+    el.value = String(width)
+    this.widthWrapper().trigger('input')
   }
 
   inputHeight(height: number | string): void {
     const el = this.heightField()
-    ;(el.element as HTMLInputElement).value = String(height)
-    el.trigger('input')
+    el.value = String(height)
+    this.heightWrapper().trigger('input')
   }
 }

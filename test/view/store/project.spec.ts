@@ -4,6 +4,7 @@ import { createTemplate, h } from '../../helpers/template'
 import { createStyle, rule, selector } from '../../helpers/style'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
 import { ClientConnection } from '@/view/communication'
+import { StyleMatcher } from '@/view/store/style-matcher'
 
 describe('Store project getters', () => {
   let store: Store<any>, state: ProjectState
@@ -185,7 +186,10 @@ describe('Store project getters', () => {
 })
 
 describe('Store project actions', () => {
-  let store: Store<any>, state: ProjectState, mockConnection: ClientConnection
+  let store: Store<any>,
+    state: ProjectState,
+    mockConnection: ClientConnection,
+    mockStyleMatcher: StyleMatcher
   beforeEach(() => {
     store = new Store({
       modules: { project }
@@ -196,8 +200,14 @@ describe('Store project actions', () => {
       send: jest.fn(),
       onMessage: jest.fn()
     } as any
+
+    mockStyleMatcher = {
+      match: jest.fn()
+    } as any
+
     store.dispatch('project/init', {
-      connection: mockConnection
+      connection: mockConnection,
+      styleMatcher: mockStyleMatcher
     })
   })
 
@@ -254,6 +264,51 @@ describe('Store project actions', () => {
       })
 
       expect(mockConnection.send).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('matchSelectedNodeWithStyles', () => {
+    const emptyRule = {
+      path: [0, 0],
+      selectors: ['div'],
+      declarations: []
+    }
+
+    it('extract rules of node', () => {
+      const docs = (state.documents = documents())
+      state.currentUri = 'file:///Foo.vue'
+      state.selectedPath = [0]
+
+      const matched = [docs['file:///Foo.vue'].styles[0].body[0]]
+      ;(mockStyleMatcher.match as any).mockReturnValue(matched)
+
+      store.dispatch('project/matchSelectedNodeWithStyles')
+
+      expect(state.matchedRules.length).toBe(1)
+      const r = state.matchedRules[0]
+      expect(r.path).toEqual([0, 0])
+      expect(r.selectors).toEqual(['div'])
+    })
+
+    it('resets matched rules when no doc is selected', () => {
+      state.documents = documents()
+      state.currentUri = undefined
+      state.matchedRules = [emptyRule]
+
+      store.dispatch('project/matchSelectedNodeWithStyles')
+
+      expect(state.matchedRules).toEqual([])
+    })
+
+    it('resets matched rules when no node is selected', () => {
+      state.documents = documents()
+      state.currentUri = 'file:///Foo.vue'
+      state.selectedPath = []
+      state.matchedRules = [emptyRule]
+
+      store.dispatch('project/matchSelectedNodeWithStyles')
+
+      expect(state.matchedRules).toEqual([])
     })
   })
 })

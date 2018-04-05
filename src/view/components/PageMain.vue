@@ -1,12 +1,27 @@
 <template>
   <div>
-    <Renderer
-      v-if="renderingDocument"
-      :document="renderingDocument"
-      @select="select"
-      @dragover="setDraggingPlace"
-      @add="applyDraggingElement"
-    />
+    <div class="page-layout">
+      <div class="page-layout-renderer">
+        <Renderer
+          v-if="renderingDocument"
+          :document="renderingDocument"
+          :width="width"
+          :height="height"
+          @select="select"
+          @dragover="setDraggingPlace"
+          @add="applyDraggingElement"
+          @resize="resize"
+        />
+      </div>
+
+      <div class="page-layout-toolbar">
+        <Toolbar
+          :width="width"
+          :height="height"
+          @resize="resize"
+        />
+      </div>
+    </div>
 
     <div v-if="document" class="information-pane" :class="{ open: openPane }">
       <div class="information-pane-scroller">
@@ -57,7 +72,9 @@ import Renderer from './Renderer.vue'
 import ScopeInformation from './ScopeInformation.vue'
 import StyleInformation from './StyleInformation.vue'
 import ComponentCatalog from './ComponentCatalog.vue'
+import Toolbar from './Toolbar.vue'
 import { projectHelpers, ScopedDocument } from '../store/modules/project'
+import { viewportHelpers } from '@/view/store/modules/viewport'
 
 export default Vue.extend({
   name: 'PageMain',
@@ -66,7 +83,8 @@ export default Vue.extend({
     Renderer,
     ScopeInformation,
     StyleInformation,
-    ComponentCatalog
+    ComponentCatalog,
+    Toolbar
   },
 
   data() {
@@ -82,6 +100,8 @@ export default Vue.extend({
       matchedRules: 'matchedRules'
     }),
 
+    ...viewportHelpers.mapState(['width', 'height']),
+
     ...projectHelpers.mapGetters({
       document: 'currentDocument',
       renderingDocument: 'currentRenderingDocument',
@@ -95,20 +115,40 @@ export default Vue.extend({
     }
   },
 
-  methods: projectHelpers.mapActions([
-    'startDragging',
-    'endDragging',
-    'setDraggingPlace',
-    'select',
-    'applyDraggingElement',
-    'addDeclaration',
-    'removeDeclaration',
-    'updateDeclaration'
-  ])
+  methods: {
+    ...projectHelpers.mapActions([
+      'startDragging',
+      'endDragging',
+      'setDraggingPlace',
+      'select',
+      'applyDraggingElement',
+      'addDeclaration',
+      'removeDeclaration',
+      'updateDeclaration'
+    ]),
+
+    ...viewportHelpers.mapActions(['resize'])
+  }
 })
 </script>
 
 <style lang="scss" scoped>
+.page-layout-renderer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 32px;
+}
+
+.page-layout-toolbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 32px;
+}
+
 .information-pane {
   position: fixed;
   right: 0;

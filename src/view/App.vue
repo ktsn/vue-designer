@@ -21,6 +21,7 @@ export default Vue.extend({
 body {
   padding: 0;
   margin: 0;
+  background-color: #ddd;
 }
 </style>
 

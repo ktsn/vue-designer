@@ -415,7 +415,11 @@ export const project: DefineModule<
     matchSelectedNodeWithStyles({ commit, getters, state }) {
       const doc = getters.currentDocument
       const selected = state.selectedPath
-      if (!doc || !doc.template || !selected) return
+
+      if (!doc || !doc.template || selected.length === 0) {
+        commit('setMatchedRules', [])
+        return
+      }
 
       const matchedRules = styleMatcher.match(doc.uri, doc.template, selected)
       const forPrint = matchedRules.map(transformRuleForPrint)

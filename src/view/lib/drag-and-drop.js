@@ -218,6 +218,7 @@ var DragDropTouch;
                         this._lastTarget = target;
                     }
                     this._moveImage(e);
+                    this._dispatchEvent(e, 'drag', this._dragSource);
                     this._dispatchEvent(e, 'dragover', target);
                 }
             }

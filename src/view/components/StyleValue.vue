@@ -55,6 +55,7 @@ export default Vue.extend({
         if (input) {
           input.textContent = this.value
           selectNodeContents(input)
+          this.$emit('input-start')
         }
       })
     },

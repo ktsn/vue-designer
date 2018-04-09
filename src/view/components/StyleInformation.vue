@@ -19,6 +19,8 @@
             @update:prop="updateDeclarationProp(d.path, arguments[0])"
             @update:value="updateDeclarationValue(d.path, arguments[0])"
             @remove="removeDeclaration(d.path)"
+            @input-start="onStartStyleInput"
+            @input-end="onEndStyleInput"
           />
         </li>
       </ul>
@@ -49,7 +51,8 @@ export default Vue.extend({
 
   data() {
     return {
-      autoFocusOnNextRender: false
+      autoFocusOnNextRender: false,
+      endingInput: false
     }
   },
 
@@ -73,10 +76,36 @@ export default Vue.extend({
     },
 
     onClickRule(rule: RuleForPrint): void {
+      if (this.endingInput) return
+
       this.$emit('add-declaration', {
         path: rule.path.concat(rule.declarations.length)
       })
       this.autoFocusOnNextRender = true
+    },
+
+    /*
+     * While it will add a new rule when clicking empty space,
+     * we don't want to do that if it is intended to cancel style editing.
+     * To resolve that situation, we limit to add a new declaration
+     * when the user is starting editing style value. Then release
+     * the limitation after several time passes from finished editing.
+     */
+    onStartStyleInput(): void {
+      const vm: any = this
+      clearTimeout(vm.endingInputTimer)
+
+      this.endingInput = true
+    },
+
+    onEndStyleInput(): void {
+      const delayToEndEdit = 200
+      const vm: any = this
+
+      clearTimeout(vm.endingInputTimer)
+      vm.endingInputTimer = setTimeout(() => {
+        this.endingInput = false
+      }, delayToEndEdit)
     }
   },
 
@@ -86,6 +115,11 @@ export default Vue.extend({
         this.autoFocusOnNextRender = false
       })
     }
+  },
+
+  created() {
+    const vm: any = this
+    vm.endingInputTimer = null
   }
 })
 </script>

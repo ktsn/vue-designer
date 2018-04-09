@@ -4,11 +4,13 @@
       class="style-declaration-prop-text"
       :auto-focus="autoFocusProp"
       :value="prop"
+      @input-start="$emit('input-start')"
       @input="inputProp"
       @input-end="finishInputProp"
     /></span>
     <span class="style-declaration-value"><StyleValue
       :value="value"
+      @input-start="$emit('input-start')"
       @input="inputValue"
       @input-end="finishInputValue"
     /></span>
@@ -48,6 +50,8 @@ export default Vue.extend({
     },
 
     finishInputProp(rawProp: string): void {
+      this.$emit('input-end')
+
       const prop = rawProp.trim()
       if (!prop) {
         this.$emit('remove')
@@ -57,6 +61,8 @@ export default Vue.extend({
     },
 
     finishInputValue(rawValue: string): void {
+      this.$emit('input-end')
+
       const value = rawValue.trim()
       if (!value) {
         this.$emit('remove')

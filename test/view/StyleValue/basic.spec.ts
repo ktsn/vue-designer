@@ -48,6 +48,17 @@ describe('StyleValue basic', () => {
     expect(wrapper.emitted('input')[0]).toEqual(['22px'])
   })
 
+  it('should notify starting input', async () => {
+    const wrapper = mount(StyleValue, {
+      propsData: {
+        value: '20px'
+      }
+    })
+    wrapper.trigger('click')
+    await wrapper.vm.$nextTick()
+    expect(wrapper.emitted('input-start').length).toBe(1)
+  })
+
   it('should end editing when blured', () => {
     const wrapper = mount(StyleValue, {
       propsData: {

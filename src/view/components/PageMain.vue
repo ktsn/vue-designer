@@ -7,10 +7,12 @@
           :document="renderingDocument"
           :width="width"
           :height="height"
+          :scale="scale"
           @select="select"
           @dragover="setDraggingPlace"
           @add="applyDraggingElement"
           @resize="resize"
+          @zoom="zoom"
         />
       </div>
 
@@ -18,7 +20,9 @@
         <Toolbar
           :width="width"
           :height="height"
+          :scale="scale"
           @resize="resize"
+          @zoom="zoom"
         />
       </div>
     </div>
@@ -100,7 +104,7 @@ export default Vue.extend({
       matchedRules: 'matchedRules'
     }),
 
-    ...viewportHelpers.mapState(['width', 'height']),
+    ...viewportHelpers.mapState(['width', 'height', 'scale']),
 
     ...projectHelpers.mapGetters({
       document: 'currentDocument',
@@ -127,7 +131,7 @@ export default Vue.extend({
       'updateDeclaration'
     ]),
 
-    ...viewportHelpers.mapActions(['resize'])
+    ...viewportHelpers.mapActions(['resize', 'zoom'])
   }
 })
 </script>

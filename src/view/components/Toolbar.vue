@@ -4,18 +4,29 @@
       <input
         v-model="dirtyWidth"
         type="text"
-        class="viewport-size-input"
+        class="toolbar-input viewport-size-input"
         @focus="selectAll($event.target)"
-        @keydown.enter="apply"
+        @keydown.enter="applySize"
       >
-      <span class="viewport-size-char">x</span>
+      <span class="toolbar-input-char">x</span>
       <input
         v-model="dirtyHeight"
         type="text"
-        class="viewport-size-input"
+        class="toolbar-input viewport-size-input"
         @focus="selectAll($event.target)"
-        @keydown.enter="apply"
+        @keydown.enter="applySize"
       >
+    </div>
+
+    <div class="toolbar-item">
+      <input
+        v-model="dirtyScale"
+        type="text"
+        class="toolbar-input viewport-scale-input"
+        @focus="selectAll($event.target)"
+        @keydown.enter="applyScale"
+      >
+      <span class="toolbar-input-char">%</span>
     </div>
   </div>
 </template>
@@ -34,13 +45,18 @@ export default Vue.extend({
     height: {
       type: Number,
       required: true
+    },
+    scale: {
+      type: Number,
+      required: true
     }
   },
 
   data() {
     return {
       dirtyWidth: this.width,
-      dirtyHeight: this.height
+      dirtyHeight: this.height,
+      dirtyScale: this.scale * 100
     }
   },
 
@@ -50,11 +66,15 @@ export default Vue.extend({
       this.dirtyHeight = this.height
     },
 
+    resetScale(): void {
+      this.dirtyScale = this.scale * 100
+    },
+
     selectAll(target: HTMLInputElement): void {
       target.select()
     },
 
-    apply(): void {
+    applySize(): void {
       const width = Number(this.dirtyWidth)
       const height = Number(this.dirtyHeight)
 
@@ -66,12 +86,23 @@ export default Vue.extend({
           height
         })
       }
+    },
+
+    applyScale(): void {
+      const scale = Number(this.dirtyScale)
+
+      if (Number.isNaN(scale)) {
+        this.resetScale()
+      } else {
+        this.$emit('zoom', scale / 100)
+      }
     }
   },
 
   watch: {
     width: 'resetSize',
-    height: 'resetSize'
+    height: 'resetSize',
+    scale: 'resetScale'
   }
 })
 </script>
@@ -89,22 +120,33 @@ export default Vue.extend({
 }
 
 .toolbar-item {
-  display: inline-block;
-  vertical-align: middle;
+  margin-left: 30px;
   font-size: rem(14);
 }
 
-.viewport-size-input {
+.toolbar-item:first-child {
+  margin-left: 0;
+}
+
+.toolbar-input {
   padding: 2px 4px;
-  width: 3.2em;
   border-width: 0;
   font-size: inherit;
   font-family: inherit;
+}
+
+.toolbar-input,
+.toolbar-input-char {
+  vertical-align: middle;
+}
+
+.viewport-size-input {
+  width: 3.2em;
   text-align: center;
 }
 
-.viewport-size-input,
-.viewport-size-char {
-  vertical-align: middle;
+.viewport-scale-input {
+  width: 3.2em;
+  text-align: center;
 }
 </style>

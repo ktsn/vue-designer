@@ -3,6 +3,7 @@ import { DefineModule, createNamespacedHelpers } from 'vuex'
 interface ViewportState {
   width: number
   height: number
+  scale: number
 }
 
 interface ViewportActions {
@@ -10,6 +11,7 @@ interface ViewportActions {
     width: number
     height: number
   }
+  zoom: number
 }
 
 interface ViewportMutations {
@@ -17,6 +19,7 @@ interface ViewportMutations {
     width: number
     height: number
   }
+  zoom: number
 }
 
 export const viewportHelpers = createNamespacedHelpers<
@@ -36,12 +39,17 @@ export const viewport: DefineModule<
 
   state: () => ({
     width: 600,
-    height: 800
+    height: 800,
+    scale: 1.0
   }),
 
   actions: {
     resize({ commit }, payload) {
       commit('resize', payload)
+    },
+
+    zoom({ commit }, payload) {
+      commit('zoom', payload)
     }
   },
 
@@ -49,6 +57,12 @@ export const viewport: DefineModule<
     resize(state, { width, height }) {
       state.width = width
       state.height = height
+    },
+
+    zoom(state, scale) {
+      const max = 5
+      const min = 0.1
+      state.scale = Math.min(max, Math.max(min, scale))
     }
   }
 }

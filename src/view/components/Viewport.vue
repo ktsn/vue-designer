@@ -1,26 +1,32 @@
 <template>
-  <!-- Since viewport is aligned by center, the offset needs to be multiplied by 2 -->
+  <!-- Since viewport is aligned by center, the offset needs to be multiplied by 2 in default scale -->
   <Resizable
     class="viewport-wrapper"
     :width="width"
     :height="height"
-    :offset-weight="2"
+    :offset-weight="2 / scale"
+    :style="viewportStyle"
     @resize="$emit('resize', arguments[0])"
   >
     <div class="viewport">
       <slot />
     </div>
+
+    <!-- To detect mac trackpad's pinch, we need to listen wheel event with ctrl is pressed -->
+    <GlobalEvents @wheel.ctrl="onZoom" />
   </Resizable>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import GlobalEvents from 'vue-global-events'
 import Resizable from './Resizable.vue'
 
 export default Vue.extend({
   name: 'Viewport',
 
   components: {
+    GlobalEvents,
     Resizable
   },
 
@@ -32,6 +38,24 @@ export default Vue.extend({
     height: {
       type: Number,
       required: true
+    },
+    scale: {
+      type: Number,
+      required: true
+    }
+  },
+
+  computed: {
+    viewportStyle(): Record<string, string> {
+      return {
+        transform: `scale(${this.scale})`
+      }
+    }
+  },
+
+  methods: {
+    onZoom(event: WheelEvent): void {
+      this.$emit('zoom', this.scale - event.deltaY * 0.01)
     }
   }
 })

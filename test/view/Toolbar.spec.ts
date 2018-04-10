@@ -8,6 +8,11 @@ describe('Toolbar', () => {
     expect(t.heightField().value).toBe('400')
   })
 
+  it('has initial scale based on props', () => {
+    const t = new ToolbarTest(300, 400, 3)
+    expect(t.scaleField().value).toBe('300')
+  })
+
   it('submit resized value when pressed enter key', () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(600)
@@ -24,7 +29,17 @@ describe('Toolbar', () => {
     ])
   })
 
-  it('reset if invalid number is applied', () => {
+  it('submit changed scale when pressed enter key', () => {
+    const t = new ToolbarTest(300, 400, 2)
+    t.inputScale(400)
+    expect(t.wrapper.emitted('zoom')).toBeFalsy()
+    t.scaleWrapper().trigger('keydown', {
+      keyCode: 13
+    })
+    expect(t.wrapper.emitted('zoom')[0]).toEqual([4])
+  })
+
+  it('reset if invalid size is applied', () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(600)
     t.inputHeight('800abc')
@@ -38,6 +53,18 @@ describe('Toolbar', () => {
     expect(t.heightField().value).toBe('400')
   })
 
+  it('reset if invalid scale is applied', () => {
+    const t = new ToolbarTest(300, 400, 1)
+    t.inputScale('30abc')
+
+    t.scaleWrapper().trigger('keydown', {
+      keyCode: 13
+    })
+
+    expect(t.wrapper.emitted('zoom')).toBeFalsy()
+    expect(t.scaleField().value).toBe('100')
+  })
+
   it('sync width and height field when the props are updated', () => {
     const t = new ToolbarTest(300, 400)
     t.wrapper.setProps({
@@ -48,7 +75,16 @@ describe('Toolbar', () => {
     expect(t.heightField().value).toBe('500')
   })
 
-  it('reset dirty value when props are updated', () => {
+  it('sync scale field when the props are updated', () => {
+    const t = new ToolbarTest(300, 400, 1)
+    t.wrapper.setProps({
+      scale: 2
+    })
+
+    expect(t.scaleField().value).toBe('200')
+  })
+
+  it('reset dirty size value when props are updated', () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(400)
     t.wrapper.setProps({
@@ -63,11 +99,12 @@ describe('Toolbar', () => {
 class ToolbarTest {
   wrapper: Wrapper<Toolbar>
 
-  constructor(width: number, height: number) {
+  constructor(width: number, height: number, scale: number = 1) {
     this.wrapper = mount(Toolbar, {
       propsData: {
         width,
-        height
+        height,
+        scale
       }
     })
   }
@@ -80,12 +117,20 @@ class ToolbarTest {
     return this.wrapper.find('.viewport-size-input:nth-of-type(2)')
   }
 
+  scaleWrapper(): Wrapper<any> {
+    return this.wrapper.find('.viewport-scale-input')
+  }
+
   widthField(): HTMLInputElement {
     return this.widthWrapper().element as HTMLInputElement
   }
 
   heightField(): HTMLInputElement {
     return this.heightWrapper().element as HTMLInputElement
+  }
+
+  scaleField(): HTMLInputElement {
+    return this.scaleWrapper().element as HTMLInputElement
   }
 
   inputWidth(width: number | string): void {
@@ -98,5 +143,11 @@ class ToolbarTest {
     const el = this.heightField()
     el.value = String(height)
     this.heightWrapper().trigger('input')
+  }
+
+  inputScale(scale: number | string): void {
+    const el = this.scaleField()
+    el.value = String(scale)
+    this.scaleWrapper().trigger('input')
   }
 }

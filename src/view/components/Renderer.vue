@@ -1,6 +1,12 @@
 <template>
   <div class="renderer" @click="$emit('select')">
-    <Viewport :width="width" :height="height" @resize="$emit('resize', arguments[0])">
+    <Viewport
+      :width="width"
+      :height="height"
+      :scale="scale"
+      @resize="$emit('resize', arguments[0])"
+      @zoom="$emit('zoom', arguments[0])"
+    >
       <VueComponent
         :uri="document.uri"
         :template="document.template"
@@ -40,6 +46,10 @@ export default Vue.extend({
       required: true
     },
     height: {
+      type: Number,
+      required: true
+    },
+    scale: {
       type: Number,
       required: true
     }

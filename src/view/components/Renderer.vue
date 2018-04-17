@@ -1,18 +1,20 @@
 <template>
   <div class="renderer" @click="$emit('select')">
-    <Viewport :width="width" :height="height" @resize="$emit('resize', arguments[0])">
-      <VueComponent
-        :uri="document.uri"
-        :template="document.template"
-        :props="document.props"
-        :data="document.data"
-        :child-components="document.childComponents"
-        :styles="document.styleCode"
-        @select="$emit('select', arguments[0])"
-        @dragover="$emit('dragover', arguments[0])"
-        @add="$emit('add')"
-      />
-    </Viewport>
+    <div class="renderer-scroller" :style="scrollerStyle">
+      <Viewport :width="width" :height="height" @resize="$emit('resize', arguments[0])">
+        <VueComponent
+          :uri="document.uri"
+          :template="document.template"
+          :props="document.props"
+          :data="document.data"
+          :child-components="document.childComponents"
+          :styles="document.styleCode"
+          @select="$emit('select', arguments[0])"
+          @dragover="$emit('dragover', arguments[0])"
+          @add="$emit('add')"
+        />
+      </Viewport>
+    </div>
   </div>
 </template>
 
@@ -42,6 +44,46 @@ export default Vue.extend({
     height: {
       type: Number,
       required: true
+    },
+    scrollerWidth: {
+      type: Number,
+      required: true
+    },
+    scrollerHeight: {
+      type: Number,
+      required: true
+    }
+  },
+
+  computed: {
+    scrollerStyle(): Record<string, string> {
+      return {
+        width: this.scrollerWidth + 'px',
+        height: this.scrollerHeight + 'px'
+      }
+    },
+
+    scrollerCenter(): { x: number; y: number } {
+      return {
+        x: this.scrollerWidth / 2,
+        y: this.scrollerHeight / 2
+      }
+    }
+  },
+
+  watch: {
+    scrollerCenter(
+      { x, y }: { x: number; y: number },
+      { x: prevX, y: prevY }: { x: number; y: number }
+    ): void {
+      const el = this.$el
+
+      // Ajust scroll offset after DOM is rerendered
+      // to avoid flickering viewport
+      requestAnimationFrame(() => {
+        el.scrollLeft = el.scrollLeft + (x - prevX)
+        el.scrollTop = el.scrollTop + (y - prevY)
+      })
     }
   }
 })
@@ -52,8 +94,11 @@ export default Vue.extend({
   all: initial;
   overflow: auto;
   display: block;
-  position: relative;
   height: 100%;
   width: 100%;
+}
+
+.renderer-scroller {
+  position: relative;
 }
 </style>

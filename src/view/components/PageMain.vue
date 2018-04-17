@@ -1,12 +1,14 @@
 <template>
   <div>
     <div class="page-layout">
-      <div class="page-layout-renderer">
+      <div class="page-layout-renderer" ref="renderer">
         <Renderer
           v-if="renderingDocument"
           :document="renderingDocument"
           :width="width"
           :height="height"
+          :scroller-width="scroller.width"
+          :scroller-height="scroller.height"
           @select="select"
           @dragover="setDraggingPlace"
           @add="applyDraggingElement"
@@ -108,6 +110,8 @@ export default Vue.extend({
       scopedDocuments: 'scopedDocuments'
     }),
 
+    ...viewportHelpers.mapGetters(['scroller']),
+
     catalog(): ScopedDocument[] {
       return Object.keys(this.scopedDocuments).map(
         key => this.scopedDocuments[key]
@@ -127,7 +131,26 @@ export default Vue.extend({
       'updateDeclaration'
     ]),
 
-    ...viewportHelpers.mapActions(['resize'])
+    ...viewportHelpers.mapActions(['resize']),
+
+    ...viewportHelpers.mapMutations(['setWindowSize'])
+  },
+
+  mounted() {
+    const listener = () => {
+      const el = this.$refs.renderer as HTMLElement
+      const { width, height } = el.getBoundingClientRect()
+      this.setWindowSize({
+        width,
+        height
+      })
+    }
+
+    window.addEventListener('resize', listener)
+    listener()
+    this.$once('hook:beforeDestroy', () => {
+      window.removeEventListener('resize', listener)
+    })
   }
 })
 </script>

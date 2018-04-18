@@ -102,7 +102,7 @@ export default Vue.extend({
     ): void {
       const el = this.$el
 
-      // Ajust scroll offset after DOM is rerendered
+      // Adjust scroll offset after DOM is rerendered
       // to avoid flickering viewport
       requestAnimationFrame(() => {
         el.scrollLeft = el.scrollLeft + (x - prevX)

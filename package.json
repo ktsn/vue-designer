@@ -118,7 +118,7 @@
     "vue": "^2.5.13",
     "vue-global-events": "^1.0.3",
     "vue-jest": "^2.1.0",
-    "vue-loader": "^15.0.0-beta.7",
+    "vue-loader": "^15.0.0-rc.2",
     "vue-style-loader": "^4.1.0",
     "vuex": "github:ktsn/vuex#fc1f29b",
     "webpack": "^4.0.1",

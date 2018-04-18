@@ -61,6 +61,11 @@ export default Vue.extend({
   computed: {
     scrollContentSize(): { width: number; height: number } {
       const renderer = this.rendererSize
+      const thresholdWidth = Math.max(0, renderer.width - scrollContentPadding)
+      const thresholdHeight = Math.max(
+        0,
+        renderer.height - scrollContentPadding
+      )
 
       // If the viewport size is enough smaller than renderer size,
       // the scroll content size is the same as the renderer size so that the viewport will not be scrollable.
@@ -68,13 +73,13 @@ export default Vue.extend({
       // This is similar behavior with Photoshop.
       return {
         width:
-          renderer.width - scrollContentPadding > this.width
+          thresholdWidth > this.width
             ? renderer.width
-            : this.width + (renderer.width - scrollContentPadding) * 2,
+            : this.width + thresholdWidth * 2,
         height:
-          renderer.height - scrollContentPadding > this.height
+          thresholdHeight > this.height
             ? renderer.height
-            : this.height + (renderer.height - scrollContentPadding) * 2
+            : this.height + thresholdHeight * 2
       }
     },
 

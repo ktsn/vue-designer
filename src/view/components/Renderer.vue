@@ -1,6 +1,6 @@
 <template>
   <div class="renderer" @click="$emit('select')">
-    <div class="renderer-scroller" :style="scrollerStyle">
+    <div class="renderer-scroll-content" :style="scrollContentStyle">
       <Viewport :width="width" :height="height" @resize="$emit('resize', arguments[0])">
         <VueComponent
           :uri="document.uri"
@@ -24,6 +24,8 @@ import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
 import { ScopedDocument } from '../store/modules/project'
 
+const scrollContentPadding = 100
+
 export default Vue.extend({
   name: 'Renderer',
 
@@ -44,35 +46,57 @@ export default Vue.extend({
     height: {
       type: Number,
       required: true
-    },
-    scrollerWidth: {
-      type: Number,
-      required: true
-    },
-    scrollerHeight: {
-      type: Number,
-      required: true
+    }
+  },
+
+  data() {
+    return {
+      rendererSize: {
+        width: 0,
+        height: 0
+      }
     }
   },
 
   computed: {
-    scrollerStyle(): Record<string, string> {
+    scrollContentSize(): { width: number; height: number } {
+      const renderer = this.rendererSize
+
+      // If the viewport size is enough smaller than renderer size,
+      // the scroll content size is the same as the renderer size so that the viewport will not be scrollable.
+      // Otherwise, the scroll content size will be much lager than renderer size to allow scrolling.
+      // This is similar behavior with Photoshop.
       return {
-        width: this.scrollerWidth + 'px',
-        height: this.scrollerHeight + 'px'
+        width:
+          renderer.width - scrollContentPadding > this.width
+            ? renderer.width
+            : this.width + (renderer.width - scrollContentPadding) * 2,
+        height:
+          renderer.height - scrollContentPadding > this.height
+            ? renderer.height
+            : this.height + (renderer.height - scrollContentPadding) * 2
       }
     },
 
-    scrollerCenter(): { x: number; y: number } {
+    scrollContentStyle(): Record<string, string> {
+      const { scrollContentSize: size } = this
       return {
-        x: this.scrollerWidth / 2,
-        y: this.scrollerHeight / 2
+        width: size.width + 'px',
+        height: size.height + 'px'
+      }
+    },
+
+    scrollContentCenter(): { x: number; y: number } {
+      const { scrollContentSize: size } = this
+      return {
+        x: size.width / 2,
+        y: size.height / 2
       }
     }
   },
 
   watch: {
-    scrollerCenter(
+    scrollContentCenter(
       { x, y }: { x: number; y: number },
       { x: prevX, y: prevY }: { x: number; y: number }
     ): void {
@@ -85,6 +109,21 @@ export default Vue.extend({
         el.scrollTop = el.scrollTop + (y - prevY)
       })
     }
+  },
+
+  mounted() {
+    const listener = () => {
+      const el = this.$el
+      const { width, height } = el.getBoundingClientRect()
+      this.rendererSize.width = width
+      this.rendererSize.height = height
+    }
+
+    window.addEventListener('resize', listener)
+    listener()
+    this.$once('hook:beforeDestroy', () => {
+      window.removeEventListener('resize', listener)
+    })
   }
 })
 </script>
@@ -98,7 +137,7 @@ export default Vue.extend({
   width: 100%;
 }
 
-.renderer-scroller {
+.renderer-scroll-content {
   position: relative;
 }
 </style>

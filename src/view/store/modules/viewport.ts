@@ -36,11 +36,7 @@ export const viewport: DefineModule<
 
   state: () => ({
     width: 600,
-    height: 800,
-    window: {
-      width: 0,
-      height: 0
-    }
+    height: 800
   }),
 
   actions: {

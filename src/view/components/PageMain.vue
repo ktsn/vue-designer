@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="page-layout">
-      <div class="page-layout-renderer" ref="renderer">
+      <div class="page-layout-renderer">
         <Renderer
           v-if="renderingDocument"
           :document="renderingDocument"

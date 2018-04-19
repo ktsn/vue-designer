@@ -61,6 +61,21 @@ describe('Renderer', () => {
     expect(size.height).toBe(3000)
   })
 
+  it('considers scale value for scroll content size', () => {
+    const wrapper = shallow<any>(Renderer, {
+      propsData: {
+        document: {},
+        width: 500,
+        height: 500,
+        scale: 2
+      }
+    })
+
+    const size = wrapper.vm.scrollContentSize
+    expect(size.width).toBe(2800)
+    expect(size.height).toBe(2800)
+  })
+
   it('retain current position when the scroll content size is changed', async () => {
     const wrapper = shallow<any>(Renderer, {
       propsData: {
@@ -88,6 +103,34 @@ describe('Renderer', () => {
 
     expect(el.scrollTop).toBe(1000)
     expect(el.scrollLeft).toBe(1000)
+  })
+
+  it('considers scale value to detect proper scroll position', async () => {
+    const wrapper = shallow<any>(Renderer, {
+      propsData: {
+        document: {},
+        width: 800,
+        height: 600,
+        scale: 1
+      }
+    })
+
+    // Waiting for mount
+    await nextFrame()
+
+    const el = wrapper.element
+    el.scrollTop = 0
+    el.scrollLeft = 0
+
+    // This let the scroll content size be from 1000x1000 to 3400x3000
+    wrapper.setProps({
+      scale: 2
+    })
+
+    await nextFrame()
+
+    expect(el.scrollTop).toBe(1000)
+    expect(el.scrollLeft).toBe(1200)
   })
 })
 

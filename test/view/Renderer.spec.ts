@@ -36,7 +36,8 @@ describe('Renderer', () => {
       propsData: {
         document: {},
         width: 800,
-        height: 600
+        height: 600,
+        scale: 1
       }
     })
 
@@ -50,7 +51,8 @@ describe('Renderer', () => {
       propsData: {
         document: {},
         width: 800,
-        height: 1200
+        height: 1200,
+        scale: 1
       }
     })
 
@@ -64,7 +66,8 @@ describe('Renderer', () => {
       propsData: {
         document: {},
         width: 800,
-        height: 600
+        height: 600,
+        scale: 1
       }
     })
 

@@ -1,7 +1,13 @@
 <template>
   <div class="renderer" @click="$emit('select')">
     <div class="renderer-scroll-content" :style="scrollContentStyle">
-      <Viewport :width="width" :height="height" @resize="$emit('resize', arguments[0])">
+      <Viewport
+        :width="width"
+        :height="height"
+        :scale="scale"
+        @resize="$emit('resize', arguments[0])"
+        @zoom="$emit('zoom', arguments[0])"
+      >
         <VueComponent
           :uri="document.uri"
           :template="document.template"
@@ -46,6 +52,10 @@ export default Vue.extend({
     height: {
       type: Number,
       required: true
+    },
+    scale: {
+      type: Number,
+      required: true
     }
   },
 
@@ -54,11 +64,27 @@ export default Vue.extend({
       rendererSize: {
         width: 0,
         height: 0
-      }
+      },
+
+      /**
+       * Indicates how much the scroll offset will be changed on after the next render.
+       * This is needed to retain the viewport position visually even after the scroll content size is changed.
+       * When scroll content size is changed, it calcurate how much we should modify its scroll position
+       * and set the value to `deltaScrollOffset`. Then, it will be applied actual DOM element
+       * after VNode is patched (in updated hook).
+       */
+      deltaScrollOffset: null as { left: number; top: number } | null
     }
   },
 
   computed: {
+    scaledSize(): { width: number; height: number } {
+      return {
+        width: this.width * this.scale,
+        height: this.height * this.scale
+      }
+    },
+
     scrollContentSize(): { width: number; height: number } {
       const renderer = this.rendererSize
       const thresholdWidth = Math.max(0, renderer.width - scrollContentPadding)
@@ -67,19 +93,19 @@ export default Vue.extend({
         renderer.height - scrollContentPadding
       )
 
+      const { width, height } = this.scaledSize
+
       // If the viewport size is enough smaller than renderer size,
       // the scroll content size is the same as the renderer size so that the viewport will not be scrollable.
       // Otherwise, the scroll content size will be much lager than renderer size to allow scrolling.
       // This is similar behavior with Photoshop.
       return {
         width:
-          thresholdWidth > this.width
-            ? renderer.width
-            : this.width + thresholdWidth * 2,
+          thresholdWidth > width ? renderer.width : width + thresholdWidth * 2,
         height:
-          thresholdHeight > this.height
+          thresholdHeight > height
             ? renderer.height
-            : this.height + thresholdHeight * 2
+            : height + thresholdHeight * 2
       }
     },
 
@@ -105,14 +131,12 @@ export default Vue.extend({
       { x, y }: { x: number; y: number },
       { x: prevX, y: prevY }: { x: number; y: number }
     ): void {
-      const el = this.$el
-
       // Adjust scroll offset after DOM is rerendered
       // to avoid flickering viewport
-      requestAnimationFrame(() => {
-        el.scrollLeft = el.scrollLeft + (x - prevX)
-        el.scrollTop = el.scrollTop + (y - prevY)
-      })
+      this.deltaScrollOffset = {
+        left: x - prevX,
+        top: y - prevY
+      }
     }
   },
 
@@ -129,6 +153,16 @@ export default Vue.extend({
     this.$once('hook:beforeDestroy', () => {
       window.removeEventListener('resize', listener)
     })
+  },
+
+  updated() {
+    const delta = this.deltaScrollOffset
+    if (delta) {
+      const el = this.$el
+      el.scrollLeft += delta.left
+      el.scrollTop += delta.top
+      this.deltaScrollOffset = null
+    }
   }
 })
 </script>

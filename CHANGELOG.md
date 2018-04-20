@@ -1,3 +1,22 @@
+<a name="0.3.0"></a>
+# [0.3.0](https://github.com/ktsn/vue-designer/compare/v0.2.2...v0.3.0) (2018-04-20)
+
+
+### Bug Fixes
+
+* avoid adding a new declaration when finish editing existing style ([#21](https://github.com/ktsn/vue-designer/issues/21)) ([1ddcc1d](https://github.com/ktsn/vue-designer/commit/1ddcc1d))
+* avoid clashing by ECONNRESET ([#25](https://github.com/ktsn/vue-designer/issues/25)) ([1dd6dab](https://github.com/ktsn/vue-designer/commit/1dd6dab))
+* fix scoped style leakage ([de82d01](https://github.com/ktsn/vue-designer/commit/de82d01))
+
+
+### Features
+
+* enable to zoom viewport with pinch ([#22](https://github.com/ktsn/vue-designer/issues/22)) ([fbf8156](https://github.com/ktsn/vue-designer/commit/fbf8156))
+* improve viewport scrolling ([#24](https://github.com/ktsn/vue-designer/issues/24)) ([b99f861](https://github.com/ktsn/vue-designer/commit/b99f861))
+* resizable viewport ([#19](https://github.com/ktsn/vue-designer/issues/19)) ([98bd2fe](https://github.com/ktsn/vue-designer/commit/98bd2fe))
+
+
+
 <a name="0.2.2"></a>
 ## [0.2.2](https://github.com/ktsn/vue-designer/compare/v0.2.1...v0.2.2) (2018-03-22)
 

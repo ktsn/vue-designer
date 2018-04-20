@@ -13,7 +13,7 @@
     </div>
 
     <!-- To detect mac trackpad's pinch, we need to listen wheel event with ctrl is pressed -->
-    <GlobalEvents @wheel.ctrl="onZoom" />
+    <GlobalEvents @wheel.ctrl.prevent="onZoom" />
   </Resizable>
 </template>
 

@@ -78,7 +78,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
 }
 
 export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
-  const scopeId = hashsum(vueFile.uri)
+  const scopeId = hashsum(vueFile.uri.toString())
 
   return {
     uri: vueFile.uri.toString(),

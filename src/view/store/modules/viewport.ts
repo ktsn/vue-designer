@@ -1,4 +1,5 @@
 import { DefineModule, createNamespacedHelpers } from 'vuex'
+import { minmax } from '@/utils'
 
 interface ViewportState {
   width: number
@@ -55,14 +56,14 @@ export const viewport: DefineModule<
 
   mutations: {
     resize(state, { width, height }) {
-      state.width = width
-      state.height = height
+      state.width = Math.floor(width)
+      state.height = Math.floor(height)
     },
 
     zoom(state, scale) {
       const max = 5
       const min = 0.1
-      state.scale = Math.min(max, Math.max(min, scale))
+      state.scale = minmax(min, scale, max)
     }
   }
 }

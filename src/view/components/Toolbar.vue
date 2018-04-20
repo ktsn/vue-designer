@@ -34,6 +34,11 @@
 <script lang="ts">
 import Vue from 'vue'
 
+const scaleFormatter = new Intl.NumberFormat('latn', {
+  maximumFractionDigits: 2,
+  useGrouping: false
+})
+
 export default Vue.extend({
   name: 'Toolbar',
 
@@ -56,7 +61,7 @@ export default Vue.extend({
     return {
       dirtyWidth: this.width,
       dirtyHeight: this.height,
-      dirtyScale: this.scale * 100
+      dirtyScale: scaleFormatter.format(this.scale * 100)
     }
   },
 
@@ -67,7 +72,7 @@ export default Vue.extend({
     },
 
     resetScale(): void {
-      this.dirtyScale = this.scale * 100
+      this.dirtyScale = scaleFormatter.format(this.scale * 100)
     },
 
     selectAll(target: HTMLInputElement): void {
@@ -146,7 +151,7 @@ export default Vue.extend({
 }
 
 .viewport-scale-input {
-  width: 3.2em;
+  width: 4em;
   text-align: center;
 }
 </style>

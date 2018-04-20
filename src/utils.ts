@@ -50,6 +50,10 @@ export function range(min: number, max: number): number[] {
   )
 }
 
+export function minmax(min: number, n: number, max: number): number {
+  return Math.min(max, Math.max(min, n))
+}
+
 export function isObject(value: any): boolean {
   return value !== null && typeof value === 'object'
 }

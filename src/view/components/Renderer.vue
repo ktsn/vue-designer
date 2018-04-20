@@ -64,7 +64,16 @@ export default Vue.extend({
       rendererSize: {
         width: 0,
         height: 0
-      }
+      },
+
+      /**
+       * Indicates how much the scroll offset will be changed on after the next render.
+       * This is needed to retain the viewport position visually even after the scroll content size is changed.
+       * When scroll content size is changed, it calcurate how much we should modify its scroll position
+       * and set the value to `deltaScrollOffset`. Then, it will be applied actual DOM element
+       * after VNode is patched (in updated hook).
+       */
+      deltaScrollOffset: null as { left: number; top: number } | null
     }
   },
 
@@ -122,14 +131,12 @@ export default Vue.extend({
       { x, y }: { x: number; y: number },
       { x: prevX, y: prevY }: { x: number; y: number }
     ): void {
-      const el = this.$el
-
       // Adjust scroll offset after DOM is rerendered
       // to avoid flickering viewport
-      requestAnimationFrame(() => {
-        el.scrollLeft = el.scrollLeft + (x - prevX)
-        el.scrollTop = el.scrollTop + (y - prevY)
-      })
+      this.deltaScrollOffset = {
+        left: x - prevX,
+        top: y - prevY
+      }
     }
   },
 
@@ -146,6 +153,16 @@ export default Vue.extend({
     this.$once('hook:beforeDestroy', () => {
       window.removeEventListener('resize', listener)
     })
+  },
+
+  updated() {
+    const delta = this.deltaScrollOffset
+    if (delta) {
+      const el = this.$el
+      el.scrollLeft += delta.left
+      el.scrollTop += delta.top
+      this.deltaScrollOffset = null
+    }
   }
 })
 </script>

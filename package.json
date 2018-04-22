@@ -85,7 +85,7 @@
   "dependencies": {
     "@babel/types": "^7.0.0-beta.40",
     "babylon": "^7.0.0-beta.40",
-    "eslint": "github:eslint/eslint#6b71fd0",
+    "eslint": "^4.19.1",
     "hash-sum": "^1.0.2",
     "meck": "^0.1.1",
     "postcss": "^6.0.19",
@@ -119,6 +119,7 @@
     "vue-global-events": "^1.0.3",
     "vue-jest": "^2.1.0",
     "vue-loader": "^15.0.0-rc.2",
+    "vue-server-renderer": "^2.5.13",
     "vue-style-loader": "^4.1.0",
     "vuex": "github:ktsn/vuex#fc1f29b",
     "webpack": "^4.0.1",

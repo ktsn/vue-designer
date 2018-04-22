@@ -46,7 +46,9 @@ export default Vue.extend({
       direction: {
         x: 0,
         y: 0
-      }
+      },
+
+      dragging: false
     }
   },
 
@@ -60,9 +62,11 @@ export default Vue.extend({
   },
 
   methods: {
-    onDragStart(event: DragEvent): void {
-      // Do not show the shadow of dragging element
-      event.dataTransfer.setDragImage(document.createElement('div'), 0, 0)
+    onDragStart(event: PointerEvent): void {
+      const el = event.currentTarget as HTMLElement
+      el.setPointerCapture(event.pointerId)
+
+      this.dragging = true
 
       this.base = {
         width: this.width,
@@ -72,7 +76,9 @@ export default Vue.extend({
       }
     },
 
-    onDrag(event: DragEvent): void {
+    onDrag(event: PointerEvent): void {
+      if (!this.dragging) return
+
       const { width, height, x, y } = this.base
       const dir = this.direction
 
@@ -83,6 +89,10 @@ export default Vue.extend({
         width: width + offsetX,
         height: height + offsetY
       })
+    },
+
+    onDragEnd(): void {
+      this.dragging = false
     }
   },
 
@@ -113,12 +123,14 @@ export default Vue.extend({
             class: `resizable-handler resizable-handler-${type}`,
             attrs: { draggable: 'true' },
             on: {
-              dragstart: (event: DragEvent) => {
+              pointerdown: (event: PointerEvent) => {
                 this.direction.x = x
                 this.direction.y = y
                 this.onDragStart(event)
               },
-              drag: this.onDrag
+              pointermove: this.onDrag,
+              pointerup: this.onDragEnd,
+              pointercancel: this.onDragEnd
             }
           })
         })

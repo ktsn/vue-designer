@@ -3,6 +3,16 @@ import { mount, Wrapper } from '@vue/test-utils'
 import Resizable from '@/view/components/Resizable.vue'
 
 describe('Resizable', () => {
+  beforeAll(() => {
+    Element.prototype.setPointerCapture = jest.fn()
+    Element.prototype.releasePointerCapture = jest.fn()
+  })
+
+  afterAll(() => {
+    delete Element.prototype.setPointerCapture
+    delete Element.prototype.releasePointerCapture
+  })
+
   it('tells resized size on dragging', () => {
     const t = new ResizableTest(300, 300)
     t.dragStart('se', 295, 305)
@@ -126,10 +136,7 @@ class ResizableTest {
 
   dragStart(direction: string, x: number, y: number): void {
     this.handler = this.wrapper.find('.resizable-handler-' + direction)
-    this.handler.trigger('dragstart', {
-      dataTransfer: {
-        setDragImage: jest.fn()
-      },
+    this.handler.trigger('pointerdown', {
       clientX: x,
       clientY: y
     })
@@ -137,9 +144,10 @@ class ResizableTest {
 
   dragTo(x: number, y: number): void {
     assert(this.handler)
-    this.handler.trigger('drag', {
+    this.handler.trigger('pointermove', {
       clientX: x,
       clientY: y
     })
+    this.handler.trigger('pointerup')
   }
 }

@@ -56,8 +56,9 @@ export const viewport: DefineModule<
 
   mutations: {
     resize(state, { width, height }) {
-      state.width = Math.floor(width)
-      state.height = Math.floor(height)
+      const min = 10
+      state.width = Math.max(min, Math.floor(width))
+      state.height = Math.max(min, Math.floor(height))
     },
 
     zoom(state, scale) {

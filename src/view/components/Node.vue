@@ -56,8 +56,12 @@ export default Vue.extend({
         }
       }
 
+      // If there is matched nodeUri, the vnode will be ContainerVueComponent
       if (this.nodeUri) {
-        data.props = { uri: this.nodeUri }
+        data.props = {
+          uri: this.nodeUri,
+          propsData: data.attrs
+        }
       }
 
       return data

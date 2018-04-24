@@ -2,7 +2,7 @@
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
 import { Template } from '@/parser/template/types'
-import { DefaultValue, Prop, Data, ChildComponent } from '@/parser/script/types'
+import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { resolveControlDirectives, ResolvedChild } from '../rendering'
 
 export default Vue.extend({
@@ -29,18 +29,22 @@ export default Vue.extend({
     childComponents: {
       type: Array as { (): ChildComponent[] },
       required: true
+    },
+    propsData: {
+      type: Object as { (): Record<string, any> },
+      default: () => ({})
     }
   },
 
   computed: {
-    scope(): Record<string, DefaultValue> {
-      const scope: Record<string, DefaultValue> = {}
-      const data: { name: string; default?: DefaultValue }[] = [
-        ...this.props,
-        ...this.data
-      ]
+    scope(): Record<string, any> {
+      const scope: Record<string, any> = {}
 
-      data.forEach(({ name, default: value }) => {
+      this.props.forEach(({ name, default: value }) => {
+        scope[name] = name in this.propsData ? this.propsData[name] : value
+      })
+
+      this.data.forEach(({ name, default: value }) => {
         scope[name] = value
       })
 

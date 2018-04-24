@@ -1,4 +1,4 @@
-import { createTemplate, h, render, exp, a } from '../../helpers/template'
+import { createTemplate, h, render, exp, a, d } from '../../helpers/template'
 
 describe('VueComponent child components', () => {
   it('should render child components in the store', () => {
@@ -90,5 +90,115 @@ describe('VueComponent child components', () => {
 
     // should resolved as child component value
     expect(wrapper.find('#second').text()).toBe('should render child value')
+  })
+
+  it('passes attribute values as props to a child component', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        h('Foo', [a('message', 'hello from parent')], [])
+      ])
+    ])
+
+    const components = {
+      'file:///Foo.vue': {
+        // prettier-ignore
+        template: createTemplate([
+          h('h1', [], [exp('message')])
+        ]),
+        props: [
+          {
+            name: 'message',
+            type: 'String'
+          }
+        ]
+      }
+    }
+    const wrapper = render(
+      template,
+      [],
+      [],
+      [
+        {
+          name: 'Foo',
+          uri: 'file:///Foo.vue'
+        }
+      ],
+      components
+    )
+    expect(wrapper.find('h1').text()).toBe('hello from parent')
+  })
+
+  it('passes v-bind values as props to a child component', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        h('Foo', [d('bind', { argument: 'childMessage' }, 'message')], [])
+      ])
+    ])
+
+    const components = {
+      'file:///Foo.vue': {
+        // prettier-ignore
+        template: createTemplate([
+          h('h1', [], [exp('childMessage')])
+        ]),
+        props: [
+          {
+            name: 'childMessage',
+            type: 'String'
+          }
+        ]
+      }
+    }
+    const wrapper = render(
+      template,
+      [],
+      [
+        {
+          name: 'message',
+          default: 'hello from parent v-bind'
+        }
+      ],
+      [
+        {
+          name: 'Foo',
+          uri: 'file:///Foo.vue'
+        }
+      ],
+      components
+    )
+    expect(wrapper.find('h1').text()).toBe('hello from parent v-bind')
+  })
+
+  it('does not pass props if child component does not declare it', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        h('Foo', [a('message', 'hello from parent')], [])
+      ])
+    ])
+
+    const components = {
+      'file:///Foo.vue': {
+        // prettier-ignore
+        template: createTemplate([
+          h('h1', [], [exp('message')])
+        ])
+      }
+    }
+    const wrapper = render(
+      template,
+      [],
+      [],
+      [
+        {
+          name: 'Foo',
+          uri: 'file:///Foo.vue'
+        }
+      ],
+      components
+    )
+    expect(wrapper.find('h1').text()).toBe('{{ message }}') // not resolved
   })
 })

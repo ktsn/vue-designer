@@ -7,6 +7,7 @@
     :data="document.data"
     :child-components="document.childComponents"
     :styles="document.styleCode"
+    :props-data="propsData"
   />
 </template>
 
@@ -25,6 +26,11 @@ export default Vue.extend({
   props: {
     uri: {
       type: String,
+      required: true
+    },
+
+    propsData: {
+      type: Object as () => Record<string, any>,
       required: true
     }
   },

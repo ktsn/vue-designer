@@ -5,6 +5,7 @@
         <Renderer
           v-if="renderingDocument"
           :document="renderingDocument"
+          :selected-path="selectedPath"
           :width="width"
           :height="height"
           :scale="scale"

@@ -2,6 +2,23 @@ import * as td from 'testdouble'
 import { createTemplate, h, a, render } from '../../helpers/template'
 
 describe('VueComponent select event', () => {
+  beforeAll(() => {
+    Element.prototype.getBoundingClientRect = jest.fn(() => ({
+      x: 0,
+      y: 0,
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      width: 0,
+      height: 0
+    }))
+  })
+
+  afterAll(() => {
+    delete Element.prototype.getBoundingClientRect
+  })
+
   it('should catch select event from descendant nodes', () => {
     const third = h('button', [a('id', 'third')], [])
     // prettier-ignore
@@ -26,10 +43,10 @@ describe('VueComponent select event', () => {
     wrapper.find('#second').trigger('click')
     wrapper.find('#third').trigger('click')
 
-    td.verify(spy(root), { times: 1 })
-    td.verify(spy(first), { times: 1 })
-    td.verify(spy(second), { times: 1 })
-    td.verify(spy(third), { times: 1 })
+    td.verify(spy(td.matchers.contains({ node: root })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ node: first })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ node: second })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ node: third })), { times: 1 })
   })
 
   it('should catch select event of child component', () => {
@@ -68,6 +85,6 @@ describe('VueComponent select event', () => {
 
     wrapper.vm.$on('select', spy)
     wrapper.find('#child-button').trigger('click')
-    td.verify(spy(comp), { times: 1 })
+    td.verify(spy(td.matchers.contains({ node: comp })), { times: 1 })
   })
 })

@@ -12,7 +12,7 @@
           @select="select"
           @dragover="setDraggingPlace"
           @add="applyDraggingElement"
-          @resize="resize"
+          @resize="onResize"
           @zoom="zoom"
         />
       </div>
@@ -132,7 +132,14 @@ export default Vue.extend({
       'updateDeclaration'
     ]),
 
-    ...viewportHelpers.mapActions(['resize', 'zoom'])
+    ...viewportHelpers.mapActions(['resize', 'zoom']),
+
+    onResize(size: { width: number; height: number }): void {
+      // Deselect to avoid showing incorrect bounds
+      this.select(undefined)
+
+      this.resize(size)
+    }
   }
 })
 </script>

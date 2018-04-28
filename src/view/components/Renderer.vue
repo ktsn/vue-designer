@@ -145,12 +145,12 @@ export default Vue.extend({
     },
 
     selectedStyle(): Record<string, string> {
-      const { selectedBounds: bounds, scale } = this
+      const { selectedBounds: bounds } = this
       return {
-        left: bounds.left * scale + 'px',
-        top: bounds.top * scale + 'px',
-        width: bounds.width * scale + 'px',
-        height: bounds.height * scale + 'px'
+        left: bounds.left + 'px',
+        top: bounds.top + 'px',
+        width: bounds.width + 'px',
+        height: bounds.height + 'px'
       }
     }
   },
@@ -166,11 +166,14 @@ export default Vue.extend({
       const viewport = this.$refs.viewport as Vue
       const viewportBounds = viewport.$el.getBoundingClientRect()
 
+      // The bounds are modified by the current scale.
+      // To show the selected border with accurate bounds,
+      // we need to get original bounds by dividing them by the scale.
       this.selectedBounds = {
-        left: bounds.left - viewportBounds.left,
-        top: bounds.top - viewportBounds.top,
-        width: bounds.width,
-        height: bounds.height
+        left: (bounds.left - viewportBounds.left) / this.scale,
+        top: (bounds.top - viewportBounds.top) / this.scale,
+        width: bounds.width / this.scale,
+        height: bounds.height / this.scale
       }
 
       this.$emit('select', node)

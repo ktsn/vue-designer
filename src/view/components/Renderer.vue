@@ -157,14 +157,15 @@ export default Vue.extend({
 
   methods: {
     onSelectNode({
-      node,
-      bounds
+      ast,
+      element
     }: {
-      node: Element
-      bounds: { left: number; top: number; width: number; height: number }
+      ast: Element
+      element: HTMLElement
     }): void {
       const viewport = this.$refs.viewport as Vue
       const viewportBounds = viewport.$el.getBoundingClientRect()
+      const bounds = element.getBoundingClientRect()
 
       // The bounds are modified by the current scale.
       // To show the selected border with accurate bounds,
@@ -176,7 +177,7 @@ export default Vue.extend({
         height: bounds.height / this.scale
       }
 
-      this.$emit('select', node)
+      this.$emit('select', ast)
     }
   },
 

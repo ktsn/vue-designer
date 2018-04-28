@@ -43,10 +43,10 @@ describe('VueComponent select event', () => {
     wrapper.find('#second').trigger('click')
     wrapper.find('#third').trigger('click')
 
-    td.verify(spy(td.matchers.contains({ node: root })), { times: 1 })
-    td.verify(spy(td.matchers.contains({ node: first })), { times: 1 })
-    td.verify(spy(td.matchers.contains({ node: second })), { times: 1 })
-    td.verify(spy(td.matchers.contains({ node: third })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ ast: root })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ ast: first })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ ast: second })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ ast: third })), { times: 1 })
   })
 
   it('should catch select event of child component', () => {
@@ -85,6 +85,6 @@ describe('VueComponent select event', () => {
 
     wrapper.vm.$on('select', spy)
     wrapper.find('#child-button').trigger('click')
-    td.verify(spy(td.matchers.contains({ node: comp })), { times: 1 })
+    td.verify(spy(td.matchers.contains({ ast: comp })), { times: 1 })
   })
 })

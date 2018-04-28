@@ -90,15 +90,9 @@ export default Vue.extend({
     onClick(event: Event): void {
       event.stopPropagation()
 
-      const bounds = (event.currentTarget as HTMLElement).getBoundingClientRect()
       this.$emit('select', {
-        node: this.data,
-        bounds: {
-          left: bounds.left,
-          top: bounds.top,
-          width: bounds.width,
-          height: bounds.height
-        }
+        ast: this.data,
+        element: event.currentTarget
       })
     },
 

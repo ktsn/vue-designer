@@ -234,7 +234,7 @@ export default Vue.extend({
 .renderer-selected {
   position: absolute;
   box-sizing: border-box;
-  border: 1px solid #2b47ff;
+  border: 1px solid #0f2fff;
   pointer-events: none;
 }
 </style>

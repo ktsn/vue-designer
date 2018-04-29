@@ -2,6 +2,7 @@
   <div class="renderer" @click="$emit('select')">
     <div class="renderer-scroll-content" :style="scrollContentStyle">
       <Viewport
+        ref="viewport"
         :width="width"
         :height="height"
         :scale="scale"
@@ -15,9 +16,15 @@
           :data="document.data"
           :child-components="document.childComponents"
           :styles="document.styleCode"
-          @select="$emit('select', arguments[0])"
+          @select="onSelectNode"
           @dragover="$emit('dragover', arguments[0])"
           @add="$emit('add')"
+        />
+
+        <div
+          v-if="selectedPath.length > 0"
+          :style="selectedStyle"
+          class="renderer-selected"
         />
       </Viewport>
     </div>
@@ -29,6 +36,7 @@ import Vue from 'vue'
 import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
 import { ScopedDocument } from '../store/modules/project'
+import { Element } from '@/parser/template/types'
 
 const scrollContentPadding = 100
 
@@ -43,6 +51,10 @@ export default Vue.extend({
   props: {
     document: {
       type: Object as () => ScopedDocument,
+      required: true
+    },
+    selectedPath: {
+      type: Array as () => number[],
       required: true
     },
     width: {
@@ -62,6 +74,13 @@ export default Vue.extend({
   data() {
     return {
       rendererSize: {
+        width: 0,
+        height: 0
+      },
+
+      selectedBounds: {
+        left: 0,
+        top: 0,
         width: 0,
         height: 0
       },
@@ -123,6 +142,42 @@ export default Vue.extend({
         x: size.width / 2,
         y: size.height / 2
       }
+    },
+
+    selectedStyle(): Record<string, string> {
+      const { selectedBounds: bounds } = this
+      return {
+        left: bounds.left + 'px',
+        top: bounds.top + 'px',
+        width: bounds.width + 'px',
+        height: bounds.height + 'px'
+      }
+    }
+  },
+
+  methods: {
+    onSelectNode({
+      ast,
+      element
+    }: {
+      ast: Element
+      element: HTMLElement
+    }): void {
+      const viewport = this.$refs.viewport as Vue
+      const viewportBounds = viewport.$el.getBoundingClientRect()
+      const bounds = element.getBoundingClientRect()
+
+      // The bounds are modified by the current scale.
+      // To show the selected border with accurate bounds,
+      // we need to get original bounds by dividing them by the scale.
+      this.selectedBounds = {
+        left: (bounds.left - viewportBounds.left) / this.scale,
+        top: (bounds.top - viewportBounds.top) / this.scale,
+        width: bounds.width / this.scale,
+        height: bounds.height / this.scale
+      }
+
+      this.$emit('select', ast)
     }
   },
 
@@ -178,5 +233,12 @@ export default Vue.extend({
 
 .renderer-scroll-content {
   position: relative;
+}
+
+.renderer-selected {
+  position: absolute;
+  box-sizing: border-box;
+  border: 1px solid #0f2fff;
+  pointer-events: none;
 }
 </style>

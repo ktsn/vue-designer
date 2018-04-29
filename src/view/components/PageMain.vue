@@ -5,13 +5,14 @@
         <Renderer
           v-if="renderingDocument"
           :document="renderingDocument"
+          :selected-path="selectedPath"
           :width="width"
           :height="height"
           :scale="scale"
           @select="select"
           @dragover="setDraggingPlace"
           @add="applyDraggingElement"
-          @resize="resize"
+          @resize="onResize"
           @zoom="zoom"
         />
       </div>
@@ -21,7 +22,7 @@
           :width="width"
           :height="height"
           :scale="scale"
-          @resize="resize"
+          @resize="onResize"
           @zoom="zoom"
         />
       </div>
@@ -53,7 +54,7 @@
         <div class="component-catalog">
           <ComponentCatalog
             :components="catalog"
-            @dragstart="startDragging"
+            @dragstart="onStartDragging"
             @dragend="endDragging"
           />
         </div>
@@ -131,7 +132,21 @@ export default Vue.extend({
       'updateDeclaration'
     ]),
 
-    ...viewportHelpers.mapActions(['resize', 'zoom'])
+    ...viewportHelpers.mapActions(['resize', 'zoom']),
+
+    onStartDragging(uri: string): void {
+      // Deselect to avoid showing incorrect bounds
+      this.select(undefined)
+
+      this.startDragging(uri)
+    },
+
+    onResize(size: { width: number; height: number }): void {
+      // Deselect to avoid showing incorrect bounds
+      this.select(undefined)
+
+      this.resize(size)
+    }
   }
 })
 </script>

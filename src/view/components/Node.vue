@@ -37,16 +37,10 @@ export default Vue.extend({
 
   computed: {
     vnodeData(): VNodeData {
-      const { data: node, scope, selectable, selected } = this
+      const { data: node, scope, selectable } = this
       const data = convertToVNodeData(node.startTag.attributes, scope)
 
       if (selectable) {
-        if (selected) {
-          data.class.push('selected')
-        }
-
-        data.attrs!.tabindex = '0'
-
         // The vnode may be a native element or ContainerVueComponent,
         // so we should set both `on` and `nativeOn` here.
         data.on = data.nativeOn = {
@@ -95,7 +89,11 @@ export default Vue.extend({
   methods: {
     onClick(event: Event): void {
       event.stopPropagation()
-      this.$emit('select', this.data)
+
+      this.$emit('select', {
+        ast: this.data,
+        element: event.currentTarget
+      })
     },
 
     onDragOver(event: DragEvent): void {

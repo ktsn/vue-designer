@@ -53,7 +53,7 @@ describe('VueComponent basic', () => {
     expect(wrapper.find('p').text()).toBe('This is replaced text')
   })
 
-  it('should print an empty string if the expression is resolved as null or undefined', () => {
+  it('should print an expression if it is resolved as null or undefined', () => {
     // prettier-ignore
     const template = createTemplate([
       h('div', [], [
@@ -80,8 +80,8 @@ describe('VueComponent basic', () => {
         }
       ]
     )
-    expect(wrapper.find('#foo').text()).toBe('')
-    expect(wrapper.find('#bar').text()).toBe('')
+    expect(wrapper.find('#foo').text()).toBe('{{ foo }}')
+    expect(wrapper.find('#bar').text()).toBe('{{ bar }}')
   })
 
   it('should add class', () => {

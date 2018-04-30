@@ -24,7 +24,7 @@ export default Vue.extend({
     const result = evalWithScope(exp, scope)
     const resolved = result.isSuccess && result.value != null
     const str = resolved
-      ? toStringForPrint((result as EvalSuccess).value)
+      ? String((result as EvalSuccess).value)
       : '{{ ' + exp + ' }}'
 
     return h(
@@ -38,14 +38,6 @@ export default Vue.extend({
     )
   }
 })
-
-function toStringForPrint(value: DefaultValue): string {
-  if (value == null) {
-    return ''
-  } else {
-    return String(value)
-  }
-}
 </script>
 
 <style lang="scss" scoped>

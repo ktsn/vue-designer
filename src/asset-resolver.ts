@@ -1,7 +1,7 @@
 import { URL } from 'url'
 import path from 'path'
 
-export const assetsEndpoint = '/assets'
+const assetsEndpoint = '/assets'
 
 export class AssetResolver {
   pathToUrl(assetPath: string, basePath: string): string {

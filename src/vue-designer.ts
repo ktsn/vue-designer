@@ -9,6 +9,7 @@ import {
 import { VueFile } from './parser/vue-file'
 import { Commands, Events } from './message/types'
 import { observeServerEvents } from './message/bus'
+import { AssetResolver } from './asset-resolver'
 
 function createHighlight(): vscode.TextEditorDecorationType {
   return vscode.window.createTextEditorDecorationType({
@@ -122,9 +123,10 @@ function createVSCodeCommandEmitter(): CommandEmitter<Commands> {
 
 export function activate(context: vscode.ExtensionContext) {
   const vueFiles: Record<string, VueFile> = {}
+  const assetResolver = new AssetResolver()
 
   const previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer')
-  const server = startStaticServer()
+  const server = startStaticServer(assetResolver)
   const wsServer = startWebSocketServer(server)
 
   const editor = vscode.window.activeTextEditor
@@ -134,7 +136,7 @@ export function activate(context: vscode.ExtensionContext) {
     [wsEventObserver(wsServer), createVSCodeEventObserver()],
     [wsCommandEmiter(wsServer), createVSCodeCommandEmitter()]
   )
-  observeServerEvents(bus, vueFiles, activeUri)
+  observeServerEvents(bus, assetResolver, vueFiles, activeUri)
 
   const serverPort = process.env.DEV ? 50000 : server.address().port
   console.log(`Vue Designer server listening at http://localhost:${serverPort}`)

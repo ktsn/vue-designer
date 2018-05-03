@@ -6,6 +6,7 @@ import WebSocket from 'ws'
 import { EventObserver, CommandEmitter } from 'meck'
 import { ClientPayload, ServerPayload } from '../payload'
 import { Events, Commands } from '../message/types'
+import { AssetResolver } from '../asset-resolver'
 
 function readContent(
   file: string,
@@ -23,7 +24,7 @@ const html = `<html>
 
 const allowedUrls = ['/vue-designer-view.js']
 
-export function startStaticServer(): http.Server {
+export function startStaticServer(assetResolver: AssetResolver): http.Server {
   const server = http.createServer((req, res) => {
     if (req.headers.host && !/^localhost(:\d+)?$/.test(req.headers.host)) {
       res.statusCode = 403
@@ -31,17 +32,32 @@ export function startStaticServer(): http.Server {
       return
     }
 
-    if (req.url === '/' || req.url === '/index.html') {
-      res.end(html)
-      return
-    }
+    if (req.url) {
+      if (req.url === '/' || req.url === '/index.html') {
+        res.end(html)
+        return
+      }
 
-    if (req.url && allowedUrls.indexOf(req.url) >= 0) {
-      readContent(req.url, (err, content) => {
-        assert(!err, 'Unexpectedly file not found')
-        res.end(content)
-      })
-      return
+      const assetPath = assetResolver.urlToPath(req.url)
+      if (assetPath) {
+        fs.readFile(assetPath, (err, data) => {
+          if (err) {
+            res.statusCode = 500
+            res.end(err.message)
+            return
+          }
+          res.end(data)
+        })
+        return
+      }
+
+      if (allowedUrls.indexOf(req.url) >= 0) {
+        readContent(req.url, (err, content) => {
+          assert(!err, 'Unexpectedly file not found')
+          res.end(content)
+        })
+        return
+      }
     }
 
     res.statusCode = 404

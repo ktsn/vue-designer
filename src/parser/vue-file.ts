@@ -8,6 +8,7 @@ import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
 import { Template } from './template/types'
 import { transformTemplate } from './template/transform'
+import { resolveAsset } from './template/manipulate'
 import { Prop, Data, ChildComponent } from './script/types'
 import {
   extractChildComponents,
@@ -16,6 +17,7 @@ import {
 } from './script/manipulate'
 import { Style } from './style/types'
 import { transformStyle } from './style/transform'
+import { AssetResolver } from '../asset-resolver'
 
 export interface VueFilePayload {
   uri: string
@@ -77,13 +79,19 @@ export function parseVueFile(code: string, uri: string): VueFile {
   }
 }
 
-export function vueFileToPayload(vueFile: VueFile): VueFilePayload {
+export function vueFileToPayload(
+  vueFile: VueFile,
+  assetResolver: AssetResolver
+): VueFilePayload {
   const scopeId = hashsum(vueFile.uri.toString())
+  const basePath = path.dirname(vueFile.uri.pathname)
 
   return {
     uri: vueFile.uri.toString(),
     scopeId,
-    template: vueFile.template,
+    template:
+      vueFile.template &&
+      resolveAsset(vueFile.template, basePath, assetResolver),
     props: vueFile.props,
     data: vueFile.data,
     childComponents: vueFile.childComponents,

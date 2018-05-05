@@ -1,35 +1,74 @@
 import * as t from './types'
-import { clone } from '../../utils'
+import { clone, unquote } from '../../utils'
+import { AssetResolver } from '../../asset-resolver'
+
+interface StyleVisitor {
+  atRule?(atRule: t.AtRule): t.AtRule | void
+  rule?(rule: t.Rule): t.Rule | void
+  declaration?(decl: t.Declaration): t.Declaration | void
+}
 
 export const scopePrefix = 'data-scope-'
 
-export function visitLastSelectors(
-  node: t.Style,
-  fn: (selector: t.Selector, rule: t.Rule) => t.Selector | void
-): t.Style {
-  function loop(node: t.AtRule | t.Rule): t.AtRule | t.Rule
-  function loop(
-    node: t.AtRule | t.Rule | t.Declaration
-  ): t.AtRule | t.Rule | t.Declaration
+function visitStyle(style: t.Style, visitor: StyleVisitor): t.Style {
+  function apply<T>(node: T, visitor?: (node: T) => T | void): T {
+    return visitor ? visitor(node) || node : node
+  }
+
   function loop(
     node: t.AtRule | t.Rule | t.Declaration
   ): t.AtRule | t.Rule | t.Declaration {
     switch (node.type) {
       case 'AtRule':
-        return clone(node, {
+        return clone(apply(node, visitor.atRule), {
           children: node.children.map(loop)
         })
       case 'Rule':
-        return clone(node, {
-          selectors: node.selectors.map(s => fn(s, node) || s)
+        return clone(apply(node, visitor.rule), {
+          declarations: node.declarations.map(loop)
         })
-      default:
-        // Do nothing
-        return node
+      case 'Declaration':
+        return apply(node, visitor.declaration)
     }
   }
-  return clone(node, {
-    body: node.body.map(b => loop(b))
+
+  return clone(style, {
+    body: style.body.map(loop)
+  })
+}
+
+export function visitLastSelectors(
+  node: t.Style,
+  fn: (selector: t.Selector, rule: t.Rule) => t.Selector | void
+): t.Style {
+  return visitStyle(node, {
+    rule: rule => {
+      return clone(rule, {
+        selectors: rule.selectors.map(s => fn(s, rule) || s)
+      })
+    }
+  })
+}
+
+export function resolveAsset(
+  style: t.Style,
+  basePath: string,
+  resolver: AssetResolver
+): t.Style {
+  return visitStyle(style, {
+    declaration: decl => {
+      const value = decl.value
+      const replaced = value.replace(/url\(([^)]+)\)/g, (_, p) => {
+        const unquoted = unquote(p)
+        const resolved = resolver.pathToUrl(unquoted, basePath)
+        return 'url(' + (resolved ? JSON.stringify(resolved) : p) + ')'
+      })
+      return replaced !== value
+        ? clone(decl, {
+            value: replaced
+          })
+        : decl
+    }
   })
 }
 

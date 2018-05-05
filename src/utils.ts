@@ -37,7 +37,7 @@ export function flatten<T>(list: (T | T[])[]): T[] {
   }, [])
 }
 
-export function clone<T>(value: T, changes: any): T {
+export function clone<T>(value: T, changes: any = {}): T {
   return {
     ...(value as any),
     ...changes
@@ -56,4 +56,13 @@ export function minmax(min: number, n: number, max: number): number {
 
 export function isObject(value: any): boolean {
   return value !== null && typeof value === 'object'
+}
+
+export function unquote(str: string): string {
+  const quotes = str[0] + str[str.length - 1]
+  if (quotes === "''" || quotes === '""') {
+    return str.slice(1, -1)
+  } else {
+    return str
+  }
 }

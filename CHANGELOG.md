@@ -1,3 +1,21 @@
+<a name="0.4.0"></a>
+# [0.4.0](https://github.com/ktsn/vue-designer/compare/v0.3.0...v0.4.0) (2018-05-05)
+
+
+### Bug Fixes
+
+* limit viewport size to avoid going minus value (fix [#28](https://github.com/ktsn/vue-designer/issues/28)) ([dc43f42](https://github.com/ktsn/vue-designer/commit/dc43f42))
+* print expression if it is resolved as null or undefined ([a4ace5c](https://github.com/ktsn/vue-designer/commit/a4ace5c))
+
+
+### Features
+
+* allow to pass props to child components ([#29](https://github.com/ktsn/vue-designer/issues/29)) ([3989f24](https://github.com/ktsn/vue-designer/commit/3989f24))
+* resolve assets in preview ([#31](https://github.com/ktsn/vue-designer/issues/31)) ([668450c](https://github.com/ktsn/vue-designer/commit/668450c))
+* show guide of selected node ([#30](https://github.com/ktsn/vue-designer/issues/30)) ([c84f20b](https://github.com/ktsn/vue-designer/commit/c84f20b))
+
+
+
 <a name="0.3.0"></a>
 # [0.3.0](https://github.com/ktsn/vue-designer/compare/v0.2.2...v0.3.0) (2018-04-20)
 

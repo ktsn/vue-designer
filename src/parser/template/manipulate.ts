@@ -1,6 +1,7 @@
 import assert from 'assert'
 import * as t from './types'
 import { scopePrefix } from '../style/manipulate'
+import { AssetResolver } from '../../asset-resolver'
 import { clone } from '../../utils'
 
 export function getNode(
@@ -108,6 +109,29 @@ export function visitElements(
   }
   return clone(node, {
     children: node.children.map(loop)
+  })
+}
+
+export function resolveAsset(
+  template: t.Template,
+  baseUrl: string,
+  resolver: AssetResolver
+): t.Template {
+  return visitElements(template, el => {
+    if (el.name === 'img') {
+      const resolvedAttrs = el.startTag.attributes.map(attr => {
+        if (attr.name !== 'src' || !attr.value) return attr
+
+        return clone(attr, {
+          value: resolver.pathToUrl(attr.value, baseUrl)
+        })
+      })
+      return clone(el, {
+        startTag: clone(el.startTag, {
+          attributes: resolvedAttrs
+        })
+      })
+    }
   })
 }
 

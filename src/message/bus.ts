@@ -4,22 +4,32 @@ import {
   VueFile,
   resolveImportPath,
   parseVueFile,
-  vueFileToPayload
+  vueFileToPayload as _vueFileToPayload
 } from '../parser/vue-file'
 import { getNode as getTemplateNode } from '../parser/template/manipulate'
 import { getNode as getStyleNode } from '../parser/style/manipulate'
 import { Modifiers, modify } from '../parser/modifier'
 import { insertComponentScript } from '../parser/script/modify'
 import { insertToTemplate } from '../parser/template/modify'
-import { updateDeclaration, insertDeclaration, removeDeclaration } from '../parser/style/modify'
+import {
+  updateDeclaration,
+  insertDeclaration,
+  removeDeclaration
+} from '../parser/style/modify'
+import { AssetResolver } from '../asset-resolver'
 import { mapValues } from '../utils'
 
 export function observeServerEvents(
   bus: MessageBus<Events, Commands>,
+  assetResolver: AssetResolver,
   vueFiles: Record<string, VueFile>,
   activeUri: string | undefined
 ): void {
   let lastActiveUri: string | undefined = activeUri
+
+  const vueFileToPayload = (vueFile: VueFile) => {
+    return _vueFileToPayload(vueFile, assetResolver)
+  }
 
   bus.on('initClient', () => {
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
@@ -137,9 +147,7 @@ export function observeServerEvents(
 
   bus.on('addDeclaration', ({ uri, path, declaration }) => {
     const { code, styles } = vueFiles[uri]
-    const added = modify(code, [
-      insertDeclaration(styles, declaration, path)
-    ])
+    const added = modify(code, [insertDeclaration(styles, declaration, path)])
 
     bus.emit('updateEditor', {
       uri,
@@ -155,9 +163,7 @@ export function observeServerEvents(
 
   bus.on('removeDeclaration', ({ uri, path }) => {
     const { code, styles } = vueFiles[uri]
-    const removed = modify(code, [
-      removeDeclaration(styles, path)
-    ])
+    const removed = modify(code, [removeDeclaration(styles, path)])
 
     bus.emit('updateEditor', {
       uri,

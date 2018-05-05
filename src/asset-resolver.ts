@@ -4,7 +4,7 @@ import path from 'path'
 const assetsEndpoint = '/assets'
 
 // https://tools.ietf.org/html/rfc3986#section-3.1
-const uriRegExp = /^\w[\w\d+-.]*:/
+const uriRegExp = /^\w[\w\d\+\-\.]*:/
 
 export class AssetResolver {
   pathToUrl(assetPath: string, basePath: string): string {

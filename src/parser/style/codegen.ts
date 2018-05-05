@@ -76,7 +76,10 @@ export function genSelector(s: t.Selector): string {
     const attrsCodes = s.attributes.map(attr => {
       if (attr.operator != null && attr.value != null) {
         const suffix = attr.insensitive ? ' i' : ''
-        return `[${attr.name}${attr.operator}"${attr.value}"${suffix}]`
+        const quote = attr.value.includes('"') ? "'" : '"'
+        return `[${attr.name}${attr.operator}${quote}${
+          attr.value
+        }${quote}${suffix}]`
       } else {
         return `[${attr.name}]`
       }

@@ -164,4 +164,17 @@ describe('Style codegen', () => {
 
     expect(genStyle(ast)).toBe(expected)
   })
+
+  it('uses single quote for attribute value when it has double quote', () => {
+    const ast = createStyle([
+      rule([
+        selector({
+          attributes: [attribute('value', '=', '"quoted"')]
+        })
+      ])
+    ])
+    const expected = '[value=\'"quoted"\'] {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
 })

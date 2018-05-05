@@ -3,11 +3,17 @@ import { AssetResolver } from '@/asset-resolver'
 describe('AssetResolver', () => {
   const asset = new AssetResolver()
 
-  it('convers path to url', () => {
+  it('converts path to url', () => {
     const url = asset.pathToUrl('../assets/logo.png', '/path/to/components')
     expect(url).toBe(
       '/assets?path=' + encodeURIComponent('/path/to/assets/logo.png')
     )
+  })
+
+  it('should not convert url', () => {
+    const value = 'https://example.com/logo.png'
+    const url = asset.pathToUrl(value, '/path/to/components')
+    expect(url).toBe(value)
   })
 
   it('convers url to path', () => {

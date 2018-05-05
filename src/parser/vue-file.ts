@@ -8,7 +8,7 @@ import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
 import { Template } from './template/types'
 import { transformTemplate } from './template/transform'
-import { resolveAsset } from './template/manipulate'
+import { resolveAsset as resolveTemplateAsset } from './template/manipulate'
 import { Prop, Data, ChildComponent } from './script/types'
 import {
   extractChildComponents,
@@ -16,6 +16,7 @@ import {
   extractData
 } from './script/manipulate'
 import { Style } from './style/types'
+import { resolveAsset as resolveStyleAsset } from './style/manipulate'
 import { transformStyle } from './style/transform'
 import { AssetResolver } from '../asset-resolver'
 
@@ -91,11 +92,13 @@ export function vueFileToPayload(
     scopeId,
     template:
       vueFile.template &&
-      resolveAsset(vueFile.template, basePath, assetResolver),
+      resolveTemplateAsset(vueFile.template, basePath, assetResolver),
     props: vueFile.props,
     data: vueFile.data,
     childComponents: vueFile.childComponents,
-    styles: vueFile.styles
+    styles: vueFile.styles.map(s =>
+      resolveStyleAsset(s, basePath, assetResolver)
+    )
   }
 }
 

@@ -146,4 +146,22 @@ describe('Style codegen', () => {
 
     expect(genStyle(ast)).toBe(expected)
   })
+
+  it('should generate case insensitive attribute selector', () => {
+    const ast = createStyle([
+      rule([
+        selector({
+          attributes: [attribute('value', '=', 'abc')]
+        })
+      ]),
+      rule([
+        selector({
+          attributes: [attribute('value', '=', 'abc', true)]
+        })
+      ])
+    ])
+    const expected = '[value="abc"] {}\n[value="abc" i] {}'
+
+    expect(genStyle(ast)).toBe(expected)
+  })
 })

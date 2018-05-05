@@ -181,7 +181,8 @@ function transformAttribute(attr: selectorParser.Attribute): t.Attribute {
     type: 'Attribute',
     operator: attr.operator,
     name: attr.attribute,
-    value: attr.raws.unquoted
+    value: attr.raws.unquoted,
+    insensitive: attr.insensitive || false
   }
 }
 

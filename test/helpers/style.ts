@@ -102,13 +102,15 @@ export function selector(
 export function attribute(
   name: string,
   operator?: AttributeOperator,
-  value?: string
+  value?: string,
+  insensitive: boolean = false
 ): Attribute {
   return {
     type: 'Attribute',
     name,
     operator,
-    value
+    value,
+    insensitive
   }
 }
 

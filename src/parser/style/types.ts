@@ -67,6 +67,7 @@ export interface Attribute {
   operator?: AttributeOperator
   name: string
   value?: string
+  insensitive: boolean
 }
 
 export interface Combinator {

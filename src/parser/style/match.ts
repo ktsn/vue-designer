@@ -107,24 +107,27 @@ function matchSelectorByAttribute(
     }
 
     const attr = attrs.get(sel.name)
-    const value = attr && attr.value
-    if (value == null || sel.value == null) {
+    const rawValue = attr && attr.value
+    if (rawValue == null || sel.value == null) {
       return false
     }
 
+    const matching = sel.insensitive ? sel.value.toLowerCase() : sel.value
+    const value = sel.insensitive ? rawValue.toLowerCase() : rawValue
+
     switch (sel.operator) {
       case '=':
-        return sel.value === value
+        return matching === value
       case '~=':
-        return value.split(/\s+/).indexOf(sel.value) >= 0
+        return value.split(/\s+/).indexOf(matching) >= 0
       case '|=':
-        return sel.value === value || value.startsWith(sel.value + '-')
+        return matching === value || value.startsWith(matching + '-')
       case '^=':
-        return value.startsWith(sel.value)
+        return value.startsWith(matching)
       case '$=':
-        return value.endsWith(sel.value)
+        return value.endsWith(matching)
       case '*=':
-        return value.includes(sel.value)
+        return value.includes(matching)
       default:
         // Unknown operator, always unmatched.
         return false

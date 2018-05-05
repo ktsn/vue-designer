@@ -77,7 +77,8 @@ export function addScope(node: t.Style, scope: string): t.Style {
     return clone(selector, {
       attributes: selector.attributes.concat({
         type: 'Attribute',
-        name: scopePrefix + scope
+        name: scopePrefix + scope,
+        insensitive: false
       })
     })
   })

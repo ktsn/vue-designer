@@ -572,5 +572,32 @@ describe('Style matcher', () => {
       expect(res[1]).toEqual(rules[1])
       expect(res[2]).toEqual(rules[2])
     })
+
+    it('should match with insensitive attribute value', () => {
+      const rules = [
+        rule([
+          selector({
+            attributes: [attribute('value', '=', 'abc', true)]
+          })
+        ]),
+
+        rule([
+          selector({
+            attributes: [attribute('value', '=', 'abc')]
+          })
+        ])
+      ]
+
+      const matcher = createStyleMatcher([createStyle(rules)])
+
+      // prettier-ignore
+      const template = createTemplate([
+        h('input', [a('value', 'ABC')], [])
+      ])
+
+      const res = matcher(template, [0])
+      expect(res.length).toBe(1)
+      expect(res[0]).toEqual(rules[0])
+    })
   })
 })

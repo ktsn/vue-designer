@@ -30,14 +30,10 @@
 
     <div v-if="document" class="information-pane" :class="{ open: openPane }">
       <div class="information-pane-scroller">
-        <div v-if="selectedPath.length === 0" class="scope-information">
-          <ScopeInformation :props="document.props" :data="document.data">
-            <p class="not-found" slot="not-found-prop">Not found</p>
-            <p class="not-found" slot="not-found-data">Not found</p>
-          </ScopeInformation>
-        </div>
-
-        <div v-else class="style-information">
+        <div
+          v-if="selectedPath.length > 0"
+          class="style-information-wrapper information-pane-item"
+        >
           <p class="style-information-title">Node Styles</p>
           <div class="style-information-list">
             <StyleInformation
@@ -51,7 +47,14 @@
           </div>
         </div>
 
-        <div class="component-catalog">
+        <div class="information-pane-item">
+          <ScopeInformation :props="document.props" :data="document.data">
+            <p class="not-found" slot="not-found-prop">Not found</p>
+            <p class="not-found" slot="not-found-data">Not found</p>
+          </ScopeInformation>
+        </div>
+
+        <div class="information-pane-item">
           <ComponentCatalog
             :components="catalog"
             @dragstart="onStartDragging"
@@ -189,6 +192,10 @@ export default Vue.extend({
   height: 100%;
 }
 
+.information-pane-item:not(:first-child) {
+  border-top: 1px solid #ccc;
+}
+
 .information-pane-toggle {
   position: absolute;
   right: 100%;
@@ -229,8 +236,8 @@ export default Vue.extend({
   transform: rotate(180deg);
 }
 
-.style-information {
-  padding-top: 10px;
+.style-information-wrapper {
+  padding-top: 13px;
 }
 
 .style-information-title {
@@ -246,9 +253,5 @@ export default Vue.extend({
 .not-found {
   margin: 0;
   color: #888;
-}
-
-.component-catalog {
-  border-top: 1px solid #ccc;
 }
 </style>

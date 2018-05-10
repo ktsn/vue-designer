@@ -6,10 +6,7 @@
         <li v-for="prop in props" :key="prop.name" class="information-list-item">
           <strong class="information-label">{{ prop.name }}</strong>
           <span class="information-text">
-            <span v-if="prop.default === undefined" class="information-placeholder">
-              {{ prop.type }}
-            </span>
-            <span v-else>{{ prop.default }}</span>
+            <InputJson :value="prop.default" />
           </span>
         </li>
       </ul>
@@ -24,7 +21,7 @@
         <li v-for="d in data" :key="d.name" class="information-list-item">
           <strong class="information-label">{{ d.name }}</strong>
           <span class="information-text">
-            {{ d.default }}
+            <InputJson :value="d.default" />
           </span>
         </li>
       </ul>
@@ -38,9 +35,14 @@
 <script lang="ts">
 import Vue from 'vue'
 import { Prop, Data } from '@/parser/script/types'
+import InputJson from './InputJson.vue'
 
 export default Vue.extend({
   name: 'Information',
+
+  components: {
+    InputJson
+  },
 
   props: {
     props: {
@@ -91,10 +93,6 @@ export default Vue.extend({
 
 .information-label::after {
   content: ':';
-}
-
-.information-placeholder {
-  color: #888;
 }
 
 .information-text {

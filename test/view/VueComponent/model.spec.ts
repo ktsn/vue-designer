@@ -19,6 +19,7 @@ describe('VueComponent v-model', () => {
         }
       ]
     )
-    expect(wrapper.find('input').attributes()!.value).toBe('message')
+    const input = wrapper.find('input').element as HTMLInputElement
+    expect(input.value).toBe('message')
   })
 })

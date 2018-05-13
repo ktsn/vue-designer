@@ -73,4 +73,31 @@ describe('VueComponent v-model', () => {
     expect(bar.checked).toBe(false)
     expect(baz.checked).toBe(true)
   })
+
+  it('resolves ratio button v-model', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        h('input', [a('type', 'radio'), a('value', 'foo'), d('model', 'radio')], []),
+        h('input', [a('type', 'radio'), a('value', 'bar'), d('model', 'radio')], [])
+      ])
+    ])
+
+    const wrapper = render(
+      template,
+      [],
+      [
+        {
+          name: 'radio',
+          default: 'bar'
+        }
+      ]
+    )
+
+    const foo = wrapper.find('input[value=foo]').element as HTMLInputElement
+    const bar = wrapper.find('input[value=bar]').element as HTMLInputElement
+
+    expect(foo.checked).toBe(false)
+    expect(bar.checked).toBe(true)
+  })
 })

@@ -285,6 +285,14 @@ function resolveVModel(
         }
         return
       }
+
+      if (type.value === 'radio') {
+        const valueAttr = attrs.find(a => !a.directive && a.name === 'value')
+        if (valueAttr) {
+          data.domProps!.checked = valueAttr.value === value
+        }
+        return
+      }
     }
   }
   data.attrs!.value = value

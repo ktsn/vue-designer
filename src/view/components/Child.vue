@@ -46,7 +46,7 @@ export default Vue.extend({
           on: listeners
         })
       case 'TextNode':
-        return data.text as any
+        return [data.text] as any
       case 'ExpressionNode':
         return h(Expression, {
           props: {

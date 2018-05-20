@@ -5,6 +5,7 @@
         <Renderer
           v-if="renderingDocument"
           :document="renderingDocument"
+          :scope="scope"
           :selected-path="selectedPath"
           :width="width"
           :height="height"
@@ -112,6 +113,7 @@ export default Vue.extend({
 
     ...projectHelpers.mapGetters({
       document: 'currentDocument',
+      scope: 'currentScope',
       renderingDocument: 'currentRenderingDocument',
       scopedDocuments: 'scopedDocuments'
     }),

@@ -2,7 +2,8 @@
 import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
 import { Template } from '@/parser/template/types'
-import { Prop, Data, ChildComponent } from '@/parser/script/types'
+import { ChildComponent } from '@/parser/script/types'
+import { DocumentScope } from '@/view/store/modules/project'
 import { resolveControlDirectives, ResolvedChild } from '../rendering'
 
 export default Vue.extend({
@@ -18,12 +19,8 @@ export default Vue.extend({
       type: String,
       required: true
     },
-    props: {
-      type: Array as { (): Prop[] },
-      required: true
-    },
-    data: {
-      type: Array as { (): Data[] },
+    scope: {
+      type: Object as { (): DocumentScope },
       required: true
     },
     childComponents: {
@@ -37,18 +34,21 @@ export default Vue.extend({
   },
 
   computed: {
-    scope(): Record<string, any> {
-      const scope: Record<string, any> = {}
+    scopeValues(): Record<string, any> {
+      const values: Record<string, any> = {}
 
-      this.props.forEach(({ name, default: value }) => {
-        scope[name] = name in this.propsData ? this.propsData[name] : value
+      Object.keys(this.scope.props).forEach(name => {
+        values[name] =
+          name in this.propsData
+            ? this.propsData[name]
+            : this.scope.props[name].value
       })
 
-      this.data.forEach(({ name, default: value }) => {
-        scope[name] = value
+      Object.keys(this.scope.data).forEach(name => {
+        values[name] = this.scope.data[name].value
       })
 
-      return scope
+      return values
     }
   },
 
@@ -58,7 +58,10 @@ export default Vue.extend({
     if (this.template) {
       this.template.children
         .reduce<ResolvedChild[]>((acc, child) => {
-          return resolveControlDirectives(acc, { el: child, scope: this.scope })
+          return resolveControlDirectives(acc, {
+            el: child,
+            scope: this.scopeValues
+          })
         }, [])
         .forEach(child => {
           return children.push(

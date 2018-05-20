@@ -206,6 +206,7 @@ function parseStyleText(cssText: string): Record<string, string> {
 }
 
 export function convertToVNodeData(
+  tag: string,
   attrs: (Attribute | Directive)[],
   scope: Record<string, DefaultValue>
 ): VNodeData {
@@ -240,7 +241,7 @@ export function convertToVNodeData(
         acc.attrs![attr.argument] = value
       }
     } else if (attr.name === 'model') {
-      acc.attrs!.value = value
+      resolveVModel(acc, tag, attrs, value)
     } else if (attr.name === 'text') {
       acc.domProps!.textContent = value
     } else if (attr.name === 'html') {
@@ -262,6 +263,39 @@ export function convertToVNodeData(
     }
     return acc
   }, initial)
+}
+
+function resolveVModel(
+  data: VNodeData,
+  tag: string,
+  attrs: (Attribute | Directive)[],
+  value: any
+): void {
+  if (tag === 'input') {
+    const type = attrs.find(a => !a.directive && a.name === 'type')
+    if (type) {
+      if (type.value === 'checkbox') {
+        if (typeof value === 'boolean') {
+          data.domProps!.checked = value
+        } else if (Array.isArray(value)) {
+          const valueAttr = attrs.find(a => !a.directive && a.name === 'value')
+          if (valueAttr) {
+            data.domProps!.checked = value.indexOf(valueAttr.value) >= 0
+          }
+        }
+        return
+      }
+
+      if (type.value === 'radio') {
+        const valueAttr = attrs.find(a => !a.directive && a.name === 'value')
+        if (valueAttr) {
+          data.domProps!.checked = valueAttr.value === value
+        }
+        return
+      }
+    }
+  }
+  data.attrs!.value = value
 }
 
 function isValidAttributeName(name: string): boolean {

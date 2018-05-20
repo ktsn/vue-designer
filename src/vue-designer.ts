@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import { AddressInfo } from 'net'
 import { CommandEmitter, MessageBus, EventObserver } from 'meck'
 import {
   startStaticServer,
@@ -138,7 +139,9 @@ export function activate(context: vscode.ExtensionContext) {
   )
   observeServerEvents(bus, assetResolver, vueFiles, activeUri)
 
-  const serverPort = process.env.DEV ? 50000 : server.address().port
+  const serverPort = process.env.DEV
+    ? 50000
+    : (server.address() as AddressInfo).port
   console.log(`Vue Designer server listening at http://localhost:${serverPort}`)
 
   class TextDocumentContentProvider

@@ -5,6 +5,11 @@ describe('Renderer', () => {
   let mockWidth = 1000
   let mockHeight = 1000
 
+  const emptyScope = {
+    props: {},
+    data: {}
+  }
+
   function mockGetBoundingClientRect() {
     return {
       x: 0,
@@ -35,6 +40,7 @@ describe('Renderer', () => {
     const wrapper = shallow<any>(Renderer, {
       propsData: {
         document: {},
+        scope: emptyScope,
         selectedPath: [],
         width: 800,
         height: 600,
@@ -51,6 +57,7 @@ describe('Renderer', () => {
     const wrapper = shallow<any>(Renderer, {
       propsData: {
         document: {},
+        scope: emptyScope,
         selectedPath: [],
         width: 800,
         height: 1200,
@@ -67,6 +74,7 @@ describe('Renderer', () => {
     const wrapper = shallow<any>(Renderer, {
       propsData: {
         document: {},
+        scope: emptyScope,
         selectedPath: [],
         width: 500,
         height: 500,
@@ -83,6 +91,7 @@ describe('Renderer', () => {
     const wrapper = shallow<any>(Renderer, {
       propsData: {
         document: {},
+        scope: emptyScope,
         selectedPath: [],
         width: 800,
         height: 600,
@@ -113,6 +122,7 @@ describe('Renderer', () => {
     const wrapper = shallow<any>(Renderer, {
       propsData: {
         document: {},
+        scope: emptyScope,
         selectedPath: [],
         width: 800,
         height: 600,

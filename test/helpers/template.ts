@@ -28,6 +28,11 @@ export function render(
   })
 
   store.commit('project/changeDocument', 'file:///Test.vue')
+  store.commit('project/refreshScope', {
+    uri: 'file:///Test.vue',
+    props,
+    data
+  })
 
   store.commit(
     'project/setDocuments',
@@ -44,12 +49,20 @@ export function render(
     })
   )
 
+  Object.keys(storeDocuments).forEach(uri => {
+    const doc = storeDocuments[uri]
+    store.commit('project/refreshScope', {
+      uri,
+      props: doc.props || [],
+      data: doc.data || []
+    })
+  })
+
   return mount(VueComponent, {
     propsData: {
       uri: 'file:///Test.vue',
       template,
-      props,
-      data,
+      scope: store.getters['project/currentScope'],
       childComponents,
       styles: ''
     },

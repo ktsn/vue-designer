@@ -1,4 +1,5 @@
 import assert from 'assert'
+import Vue from 'vue'
 import { DefineModule, createNamespacedHelpers } from 'vuex'
 import { VueFilePayload } from '@/parser/vue-file'
 import { Template, Element } from '@/parser/template/types'
@@ -26,10 +27,21 @@ export interface ScopedDocument {
   styleCode: string
 }
 
+interface DocumentScopeItem {
+  type: string | null
+  value: any
+}
+
+export interface DocumentScope {
+  props: Record<string, DocumentScopeItem>
+  data: Record<string, DocumentScopeItem>
+}
+
 export type DraggingPlace = 'before' | 'after' | 'first' | 'last'
 
 export interface ProjectState {
   documents: Record<string, VueFilePayload>
+  documentScopes: Record<string, DocumentScope>
   currentUri: string | undefined
   draggingUri: string | undefined
   selectedPath: number[]
@@ -40,6 +52,7 @@ export interface ProjectState {
 interface ProjectGetters {
   scopedDocuments: Record<string, ScopedDocument>
   currentDocument: VueFilePayload | undefined
+  currentScope: DocumentScope | undefined
   currentRenderingDocument: ScopedDocument | undefined
   draggingScopedDocument: ScopedDocument | undefined
   localNameOfDragging: string | undefined
@@ -79,6 +92,22 @@ interface ProjectMutations {
   setDraggingUri: string | undefined
   setDraggingPath: number[]
   setMatchedRules: RuleForPrint[]
+
+  // TODO: add removeScope mutation after splitting
+  // document update notification into more grained
+  refreshScope: {
+    uri: string
+    props: Prop[]
+    data: Data[]
+  }
+  updatePropValue: {
+    name: string
+    value: any
+  }
+  updateDataValue: {
+    name: string
+    value: any
+  }
 }
 
 export const projectHelpers = createNamespacedHelpers<
@@ -103,6 +132,7 @@ export const project: DefineModule<
 
   state: () => ({
     documents: {},
+    documentScopes: {},
     currentUri: undefined,
     draggingUri: undefined,
     selectedPath: [],
@@ -138,6 +168,13 @@ export const project: DefineModule<
         return undefined
       }
       return state.documents[state.currentUri]
+    },
+
+    currentScope(state) {
+      if (!state.currentUri) {
+        return undefined
+      }
+      return state.documentScopes[state.currentUri]
     },
 
     currentRenderingDocument(state, getters) {
@@ -234,6 +271,12 @@ export const project: DefineModule<
             Object.keys(data.vueFiles).forEach(key => {
               const file = data.vueFiles[key]
               styleMatcher.register(file.uri, file.styles)
+
+              commit('refreshScope', {
+                uri: key,
+                props: file.props,
+                data: file.data
+              })
             })
             dispatch('matchSelectedNodeWithStyles', undefined)
             break
@@ -476,6 +519,73 @@ export const project: DefineModule<
 
     setMatchedRules(state, rules) {
       state.matchedRules = rules
+    },
+
+    // TODO: move this logic to server side
+    refreshScope(state, { uri, props, data }) {
+      function update(
+        scope: Record<string, DocumentScopeItem>,
+        next: (Prop | Data)[]
+      ): void {
+        const willRemove = Object.keys(scope)
+
+        next.forEach(item => {
+          if (!scope[item.name]) {
+            Vue.set(scope, item.name, {
+              type: null,
+              value: item.default
+            })
+          }
+
+          scope[item.name].type = 'type' in item ? item.type : null
+
+          const index = willRemove.indexOf(item.name)
+          if (index >= 0) {
+            willRemove.splice(index, 1)
+          }
+        })
+
+        willRemove.forEach(key => {
+          Vue.delete(scope, key)
+        })
+      }
+
+      let scope = state.documentScopes[uri]
+      if (!scope) {
+        scope = Vue.set(state.documentScopes, uri, {
+          props: {},
+          data: {}
+        })
+      }
+
+      update(scope.props, props)
+      update(scope.data, data)
+    },
+
+    updatePropValue(state, { name, value }) {
+      const uri = state.currentUri
+      if (!uri) return
+
+      const scope = state.documentScopes[uri]
+      if (!scope) return
+
+      const target = scope.props[name]
+      if (!target) return
+
+      target.value = value
+    },
+
+    updateDataValue(state, { name, value }) {
+      const uri = state.currentUri
+      if (!uri) return
+
+      const scope = state.documentScopes[uri]
+      if (!scope) return
+
+      const target = scope.data[name]
+      if (!target) return
+
+      target.value = value
     }
   }
 }

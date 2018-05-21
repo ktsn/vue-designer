@@ -313,6 +313,221 @@ describe('Store project actions', () => {
   })
 })
 
+describe('Store project mutations', () => {
+  describe('refreshScope', () => {
+    const { refreshScope } = project.mutations!
+
+    it('adds missing scope', () => {
+      const state: any = {
+        documentScopes: {}
+      }
+
+      refreshScope(state, {
+        uri: 'file:///Foo.vue',
+        props: [],
+        data: []
+      })
+
+      expect(state.documentScopes).toEqual({
+        'file:///Foo.vue': {
+          props: {},
+          data: {}
+        }
+      })
+    })
+
+    it('adds missing properties', () => {
+      const state: any = {
+        documentScopes: {
+          'file:///Foo.vue': {
+            props: {
+              test: {
+                type: 'String',
+                value: 'test'
+              }
+            },
+            data: {
+              test2: {
+                type: null,
+                value: 'test2'
+              }
+            }
+          }
+        }
+      }
+
+      refreshScope(state, {
+        uri: 'file:///Foo.vue',
+        props: [
+          {
+            name: 'test',
+            type: 'String',
+            default: undefined
+          },
+          {
+            name: 'additionalProp',
+            type: 'Number',
+            default: 10
+          }
+        ],
+        data: [
+          {
+            name: 'test2',
+            default: 'initial'
+          },
+          {
+            name: 'additionalData',
+            default: true
+          }
+        ]
+      })
+
+      expect(state.documentScopes).toEqual({
+        'file:///Foo.vue': {
+          props: {
+            test: {
+              type: 'String',
+              value: 'test'
+            },
+            additionalProp: {
+              type: 'Number',
+              value: 10
+            }
+          },
+          data: {
+            test2: {
+              type: null,
+              value: 'test2'
+            },
+            additionalData: {
+              type: null,
+              value: true
+            }
+          }
+        }
+      })
+    })
+
+    it('removes no longer undeclared properties', () => {
+      const state: any = {
+        documentScopes: {
+          'file:///Foo.vue': {
+            props: {
+              test: {
+                type: 'String',
+                value: 'test'
+              },
+              additionalProp: {
+                type: 'Number',
+                value: 10
+              }
+            },
+            data: {
+              test2: {
+                type: null,
+                value: 'test2'
+              },
+              additionalData: {
+                type: null,
+                value: true
+              }
+            }
+          }
+        }
+      }
+
+      refreshScope(state, {
+        uri: 'file:///Foo.vue',
+        props: [
+          {
+            name: 'additionalProp',
+            type: 'Number',
+            default: 10
+          }
+        ],
+        data: [
+          {
+            name: 'additionalData',
+            default: true
+          }
+        ]
+      })
+
+      expect(state.documentScopes).toEqual({
+        'file:///Foo.vue': {
+          props: {
+            additionalProp: {
+              type: 'Number',
+              value: 10
+            }
+          },
+          data: {
+            additionalData: {
+              type: null,
+              value: true
+            }
+          }
+        }
+      })
+    })
+
+    it('does nothing if there are no diffs', () => {
+      const state: any = {
+        documentScopes: {
+          'file:///Foo.vue': {
+            props: {
+              test: {
+                type: 'String',
+                value: 'test'
+              }
+            },
+            data: {
+              test2: {
+                type: null,
+                value: 'test2'
+              }
+            }
+          }
+        }
+      }
+
+      refreshScope(state, {
+        uri: 'file:///Foo.vue',
+        props: [
+          {
+            name: 'test',
+            type: 'String',
+            default: undefined
+          }
+        ],
+        data: [
+          {
+            name: 'test2',
+            default: 'initial'
+          }
+        ]
+      })
+
+      expect(state.documentScopes).toEqual({
+        'file:///Foo.vue': {
+          props: {
+            test: {
+              type: 'String',
+              value: 'test'
+            }
+          },
+          data: {
+            test2: {
+              type: null,
+              value: 'test2'
+            }
+          }
+        }
+      })
+    })
+  })
+})
+
 function documents() {
   return {
     'file:///Foo.vue': {

@@ -12,8 +12,7 @@
         <VueComponent
           :uri="document.uri"
           :template="document.template"
-          :props="document.props"
-          :data="document.data"
+          :scope="scope"
           :child-components="document.childComponents"
           :styles="document.styleCode"
           @select="onSelectNode"
@@ -35,7 +34,7 @@
 import Vue from 'vue'
 import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
-import { ScopedDocument } from '../store/modules/project'
+import { ScopedDocument, DocumentScope } from '../store/modules/project'
 import { Element } from '@/parser/template/types'
 
 const scrollContentPadding = 100
@@ -51,6 +50,10 @@ export default Vue.extend({
   props: {
     document: {
       type: Object as () => ScopedDocument,
+      required: true
+    },
+    scope: {
+      type: Object as () => DocumentScope,
       required: true
     },
     selectedPath: {

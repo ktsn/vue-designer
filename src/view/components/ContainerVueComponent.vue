@@ -3,8 +3,7 @@
     v-if="document"
     :uri="uri"
     :template="document.template"
-    :props="document.props"
-    :data="document.data"
+    :scope="scope"
     :child-components="document.childComponents"
     :styles="document.styleCode"
     :props-data="propsData"
@@ -14,7 +13,11 @@
 <script lang="ts">
 import Vue from 'vue'
 import VueComponent from './VueComponent.vue'
-import { ScopedDocument, projectHelpers } from '../store/modules/project'
+import {
+  ScopedDocument,
+  projectHelpers,
+  DocumentScope
+} from '../store/modules/project'
 
 export default Vue.extend({
   name: 'ContainerVueComponent',
@@ -36,12 +39,20 @@ export default Vue.extend({
   },
 
   computed: {
+    ...projectHelpers.mapState({
+      scopes: 'documentScopes'
+    }),
+
     ...projectHelpers.mapGetters({
       documents: 'scopedDocuments'
     }),
 
     document(): ScopedDocument | undefined {
       return this.documents[this.uri]
+    },
+
+    scope(): DocumentScope | undefined {
+      return this.scopes[this.uri]
     }
   }
 })

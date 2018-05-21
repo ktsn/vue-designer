@@ -5,8 +5,7 @@
         :uri="component.uri"
         :template="component.template"
         :styles="component.styleCode"
-        :props="component.props"
-        :data="component.data"
+        :scope="scope"
         :child-components="component.childComponents"
       />
     </div>
@@ -16,7 +15,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import VueComponent from './VueComponent.vue'
-import { ScopedDocument } from '../store/modules/project'
+import { ScopedDocument, DocumentScope } from '../store/modules/project'
 
 export default Vue.extend({
   name: 'ComponentCatalogPreview',
@@ -29,6 +28,28 @@ export default Vue.extend({
     component: {
       type: Object as () => ScopedDocument,
       required: true
+    }
+  },
+
+  computed: {
+    scope(): DocumentScope {
+      const scope: DocumentScope = { props: {}, data: {} }
+
+      this.component.props.forEach(prop => {
+        scope.props[prop.name] = {
+          type: prop.type,
+          value: prop.default
+        }
+      })
+
+      this.component.data.forEach(d => {
+        scope.data[d.name] = {
+          type: null,
+          value: d.default
+        }
+      })
+
+      return scope
     }
   }
 })

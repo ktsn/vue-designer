@@ -101,12 +101,10 @@ interface ProjectMutations {
     data: Data[]
   }
   updatePropValue: {
-    uri: string
     name: string
     value: any
   }
   updateDataValue: {
-    uri: string
     name: string
     value: any
   }
@@ -564,30 +562,28 @@ export const project: DefineModule<
       update(scope.data, data)
     },
 
-    updatePropValue(state, { uri, name, value }) {
+    updatePropValue(state, { name, value }) {
+      const uri = state.currentUri
+      if (!uri) return
+
       const scope = state.documentScopes[uri]
-      if (!scope) {
-        return
-      }
+      if (!scope) return
 
       const target = scope.props[name]
-      if (!target) {
-        return
-      }
+      if (!target) return
 
       target.value = value
     },
 
-    updateDataValue(state, { uri, name, value }) {
+    updateDataValue(state, { name, value }) {
+      const uri = state.currentUri
+      if (!uri) return
+
       const scope = state.documentScopes[uri]
-      if (!scope) {
-        return
-      }
+      if (!scope) return
 
       const target = scope.data[name]
-      if (!target) {
-        return
-      }
+      if (!target) return
 
       target.value = value
     }

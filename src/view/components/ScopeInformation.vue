@@ -2,11 +2,14 @@
   <div class="information">
     <section class="information-group">
       <h2 class="information-title">Props</h2>
-      <ul v-if="props.length > 0" class="information-list">
-        <li v-for="prop in props" :key="prop.name" class="information-list-item">
-          <strong class="information-label">{{ prop.name }}</strong>
+      <ul v-if="hasProps" class="information-list">
+        <li v-for="(prop, name) in scope.props" :key="name" class="information-list-item">
+          <strong class="information-label">{{ name }}</strong>
           <span class="information-text">
-            <InputJson :value="prop.default" />
+            <InputJson
+              :value="prop.value"
+              @change="updateProp(name, arguments[0])"
+            />
           </span>
         </li>
       </ul>
@@ -17,11 +20,14 @@
 
     <section class="information-group">
       <h2 class="information-title">Data</h2>
-      <ul v-if="data.length > 0" class="information-list">
-        <li v-for="d in data" :key="d.name" class="information-list-item">
-          <strong class="information-label">{{ d.name }}</strong>
+      <ul v-if="hasData" class="information-list">
+        <li v-for="(d, name) in scope.data" :key="name" class="information-list-item">
+          <strong class="information-label">{{ name }}</strong>
           <span class="information-text">
-            <InputJson :value="d.default" />
+            <InputJson
+              :value="d.value"
+              @change="updateData(name, arguments[0])"
+            />
           </span>
         </li>
       </ul>
@@ -34,24 +40,46 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { Prop, Data } from '@/parser/script/types'
 import InputJson from './InputJson.vue'
+import { DocumentScope } from '@/view/store/modules/project'
 
 export default Vue.extend({
-  name: 'Information',
+  name: 'ScopeInformation',
 
   components: {
     InputJson
   },
 
   props: {
-    props: {
-      type: Array as { (): Prop[] },
+    scope: {
+      type: Object as () => DocumentScope,
       required: true
+    }
+  },
+
+  computed: {
+    hasProps(): boolean {
+      return Object.keys(this.scope.props).length > 0
     },
-    data: {
-      type: Array as { (): Data[] },
-      required: true
+
+    hasData(): boolean {
+      return Object.keys(this.scope.data).length > 0
+    }
+  },
+
+  methods: {
+    updateProp(name: string, value: any): void {
+      this.$emit('update-prop', {
+        name,
+        value
+      })
+    },
+
+    updateData(name: string, value: any): void {
+      this.$emit('update-data', {
+        name,
+        value
+      })
     }
   }
 })

@@ -49,7 +49,11 @@
         </div>
 
         <div class="information-pane-item">
-          <ScopeInformation :props="document.props" :data="document.data">
+          <ScopeInformation
+            :scope="scope"
+            @update-prop="updatePropValue"
+            @update-data="updateDataValue"
+          >
             <p class="not-found" slot="not-found-prop">Not found</p>
             <p class="not-found" slot="not-found-data">Not found</p>
           </ScopeInformation>
@@ -136,6 +140,8 @@ export default Vue.extend({
       'removeDeclaration',
       'updateDeclaration'
     ]),
+
+    ...projectHelpers.mapMutations(['updatePropValue', 'updateDataValue']),
 
     ...viewportHelpers.mapActions(['resize', 'zoom']),
 

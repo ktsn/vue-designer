@@ -8,6 +8,7 @@
           <span class="information-text">
             <InputJson
               :value="prop.value"
+              @input="updateProp(name, arguments[0])"
               @change="updateProp(name, arguments[0])"
             />
           </span>
@@ -26,6 +27,7 @@
           <span class="information-text">
             <InputJson
               :value="d.value"
+              @input="updateData(name, arguments[0])"
               @change="updateData(name, arguments[0])"
             />
           </span>

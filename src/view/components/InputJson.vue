@@ -1,5 +1,5 @@
 <template>
-  <input class="input-json" type="text" :value="jsonValue" @change="onChange">
+  <input class="input-json" type="text" :value="jsonValue" @input="onInput" @change="onChange">
 </template>
 
 <script lang="ts">
@@ -25,7 +25,21 @@ export default Vue.extend({
   },
 
   methods: {
-    onChange(event: Event) {
+    onInput(event: Event): void {
+      const input = event.target as HTMLInputElement
+      const jsonValue = input.value
+
+      try {
+        const value =
+          jsonValue === 'undefined' ? undefined : JSON.parse(jsonValue)
+
+        this.$emit('input', value)
+      } catch (e) {
+        // do nothing
+      }
+    },
+
+    onChange(event: Event): void {
       const input = event.target as HTMLInputElement
       const jsonValue = input.value
 

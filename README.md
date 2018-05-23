@@ -8,6 +8,15 @@ Open the command pallete and select `Open Vue Designer`. Then you can see a prev
 
 This extension is still work in progress. If you have some feedbacks for this extension, it would be really helpful!
 
+## Supported Preprocessors
+
+Vue Designer currently does not actively support preprocessors on `<template>`, `<script>` and `<style>` blocks. Languages not included in the following list may not work on Vue Designer.
+
+* HTML (`<template>`)
+* JavaScript (`<script>`)
+* TypeScript (`<script lang="ts">`)
+* CSS (`<style>`)
+
 ## Development
 
 Vue designer is separated by two modules - server and client.
@@ -26,10 +35,10 @@ For typings of external packages that does not exist should be in `types/(packag
 
 To debug on VSCode, follow the below steps:
 
-1. Run `npm run watch` to start dev server.
-2. Open VSCode and show debug pane on the left side of the editor.
-3. Run `Launch Extension` so that it opens a new window with enabling local Vue Designer.
-4. Select `Open Vue Designer` on command pallete.
+1.  Run `npm run watch` to start dev server.
+2.  Open VSCode and show debug pane on the left side of the editor.
+3.  Run `Launch Extension` so that it opens a new window with enabling local Vue Designer.
+4.  Select `Open Vue Designer` on command pallete.
 
 If you want to use dev tools for client code, add the following configuration in your `keybindings.json`.
 

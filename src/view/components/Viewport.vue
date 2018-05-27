@@ -21,6 +21,7 @@
 import Vue from 'vue'
 import GlobalEvents from 'vue-global-events'
 import Resizable from './Resizable.vue'
+import { minmax } from '@/utils'
 
 export default Vue.extend({
   name: 'Viewport',
@@ -55,7 +56,8 @@ export default Vue.extend({
 
   methods: {
     onZoom(event: WheelEvent): void {
-      this.$emit('zoom', this.scale - event.deltaY * 0.01)
+      const normalized = minmax(-0.1, event.deltaY * 0.01, 0.1)
+      this.$emit('zoom', this.scale - normalized)
     }
   }
 })

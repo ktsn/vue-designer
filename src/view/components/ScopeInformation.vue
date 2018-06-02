@@ -8,7 +8,6 @@
             :name="name"
             :value="prop.value"
             @input="updateProp(name, arguments[0])"
-            @change="updateProp(name, arguments[0])"
           />
         </li>
       </ul>
@@ -25,7 +24,6 @@
             :name="name"
             :value="d.value"
             @input="updateData(name, arguments[0])"
-            @change="updateData(name, arguments[0])"
           />
         </li>
       </ul>

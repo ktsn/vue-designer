@@ -5,9 +5,8 @@
       <ul v-if="hasProps" class="information-list">
         <li v-for="(prop, name) in scope.props" :key="name" class="information-list-item">
           <InputJson
-            :name="name"
-            :value="prop.value"
-            @input="updateProp(name, arguments[0])"
+            :field="{ name, value: prop.value }"
+            @input="updateProp"
           />
         </li>
       </ul>
@@ -21,9 +20,8 @@
       <ul v-if="hasData" class="information-list">
         <li v-for="(d, name) in scope.data" :key="name" class="information-list-item">
           <InputJson
-            :name="name"
-            :value="d.value"
-            @input="updateData(name, arguments[0])"
+            :field="{ name, value: d.value }"
+            @input="updateData"
           />
         </li>
       </ul>
@@ -64,14 +62,14 @@ export default Vue.extend({
   },
 
   methods: {
-    updateProp(name: string, value: any): void {
+    updateProp({ name, value }: { name: string; value: any }): void {
       this.$emit('update-prop', {
         name,
         value
       })
     },
 
-    updateData(name: string, value: any): void {
+    updateData({ name, value }: { name: string; value: any }): void {
       this.$emit('update-data', {
         name,
         value

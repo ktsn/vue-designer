@@ -1,3 +1,26 @@
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/ktsn/vue-designer/compare/v0.4.0...v0.5.0) (2018-06-03)
+
+
+### Bug Fixes
+
+* handle attribute selectors having double quotes in their value correctly ([5f2e950](https://github.com/ktsn/vue-designer/commit/5f2e950))
+
+
+### Features
+
+* allow to modify props and data in preview pane ([#32](https://github.com/ktsn/vue-designer/issues/32)) ([d4442d2](https://github.com/ktsn/vue-designer/commit/d4442d2))
+* resolve v-model on checkbox element ([f83742f](https://github.com/ktsn/vue-designer/commit/f83742f))
+* resolve v-model on radio element ([ce934b1](https://github.com/ktsn/vue-designer/commit/ce934b1))
+* support insensitive selector of css ([68be320](https://github.com/ktsn/vue-designer/commit/68be320))
+
+
+### UI Improvements
+
+* always show scope information ([09faa59](https://github.com/ktsn/vue-designer/commit/09faa59))
+* normalize scale delta during various environment ([#33](https://github.com/ktsn/vue-designer/issues/33)) ([2aab18c](https://github.com/ktsn/vue-designer/commit/2aab18c))
+
+
 <a name="0.4.0"></a>
 # [0.4.0](https://github.com/ktsn/vue-designer/compare/v0.3.0...v0.4.0) (2018-05-05)
 

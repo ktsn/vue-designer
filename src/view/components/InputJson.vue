@@ -1,23 +1,218 @@
 <template>
-  <input class="input-json" type="text" :value="jsonValue" @input="onInput" @change="onChange">
+  <div class="input-json">
+    <div class="input-json-line">
+      <!-- Object property key -->
+      <span
+        v-if="!renamable || !editing"
+        class="input-json-label"
+      >{{ field.name }}</span>
+      <input
+        v-else
+        class="input-json-label editing"
+        type="text"
+        v-model="editingName"
+        @keydown.enter="apply"
+        @keydown.esc="cancel"
+      >
+
+      <!-- Object value -->
+      <span
+        v-if="!editing"
+        class="input-json-value"
+        :class="valueType"
+      >
+        {{ formattedValue }}
+      </span>
+      <input
+        v-else
+        class="input-json-value editing"
+        type="text"
+        v-model="editingValue"
+        @keydown.enter="apply"
+        @keydown.esc="cancel"
+      >
+
+      <!-- Actions -->
+      <div class="input-json-actions">
+        <button
+          v-if="!editing"
+          type="button"
+          class="input-json-button edit"
+          aria-label="Edit"
+          @click="startEditing"
+        >
+          <BaseIcon
+            class="input-json-icon"
+            icon="create"
+          />
+        </button>
+
+        <template v-else>
+          <button
+            type="button"
+            class="input-json-button"
+            aria-label="Cancel"
+            @click="cancel"
+          >
+            <BaseIcon
+              class="input-json-icon"
+              icon="clear"
+            />
+          </button>
+
+          <button
+            type="button"
+            class="input-json-button"
+            aria-label="Apply"
+            @click="apply"
+          >
+            <BaseIcon
+              class="input-json-icon"
+              icon="done"
+            />
+          </button>
+        </template>
+      </div>
+    </div>
+
+    <!-- Children -->
+    <ul v-if="children" class="input-json-children">
+      <li v-for="child in children" :key="child.name">
+        <InputJson
+          :renamable="valueType === 'object'"
+          :field="child"
+          @change="onChangeChild(arguments[0], child.name)"
+        />
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
+import BaseIcon from './BaseIcon.vue'
+import { clone } from '@/utils'
+
+type ValueType =
+  | 'undefined'
+  | 'null'
+  | 'boolean'
+  | 'number'
+  | 'string'
+  | 'object'
+  | 'array'
+  | 'unknown'
+
+interface JsonField {
+  name: string
+  value: any
+}
 
 export default Vue.extend({
   name: 'InputJson',
 
+  components: {
+    BaseIcon
+  },
+
   props: {
-    value: [Number, String, Boolean, Object, Array]
+    field: {
+      type: Object as () => JsonField,
+      required: true,
+      validator: (p: any) => {
+        return typeof p.name === 'string' && 'value' in p
+      }
+    },
+
+    renamable: Boolean
+  },
+
+  data() {
+    return {
+      editingName: '',
+      editingValue: '',
+      editing: false
+    }
   },
 
   computed: {
+    children(): JsonField[] | undefined {
+      const { value } = this.field
+
+      if (this.valueType === 'array') {
+        return value.map((child: any, i: number) => {
+          return {
+            name: String(i),
+            value: child
+          }
+        })
+      }
+
+      if (this.valueType === 'object') {
+        return Object.keys(value).map(key => {
+          return {
+            name: key,
+            value: value[key]
+          }
+        })
+      }
+    },
+
+    valueType(): ValueType {
+      const { value } = this.field
+      const type = typeof value
+
+      if (value === undefined) {
+        return 'undefined'
+      }
+      if (value === null) {
+        return 'null'
+      }
+      if (Array.isArray(value)) {
+        return 'array'
+      }
+
+      if (
+        type === 'object' ||
+        type === 'string' ||
+        type === 'boolean' ||
+        type === 'number'
+      ) {
+        return type
+      } else {
+        return 'unknown'
+      }
+    },
+
+    isEditingNameValid(): boolean {
+      return this.editingName !== ''
+    },
+
+    formattedValue(): string {
+      const { value } = this.field
+
+      switch (this.valueType) {
+        case 'undefined':
+          return 'undefined'
+        case 'null':
+        case 'string':
+        case 'boolean':
+        case 'number':
+          return JSON.stringify(value)
+        case 'object':
+          return 'Object'
+        case 'array':
+          return 'Array[' + value.length + ']'
+        default:
+          return String(value)
+      }
+    },
+
     jsonValue(): string {
+      const { value } = this.field
+
       try {
-        return this.value === undefined
-          ? 'undefined'
-          : JSON.stringify(this.value)
+        return value === undefined ? 'undefined' : JSON.stringify(value)
       } catch (e) {
         return 'undefined'
       }
@@ -25,32 +220,68 @@ export default Vue.extend({
   },
 
   methods: {
-    onInput(event: Event): void {
-      const input = event.target as HTMLInputElement
-      const jsonValue = input.value
+    startEditing(): void {
+      this.editingValue = this.jsonValue
+      this.editingName = this.field.name
+      this.editing = true
+    },
+
+    cancel(): void {
+      this.editing = false
+    },
+
+    apply(): void {
+      this.editing = false
+      this.onChange()
+    },
+
+    onChange(): void {
+      if (!this.isEditingNameValid) return
+
+      const { editingName: name, editingValue: jsonValue } = this
 
       try {
         const value =
           jsonValue === 'undefined' ? undefined : JSON.parse(jsonValue)
 
-        this.$emit('input', value)
+        this.$emit('change', { name, value })
       } catch (e) {
         // do nothing
       }
     },
 
-    onChange(event: Event): void {
-      const input = event.target as HTMLInputElement
-      const jsonValue = input.value
+    onChangeChild(child: JsonField, oldChildName: string): void {
+      const { name, value } = this.field
 
-      try {
-        const value =
-          jsonValue === 'undefined' ? undefined : JSON.parse(jsonValue)
+      if (this.valueType === 'array') {
+        const index = Number(child.name)
+        const newValue = [
+          ...value.slice(0, index),
+          child.value,
+          ...value.slice(index + 1)
+        ]
 
-        this.$emit('change', value)
-      } catch (e) {
-        input.value = this.jsonValue
-        this.$emit('error', jsonValue)
+        this.$emit('change', {
+          name,
+          value: newValue
+        })
+        return
+      }
+
+      if (this.valueType === 'object') {
+        const newValue = clone(value)
+
+        if (child.name !== oldChildName) {
+          delete newValue[oldChildName]
+        }
+
+        newValue[child.name] = child.value
+
+        this.$emit('change', {
+          name,
+          value: newValue
+        })
+        return
       }
     }
   }
@@ -58,11 +289,98 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-.input-json {
+.input-json-line {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.input-json-label {
+  margin-right: 0.5em;
+  font-weight: bold;
+  color: #058136;
+}
+
+.input-json-label::after {
+  content: ':';
+}
+
+.input-json-value {
+  flex: 1 0 1px;
+}
+
+.input-json-value.object,
+.input-json-value.array {
+  color: #aaa;
+}
+
+.input-json-value.number {
+  color: #0e00ab;
+}
+
+.input-json-value.string {
+  color: #c40e0e;
+}
+
+.input-json-value.boolean {
+  color: #8d40d0;
+}
+
+.input-json-value.null,
+.input-json-value.undefined {
+  color: #666;
+}
+
+.input-json-label.editing,
+.input-json-value.editing {
+  flex: 1 1 1px;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  padding: 0;
+  min-width: 0;
+  border: 1px solid #058136;
+  border-radius: 3px;
+  background-color: #fff;
+  font-size: inherit;
+  font-family: inherit;
+  outline: none;
+}
+
+.input-json-actions {
+  display: flex;
+  align-items: center;
+  margin-left: 0.5em;
+  white-space: nowrap;
+}
+
+.input-json-button {
+  margin-left: 0.3em;
   padding: 0;
   border-width: 0;
   background: none;
-  font-size: inherit;
-  font-family: inherit;
+  color: #666;
+  font-size: rem(16);
+  cursor: pointer;
+}
+
+.input-json-button:first-child {
+  margin-left: 0;
+}
+
+.input-json-button:hover {
+  color: #058136;
+}
+
+.input-json-button.edit {
+  display: none;
+}
+
+.input-json-line:hover .input-json-button.edit {
+  display: inline;
+}
+
+.input-json-children {
+  padding-left: 24px;
+  list-style: none;
 }
 </style>

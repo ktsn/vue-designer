@@ -85,6 +85,6 @@ export default Vue.extend({
 }
 
 .style-declaration-prop-text {
-  color: #24b600;
+  color: #058136;
 }
 </style>

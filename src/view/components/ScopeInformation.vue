@@ -4,14 +4,10 @@
       <h2 class="information-title">Props</h2>
       <ul v-if="hasProps" class="information-list">
         <li v-for="(prop, name) in scope.props" :key="name" class="information-list-item">
-          <strong class="information-label">{{ name }}</strong>
-          <span class="information-text">
-            <InputJson
-              :value="prop.value"
-              @input="updateProp(name, arguments[0])"
-              @change="updateProp(name, arguments[0])"
-            />
-          </span>
+          <InputJson
+            :field="{ name, value: prop.value }"
+            @change="updateProp"
+          />
         </li>
       </ul>
       <div v-else>
@@ -23,14 +19,10 @@
       <h2 class="information-title">Data</h2>
       <ul v-if="hasData" class="information-list">
         <li v-for="(d, name) in scope.data" :key="name" class="information-list-item">
-          <strong class="information-label">{{ name }}</strong>
-          <span class="information-text">
-            <InputJson
-              :value="d.value"
-              @input="updateData(name, arguments[0])"
-              @change="updateData(name, arguments[0])"
-            />
-          </span>
+          <InputJson
+            :field="{ name, value: d.value }"
+            @change="updateData"
+          />
         </li>
       </ul>
       <div v-else>
@@ -70,14 +62,14 @@ export default Vue.extend({
   },
 
   methods: {
-    updateProp(name: string, value: any): void {
+    updateProp({ name, value }: { name: string; value: any }): void {
       this.$emit('update-prop', {
         name,
         value
       })
     },
 
-    updateData(name: string, value: any): void {
+    updateData({ name, value }: { name: string; value: any }): void {
       this.$emit('update-data', {
         name,
         value
@@ -119,13 +111,5 @@ export default Vue.extend({
 
 .information-list-item:first-child {
   margin-top: 0;
-}
-
-.information-label::after {
-  content: ':';
-}
-
-.information-text {
-  margin-left: 0.5em;
 }
 </style>

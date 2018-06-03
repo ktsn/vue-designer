@@ -6,7 +6,7 @@
         <li v-for="(prop, name) in scope.props" :key="name" class="information-list-item">
           <InputJson
             :field="{ name, value: prop.value }"
-            @input="updateProp"
+            @change="updateProp"
           />
         </li>
       </ul>
@@ -21,7 +21,7 @@
         <li v-for="(d, name) in scope.data" :key="name" class="information-list-item">
           <InputJson
             :field="{ name, value: d.value }"
-            @input="updateData"
+            @change="updateData"
           />
         </li>
       </ul>

@@ -11,7 +11,8 @@
         class="input-json-label editing"
         type="text"
         v-model="editingName"
-        @input="onInput"
+        @keydown.enter="apply"
+        @keydown.esc="cancel"
       >
 
       <!-- Object value -->
@@ -27,7 +28,8 @@
         class="input-json-value editing"
         type="text"
         v-model="editingValue"
-        @input="onInput"
+        @keydown.enter="apply"
+        @keydown.esc="cancel"
       >
 
       <!-- Actions -->
@@ -74,11 +76,11 @@
 
     <!-- Children -->
     <ul v-if="children" class="input-json-children">
-      <li v-for="(child, i) in children" :key="i">
+      <li v-for="child in children" :key="child.name">
         <InputJson
           :renamable="valueType === 'object'"
           :field="child"
-          @input="onInputChild(arguments[0], child.name)"
+          @change="onChangeChild(arguments[0], child.name)"
         />
       </li>
     </ul>
@@ -118,8 +120,6 @@ export default Vue.extend({
 
   data() {
     return {
-      initialName: '',
-      initialValue: '',
       editingName: '',
       editingValue: '',
       editing: false
@@ -196,26 +196,21 @@ export default Vue.extend({
 
   methods: {
     startEditing(): void {
-      this.editingValue = this.initialValue = this.jsonValue
-      this.editingName = this.initialName = this.field.name
+      this.editingValue = this.jsonValue
+      this.editingName = this.field.name
       this.editing = true
     },
 
     cancel(): void {
-      this.editingValue = this.initialValue
-      this.editingName = this.initialName
       this.editing = false
-
-      this.onInput()
     },
 
     apply(): void {
-      this.editingValue = this.jsonValue // Reset editing value
-      this.editingName = this.field.name // Reset editing name
       this.editing = false
+      this.onChange()
     },
 
-    onInput(): void {
+    onChange(): void {
       if (!this.isEditingNameValid) return
 
       const { editingName: name, editingValue: jsonValue } = this
@@ -224,13 +219,13 @@ export default Vue.extend({
         const value =
           jsonValue === 'undefined' ? undefined : JSON.parse(jsonValue)
 
-        this.$emit('input', { name, value })
+        this.$emit('change', { name, value })
       } catch (e) {
         // do nothing
       }
     },
 
-    onInputChild(child: JsonField, oldChildName: string): void {
+    onChangeChild(child: JsonField, oldChildName: string): void {
       const { name, value } = this.field
 
       if (this.valueType === 'array') {
@@ -241,7 +236,7 @@ export default Vue.extend({
           ...value.slice(index + 1)
         ]
 
-        this.$emit('input', {
+        this.$emit('change', {
           name,
           value: newValue
         })
@@ -257,7 +252,7 @@ export default Vue.extend({
 
         newValue[child.name] = child.value
 
-        this.$emit('input', {
+        this.$emit('change', {
           name,
           value: newValue
         })

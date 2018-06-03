@@ -1,4 +1,4 @@
-import { shallow } from '@vue/test-utils'
+import { shallowMount } from '@vue/test-utils'
 import Renderer from '@/view/components/Renderer.vue'
 
 describe('Renderer', () => {
@@ -37,7 +37,7 @@ describe('Renderer', () => {
   })
 
   it('scroll content has the same size with renderer when the viewport is not over the renderer size', () => {
-    const wrapper = shallow<any>(Renderer, {
+    const wrapper = shallowMount<any>(Renderer, {
       propsData: {
         document: {},
         scope: emptyScope,
@@ -53,8 +53,8 @@ describe('Renderer', () => {
     expect(size.height).toBe(1000)
   })
 
-  it('scroll content has the much larser size than renderer when the viewport is over the renderer size', () => {
-    const wrapper = shallow<any>(Renderer, {
+  it('scroll content has the much larger size than renderer when the viewport is over the renderer size', () => {
+    const wrapper = shallowMount<any>(Renderer, {
       propsData: {
         document: {},
         scope: emptyScope,
@@ -71,7 +71,7 @@ describe('Renderer', () => {
   })
 
   it('considers scale value for scroll content size', () => {
-    const wrapper = shallow<any>(Renderer, {
+    const wrapper = shallowMount<any>(Renderer, {
       propsData: {
         document: {},
         scope: emptyScope,
@@ -86,69 +86,4 @@ describe('Renderer', () => {
     expect(size.width).toBe(2800)
     expect(size.height).toBe(2800)
   })
-
-  it('retain current position when the scroll content size is changed', async () => {
-    const wrapper = shallow<any>(Renderer, {
-      propsData: {
-        document: {},
-        scope: emptyScope,
-        selectedPath: [],
-        width: 800,
-        height: 600,
-        scale: 1
-      }
-    })
-
-    // Waiting for mount
-    await nextFrame()
-
-    const el = wrapper.element
-    el.scrollTop = 0
-    el.scrollLeft = 0
-
-    // This let the scroll content size be from 1000x1000 to 3000x3000
-    wrapper.setProps({
-      width: 1200,
-      height: 1200
-    })
-
-    await nextFrame()
-
-    expect(el.scrollTop).toBe(1000)
-    expect(el.scrollLeft).toBe(1000)
-  })
-
-  it('considers scale value to detect proper scroll position', async () => {
-    const wrapper = shallow<any>(Renderer, {
-      propsData: {
-        document: {},
-        scope: emptyScope,
-        selectedPath: [],
-        width: 800,
-        height: 600,
-        scale: 1
-      }
-    })
-
-    // Waiting for mount
-    await nextFrame()
-
-    const el = wrapper.element
-    el.scrollTop = 0
-    el.scrollLeft = 0
-
-    // This let the scroll content size be from 1000x1000 to 3400x3000
-    wrapper.setProps({
-      scale: 2
-    })
-
-    await nextFrame()
-
-    expect(el.scrollTop).toBe(1000)
-    expect(el.scrollLeft).toBe(1200)
-  })
 })
-
-function nextFrame() {
-  return new Promise(requestAnimationFrame)
-}

@@ -92,7 +92,15 @@ import Vue from 'vue'
 import BaseIcon from './BaseIcon.vue'
 import { clone } from '@/utils'
 
-type ValueType = 'undefined' | 'primitive' | 'object' | 'array'
+type ValueType =
+  | 'undefined'
+  | 'null'
+  | 'boolean'
+  | 'number'
+  | 'string'
+  | 'object'
+  | 'array'
+  | 'unknown'
 
 interface JsonField {
   name: string
@@ -151,17 +159,28 @@ export default Vue.extend({
 
     valueType(): ValueType {
       const { value } = this.field
+      const type = typeof value
 
-      if (Array.isArray(value)) {
-        return 'array'
-      }
       if (value === undefined) {
         return 'undefined'
       }
-      if (value !== null && typeof value === 'object') {
-        return 'object'
+      if (value === null) {
+        return 'null'
       }
-      return 'primitive'
+      if (Array.isArray(value)) {
+        return 'array'
+      }
+
+      if (
+        type === 'object' ||
+        type === 'string' ||
+        type === 'boolean' ||
+        type === 'number'
+      ) {
+        return type
+      } else {
+        return 'unknown'
+      }
     },
 
     isEditingNameValid(): boolean {
@@ -174,12 +193,17 @@ export default Vue.extend({
       switch (this.valueType) {
         case 'undefined':
           return 'undefined'
-        case 'primitive':
+        case 'null':
+        case 'string':
+        case 'boolean':
+        case 'number':
           return JSON.stringify(value)
         case 'object':
           return 'Object'
         case 'array':
           return 'Array[' + value.length + ']'
+        default:
+          return String(value)
       }
     },
 
@@ -287,6 +311,23 @@ export default Vue.extend({
 .input-json-value.object,
 .input-json-value.array {
   color: #aaa;
+}
+
+.input-json-value.number {
+  color: #0e00ab;
+}
+
+.input-json-value.string {
+  color: #c40e0e;
+}
+
+.input-json-value.boolean {
+  color: #8d40d0;
+}
+
+.input-json-value.null,
+.input-json-value.undefined {
+  color: #666;
 }
 
 .input-json-label.editing,

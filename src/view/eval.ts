@@ -29,10 +29,10 @@ function createScopeProxy(scope: Record<string, any>): Record<string, any> {
   return new Proxy(scope, {
     get(target, name) {
       if (name === Symbol.unscopables) {
-        return target[name]
+        return (target as any)[name]
       }
 
-      const value = target[name]
+      const value = (target as any)[name]
       if (value !== null && typeof value === 'object') {
         return createScopeProxy(value)
       } else {

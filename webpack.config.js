@@ -49,7 +49,10 @@ const baseConfig = {
       }
     ]
   },
-  plugins: [new VueLoaderPlugin()]
+  plugins: [new VueLoaderPlugin()],
+  performance: {
+    hints: false
+  }
 }
 
 module.exports = function(_, argv) {

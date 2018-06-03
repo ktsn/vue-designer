@@ -100,7 +100,7 @@
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/jest": "^22.2.3",
     "@types/ws": "^5.1.1",
-    "@vue/test-utils": "1.0.0-beta.12",
+    "@vue/test-utils": "^1.0.0-beta.16",
     "codecov": "^3.0.2",
     "conventional-changelog": "^1.1.24",
     "css-loader": "^0.28.11",

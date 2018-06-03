@@ -38,6 +38,7 @@
           v-if="!editing"
           type="button"
           class="input-json-button edit"
+          aria-label="Edit"
           @click="startEditing"
         >
           <BaseIcon
@@ -46,12 +47,11 @@
           />
         </button>
 
-        <template
-          v-else
-        >
+        <template v-else>
           <button
             type="button"
             class="input-json-button"
+            aria-label="Cancel"
             @click="cancel"
           >
             <BaseIcon
@@ -63,6 +63,7 @@
           <button
             type="button"
             class="input-json-button"
+            aria-label="Apply"
             @click="apply"
           >
             <BaseIcon

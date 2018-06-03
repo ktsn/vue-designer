@@ -149,6 +149,60 @@ describe('InputJson', () => {
       ])
     })
 
+    it('edits child property value', () => {
+      const wrapper = mount(InputJson, {
+        propsData: {
+          field: {
+            name: 'test',
+            value: {
+              foo: 'abc',
+              bar: 123
+            }
+          }
+        }
+      })
+      const bar = wrapper.findAll(InputJson).at(1)
+      const ctrl = new InputJsonController(bar)
+
+      ctrl.clickEdit()
+      ctrl.editValue('456')
+      ctrl.clickApply()
+
+      expect(wrapper.emitted('change')[0]).toEqual([
+        {
+          name: 'test',
+          value: {
+            foo: 'abc',
+            bar: 456
+          }
+        }
+      ])
+    })
+
+    it('edits array item', () => {
+      const wrapper = mount(InputJson, {
+        propsData: {
+          field: {
+            name: 'test',
+            value: ['foo', 123, true]
+          }
+        }
+      })
+      const second = wrapper.findAll(InputJson).at(1)
+      const ctrl = new InputJsonController(second)
+
+      ctrl.clickEdit()
+      ctrl.editValue('456')
+      ctrl.clickApply()
+
+      expect(wrapper.emitted('change')[0]).toEqual([
+        {
+          name: 'test',
+          value: ['foo', 456, true]
+        }
+      ])
+    })
+
     it('rejects invalid json string', () => {
       const wrapper = mount<any>(InputJson, {
         propsData: {

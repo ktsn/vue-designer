@@ -15,9 +15,11 @@ function findDirective(
   attrs: (Attribute | Directive)[],
   fn: (directive: Directive) => boolean
 ): Directive | undefined {
-  return attrs.find((attr): attr is Directive => {
-    return attr.directive && fn(attr)
-  })
+  return attrs.find(
+    (attr): attr is Directive => {
+      return attr.directive && fn(attr)
+    }
+  )
 }
 
 function directiveValue(
@@ -294,6 +296,12 @@ function resolveVModel(
         return
       }
     }
+  } else if (tag === 'select') {
+    // Utilize Vue's v-model directive to sync <select> value
+    data.directives!.push({
+      name: 'model',
+      value
+    } as any)
   }
   data.attrs!.value = value
 }

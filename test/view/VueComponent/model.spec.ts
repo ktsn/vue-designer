@@ -74,7 +74,7 @@ describe('VueComponent v-model', () => {
     expect(baz.checked).toBe(true)
   })
 
-  it('resolves ratio button v-model', () => {
+  it('resolves radio button v-model', () => {
     // prettier-ignore
     const template = createTemplate([
       h('div', [], [
@@ -99,5 +99,62 @@ describe('VueComponent v-model', () => {
 
     expect(foo.checked).toBe(false)
     expect(bar.checked).toBe(true)
+  })
+
+  it('resolves select v-model', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('select', [d('model', 'selected')], [
+        h('option', [a('value', 'foo')], []),
+        h('option', [a('value', 'bar')], [])
+      ])
+    ])
+
+    const wrapper = render(
+      template,
+      [],
+      [
+        {
+          name: 'selected',
+          default: 'bar'
+        }
+      ]
+    )
+
+    const select = wrapper.find('select').element as HTMLSelectElement
+    const selected = Array.from(select.options)
+      .filter(op => op.selected)
+      .map(op => op.value)
+
+    expect(selected).toEqual(['bar'])
+  })
+
+  it('resolves multiple select v-model', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('select', [d('model', 'selected'), a('multiple', null)], [
+        h('option', [a('value', 'foo')], []),
+        h('option', [a('value', 'bar')], []),
+        h('option', [a('value', 'baz')], [])
+      ])
+    ])
+
+    const wrapper = render(
+      template,
+      [],
+      [
+        {
+          name: 'selected',
+          default: ['foo', 'baz']
+        }
+      ]
+    )
+
+    const select = wrapper.find('select').element as HTMLSelectElement
+    const selected = Array.from(select.options)
+      .filter(op => op.selected)
+      .map(op => op.value)
+
+    expect(selected).toEqual(['foo', 'baz'])
   })
 })

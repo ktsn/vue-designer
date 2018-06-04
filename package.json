@@ -24,7 +24,7 @@
     "watch:ts": "tsc --watch -p tsconfig.main.json",
     "watch:webpack": "webpack-dev-server --hot --config webpack.config.js --mode development",
     "build": "tsc --sourceMap false -p tsconfig.main.json && webpack --config webpack.config.js --mode production",
-    "test": "jest",
+    "test": "jest -w 2",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage -w 2",
     "format": "prettier --write \"{src,test}/**/*.{ts,vue}\""

@@ -115,27 +115,31 @@ export function addScope(node: t.Style, scope: string): t.Style {
     declaration: decl => {
       // individual animation-name declaration
       if (/^(-\w+-)?animation-name$/.test(decl.prop)) {
-        decl.value = decl.value
-          .split(',')
-          .map(v => keyframes.get(v.trim()) || v.trim())
-          .join(',')
+        return clone(decl, {
+          value: decl.value
+            .split(',')
+            .map(v => keyframes.get(v.trim()) || v.trim())
+            .join(',')
+        })
       }
 
       // shorthand
       if (/^(-\w+-)?animation$/.test(decl.prop)) {
-        decl.value = decl.value
-          .split(',')
-          .map(v => {
-            const vals = v.trim().split(/\s+/)
-            const i = vals.findIndex(val => keyframes.has(val))
-            if (i !== -1) {
-              vals.splice(i, 1, keyframes.get(vals[i])!)
-              return vals.join(' ')
-            } else {
-              return v
-            }
-          })
-          .join(',')
+        return clone(decl, {
+          value: decl.value
+            .split(',')
+            .map(v => {
+              const vals = v.trim().split(/\s+/)
+              const i = vals.findIndex(val => keyframes.has(val))
+              if (i !== -1) {
+                vals.splice(i, 1, keyframes.get(vals[i])!)
+                return vals.join(' ')
+              } else {
+                return v
+              }
+            })
+            .join(',')
+        })
       }
     },
 

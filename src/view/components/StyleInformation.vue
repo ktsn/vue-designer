@@ -79,7 +79,7 @@ export default Vue.extend({
       if (this.endingInput) return
 
       this.$emit('add-declaration', {
-        path: rule.path.concat(rule.declarations.length)
+        path: rule.path.concat(rule.children.length)
       })
       this.autoFocusOnNextRender = true
     },

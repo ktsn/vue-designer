@@ -2,7 +2,7 @@ import assert from 'assert'
 import * as t from './types'
 
 export function genStyle(ast: t.Style): string {
-  return ast.body
+  return ast.children
     .map(node => {
       switch (node.type) {
         case 'AtRule':

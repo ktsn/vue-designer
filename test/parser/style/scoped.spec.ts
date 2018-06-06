@@ -17,7 +17,7 @@ describe('Scoped selector', () => {
     const result = addScope(ast, scope)
 
     const expected: any = ast
-    expected.body[0].selectors[0].attributes.push(
+    expected.children[0].selectors[0].attributes.push(
       attribute('data-scope-' + scope)
     )
 
@@ -32,7 +32,7 @@ describe('Scoped selector', () => {
     const result = addScope(ast, scope)
 
     const expected: any = ast
-    expected.body[0].children[0].selectors[0].attributes.push(
+    expected.children[0].children[0].selectors[0].attributes.push(
       attribute('data-scope-' + scope)
     )
 

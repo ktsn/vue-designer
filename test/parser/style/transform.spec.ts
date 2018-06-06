@@ -168,7 +168,7 @@ describe('Style AST transformer', () => {
 
   it('should transform node position', () => {
     const ast = getAst('.foo {\n  color: red;\n}\n.bar {}')
-    const rule = ast.body[0] as Rule
+    const rule = ast.children[0] as Rule
 
     expect(ast.range).toEqual([0, 30])
     expect(rule.range).toEqual([0, 22])

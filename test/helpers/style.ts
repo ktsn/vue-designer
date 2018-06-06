@@ -12,11 +12,11 @@ import {
   ChildNode
 } from '@/parser/style/types'
 
-export function createStyle(body: (AtRule | Rule)[]): Style {
-  modifyPath(body)
+export function createStyle(children: (AtRule | Rule)[]): Style {
+  modifyPath(children)
   return {
     path: [0],
-    body,
+    children,
     range: [-1, -1]
   }
 }

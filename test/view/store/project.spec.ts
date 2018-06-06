@@ -5,6 +5,7 @@ import { createStyle, rule, selector } from '../../helpers/style'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
 import { ClientConnection } from '@/view/communication'
 import { StyleMatcher } from '@/view/store/style-matcher'
+import { RuleForPrint } from '@/parser/style/types'
 
 describe('Store project getters', () => {
   let store: Store<any>, state: ProjectState
@@ -268,10 +269,10 @@ describe('Store project actions', () => {
   })
 
   describe('matchSelectedNodeWithStyles', () => {
-    const emptyRule = {
+    const emptyRule: RuleForPrint = {
       path: [0, 0],
       selectors: ['div'],
-      declarations: []
+      children: []
     }
 
     it('extract rules of node', () => {
@@ -279,7 +280,7 @@ describe('Store project actions', () => {
       state.currentUri = 'file:///Foo.vue'
       state.selectedPath = [0]
 
-      const matched = [docs['file:///Foo.vue'].styles[0].body[0]]
+      const matched = [docs['file:///Foo.vue'].styles[0].children[0]]
       ;(mockStyleMatcher.match as any).mockReturnValue(matched)
 
       store.dispatch('project/matchSelectedNodeWithStyles')

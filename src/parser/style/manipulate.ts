@@ -33,7 +33,7 @@ function visitStyle(style: t.Style, visitor: StyleVisitor): t.Style {
   }
 
   return clone(style, {
-    body: style.body.map(loop)
+    children: style.children.map(loop)
   })
 }
 
@@ -88,16 +88,12 @@ export function getNode(
   styles: t.Style[],
   path: number[]
 ): t.ChildNode | undefined {
-  return path.reduce<any | undefined>(
+  return path.reduce<any>(
     (acc, i) => {
       if (!acc) return
 
       if (acc.children) {
         return acc.children[i]
-      } else if (acc.body) {
-        return acc.body[i]
-      } else if (acc.declarations) {
-        return acc.declarations[i]
       }
     },
     { children: styles }

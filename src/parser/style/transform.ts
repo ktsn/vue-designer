@@ -13,11 +13,11 @@ export function transformStyle(
   if (!root.nodes) {
     return {
       path: [index],
-      body: [],
+      children: [],
       range: [-1, -1]
     }
   }
-  const body = root.nodes
+  const children = root.nodes
     .map((node, i) => {
       switch (node.type) {
         case 'atrule':
@@ -36,7 +36,7 @@ export function transformStyle(
 
   return {
     path: [index],
-    body,
+    children,
     range: toRange(root.source, code)
   }
 }

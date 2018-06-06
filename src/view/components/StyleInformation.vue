@@ -11,7 +11,7 @@
       </p>
 
       <ul class="declaration-list" @click.stop>
-        <li class="declaration" v-for="d in rule.declarations" :key="d.path.join('.')">
+        <li class="declaration" v-for="d in rule.children" :key="d.path.join('.')">
           <StyleDeclaration
             :prop="d.prop"
             :value="d.value"

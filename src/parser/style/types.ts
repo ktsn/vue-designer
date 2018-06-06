@@ -11,7 +11,7 @@ export interface Rule extends Range {
   after: string
   path: number[]
   selectors: Selector[]
-  declarations: Declaration[]
+  children: Declaration[]
 }
 
 export interface Declaration extends Range {
@@ -82,7 +82,7 @@ export interface Combinator {
 export interface RuleForPrint {
   path: number[]
   selectors: string[]
-  declarations: DeclarationForPrint[]
+  children: DeclarationForPrint[]
 }
 
 export interface DeclarationForPrint {

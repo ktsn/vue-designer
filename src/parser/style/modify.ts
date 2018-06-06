@@ -51,10 +51,10 @@ export function insertDeclaration(
     }
 
     const inserted = clone(rule, {
-      declarations: [
-        ...rule.declarations.slice(last),
+      children: [
+        ...rule.children.slice(last),
         d,
-        ...rule.declarations.slice(last + 1)
+        ...rule.children.slice(last + 1)
       ]
     })
 

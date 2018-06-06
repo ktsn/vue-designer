@@ -28,9 +28,11 @@ export function transformStyle(
           return undefined
       }
     })
-    .filter((node): node is t.AtRule | t.Rule => {
-      return node !== undefined
-    })
+    .filter(
+      (node): node is t.AtRule | t.Rule => {
+        return node !== undefined
+      }
+    )
 
   return {
     path: [index],
@@ -84,7 +86,7 @@ function transformRule(
       const selectors = (n as selectorParser.Selector).nodes
       return transformSelector(selectors)
     }),
-    declarations: decls.map((decl, i) => {
+    children: decls.map((decl, i) => {
       return transformDeclaration(decl, path.concat(i), code)
     }),
     range: toRange(rule.source, code)
@@ -261,7 +263,7 @@ export function transformRuleForPrint(rule: t.Rule): t.RuleForPrint {
   return {
     path: rule.path,
     selectors: rule.selectors.map(genSelector),
-    declarations: rule.declarations.map(decl => ({
+    children: rule.children.map(decl => ({
       path: decl.path,
       prop: decl.prop,
       value: decl.value,

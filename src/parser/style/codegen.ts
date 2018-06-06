@@ -51,7 +51,7 @@ function genAtRule(atRule: t.AtRule): string {
 
 export function genRule(rule: t.Rule): string {
   const selectors = rule.selectors.map(genSelector).join(', ')
-  const declarations = rule.declarations.map(genDeclaration).join(' ')
+  const declarations = rule.children.map(genDeclaration).join(' ')
 
   return `${selectors} {${declarations}}`
 }

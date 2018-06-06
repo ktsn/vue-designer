@@ -25,7 +25,7 @@ function visitStyle(style: t.Style, visitor: StyleVisitor): t.Style {
         })
       case 'Rule':
         return clone(apply(node, visitor.rule), {
-          declarations: node.declarations.map(loop)
+          children: node.children.map(loop)
         })
       case 'Declaration':
         return apply(node, visitor.declaration)

@@ -172,6 +172,6 @@ describe('Style AST transformer', () => {
 
     expect(ast.range).toEqual([0, 30])
     expect(rule.range).toEqual([0, 22])
-    expect(rule.declarations[0].range).toEqual([9, 20])
+    expect(rule.children[0].range).toEqual([9, 20])
   })
 })

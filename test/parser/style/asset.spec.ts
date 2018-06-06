@@ -16,7 +16,7 @@ describe('Style asset resolution', () => {
     ])
 
     const resolved = resolveAsset(style, basePath, asset)
-    const decl = (resolved.body[0] as Rule).declarations[0]
+    const decl = (resolved.body[0] as Rule).children[0]
     expect(decl.prop).toBe('background')
     expect(decl.value).toBe(
       'url("/assets?path=' + encodeURIComponent('/path/to/assets/bg.png') + '")'
@@ -38,7 +38,7 @@ describe('Style asset resolution', () => {
     ])
 
     const resolved = resolveAsset(style, basePath, asset)
-    const decls = (resolved.body[0] as Rule).declarations
+    const decls = (resolved.body[0] as Rule).children
     expect(decls.length).toBe(2)
     expect(decls[0].prop).toBe('font-size')
     expect(decls[0].value).toBe('18px')

@@ -12,11 +12,11 @@ import {
   ChildNode
 } from '@/parser/style/types'
 
-export function createStyle(body: (AtRule | Rule)[]): Style {
-  modifyPath(body)
+export function createStyle(children: (AtRule | Rule)[]): Style {
+  modifyPath(children)
   return {
     path: [0],
-    body,
+    children,
     range: [-1, -1]
   }
 }
@@ -26,10 +26,9 @@ function modifyPath(nodes: (AtRule | Rule | Declaration)[]): void {
     nodes.forEach((node, i) => {
       const nextPath = path.concat(i)
       node.path = nextPath
-      if (node.type === 'AtRule') {
+
+      if (node.type !== 'Declaration') {
         loop(node.children, nextPath)
-      } else if (node.type === 'Rule') {
-        loop(node.declarations, nextPath)
       }
     })
   }
@@ -55,7 +54,7 @@ export function atRule(
 
 export function rule(
   selectors: Selector[],
-  declarations: Declaration[] = []
+  children: Declaration[] = []
 ): Rule {
   return {
     type: 'Rule',
@@ -63,7 +62,7 @@ export function rule(
     before: '',
     after: '',
     selectors,
-    declarations,
+    children,
     range: [-1, -1]
   }
 }

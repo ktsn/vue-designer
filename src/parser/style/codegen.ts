@@ -2,7 +2,7 @@ import assert from 'assert'
 import * as t from './types'
 
 export function genStyle(ast: t.Style): string {
-  return ast.body
+  return ast.children
     .map(node => {
       switch (node.type) {
         case 'AtRule':
@@ -51,7 +51,7 @@ function genAtRule(atRule: t.AtRule): string {
 
 export function genRule(rule: t.Rule): string {
   const selectors = rule.selectors.map(genSelector).join(', ')
-  const declarations = rule.declarations.map(genDeclaration).join(' ')
+  const declarations = rule.children.map(genDeclaration).join(' ')
 
   return `${selectors} {${declarations}}`
 }

@@ -11,7 +11,7 @@
       </p>
 
       <ul class="declaration-list" @click.stop>
-        <li class="declaration" v-for="d in rule.declarations" :key="d.path.join('.')">
+        <li class="declaration" v-for="d in rule.children" :key="d.path.join('.')">
           <StyleDeclaration
             :prop="d.prop"
             :value="d.value"
@@ -79,7 +79,7 @@ export default Vue.extend({
       if (this.endingInput) return
 
       this.$emit('add-declaration', {
-        path: rule.path.concat(rule.declarations.length)
+        path: rule.path.concat(rule.children.length)
       })
       this.autoFocusOnNextRender = true
     },

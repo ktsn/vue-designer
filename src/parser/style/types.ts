@@ -1,17 +1,19 @@
 import { Range } from '../modifier'
 
-export interface Style extends Range {
-  path: [number]
-  body: (AtRule | Rule)[]
+export interface HasChildren<T extends ChildNode> {
+  children: T[]
 }
 
-export interface Rule extends Range {
+export interface Style extends Range, HasChildren<AtRule | Rule> {
+  path: [number]
+}
+
+export interface Rule extends Range, HasChildren<Declaration> {
   type: 'Rule'
   before: string
   after: string
   path: number[]
   selectors: Selector[]
-  declarations: Declaration[]
 }
 
 export interface Declaration extends Range {
@@ -24,14 +26,13 @@ export interface Declaration extends Range {
   important: boolean
 }
 
-export interface AtRule extends Range {
+export interface AtRule extends Range, HasChildren<ChildNode> {
   type: 'AtRule'
   before: string
   after: string
   path: number[]
   name: string
   params: string
-  children: ChildNode[]
 }
 
 export type ChildNode = AtRule | Rule | Declaration
@@ -82,7 +83,7 @@ export interface Combinator {
 export interface RuleForPrint {
   path: number[]
   selectors: string[]
-  declarations: DeclarationForPrint[]
+  children: DeclarationForPrint[]
 }
 
 export interface DeclarationForPrint {

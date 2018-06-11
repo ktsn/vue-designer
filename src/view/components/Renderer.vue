@@ -20,10 +20,9 @@
           @add="$emit('add')"
         />
 
-        <div
+        <RendererGuide
           v-if="selectedPath.length > 0"
-          :style="selectedStyle"
-          class="renderer-selected"
+          :guide="selectedBounds"
         />
       </Viewport>
     </div>
@@ -34,6 +33,7 @@
 import Vue from 'vue'
 import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
+import RendererGuide from './RendererGuide.vue'
 import { ScopedDocument, DocumentScope } from '../store/modules/project'
 import { Element } from '@/parser/template/types'
 
@@ -44,7 +44,8 @@ export default Vue.extend({
 
   components: {
     Viewport,
-    VueComponent
+    VueComponent,
+    RendererGuide
   },
 
   props: {
@@ -85,7 +86,28 @@ export default Vue.extend({
         left: 0,
         top: 0,
         width: 0,
-        height: 0
+        height: 0,
+
+        margin: {
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0
+        },
+
+        border: {
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0
+        },
+
+        padding: {
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0
+        }
       },
 
       /**
@@ -145,16 +167,6 @@ export default Vue.extend({
         x: size.width / 2,
         y: size.height / 2
       }
-    },
-
-    selectedStyle(): Record<string, string> {
-      const { selectedBounds: bounds } = this
-      return {
-        left: bounds.left + 'px',
-        top: bounds.top + 'px',
-        width: bounds.width + 'px',
-        height: bounds.height + 'px'
-      }
     }
   },
 
@@ -169,6 +181,29 @@ export default Vue.extend({
       const viewport = this.$refs.viewport as Vue
       const viewportBounds = viewport.$el.getBoundingClientRect()
       const bounds = element.getBoundingClientRect()
+      const s = window.getComputedStyle(element)
+      const n = (str: string | null) => parseFloat(str || '0')
+
+      const margin = {
+        top: n(s.marginTop),
+        bottom: n(s.marginBottom),
+        left: n(s.marginLeft),
+        right: n(s.marginRight)
+      }
+
+      const border = {
+        top: n(s.borderTopWidth),
+        bottom: n(s.borderBottomWidth),
+        left: n(s.borderLeftWidth),
+        right: n(s.borderRightWidth)
+      }
+
+      const padding = {
+        top: n(s.paddingTop),
+        bottom: n(s.paddingBottom),
+        left: n(s.paddingLeft),
+        right: n(s.paddingRight)
+      }
 
       // The bounds are modified by the current scale.
       // To show the selected border with accurate bounds,
@@ -177,7 +212,10 @@ export default Vue.extend({
         left: (bounds.left - viewportBounds.left) / this.scale,
         top: (bounds.top - viewportBounds.top) / this.scale,
         width: bounds.width / this.scale,
-        height: bounds.height / this.scale
+        height: bounds.height / this.scale,
+        margin,
+        border,
+        padding
       }
 
       this.$emit('select', ast)
@@ -236,12 +274,5 @@ export default Vue.extend({
 
 .renderer-scroll-content {
   position: relative;
-}
-
-.renderer-selected {
-  position: absolute;
-  box-sizing: border-box;
-  border: 1px solid #0f2fff;
-  pointer-events: none;
 }
 </style>

@@ -86,8 +86,11 @@ import ScopeInformation from './ScopeInformation.vue'
 import StyleInformation from './StyleInformation.vue'
 import ComponentCatalog from './ComponentCatalog.vue'
 import Toolbar from './Toolbar.vue'
-import { projectHelpers, ScopedDocument } from '../store/modules/project'
-import { viewportHelpers } from '@/view/store/modules/viewport'
+import { ScopedDocument } from '../store/modules/project'
+import { mapper } from '../store'
+
+const projectMapper = mapper.module('project')
+const viewportMapper = mapper.module('viewport')
 
 export default Vue.extend({
   name: 'PageMain',
@@ -107,15 +110,15 @@ export default Vue.extend({
   },
 
   computed: {
-    ...projectHelpers.mapState({
+    ...projectMapper.mapState({
       uri: 'currentUri',
       selectedPath: 'selectedPath',
       matchedRules: 'matchedRules'
     }),
 
-    ...viewportHelpers.mapState(['width', 'height', 'scale']),
+    ...viewportMapper.mapState(['width', 'height', 'scale']),
 
-    ...projectHelpers.mapGetters({
+    ...projectMapper.mapGetters({
       document: 'currentDocument',
       scope: 'currentScope',
       renderingDocument: 'currentRenderingDocument',
@@ -130,7 +133,7 @@ export default Vue.extend({
   },
 
   methods: {
-    ...projectHelpers.mapActions([
+    ...projectMapper.mapActions([
       'startDragging',
       'endDragging',
       'setDraggingPlace',
@@ -141,9 +144,9 @@ export default Vue.extend({
       'updateDeclaration'
     ]),
 
-    ...projectHelpers.mapMutations(['updatePropValue', 'updateDataValue']),
+    ...projectMapper.mapMutations(['updatePropValue', 'updateDataValue']),
 
-    ...viewportHelpers.mapActions(['resize', 'zoom']),
+    ...viewportMapper.mapActions(['resize', 'zoom']),
 
     onStartDragging(uri: string): void {
       // Deselect to avoid showing incorrect bounds

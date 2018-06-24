@@ -1,5 +1,11 @@
-import { Store } from 'vuex'
-import { project, ProjectState } from '@/view/store/modules/project'
+import { store as createStore } from 'sinai'
+import { stub } from 'sinai/lib/test'
+import {
+  project,
+  ProjectGetters,
+  ProjectActions,
+  ProjectMutations
+} from '@/view/store/modules/project'
 import { createTemplate, h } from '../../helpers/template'
 import { createStyle, rule, selector } from '../../helpers/style'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
@@ -8,19 +14,16 @@ import { StyleMatcher } from '@/view/store/style-matcher'
 import { RuleForPrint } from '@/parser/style/types'
 
 describe('Store project getters', () => {
-  let store: Store<any>, state: ProjectState
-  beforeEach(() => {
-    store = new Store({
-      modules: { project }
-    })
-    state = store.state.project
-  })
-
   describe('scopedDocuments', () => {
     it('should add scope attribute to template elements', () => {
-      const docs = (state.documents = documents())
+      const docs = documents()
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: docs
+        }
+      })
 
-      const actual = store.getters['project/scopedDocuments']['file:///Foo.vue']
+      const actual = getters.scopedDocuments['file:///Foo.vue']
       const expected = addScopeToTemplate(
         docs['file:///Foo.vue'].template,
         'foo'
@@ -30,155 +33,212 @@ describe('Store project getters', () => {
     })
 
     it('should add scope attribute to style selectors', () => {
-      state.documents = documents()
-      const actual = store.getters['project/scopedDocuments']['file:///Foo.vue']
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents()
+        }
+      })
+      const actual = getters.scopedDocuments['file:///Foo.vue']
       expect(actual.styleCode).toBe('div[data-scope-foo] {}')
     })
   })
 
   describe('localNameOfDragging', () => {
     it('should return local binding name of dragging component', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///HasLocalBar.vue'
-      state.draggingUri = 'file:///Bar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri: 'file:///HasLocalBar.vue',
+          draggingUri: 'file:///Bar.vue'
+        }
+      })
 
-      const actual = store.getters['project/localNameOfDragging']
+      const actual = getters.localNameOfDragging
       expect(actual).toBe('LocalBar')
     })
 
     it('should return undefined if the current document does not have the dragging component', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///Foo.vue'
-      state.draggingUri = 'file:///Bar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri: 'file:///Foo.vue',
+          draggingUri: 'file:///Bar.vue'
+        }
+      })
 
-      const actual = store.getters['project/localNameOfDragging']
+      const actual = getters.localNameOfDragging
       expect(actual).toBe(undefined)
     })
 
     it('should return undefined if it is not dragging', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///HasLocalBar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri: 'file:///HasLocalBar.vue'
+        }
+      })
 
-      const actual = store.getters['project/localNameOfDragging']
+      const actual = getters.localNameOfDragging
       expect(actual).toBe(undefined)
     })
   })
 
   describe('nodeOfDragging', () => {
     it('should return an AST element of dragging component', () => {
-      state.documents = documents()
-      state.draggingUri = 'file:///Foo.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          draggingUri: 'file:///Foo.vue'
+        }
+      })
 
-      const actual = store.getters['project/nodeOfDragging']
+      const actual = getters.nodeOfDragging
       expect(actual).toEqual(h('Foo', [], []))
     })
 
     it('should named as local alias if the current document has it', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///HasLocalBar.vue'
-      state.draggingUri = 'file:///Bar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri: 'file:///HasLocalBar.vue',
+          draggingUri: 'file:///Bar.vue'
+        }
+      })
 
-      const actual = store.getters['project/nodeOfDragging']
+      const actual = getters.nodeOfDragging
       expect(actual).toEqual(h('LocalBar', [], []))
     })
 
     it('should return undefined if there is no dragging', () => {
-      state.documents = documents()
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents()
+        }
+      })
 
-      const actual = store.getters['project/nodeOfDragging']
+      const actual = getters.nodeOfDragging
       expect(actual).toBe(undefined)
     })
   })
 
   describe('currentRenderingDocument', () => {
     it('should return a document that will be rendered in current', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///Foo.vue'
+      const currentUri = 'file:///Foo.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri
+        }
+      })
 
-      const actual = store.getters['project/currentRenderingDocument']
-      const expected =
-        store.getters['project/scopedDocuments'][state.currentUri]
+      const actual = getters.currentRenderingDocument
+      const expected = getters.scopedDocuments[currentUri]
       expect(actual).toEqual(expected)
     })
 
     it('should ignore if dragging path is empty', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///Foo.vue'
-      state.draggingUri = 'file:///Bar.vue'
-      state.draggingPath = []
+      const currentUri = 'file:///Foo.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri,
+          draggingUri: 'file:///Bar.vue',
+          draggingPath: []
+        }
+      })
 
-      const actual = store.getters['project/currentRenderingDocument'].template
-      const expected =
-        store.getters['project/scopedDocuments'][state.currentUri].template
+      const actual = getters.currentRenderingDocument!.template
+      const expected = getters.scopedDocuments[currentUri].template
 
       expect(actual).toEqual(expected)
     })
 
     it('should insert a dragging component into returned template', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///Foo.vue'
-      state.draggingUri = 'file:///Bar.vue'
-      state.draggingPath = [0]
+      const currentUri = 'file:///Foo.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri,
+          draggingUri: 'file:///Bar.vue',
+          draggingPath: [0]
+        }
+      })
 
-      const actual = store.getters['project/currentRenderingDocument'].template
-      const expected =
-        store.getters['project/scopedDocuments'][state.currentUri].template
+      const actual = getters.currentRenderingDocument!.template
+      const expected = getters.scopedDocuments[currentUri].template!
       expected.children = [h('Bar', [], []), ...expected.children]
 
       expect(actual).toEqual(expected)
     })
 
     it('should insert a dragging component as a local name', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///HasLocalBar.vue'
-      state.draggingUri = 'file:///Bar.vue'
-      state.draggingPath = [0]
+      const currentUri = 'file:///HasLocalBar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri,
+          draggingUri: 'file:///Bar.vue',
+          draggingPath: [0]
+        }
+      })
 
-      const actual = store.getters['project/currentRenderingDocument'].template
-      const expected =
-        store.getters['project/scopedDocuments'][state.currentUri].template
+      const actual = getters.currentRenderingDocument!.template
+      const expected = getters.scopedDocuments[currentUri].template!
       expected.children = [h('LocalBar', [], []), ...expected.children]
 
       expect(actual).toEqual(expected)
     })
 
     it('should add a child component which dragging', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///Foo.vue'
-      state.draggingUri = 'file:///Bar.vue'
-      state.draggingPath = [0]
+      const currentUri = 'file:///Foo.vue'
+      const draggingUri = 'file:///Bar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          currentUri,
+          draggingUri,
+          draggingPath: [0]
+        }
+      })
 
-      const actual =
-        store.getters['project/currentRenderingDocument'].childComponents
-      const children =
-        store.getters['project/scopedDocuments'][state.currentUri]
-          .childComponents
-      const expected = children.concat({ name: 'Bar', uri: state.draggingUri })
+      const actual = getters.currentRenderingDocument!.childComponents
+      const children = getters.scopedDocuments[currentUri].childComponents
+      const expected = children.concat({ name: 'Bar', uri: draggingUri })
 
       expect(actual).toEqual(expected)
     })
 
     it('should not add duplicated child component', () => {
-      const docs = (state.documents = documents())
-      const current = (state.currentUri = 'file:///HasBar.vue')
-      state.draggingUri = 'file:///Bar.vue'
-      state.draggingPath = [0]
+      const docs = documents()
+      const current = 'file:///HasBar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: docs,
+          currentUri: current,
+          draggingUri: 'file:///Bar.vue',
+          draggingPath: [0]
+        }
+      })
 
-      const actual =
-        store.getters['project/currentRenderingDocument'].childComponents
+      const actual = getters.currentRenderingDocument!.childComponents
       const expected = docs[current].childComponents
 
       expect(actual).toEqual(expected)
     })
 
     it('should not add duplicated child component even if it has a local name', () => {
-      const docs = (state.documents = documents())
-      const current = (state.currentUri = 'file:///HasLocalBar.vue')
-      state.draggingUri = 'file:///Bar.vue'
-      state.draggingPath = [0]
+      const docs = documents()
+      const current = 'file:///HasLocalBar.vue'
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: docs,
+          currentUri: current,
+          draggingUri: 'file:///Bar.vue',
+          draggingPath: [0]
+        }
+      })
 
-      const actual =
-        store.getters['project/currentRenderingDocument'].childComponents
+      const actual = getters.currentRenderingDocument!.childComponents
       const expected = docs[current].childComponents
 
       expect(actual).toEqual(expected)
@@ -187,44 +247,39 @@ describe('Store project getters', () => {
 })
 
 describe('Store project actions', () => {
-  let store: Store<any>,
-    state: ProjectState,
-    mockConnection: ClientConnection,
-    mockStyleMatcher: StyleMatcher
+  let mock: { connection: ClientConnection; styleMatcher: StyleMatcher }
+
   beforeEach(() => {
-    store = new Store({
-      modules: { project }
-    })
-    state = store.state.project
+    mock = {
+      connection: {
+        send: jest.fn(),
+        onMessage: jest.fn()
+      } as any,
 
-    mockConnection = {
-      send: jest.fn(),
-      onMessage: jest.fn()
-    } as any
-
-    mockStyleMatcher = {
-      match: jest.fn()
-    } as any
-
-    store.dispatch('project/init', {
-      connection: mockConnection,
-      styleMatcher: mockStyleMatcher
-    })
+      styleMatcher: {
+        match: jest.fn()
+      } as any
+    }
   })
 
   describe('updateDeclaration', () => {
     it('should send to update declaration', () => {
-      state.currentUri = 'file:///Foo.vue'
+      const actions = stub(ProjectActions, {
+        state: {
+          currentUri: 'file:///Foo.vue'
+        }
+      })
+      actions.init(mock)
 
-      store.dispatch('project/updateDeclaration', {
+      actions.updateDeclaration({
         path: [0, 0, 0],
         prop: 'color',
         value: 'red'
       })
 
-      expect(mockConnection.send).toHaveBeenCalledWith({
+      expect(mock.connection.send).toHaveBeenCalledWith({
         type: 'UpdateDeclaration',
-        uri: state.currentUri,
+        uri: actions.state.currentUri,
         declaration: {
           path: [0, 0, 0],
           prop: 'color',
@@ -235,17 +290,20 @@ describe('Store project actions', () => {
     })
 
     it('should parse important annotation', () => {
-      state.currentUri = 'file:///Foo.vue'
+      const actions = stub(ProjectActions, {
+        state: { currentUri: 'file:///Foo.vue' }
+      })
+      actions.init(mock)
 
-      store.dispatch('project/updateDeclaration', {
+      actions.updateDeclaration({
         path: [0, 0, 0],
         prop: 'color',
         value: 'red !important'
       })
 
-      expect(mockConnection.send).toHaveBeenCalledWith({
+      expect(mock.connection.send).toHaveBeenCalledWith({
         type: 'UpdateDeclaration',
-        uri: state.currentUri,
+        uri: actions.state.currentUri,
         declaration: {
           path: [0, 0, 0],
           prop: 'color',
@@ -256,15 +314,18 @@ describe('Store project actions', () => {
     })
 
     it('should not send if the uri is not specified', () => {
-      state.currentUri = undefined
+      const actions = stub(ProjectActions, {
+        state: { currentUri: undefined }
+      })
+      actions.init(mock)
 
-      store.dispatch('project/updateDeclaration', {
+      actions.updateDeclaration({
         path: [0, 0, 0],
         prop: 'color',
         value: 'red'
       })
 
-      expect(mockConnection.send).not.toHaveBeenCalled()
+      expect(mock.connection.send).not.toHaveBeenCalled()
     })
   })
 
@@ -276,60 +337,68 @@ describe('Store project actions', () => {
     }
 
     it('extract rules of node', () => {
-      const docs = (state.documents = documents())
-      state.currentUri = 'file:///Foo.vue'
-      state.selectedPath = [0]
+      const docs = documents()
+      const store = createStore(project)
+
+      store.actions.init(mock)
+      store.state.documents = docs
+      store.state.currentUri = 'file:///Foo.vue'
+      store.state.selectedPath = [0]
 
       const matched = [docs['file:///Foo.vue'].styles[0].children[0]]
-      ;(mockStyleMatcher.match as any).mockReturnValue(matched)
+      ;(mock.styleMatcher.match as any).mockReturnValue(matched)
 
-      store.dispatch('project/matchSelectedNodeWithStyles')
+      store.actions.matchSelectedNodeWithStyles()
 
-      expect(state.matchedRules.length).toBe(1)
-      const r = state.matchedRules[0]
+      expect(store.state.matchedRules.length).toBe(1)
+      const r = store.state.matchedRules[0]
       expect(r.path).toEqual([0, 0])
       expect(r.selectors).toEqual(['div'])
     })
 
     it('resets matched rules when no doc is selected', () => {
-      state.documents = documents()
-      state.currentUri = undefined
-      state.matchedRules = [emptyRule]
+      const store = createStore(project)
 
-      store.dispatch('project/matchSelectedNodeWithStyles')
+      store.actions.init(mock)
+      store.state.documents = documents()
+      store.state.currentUri = undefined
+      store.state.matchedRules = [emptyRule]
 
-      expect(state.matchedRules).toEqual([])
+      store.actions.matchSelectedNodeWithStyles()
+      expect(store.state.matchedRules).toEqual([])
     })
 
     it('resets matched rules when no node is selected', () => {
-      state.documents = documents()
-      state.currentUri = 'file:///Foo.vue'
-      state.selectedPath = []
-      state.matchedRules = [emptyRule]
+      const store = createStore(project)
 
-      store.dispatch('project/matchSelectedNodeWithStyles')
+      store.actions.init(mock)
+      store.state.documents = documents()
+      store.state.currentUri = 'file:///Foo.vue'
+      store.state.selectedPath = []
+      store.state.matchedRules = [emptyRule]
 
-      expect(state.matchedRules).toEqual([])
+      store.actions.matchSelectedNodeWithStyles()
+      expect(store.state.matchedRules).toEqual([])
     })
   })
 })
 
 describe('Store project mutations', () => {
   describe('refreshScope', () => {
-    const { refreshScope } = project.mutations!
-
     it('adds missing scope', () => {
-      const state: any = {
-        documentScopes: {}
-      }
+      const mutations = stub(ProjectMutations, {
+        state: {
+          documentScopes: {}
+        }
+      })
 
-      refreshScope(state, {
+      mutations.refreshScope({
         uri: 'file:///Foo.vue',
         props: [],
         data: []
       })
 
-      expect(state.documentScopes).toEqual({
+      expect(mutations.state.documentScopes).toEqual({
         'file:///Foo.vue': {
           props: {},
           data: {}
@@ -338,26 +407,28 @@ describe('Store project mutations', () => {
     })
 
     it('adds missing properties', () => {
-      const state: any = {
-        documentScopes: {
-          'file:///Foo.vue': {
-            props: {
-              test: {
-                type: 'String',
-                value: 'test'
-              }
-            },
-            data: {
-              test2: {
-                type: null,
-                value: 'test2'
+      const mutations = stub(ProjectMutations, {
+        state: {
+          documentScopes: {
+            'file:///Foo.vue': {
+              props: {
+                test: {
+                  type: 'String',
+                  value: 'test'
+                }
+              },
+              data: {
+                test2: {
+                  type: null,
+                  value: 'test2'
+                }
               }
             }
           }
         }
-      }
+      })
 
-      refreshScope(state, {
+      mutations.refreshScope({
         uri: 'file:///Foo.vue',
         props: [
           {
@@ -383,7 +454,7 @@ describe('Store project mutations', () => {
         ]
       })
 
-      expect(state.documentScopes).toEqual({
+      expect(mutations.state.documentScopes).toEqual({
         'file:///Foo.vue': {
           props: {
             test: {
@@ -410,34 +481,36 @@ describe('Store project mutations', () => {
     })
 
     it('removes no longer undeclared properties', () => {
-      const state: any = {
-        documentScopes: {
-          'file:///Foo.vue': {
-            props: {
-              test: {
-                type: 'String',
-                value: 'test'
+      const mutations = stub(ProjectMutations, {
+        state: {
+          documentScopes: {
+            'file:///Foo.vue': {
+              props: {
+                test: {
+                  type: 'String',
+                  value: 'test'
+                },
+                additionalProp: {
+                  type: 'Number',
+                  value: 10
+                }
               },
-              additionalProp: {
-                type: 'Number',
-                value: 10
-              }
-            },
-            data: {
-              test2: {
-                type: null,
-                value: 'test2'
-              },
-              additionalData: {
-                type: null,
-                value: true
+              data: {
+                test2: {
+                  type: null,
+                  value: 'test2'
+                },
+                additionalData: {
+                  type: null,
+                  value: true
+                }
               }
             }
           }
         }
-      }
+      })
 
-      refreshScope(state, {
+      mutations.refreshScope({
         uri: 'file:///Foo.vue',
         props: [
           {
@@ -454,7 +527,7 @@ describe('Store project mutations', () => {
         ]
       })
 
-      expect(state.documentScopes).toEqual({
+      expect(mutations.state.documentScopes).toEqual({
         'file:///Foo.vue': {
           props: {
             additionalProp: {
@@ -473,26 +546,28 @@ describe('Store project mutations', () => {
     })
 
     it('does nothing if there are no diffs', () => {
-      const state: any = {
-        documentScopes: {
-          'file:///Foo.vue': {
-            props: {
-              test: {
-                type: 'String',
-                value: 'test'
-              }
-            },
-            data: {
-              test2: {
-                type: null,
-                value: 'test2'
+      const mutations = stub(ProjectMutations, {
+        state: {
+          documentScopes: {
+            'file:///Foo.vue': {
+              props: {
+                test: {
+                  type: 'String',
+                  value: 'test'
+                }
+              },
+              data: {
+                test2: {
+                  type: null,
+                  value: 'test2'
+                }
               }
             }
           }
         }
-      }
+      })
 
-      refreshScope(state, {
+      mutations.refreshScope({
         uri: 'file:///Foo.vue',
         props: [
           {
@@ -509,7 +584,7 @@ describe('Store project mutations', () => {
         ]
       })
 
-      expect(state.documentScopes).toEqual({
+      expect(mutations.state.documentScopes).toEqual({
         'file:///Foo.vue': {
           props: {
             test: {

@@ -12,7 +12,9 @@ import Vue from 'vue'
 import Node from './Node.vue'
 import { Element } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
-import { projectHelpers } from '../store/modules/project'
+import { mapper } from '../store'
+
+const projectMapper = mapper.module('project')
 
 export default Vue.extend({
   name: 'ContainerNode',
@@ -44,7 +46,7 @@ export default Vue.extend({
   },
 
   computed: {
-    ...projectHelpers.mapState(['selectedPath', 'currentUri']),
+    ...projectMapper.mapState(['selectedPath', 'currentUri']),
 
     selected(): boolean {
       const path = this.data.path

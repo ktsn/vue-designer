@@ -94,7 +94,6 @@
     "postcss": "^6.0.22",
     "postcss-safe-parser": "^3.0.1",
     "postcss-selector-parser": "^5.0.0-rc.3",
-    "sinai": "^0.2.2",
     "vue-eslint-parser": "^2.0.3",
     "vue-template-compiler": "^2.5.16",
     "ws": "^5.2.0"
@@ -116,6 +115,7 @@
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.2",
     "sass-loader": "^7.0.2",
+    "sinai": "^0.2.2",
     "testdouble": "^3.8.1",
     "ts-jest": "^22.4.6",
     "ts-loader": "^4.3.1",

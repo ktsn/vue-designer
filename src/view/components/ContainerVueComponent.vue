@@ -13,11 +13,10 @@
 <script lang="ts">
 import Vue from 'vue'
 import VueComponent from './VueComponent.vue'
-import {
-  ScopedDocument,
-  projectHelpers,
-  DocumentScope
-} from '../store/modules/project'
+import { ScopedDocument, DocumentScope } from '../store/modules/project'
+import { mapper } from '../store'
+
+const projectMapper = mapper.module('project')
 
 export default Vue.extend({
   name: 'ContainerVueComponent',
@@ -39,11 +38,11 @@ export default Vue.extend({
   },
 
   computed: {
-    ...projectHelpers.mapState({
+    ...projectMapper.mapState({
       scopes: 'documentScopes'
     }),
 
-    ...projectHelpers.mapGetters({
+    ...projectMapper.mapGetters({
       documents: 'scopedDocuments'
     }),
 

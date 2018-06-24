@@ -56,9 +56,12 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.ts$": "ts-jest",
+      "^.+\\.[jt]s$": "ts-jest",
       "^.+\\.vue$": "vue-jest"
     },
+    "transformIgnorePatterns": [
+      "node_modules/(?!(sinai/lib)/)"
+    ],
     "setupFiles": [
       "<rootDir>/test/setup.ts"
     ],
@@ -112,6 +115,7 @@
     "raw-loader": "^0.5.1",
     "rimraf": "^2.6.2",
     "sass-loader": "^7.0.2",
+    "sinai": "^0.2.2",
     "testdouble": "^3.8.1",
     "ts-jest": "^22.4.6",
     "ts-loader": "^4.3.1",
@@ -123,7 +127,6 @@
     "vue-loader": "^15.2.4",
     "vue-server-renderer": "^2.5.16",
     "vue-style-loader": "^4.1.0",
-    "vuex": "github:ktsn/vuex#fc1f29b",
     "webpack": "^4.10.2",
     "webpack-cli": "^3.0.1",
     "webpack-dev-server": "^3.1.4",

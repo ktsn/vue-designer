@@ -1,4 +1,4 @@
-import { Store } from 'vuex'
+import { store as createStore, module } from 'sinai'
 import { mount, Wrapper } from '@vue/test-utils'
 import {
   Template,
@@ -13,7 +13,7 @@ import {
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { VueFilePayload } from '@/parser/vue-file'
 import VueComponent from '@/view/components/VueComponent.vue'
-import { project as originalProject } from '@/view/store/modules/project'
+import { project } from '@/view/store/modules/project'
 import { mapValues } from '@/utils'
 
 export function render(
@@ -23,19 +23,16 @@ export function render(
   childComponents: ChildComponent[] = [],
   storeDocuments: Record<string, Partial<VueFilePayload>> = {}
 ): Wrapper<VueComponent> {
-  const store = new Store({
-    modules: { project: originalProject }
-  })
+  const store = createStore(module().child('project', project))
 
-  store.commit('project/changeDocument', 'file:///Test.vue')
-  store.commit('project/refreshScope', {
+  store.mutations.project.changeDocument('file:///Test.vue')
+  store.mutations.project.refreshScope({
     uri: 'file:///Test.vue',
     props,
     data
   })
 
-  store.commit(
-    'project/setDocuments',
+  store.mutations.project.setDocuments(
     mapValues(storeDocuments, (doc, uri) => {
       return {
         uri,
@@ -51,7 +48,7 @@ export function render(
 
   Object.keys(storeDocuments).forEach(uri => {
     const doc = storeDocuments[uri]
-    store.commit('project/refreshScope', {
+    store.mutations.project.refreshScope({
       uri,
       props: doc.props || [],
       data: doc.data || []
@@ -62,7 +59,7 @@ export function render(
     propsData: {
       uri: 'file:///Test.vue',
       template,
-      scope: store.getters['project/currentScope'],
+      scope: store.getters.project.currentScope,
       childComponents,
       styles: ''
     },

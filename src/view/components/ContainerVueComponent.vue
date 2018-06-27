@@ -13,7 +13,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import VueComponent from './VueComponent.vue'
-import { ScopedDocument, DocumentScope } from '../store/modules/project'
+import { ScopedDocument, DocumentScope } from '../store/modules/project/types'
 import { mapper } from '../store'
 
 const projectMapper = mapper.module('project')

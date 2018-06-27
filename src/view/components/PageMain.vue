@@ -86,7 +86,7 @@ import ScopeInformation from './ScopeInformation.vue'
 import StyleInformation from './StyleInformation.vue'
 import ComponentCatalog from './ComponentCatalog.vue'
 import Toolbar from './Toolbar.vue'
-import { ScopedDocument } from '../store/modules/project'
+import { ScopedDocument } from '../store/modules/project/types'
 import { mapper } from '../store'
 
 const projectMapper = mapper.module('project')

@@ -22,7 +22,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import ComponentCatalogPreview from './ComponentCatalogPreview.vue'
-import { ScopedDocument } from '../store/modules/project'
+import { ScopedDocument } from '../store/modules/project/types'
 
 export default Vue.extend({
   name: 'ComponentCatalog',

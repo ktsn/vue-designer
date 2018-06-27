@@ -34,7 +34,7 @@
 import Vue from 'vue'
 import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
-import { ScopedDocument, DocumentScope } from '../store/modules/project'
+import { ScopedDocument, DocumentScope } from '../store/modules/project/types'
 import { Element } from '@/parser/template/types'
 
 const scrollContentPadding = 100

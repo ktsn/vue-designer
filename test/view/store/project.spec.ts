@@ -1,11 +1,9 @@
 import { store as createStore } from 'sinai'
 import { stub } from 'sinai/lib/test'
-import {
-  project,
-  ProjectGetters,
-  ProjectActions,
-  ProjectMutations
-} from '@/view/store/modules/project'
+import { project } from '@/view/store/modules/project'
+import { ProjectGetters } from '@/view/store/modules/project/project-getters'
+import { ProjectActions } from '@/view/store/modules/project/project-actions'
+import { ProjectMutations } from '@/view/store/modules/project/project-mutations'
 import { createTemplate, h } from '../../helpers/template'
 import { createStyle, rule, selector } from '../../helpers/style'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'

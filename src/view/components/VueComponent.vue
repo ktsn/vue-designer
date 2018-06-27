@@ -3,7 +3,7 @@ import Vue, { VNode } from 'vue'
 import Child from './Child.vue'
 import { Template } from '@/parser/template/types'
 import { ChildComponent } from '@/parser/script/types'
-import { DocumentScope } from '@/view/store/modules/project'
+import { DocumentScope } from '@/view/store/modules/project/types'
 import { resolveControlDirectives, ResolvedChild } from '../rendering'
 
 export default Vue.extend({

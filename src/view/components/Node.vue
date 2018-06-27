@@ -9,7 +9,7 @@ import {
   resolveControlDirectives,
   ResolvedChild
 } from '../rendering'
-import { DraggingPlace } from '../store/modules/project'
+import { DraggingPlace } from '../store/modules/project/types'
 
 export default Vue.extend({
   name: 'Node',

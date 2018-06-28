@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import * as path from 'path'
 import { AddressInfo } from 'net'
 import { CommandEmitter, MessageBus, EventObserver } from 'meck'
 import {
@@ -22,6 +23,9 @@ function createVSCodeEventObserver(): EventObserver<Events> {
   const folders = vscode.workspace.workspaceFolders
   const pattern = folders && new vscode.RelativePattern(folders[0], '**/*.vue')
   const watcher = pattern && vscode.workspace.createFileSystemWatcher(pattern)
+
+  const config = vscode.workspace.getConfiguration('vueDesigner')
+  const sharedStylePaths = config.get<string[]>('sharedStyles') || []
 
   return new EventObserver(emit => {
     vscode.window.onDidChangeActiveTextEditor(editor => {
@@ -75,6 +79,21 @@ function createVSCodeEventObserver(): EventObserver<Events> {
         })
       })
     })
+
+    if (folders) {
+      const rootPath = folders[0].uri.fsPath
+
+      Promise.all(
+        sharedStylePaths.map(stylePath => {
+          const fsStylePath = path.join(rootPath, stylePath)
+          return vscode.workspace.openTextDocument(fsStylePath).then(doc => {
+            return doc.getText()
+          })
+        })
+      ).then(sharedStyles => {
+        emit('loadSharedStyle', sharedStyles.join('\n'))
+      })
+    }
   })
 }
 

@@ -3,6 +3,7 @@ import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {
   initClient: undefined
+  loadSharedStyle: string
   selectNode: {
     uri: string
     templatePath: number[]
@@ -44,6 +45,7 @@ export interface Events {
 
 export interface Commands {
   initProject: Record<string, VueFilePayload>
+  initSharedStyle: string
   changeDocument: string
   highlightEditor: {
     uri: string

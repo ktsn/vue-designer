@@ -133,6 +133,10 @@ export function wsCommandEmiter(
       send({ type: 'InitProject', vueFiles: payload })
     })
 
+    observe('initSharedStyle', payload => {
+      send({ type: 'InitSharedStyle', style: payload })
+    })
+
     observe('changeDocument', payload => {
       send({ type: 'ChangeDocument', uri: payload })
     })

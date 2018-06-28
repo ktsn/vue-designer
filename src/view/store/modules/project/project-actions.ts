@@ -45,6 +45,9 @@ export class ProjectActions extends Actions<
           })
           this.matchSelectedNodeWithStyles()
           break
+        case 'InitSharedStyle':
+          this.mutations.setSharedStyle(data.style)
+          break
         case 'ChangeDocument':
           this.mutations.changeDocument(data.uri)
           break

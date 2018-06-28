@@ -37,7 +37,18 @@ describe('Store project getters', () => {
         }
       })
       const actual = getters.scopedDocuments['file:///Foo.vue']
-      expect(actual.styleCode).toBe('div[data-scope-foo] {}')
+      expect(actual.styleCode).toBe('\ndiv[data-scope-foo] {}')
+    })
+
+    it('should add shared style to style code', () => {
+      const getters = stub(ProjectGetters, {
+        state: {
+          documents: documents(),
+          sharedStyle: 'h1 { margin: 0; }'
+        }
+      })
+      const actual = getters.scopedDocuments['file:///Foo.vue']
+      expect(actual.styleCode).toBe('h1 { margin: 0; }\ndiv[data-scope-foo] {}')
     })
   })
 

@@ -1,4 +1,5 @@
 import * as vscode from 'vscode'
+import * as path from 'path'
 import { AddressInfo } from 'net'
 import { CommandEmitter, MessageBus, EventObserver } from 'meck'
 import {
@@ -11,6 +12,7 @@ import { VueFile } from './parser/vue-file'
 import { Commands, Events } from './message/types'
 import { observeServerEvents } from './message/bus'
 import { AssetResolver } from './asset-resolver'
+import { Watcher } from './vscode/watcher'
 
 function createHighlight(): vscode.TextEditorDecorationType {
   return vscode.window.createTextEditorDecorationType({
@@ -20,8 +22,10 @@ function createHighlight(): vscode.TextEditorDecorationType {
 
 function createVSCodeEventObserver(): EventObserver<Events> {
   const folders = vscode.workspace.workspaceFolders
-  const pattern = folders && new vscode.RelativePattern(folders[0], '**/*.vue')
-  const watcher = pattern && vscode.workspace.createFileSystemWatcher(pattern)
+  const watcher = folders && new Watcher(folders[0].uri.fsPath)
+
+  const config = vscode.workspace.getConfiguration('vueDesigner')
+  const sharedStylePaths = config.get<string[]>('sharedStyles') || []
 
   return new EventObserver(emit => {
     vscode.window.onDidChangeActiveTextEditor(editor => {
@@ -42,26 +46,26 @@ function createVSCodeEventObserver(): EventObserver<Events> {
     })
 
     if (watcher) {
-      watcher.onDidCreate(uri => {
-        vscode.workspace.openTextDocument(uri).then(document => {
-          emit('addDocument', {
-            uri: uri.toString(),
-            code: document.getText()
-          })
+      watcher.onDidCreateComponent((uri, doc) => {
+        emit('addDocument', {
+          uri: uri.toString(),
+          code: doc.getText()
         })
       })
 
-      watcher.onDidChange(uri => {
-        vscode.workspace.openTextDocument(uri).then(document => {
-          emit('changeDocument', {
-            uri: uri.toString(),
-            code: document.getText()
-          })
+      watcher.onDidChangeComponent((uri, doc) => {
+        emit('changeDocument', {
+          uri: uri.toString(),
+          code: doc.getText()
         })
       })
 
-      watcher.onDidDelete(uri => {
+      watcher.onDidDeleteComponent(uri => {
         emit('removeDocument', uri.toString())
+      })
+
+      watcher.onDidChangeSharedStyle(style => {
+        emit('loadSharedStyle', style)
       })
     }
 
@@ -75,6 +79,21 @@ function createVSCodeEventObserver(): EventObserver<Events> {
         })
       })
     })
+
+    if (folders) {
+      const rootPath = folders[0].uri.fsPath
+
+      Promise.all(
+        sharedStylePaths.map(stylePath => {
+          const fsStylePath = path.join(rootPath, stylePath)
+          return vscode.workspace
+            .openTextDocument(fsStylePath)
+            .then(doc => doc.getText(), () => '')
+        })
+      ).then(sharedStyles => {
+        emit('loadSharedStyle', sharedStyles.join('\n'))
+      })
+    }
   })
 }
 

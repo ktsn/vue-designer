@@ -1,7 +1,7 @@
 import { VueFilePayload } from './parser/vue-file'
 import { DeclarationForUpdate, DeclarationForAdd } from './parser/style/types'
 
-export type ServerPayload = InitProject | ChangeDocument
+export type ServerPayload = InitProject | InitSharedStyle | ChangeDocument
 export type ClientPayload =
   | SelectNode
   | AddNode
@@ -12,6 +12,11 @@ export type ClientPayload =
 export interface InitProject {
   type: 'InitProject'
   vueFiles: Record<string, VueFilePayload>
+}
+
+export interface InitSharedStyle {
+  type: 'InitSharedStyle'
+  style: string
 }
 
 export interface ChangeDocument {

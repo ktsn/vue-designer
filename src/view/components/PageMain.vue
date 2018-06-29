@@ -10,6 +10,7 @@
           :width="width"
           :height="height"
           :scale="scale"
+          :shared-style="sharedStyle"
           @select="select"
           @dragover="setDraggingPlace"
           @add="applyDraggingElement"
@@ -113,7 +114,8 @@ export default Vue.extend({
     ...projectMapper.mapState({
       uri: 'currentUri',
       selectedPath: 'selectedPath',
-      matchedRules: 'matchedRules'
+      matchedRules: 'matchedRules',
+      sharedStyle: 'sharedStyle'
     }),
 
     ...viewportMapper.mapState(['width', 'height', 'scale']),

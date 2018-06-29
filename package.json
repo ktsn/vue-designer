@@ -36,6 +36,17 @@
     "onCommand:extension.openVueDesigner"
   ],
   "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Vue Designer configuration",
+      "properties": {
+        "vueDesigner.sharedStyles": {
+          "type": "array",
+          "default": [],
+          "description": "Path to css files which will be loaded globally in the preview"
+        }
+      }
+    },
     "commands": [
       {
         "command": "extension.openVueDesigner",

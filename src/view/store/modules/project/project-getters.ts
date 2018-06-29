@@ -18,6 +18,10 @@ export class ProjectGetters extends Getters<ProjectState>() {
       const pathEls = doc.uri.split('/')
       const displayName = pathEls[pathEls.length - 1].replace(/\..*$/, '')
 
+      const styleCodes = doc.styles.reduce<string[]>((acc, style) => {
+        return acc.concat(genStyle(addScopeToStyle(style, doc.scopeId)))
+      }, [])
+
       return {
         uri: doc.uri,
         displayName,
@@ -25,11 +29,7 @@ export class ProjectGetters extends Getters<ProjectState>() {
         props: doc.props,
         data: doc.data,
         childComponents: doc.childComponents,
-        styleCode: doc.styles
-          .reduce<string[]>((acc, style) => {
-            return acc.concat(genStyle(addScopeToStyle(style, doc.scopeId)))
-          }, [])
-          .join('\n')
+        styleCode: styleCodes.join('\n')
       }
     })
   }

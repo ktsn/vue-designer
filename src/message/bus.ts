@@ -26,6 +26,7 @@ export function observeServerEvents(
   activeUri: string | undefined
 ): void {
   let lastActiveUri: string | undefined = activeUri
+  let sharedStyle: string = ''
 
   const vueFileToPayload = (vueFile: VueFile) => {
     return _vueFileToPayload(vueFile, assetResolver)
@@ -33,9 +34,15 @@ export function observeServerEvents(
 
   bus.on('initClient', () => {
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+    bus.emit('initSharedStyle', sharedStyle)
     if (lastActiveUri) {
       bus.emit('changeDocument', lastActiveUri)
     }
+  })
+
+  bus.on('loadSharedStyle', style => {
+    sharedStyle = style
+    bus.emit('initSharedStyle', style)
   })
 
   bus.on('selectNode', payload => {

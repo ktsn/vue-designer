@@ -8,6 +8,9 @@
     :style="viewportStyle"
     @resize="$emit('resize', arguments[0])"
   >
+    <!-- Hack for avoiding template compile error of style elements -->
+    <div is="style" :text-content.prop="sharedStyle" />
+
     <div class="viewport">
       <slot />
     </div>
@@ -42,6 +45,10 @@ export default Vue.extend({
     },
     scale: {
       type: Number,
+      required: true
+    },
+    sharedStyle: {
+      type: String,
       required: true
     }
   },

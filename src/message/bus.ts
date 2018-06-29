@@ -1,3 +1,4 @@
+import * as path from 'path'
 import { MessageBus } from 'meck'
 import { Events, Commands } from './types'
 import {
@@ -18,6 +19,10 @@ import {
 } from '../parser/style/modify'
 import { AssetResolver } from '../asset-resolver'
 import { mapValues } from '../utils'
+
+function isInterested(uri: string): boolean {
+  return path.extname(uri) === '.vue'
+}
 
 export function observeServerEvents(
   bus: MessageBus<Events, Commands>,
@@ -117,8 +122,10 @@ export function observeServerEvents(
   })
 
   bus.on('changeActiveEditor', uri => {
-    lastActiveUri = uri
-    bus.emit('changeDocument', uri)
+    if (isInterested(uri)) {
+      lastActiveUri = uri
+      bus.emit('changeDocument', uri)
+    }
   })
 
   bus.on('updateEditor', ({ uri, code }) => {

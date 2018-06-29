@@ -31,6 +31,10 @@
     </div>
 
     <div v-if="document" class="information-pane" :class="{ open: openPane }">
+      <p class="information-pane-title">
+        {{ documentName }}
+      </p>
+
       <div class="information-pane-scroller">
         <div
           v-if="selectedPath.length > 0"
@@ -123,6 +127,7 @@ export default Vue.extend({
     ...projectMapper.mapGetters({
       document: 'currentDocument',
       scope: 'currentScope',
+      documentName: 'currentDocumentName',
       renderingDocument: 'currentRenderingDocument',
       scopedDocuments: 'scopedDocuments'
     }),
@@ -194,10 +199,16 @@ export default Vue.extend({
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   transform: translateX(100%);
   transition: transform 400ms cubic-bezier(0.19, 1, 0.22, 1);
+}
 
-  &.open {
-    transform: translateX(0);
-  }
+.information-pane.open {
+  transform: translateX(0);
+}
+
+.information-pane-title {
+  margin: 0;
+  padding: 13px 15px 0;
+  font-size: rem(20);
 }
 
 .information-pane-scroller {

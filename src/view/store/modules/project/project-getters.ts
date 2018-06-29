@@ -42,6 +42,12 @@ export class ProjectGetters extends Getters<ProjectState>() {
     return state.documents[state.currentUri]
   }
 
+  get currentDocumentName(): string | undefined {
+    return this.currentRenderingDocument
+      ? this.currentRenderingDocument.displayName
+      : undefined
+  }
+
   get currentScope(): DocumentScope | undefined {
     const { state } = this
     if (!state.currentUri) {

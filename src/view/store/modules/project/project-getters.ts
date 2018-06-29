@@ -21,7 +21,6 @@ export class ProjectGetters extends Getters<ProjectState>() {
       const styleCodes = doc.styles.reduce<string[]>((acc, style) => {
         return acc.concat(genStyle(addScopeToStyle(style, doc.scopeId)))
       }, [])
-      styleCodes.unshift(this.state.sharedStyle)
 
       return {
         uri: doc.uri,

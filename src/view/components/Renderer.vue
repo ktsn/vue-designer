@@ -6,6 +6,7 @@
         :width="width"
         :height="height"
         :scale="scale"
+        :shared-style="sharedStyle"
         @resize="$emit('resize', arguments[0])"
         @zoom="$emit('zoom', arguments[0])"
       >
@@ -70,6 +71,10 @@ export default Vue.extend({
     },
     scale: {
       type: Number,
+      required: true
+    },
+    sharedStyle: {
+      type: String,
       required: true
     }
   },

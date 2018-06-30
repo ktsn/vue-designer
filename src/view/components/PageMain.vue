@@ -172,7 +172,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .page-layout-renderer {
   position: absolute;
   top: 0;
@@ -195,7 +195,7 @@ export default Vue.extend({
   top: 0;
   bottom: 0;
   width: 330px;
-  background-color: #f5f5f5;
+  background-color: var(--vd-color-bg-pane);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   transform: translateX(100%);
   transition: transform 400ms cubic-bezier(0.19, 1, 0.22, 1);
@@ -208,7 +208,7 @@ export default Vue.extend({
 .information-pane-title {
   margin: 0;
   padding: 13px 15px 0;
-  font-size: rem(20);
+  font-size: var(--vd-font-size-large);
 }
 
 .information-pane-scroller {
@@ -217,7 +217,7 @@ export default Vue.extend({
 }
 
 .information-pane-item:not(:first-child) {
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--vd-border-color);
 }
 
 .information-pane-toggle {
@@ -238,7 +238,7 @@ export default Vue.extend({
 }
 
 .information-pane-toggle:hover {
-  background-color: #24b600;
+  background-color: var(--vd-color-accent);
 }
 
 .information-pane-toggle::before {
@@ -276,6 +276,6 @@ export default Vue.extend({
 
 .not-found {
   margin: 0;
-  color: #888;
+  color: var(--vd-color-text-weakest);
 }
 </style>

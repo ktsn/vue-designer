@@ -1,5 +1,5 @@
 <template>
-  <div class="app">
+  <div id="app">
     <PageMain />
   </div>
 </template>
@@ -17,7 +17,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss">
+<style>
 body {
   padding: 0;
   margin: 0;
@@ -25,10 +25,10 @@ body {
 }
 </style>
 
-<style lang="scss" scoped>
-.app {
+<style scoped>
+#app {
   font-family: sans-serif;
-  font-size: rem(16);
-  color: #333;
+  font-size: var(--vd-font-size);
+  color: var(--vd-text-color);
 }
 </style>

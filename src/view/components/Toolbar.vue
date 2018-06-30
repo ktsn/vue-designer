@@ -113,7 +113,7 @@ export default Vue.extend({
 </script>
 
 
-<style lang="scss" scoped>
+<style scoped>
 .toolbar {
   display: flex;
   align-items: center;
@@ -126,7 +126,6 @@ export default Vue.extend({
 
 .toolbar-item {
   margin-left: 30px;
-  font-size: rem(14);
 }
 
 .toolbar-item:first-child {

@@ -79,17 +79,15 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .information {
   overflow-y: auto;
   max-height: 100%;
   padding: 13px 15px;
 }
 
-.information-group {
-  &:not(:first-child) {
-    margin-top: 16px;
-  }
+.information-group:not(:first-child) {
+  margin-top: 16px;
 }
 
 .information-title {

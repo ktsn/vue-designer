@@ -230,7 +230,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .renderer {
   all: initial;
   overflow: auto;
@@ -246,7 +246,7 @@ export default Vue.extend({
 .renderer-selected {
   position: absolute;
   box-sizing: border-box;
-  border: 1px solid #0f2fff;
+  border: 1px solid var(--vd-color-selected-border);
   pointer-events: none;
 }
 </style>

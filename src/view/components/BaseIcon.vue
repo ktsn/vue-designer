@@ -21,7 +21,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .base-icon {
   display: inline-block;
   height: 1em;

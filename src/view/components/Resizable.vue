@@ -140,7 +140,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .resizable {
   --handler-size: 10px;
   --handler-offset: calc(var(--handler-size) / 2);

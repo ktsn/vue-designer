@@ -1,0 +1,16 @@
+:root {
+  --vd-color-text: #333;
+  --vd-color-text-weak: #666;
+  --vd-color-text-weakest: #aaa;
+  --vd-color-accent: #058136;
+  --vd-color-number: #0e00ab;
+  --vd-color-string: #c40e0e;
+  --vd-color-boolean: #8d40d0;
+  --vd-border-color: #ccc;
+  --vd-color-bg-pane: #f5f5f5;
+  --vd-color-selected-border: #0f2fff;
+  --vd-color-unresolved: rgba(119, 166, 255, 0.3);
+  --vd-font-size: 16px;
+  --vd-font-size-small: 12px;
+  --vd-font-size-large: 20px;
+}

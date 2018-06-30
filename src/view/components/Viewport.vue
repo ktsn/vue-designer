@@ -70,7 +70,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .viewport-wrapper {
   position: absolute;
   top: 0;

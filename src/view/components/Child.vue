@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
+import NodeSlot from './NodeSlot.vue'
 import ContainerNode from './ContainerNode.vue'
 import Expression from './Expression.vue'
 import { ElementChild } from '@/parser/template/types'
@@ -28,25 +29,26 @@ export default Vue.extend({
     childComponents: {
       type: Array as { (): ChildComponent[] },
       required: true
+    },
+
+    slots: {
+      type: Object as { (): Record<string, VNode[]> },
+      required: true
     }
   },
 
-  // @ts-ignore
-  render(h, { props, listeners }): VNode {
-    const { uri, data, scope, childComponents } = props
+  render(h, { props, listeners }): any /* VNode | VNode[] */ {
+    const { data, scope } = props
     switch (data.type) {
       case 'Element':
-        return h(ContainerNode, {
-          props: {
-            uri,
-            data,
-            scope,
-            childComponents
-          },
-          on: listeners
+        const slot = data.startTag.attributes.find(attr => attr.name === 'slot')
+        return h(data.name === 'slot' ? NodeSlot : ContainerNode, {
+          props,
+          on: listeners,
+          slot: slot && slot.value
         })
       case 'TextNode':
-        return [data.text] as any
+        return [data.text]
       case 'ExpressionNode':
         return h(Expression, {
           props: {

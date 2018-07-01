@@ -8,7 +8,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { VNode } from 'vue'
 import Node from './Node.vue'
 import { Element } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
@@ -41,6 +41,11 @@ export default Vue.extend({
 
     childComponents: {
       type: Array as { (): ChildComponent[] },
+      required: true
+    },
+
+    slots: {
+      type: Object as { (): Record<string, VNode[]> },
       required: true
     }
   },

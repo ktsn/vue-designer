@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import Node from './Node.vue'
+import Child from './Child.vue'
 import { Element } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 
@@ -39,7 +39,7 @@ export default Vue.extend({
     if (!slot) {
       // placeholder content
       return props.data.children.map(child => {
-        return h(Node, {
+        return h(Child, {
           props: {
             uri: props.uri,
             data: child,

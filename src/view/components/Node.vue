@@ -162,6 +162,7 @@ export default Vue.extend({
       this.vnodeTag,
       this.vnodeData,
       this.resolvedChildren.map(c => {
+        // Slot name will be resolved in <Child> component
         return h(Child, {
           props: {
             uri,

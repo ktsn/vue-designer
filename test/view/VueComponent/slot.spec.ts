@@ -1,4 +1,4 @@
-import { createTemplate, h, render } from '../../helpers/template'
+import { createTemplate, h, render, a } from '../../helpers/template'
 
 describe('VueComponent slot', () => {
   it('renders placeholder slot content', () => {
@@ -30,6 +30,43 @@ describe('VueComponent slot', () => {
           h('div', [], [
             h('p', [], ['foo content']),
             h('slot', [], [])
+          ])
+        ])
+      }
+    }
+
+    const wrapper = render(
+      template,
+      [],
+      [],
+      [
+        {
+          name: 'Foo',
+          uri: 'file://Foo.vue'
+        }
+      ],
+      components
+    )
+
+    expect(wrapper.html()).toMatchSnapshot()
+  })
+
+  it('renders named slot content', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('Foo', [], [
+        h('p', [], ['default']),
+        h('p', [a('slot', 'test')], ['named'])
+      ])
+    ])
+
+    const components = {
+      'file://Foo.vue': {
+        // prettier-ignore
+        template: createTemplate([
+          h('div', [], [
+            h('p', [], ['foo content']),
+            h('slot', [a('name', 'test')], [])
           ])
         ])
       }

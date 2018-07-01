@@ -41,9 +41,11 @@ export default Vue.extend({
     const { data, scope } = props
     switch (data.type) {
       case 'Element':
+        const slot = data.startTag.attributes.find(attr => attr.name === 'slot')
         return h(data.name === 'slot' ? NodeSlot : ContainerNode, {
           props,
-          on: listeners
+          on: listeners,
+          slot: slot && slot.value
         })
       case 'TextNode':
         return [data.text]

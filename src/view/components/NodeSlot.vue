@@ -33,7 +33,7 @@ export default Vue.extend({
 
   render(h, { props }): any /* VNode[] */ {
     const { data, slots } = props
-    const slotAttr = data.startTag.attributes.find(attr => attr.name === 'slot')
+    const slotAttr = data.startTag.attributes.find(attr => attr.name === 'name')
     const slot = slots[slotAttr ? slotAttr.value : 'default']
 
     if (!slot) {

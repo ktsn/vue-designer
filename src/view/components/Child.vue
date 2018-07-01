@@ -1,5 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
+import NodeSlot from './NodeSlot.vue'
 import ContainerNode from './ContainerNode.vue'
 import Expression from './Expression.vue'
 import { ElementChild } from '@/parser/template/types'
@@ -33,16 +34,11 @@ export default Vue.extend({
 
   // @ts-ignore
   render(h, { props, listeners }): VNode {
-    const { uri, data, scope, childComponents } = props
+    const { data, scope } = props
     switch (data.type) {
       case 'Element':
-        return h(ContainerNode, {
-          props: {
-            uri,
-            data,
-            scope,
-            childComponents
-          },
+        return h(data.name === 'slot' ? NodeSlot : ContainerNode, {
+          props,
           on: listeners
         })
       case 'TextNode':

@@ -1,0 +1,3 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`VueComponent slot shows default elements 1`] = `"<div><style></style><div class=\\"\\"><p class=\\"\\">default content</p></div></div>"`;

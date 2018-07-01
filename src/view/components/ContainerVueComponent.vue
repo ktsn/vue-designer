@@ -36,24 +36,21 @@ export default Vue.extend({
 
     scope(): DocumentScope | undefined {
       return this.scopes[this.uri]
-    },
-
-    flattenSlots(): VNode[] {
-      const h = this.$createElement
-      return Object.keys(this.$slots).map(name => {
-        return h(
-          'template',
-          {
-            slot: name
-          },
-          this.$slots[name]
-        )
-      })
     }
   },
 
   render(h): VNode {
     if (!this.document) return h()
+
+    const flattenSlots = Object.keys(this.$slots).map(name => {
+      return h(
+        'template',
+        {
+          slot: name
+        },
+        this.$slots[name]
+      )
+    })
 
     return h(
       VueComponent,
@@ -67,7 +64,7 @@ export default Vue.extend({
           propsData: this.propsData
         }
       },
-      this.flattenSlots
+      flattenSlots
     )
   }
 })

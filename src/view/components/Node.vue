@@ -31,6 +31,10 @@ export default Vue.extend({
       type: Array as { (): ChildComponent[] },
       required: true
     },
+    slots: {
+      type: Object as { (): Record<string, VNode[]> },
+      required: true
+    },
     selectable: Boolean,
     selected: Boolean
   },
@@ -152,7 +156,7 @@ export default Vue.extend({
   },
 
   render(h): VNode {
-    const { uri, childComponents } = this
+    const { uri, childComponents, slots } = this
 
     return h(
       this.vnodeTag,
@@ -163,7 +167,8 @@ export default Vue.extend({
             uri,
             data: c.el,
             scope: c.scope,
-            childComponents
+            childComponents,
+            slots
           },
           on: this.$listeners
         })

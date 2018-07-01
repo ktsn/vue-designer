@@ -29,11 +29,15 @@ export default Vue.extend({
     childComponents: {
       type: Array as { (): ChildComponent[] },
       required: true
+    },
+
+    slots: {
+      type: Object as { (): Record<string, VNode[]> },
+      required: true
     }
   },
 
-  // @ts-ignore
-  render(h, { props, listeners }): VNode {
+  render(h, { props, listeners }): any /* VNode | VNode[] */ {
     const { data, scope } = props
     switch (data.type) {
       case 'Element':
@@ -42,7 +46,7 @@ export default Vue.extend({
           on: listeners
         })
       case 'TextNode':
-        return [data.text] as any
+        return [data.text]
       case 'ExpressionNode':
         return h(Expression, {
           props: {

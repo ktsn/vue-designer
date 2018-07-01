@@ -24,21 +24,34 @@ export default Vue.extend({
     childComponents: {
       type: Array as { (): ChildComponent[] },
       required: true
+    },
+    slots: {
+      type: Object as { (): Record<string, VNode[]> },
+      required: true
     }
   },
 
-  render(h, { props }): VNode {
-    // @ts-ignore
-    return props.data.children.map(child => {
-      return h(Node, {
-        props: {
-          uri: props.uri,
-          data: child,
-          scope: props.scope,
-          childComponents: props.childComponents
-        }
+  render(h, { props }): any /* VNode[] */ {
+    const { data, slots } = props
+    const slotAttr = data.startTag.attributes.find(attr => attr.name === 'slot')
+    const slot = slots[slotAttr ? slotAttr.value : 'default']
+
+    if (!slot) {
+      // placeholder content
+      return props.data.children.map(child => {
+        return h(Node, {
+          props: {
+            uri: props.uri,
+            data: child,
+            scope: props.scope,
+            childComponents: props.childComponents,
+            slots
+          }
+        })
       })
-    })
+    }
+
+    return slot
   }
 })
 </script>

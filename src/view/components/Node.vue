@@ -36,6 +36,14 @@ export default Vue.extend({
   },
 
   computed: {
+    vnodeTag(): string | typeof Vue {
+      if (this.nodeUri) {
+        return ContainerVueComponent
+      }
+
+      return this.data.name
+    },
+
     vnodeData(): VNodeData {
       const { data: node, scope, selectable } = this
       const data = convertToVNodeData(
@@ -54,8 +62,8 @@ export default Vue.extend({
         }
       }
 
-      // If there is matched nodeUri, the vnode will be ContainerVueComponent
-      if (this.nodeUri) {
+      const tag = this.vnodeTag
+      if (tag === ContainerVueComponent) {
         data.props = {
           uri: this.nodeUri,
           propsData: data.attrs
@@ -144,10 +152,10 @@ export default Vue.extend({
   },
 
   render(h): VNode {
-    const { uri, data, childComponents } = this
+    const { uri, childComponents } = this
 
     return h(
-      this.nodeUri ? ContainerVueComponent : data.name,
+      this.vnodeTag,
       this.vnodeData,
       this.resolvedChildren.map(c => {
         return h(Child, {

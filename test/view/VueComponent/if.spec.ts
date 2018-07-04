@@ -77,4 +77,28 @@ describe('VueComponent v-if', () => {
     const p = render(template).find('p')
     expect(p.exists()).toBe(false)
   })
+
+  it('gathers the contents in the template element', () => {
+    // prettier-ignore
+    const shown = createTemplate([
+      h('template', [d('if', 'true')], [
+        h('p', [], ['foo']),
+        'bar'
+      ]),
+      'baz'
+    ])
+
+    expect(render(shown).html()).toMatchSnapshot()
+
+    // prettier-ignore
+    const hidden = createTemplate([
+      h('template', [d('if', 'false')], [
+        h('p', [], ['foo']),
+        'bar'
+      ]),
+      'baz'
+    ])
+
+    expect(render(hidden).html()).toMatchSnapshot()
+  })
 })

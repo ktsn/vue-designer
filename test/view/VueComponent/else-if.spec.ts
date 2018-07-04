@@ -58,4 +58,20 @@ describe('VueComponent v-else-if', () => {
     expect(list.length).toBe(1)
     expect(list.at(0).text()).toBe('Bar')
   })
+
+  it('resolves template children as the else-if block', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [d('if', 'false')], [
+        'Foo'
+      ]),
+      h('template', [d('else-if', 'true')], [
+        h('strong', [], ['Bar']),
+        'Content'
+      ])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.html()).toMatchSnapshot()
+  })
 })

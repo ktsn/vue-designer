@@ -125,4 +125,20 @@ describe('VueComponent v-else', () => {
     expect(baz.exists()).toBe(false)
     expect(qux.exists()).toBe(false)
   })
+
+  it('resolves template children as the else block', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('p', [d('if', 'false')], [
+        'Foo'
+      ]),
+      h('template', [d('else')], [
+        h('strong', [], ['Bar']),
+        'Content'
+      ])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.html()).toMatchSnapshot()
+  })
 })

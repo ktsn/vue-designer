@@ -6,7 +6,8 @@ import Expression from './Expression.vue'
 import { ElementChild } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 
-export default Vue.extend({
+// Assign to a constant to recursively use this component
+const Child = Vue.extend({
   name: 'Child',
   functional: true,
 
@@ -42,10 +43,30 @@ export default Vue.extend({
     switch (data.type) {
       case 'Element':
         const slot = data.startTag.attributes.find(attr => attr.name === 'slot')
+        const slotName = slot && slot.value
+
+        // Replace AST <template> with actual <template> element
+        // to handle named slot in Vue.js correctly.
+        if (slotName && data.name === 'template') {
+          return h(
+            'template',
+            { slot: slotName },
+            data.children.map(child => {
+              return h(Child, {
+                props: {
+                  ...props,
+                  data: child
+                },
+                on: listeners
+              })
+            })
+          )
+        }
+
         return h(data.name === 'slot' ? NodeSlot : ContainerNode, {
           props,
           on: listeners,
-          slot: slot && slot.value
+          slot: slotName
         })
       case 'TextNode':
         return [data.text]
@@ -61,4 +82,5 @@ export default Vue.extend({
     }
   }
 })
+export default Child
 </script>

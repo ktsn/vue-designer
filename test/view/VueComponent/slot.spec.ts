@@ -87,4 +87,42 @@ describe('VueComponent slot', () => {
 
     expect(wrapper.html()).toMatchSnapshot()
   })
+
+  it('resolves template element children as the named slot', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('Foo', [], [
+        h('template', [a('slot', 'test')], [
+          h('strong', [], ['named']),
+          h('span', [], ['content'])
+        ])
+      ])
+    ])
+
+    const components = {
+      'file://Foo.vue': {
+        // prettier-ignore
+        template: createTemplate([
+          h('div', [], [
+            h('slot', [a('name', 'test')], [])
+          ])
+        ])
+      }
+    }
+
+    const wrapper = render(
+      template,
+      [],
+      [],
+      [
+        {
+          name: 'Foo',
+          uri: 'file://Foo.vue'
+        }
+      ],
+      components
+    )
+
+    expect(wrapper.html()).toMatchSnapshot()
+  })
 })

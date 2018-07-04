@@ -109,15 +109,21 @@ export function resolveControlDirectives(
       }
 
       const vForIndex = attrs.indexOf(vFor)
-      const cloneNode = clone(child, {
-        startTag: clone(child.startTag, {
-          // Need to remove v-for directive to avoid infinite loop.
-          attributes: [
-            ...attrs.slice(0, vForIndex),
-            ...attrs.slice(vForIndex + 1)
-          ]
-        })
-      })
+      const resolvedNodes =
+        child.name === 'template'
+          ? child.children
+          : [
+              clone(child, {
+                startTag: clone(child.startTag, {
+                  // Need to remove v-for directive to avoid infinite loop.
+                  attributes: [
+                    ...attrs.slice(0, vForIndex),
+                    ...attrs.slice(vForIndex + 1)
+                  ]
+                })
+              })
+            ]
+
       return reduceVFor(
         iteratee.value,
         (acc, ...iteraterValues: any[]) => {
@@ -125,10 +131,12 @@ export function resolveControlDirectives(
           vFor.left.forEach((name, i) => {
             newScope[name] = iteraterValues[i]
           })
-          return resolveControlDirectives(acc, {
-            el: cloneNode,
-            scope: newScope
-          })
+          return resolvedNodes.reduce((acc, node) => {
+            return resolveControlDirectives(acc, {
+              el: node,
+              scope: newScope
+            })
+          }, acc)
         },
         acc
       )
@@ -137,7 +145,9 @@ export function resolveControlDirectives(
     // v-if
     const vIf = findDirective(attrs, d => d.name === 'if')
     if (vIf) {
-      return directiveValue(vIf, scope) ? acc.concat(item) : acc
+      return directiveValue(vIf, scope)
+        ? acc.concat(unwrapTemplate(child, scope))
+        : acc
     }
 
     // v-else or v-else-if
@@ -155,14 +165,35 @@ export function resolveControlDirectives(
       }
 
       if (vElse.name === 'else') {
-        return acc.concat(item)
+        return acc.concat(unwrapTemplate(child, scope))
       }
 
-      return directiveValue(vElse, scope) ? acc.concat(item) : acc
+      return directiveValue(vElse, scope)
+        ? acc.concat(unwrapTemplate(child, scope))
+        : acc
     }
   }
 
   return acc.concat(item)
+}
+
+function unwrapTemplate(
+  el: Element,
+  scope: Record<string, DefaultValue>
+): ResolvedChild[] {
+  if (el.name !== 'template') {
+    return [
+      {
+        el,
+        scope
+      }
+    ]
+  }
+
+  return el.children.map(child => ({
+    el: child,
+    scope
+  }))
 }
 
 /**

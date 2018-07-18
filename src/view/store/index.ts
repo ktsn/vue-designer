@@ -25,6 +25,30 @@ store.actions.project.init({
 
 store.actions.guide.init(boundsCalculator)
 
+store.subscribe(path => {
+  const mayRelayout = [
+    'project.addElement',
+    'project.addChildComponent',
+    'project.setSharedStyle',
+    'project.refreshScope',
+    'project.updatePropValue',
+    'project.updateDataValue',
+    'viewport.resize',
+    'viewport.zoom'
+  ]
+
+  const shouldReset = ['project.setDocuments', 'project.changeDocument']
+
+  const pathStr = path.join('.')
+  const guideActions = store.actions.guide
+
+  if (mayRelayout.indexOf(pathStr) >= 0) {
+    Vue.nextTick(guideActions.calculate)
+  } else if (shouldReset.indexOf(pathStr) >= 0) {
+    Vue.nextTick(guideActions.deselect)
+  }
+})
+
 declare const module: any
 if (module.hot) {
   module.hot.accept(['./modules'], () => {

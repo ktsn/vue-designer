@@ -71,7 +71,8 @@ export default Vue.extend({
                 data: child.el,
                 scope: child.scope,
                 childComponents: this.childComponents,
-                slots: this.$slots
+                slots: this.$slots,
+                scopedSlots: this.$scopedSlots
               },
               on: {
                 select: (path: number[]) => {

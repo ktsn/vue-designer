@@ -86,6 +86,11 @@ export interface ResolvedChild {
   scope: Record<string, DefaultValue>
 }
 
+export interface ResolvedScopedSlot {
+  scopeName: string
+  contents: ElementChild[]
+}
+
 function resolveVFor(
   acc: ResolvedChild[],
   vFor: VForDirective,
@@ -158,6 +163,40 @@ function resolveVElse(
     // v-else-if
     return resolveVIf(acc, vElse, el, scope)
   }
+}
+
+export function resolveScopedSlots(
+  el: Element
+): Record<string, ResolvedScopedSlot> | undefined {
+  let scopedSlots: Record<string, ResolvedScopedSlot> | undefined
+
+  el.children.forEach(child => {
+    if (child.type !== 'Element') return
+
+    const slotScope = child.startTag.attributes.find(
+      attr => !attr.directive && attr.name === 'slot-scope'
+    )
+    const slotScopeName = slotScope && slotScope.value
+    if (!slotScopeName) return
+
+    const slot = child.startTag.attributes.find(
+      attr => !attr.directive && attr.name === 'slot'
+    )
+    const slotName = (slot && slot.value) || 'default'
+
+    const contents = child.name === 'template' ? child.children : [child]
+
+    if (!scopedSlots) {
+      scopedSlots = {}
+    }
+
+    scopedSlots[slotName] = {
+      scopeName: slotScopeName,
+      contents
+    }
+  })
+
+  return scopedSlots
 }
 
 /**
@@ -261,6 +300,21 @@ function parseStyleText(cssText: string): Record<string, string> {
   return res
 }
 
+export function convertToSlotScope(
+  attrs: (Attribute | Directive)[],
+  scope: Record<string, DefaultValue>
+): Record<string, DefaultValue> {
+  const slotScope: Record<string, any> = {}
+  attrs.forEach(attr => {
+    if (!attr.directive) {
+      slotScope[attr.name] = attr.value === null ? true : attr.value
+    } else if (attr.name === 'bind' && attr.argument) {
+      slotScope[attr.argument] = directiveValue(attr, scope)
+    }
+  })
+  return slotScope
+}
+
 export function convertToVNodeData(
   tag: string,
   attrs: (Attribute | Directive)[],
@@ -280,6 +334,8 @@ export function convertToVNodeData(
         acc.staticClass = attr.value || undefined
       } else if (attr.name === 'style') {
         acc.staticStyle = parseStyleText(attr.value || '')
+      } else if (attr.name === 'slot') {
+        acc.slot = attr.value || undefined
       } else if (isValidAttributeName(attr.name)) {
         acc.attrs![attr.name] = attr.value || ''
       }

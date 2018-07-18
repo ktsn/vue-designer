@@ -62,7 +62,8 @@ export default Vue.extend({
           childComponents: this.document.childComponents,
           styles: this.document.styleCode,
           propsData: this.propsData
-        }
+        },
+        scopedSlots: this.$scopedSlots
       },
       flattenSlots
     )

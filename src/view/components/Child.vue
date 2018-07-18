@@ -35,6 +35,11 @@ const Child = Vue.extend({
     slots: {
       type: Object as { (): Record<string, VNode[]> },
       required: true
+    },
+
+    scopedSlots: {
+      type: Object,
+      required: true
     }
   },
 

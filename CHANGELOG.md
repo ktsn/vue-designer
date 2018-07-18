@@ -1,3 +1,24 @@
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/ktsn/vue-designer/compare/v0.5.0...v0.6.0) (2018-07-18)
+
+
+### Bug Fixes
+
+* avoid to show empty preview when changing to active editor of non-vue file ([#42](https://github.com/ktsn/vue-designer/issues/42)) ([b1c230b](https://github.com/ktsn/vue-designer/commit/b1c230b))
+
+
+### Features
+
+* allow to include shared styles ([#41](https://github.com/ktsn/vue-designer/issues/41)) ([6b07626](https://github.com/ktsn/vue-designer/commit/6b07626))
+* make animation and keyframes scoped ([#37](https://github.com/ktsn/vue-designer/issues/37)) ([e81cd6b](https://github.com/ktsn/vue-designer/commit/e81cd6b))
+* render slot contents ([#43](https://github.com/ktsn/vue-designer/issues/43)) ([c5a398d](https://github.com/ktsn/vue-designer/commit/c5a398d))
+* resolve a template tag of an injected named slot ([#45](https://github.com/ktsn/vue-designer/issues/45)) ([2102711](https://github.com/ktsn/vue-designer/commit/2102711))
+* resolve template element having control directives ([#44](https://github.com/ktsn/vue-designer/issues/44)) ([4f274fc](https://github.com/ktsn/vue-designer/commit/4f274fc))
+* resolve v-model on select element ([#35](https://github.com/ktsn/vue-designer/issues/35)) ([194a167](https://github.com/ktsn/vue-designer/commit/194a167))
+* support rendering scoped slots ([#47](https://github.com/ktsn/vue-designer/issues/47)) ([9cbbae5](https://github.com/ktsn/vue-designer/commit/9cbbae5))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/ktsn/vue-designer/compare/v0.4.0...v0.5.0) (2018-06-03)
 

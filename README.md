@@ -8,14 +8,28 @@ Open the command pallete and select `Open Vue Designer`. Then you can see a prev
 
 This extension is still work in progress. If you have some feedbacks for this extension, it would be really helpful!
 
+## Settings
+
+### `vueDesigner.sharedStyles`
+
+An array of CSS paths which will be loaded in the preview. It is useful when your application has global CSS such as reset CSS.
+
+```json
+{
+  "vueDesigner.sharedStyles": ["reset.css"]
+}
+```
+
+Note that it does not support `@import` in the loaded CSS yet. You need to specify all depending CSS files.
+
 ## Supported Preprocessors
 
 Vue Designer currently does not actively support preprocessors on `<template>`, `<script>` and `<style>` blocks. Languages not included in the following list may not work on Vue Designer.
 
-* HTML (`<template>`)
-* JavaScript (`<script>`)
-* TypeScript (`<script lang="ts">`)
-* CSS (`<style>`)
+- HTML (`<template>`)
+- JavaScript (`<script>`)
+- TypeScript (`<script lang="ts">`)
+- CSS (`<style>`)
 
 ## Development
 

@@ -2,7 +2,7 @@
   "name": "vue-designer",
   "displayName": "Vue Designer",
   "main": "./lib/vue-designer",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Vue component design tool",
   "keywords": [
     "Vue",

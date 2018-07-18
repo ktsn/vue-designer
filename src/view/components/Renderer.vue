@@ -21,10 +21,7 @@
           @add="$emit('add')"
         />
 
-        <RendererGuide
-          v-if="selectedPath.length > 0"
-          :guide="selectedBounds"
-        />
+        <RendererGuide />
       </Viewport>
     </div>
   </div>
@@ -58,10 +55,6 @@ export default Vue.extend({
       type: Object as () => DocumentScope,
       required: true
     },
-    selectedPath: {
-      type: Array as () => number[],
-      required: true
-    },
     width: {
       type: Number,
       required: true
@@ -85,34 +78,6 @@ export default Vue.extend({
       rendererSize: {
         width: 0,
         height: 0
-      },
-
-      selectedBounds: {
-        left: 0,
-        top: 0,
-        width: 0,
-        height: 0,
-
-        margin: {
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0
-        },
-
-        border: {
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0
-        },
-
-        padding: {
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0
-        }
       },
 
       /**
@@ -183,47 +148,12 @@ export default Vue.extend({
       ast: Element
       element: HTMLElement
     }): void {
-      const viewport = this.$refs.viewport as Vue
-      const viewportBounds = viewport.$el.getBoundingClientRect()
-      const bounds = element.getBoundingClientRect()
-      const s = window.getComputedStyle(element)
-      const n = (str: string | null) => parseFloat(str || '0')
-
-      const margin = {
-        top: n(s.marginTop),
-        bottom: n(s.marginBottom),
-        left: n(s.marginLeft),
-        right: n(s.marginRight)
-      }
-
-      const border = {
-        top: n(s.borderTopWidth),
-        bottom: n(s.borderBottomWidth),
-        left: n(s.borderLeftWidth),
-        right: n(s.borderRightWidth)
-      }
-
-      const padding = {
-        top: n(s.paddingTop),
-        bottom: n(s.paddingBottom),
-        left: n(s.paddingLeft),
-        right: n(s.paddingRight)
-      }
-
-      // The bounds are modified by the current scale.
-      // To show the selected border with accurate bounds,
-      // we need to get original bounds by dividing them by the scale.
-      this.selectedBounds = {
-        left: (bounds.left - viewportBounds.left) / this.scale,
-        top: (bounds.top - viewportBounds.top) / this.scale,
-        width: bounds.width / this.scale,
-        height: bounds.height / this.scale,
-        margin,
-        border,
-        padding
-      }
-
-      this.$emit('select', ast)
+      const viewport = (this.$refs.viewport as Vue).$el
+      this.$emit('select', {
+        ast,
+        element,
+        viewport
+      })
     }
   },
 

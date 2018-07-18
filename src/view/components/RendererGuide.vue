@@ -1,5 +1,5 @@
 <template>
-  <div class="renderer-guide" :style="wrapperStyle" >
+  <div v-if="guide" class="renderer-guide" :style="wrapperStyle" >
     <div class="renderer-guide-margin" :style="marginStyle" />
     <div class="renderer-guide-border" :style="borderStyle" />
     <div class="renderer-guide-padding" :style="paddingStyle" />
@@ -9,38 +9,22 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapper } from '@/view/store'
 
-interface GuideBounds {
-  left: number
-  right: number
-  top: number
-  bottom: number
-}
-
-interface GuideData {
-  left: number
-  top: number
-  width: number
-  height: number
-
-  margin: GuideBounds
-  border: GuideBounds
-  padding: GuideBounds
-}
+const guideMapper = mapper.module('guide')
 
 export default Vue.extend({
   name: 'RendererGuide',
 
-  props: {
-    guide: {
-      type: Object as () => GuideData,
-      required: true
-    }
-  },
-
   computed: {
+    ...guideMapper.mapGetters({
+      guide: 'scaledTarget'
+    }),
+
     wrapperStyle(): Record<string, string> {
       const { guide } = this
+      if (!guide) return {}
+
       return {
         left: guide.left + 'px',
         top: guide.top + 'px',
@@ -50,6 +34,8 @@ export default Vue.extend({
     },
 
     marginStyle(): Record<string, string> {
+      if (!this.guide) return {}
+
       const { margin } = this.guide
       return {
         top: -margin.top + 'px',
@@ -64,6 +50,8 @@ export default Vue.extend({
     },
 
     borderStyle(): Record<string, string> {
+      if (!this.guide) return {}
+
       const { border } = this.guide
       return {
         borderTopWidth: border.top + 'px',
@@ -74,6 +62,8 @@ export default Vue.extend({
     },
 
     paddingStyle(): Record<string, string> {
+      if (!this.guide) return {}
+
       const { border, padding } = this.guide
       return {
         top: border.top + 'px',

@@ -50,6 +50,10 @@ export class ProjectMutations extends Mutations<ProjectState>() {
     }
   }
 
+  setSharedStyle(style: string): void {
+    this.state.sharedStyle = style
+  }
+
   setDraggingUri(uri: string | undefined): void {
     this.state.draggingUri = uri
   }

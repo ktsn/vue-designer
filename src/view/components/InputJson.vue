@@ -288,7 +288,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .input-json-line {
   display: flex;
   align-items: center;
@@ -298,7 +298,7 @@ export default Vue.extend({
 .input-json-label {
   margin-right: 0.5em;
   font-weight: bold;
-  color: #058136;
+  color: var(--vd-color-accent);
 }
 
 .input-json-label::after {
@@ -311,24 +311,24 @@ export default Vue.extend({
 
 .input-json-value.object,
 .input-json-value.array {
-  color: #aaa;
+  color: var(--vd-color-text-weakest);
 }
 
 .input-json-value.number {
-  color: #0e00ab;
+  color: var(--vd-color-number);
 }
 
 .input-json-value.string {
-  color: #c40e0e;
+  color: var(--vd-color-string);
 }
 
 .input-json-value.boolean {
-  color: #8d40d0;
+  color: var(--vd-color-boolean);
 }
 
 .input-json-value.null,
 .input-json-value.undefined {
-  color: #666;
+  color: var(--vd-color-text-weak);
 }
 
 .input-json-label.editing,
@@ -338,7 +338,7 @@ export default Vue.extend({
   margin-bottom: -1px;
   padding: 0;
   min-width: 0;
-  border: 1px solid #058136;
+  border: 1px solid var(--vd-color-accent);
   border-radius: 3px;
   background-color: #fff;
   font-size: inherit;
@@ -358,8 +358,8 @@ export default Vue.extend({
   padding: 0;
   border-width: 0;
   background: none;
-  color: #666;
-  font-size: rem(16);
+  color: var(--vd-color-text-weak);
+  font-size: var(--vd-font-size);
   cursor: pointer;
 }
 
@@ -368,7 +368,7 @@ export default Vue.extend({
 }
 
 .input-json-button:hover {
-  color: #058136;
+  color: var(--vd-color-accent);
 }
 
 .input-json-button.edit {

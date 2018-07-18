@@ -55,12 +55,12 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .preview-viewport {
   overflow: hidden;
   position: relative;
   box-sizing: border-box;
-  border: 1px solid #dfdfdf;
+  border: 1px solid var(--vd-border-color);
   background-color: #fff;
   height: 50px;
   width: 50px;

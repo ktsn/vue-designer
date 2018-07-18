@@ -70,7 +70,9 @@ export default Vue.extend({
                 uri: this.uri,
                 data: child.el,
                 scope: child.scope,
-                childComponents: this.childComponents
+                childComponents: this.childComponents,
+                slots: this.$slots,
+                scopedSlots: this.$scopedSlots
               },
               on: {
                 select: (path: number[]) => {

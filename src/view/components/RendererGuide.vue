@@ -109,18 +109,18 @@ export default Vue.extend({
 }
 
 .renderer-guide-margin {
-  border-color: rgba(249, 205, 158, 0.5);
+  border-color: var(--vd-color-guide-margin);
 }
 
 .renderer-guide-border {
-  border-color: rgba(254, 232, 183, 0.4);
+  border-color: var(--vd-color-guide-border);
 }
 
 .renderer-guide-padding {
-  border-color: rgba(195, 207, 138, 0.3);
+  border-color: var(--vd-color-guide-padding);
 }
 
 .renderer-guide-select {
-  border: 1px solid #0f2fff;
+  border: 1px solid var(--vd-color-selected-border);
 }
 </style>

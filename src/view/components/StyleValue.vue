@@ -83,7 +83,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .style-value {
   display: inline;
   padding: 0;
@@ -95,7 +95,7 @@ export default Vue.extend({
 
 .style-value.editing {
   margin: -1px;
-  border: 1px solid #aaa;
+  border: 1px solid var(--vd-border-color);
   background-color: #fff;
   outline: none;
 }

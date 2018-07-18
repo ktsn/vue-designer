@@ -40,11 +40,11 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .unresolved {
   padding: 2px;
   margin: -2px;
-  background-color: rgba(119, 166, 255, 0.3);
+  background-color: var(--vd-color-unresolved);
   border-radius: 3px;
 }
 </style>

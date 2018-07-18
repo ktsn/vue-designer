@@ -9,8 +9,16 @@ import {
 } from '@/parser/template/types'
 import { DefaultValue } from '@/parser/script/types'
 import { evalWithScope } from './eval'
-import { isObject, range, clone } from '@/utils'
+import { isObject, range } from '@/utils'
 
+function findDirective<T extends Directive>(
+  attrs: (Attribute | Directive)[],
+  fn: (directive: Directive) => directive is T
+): T | undefined
+function findDirective(
+  attrs: (Attribute | Directive)[],
+  fn: (directive: Directive) => boolean
+): Directive | undefined
 function findDirective(
   attrs: (Attribute | Directive)[],
   fn: (directive: Directive) => boolean
@@ -78,66 +86,145 @@ export interface ResolvedChild {
   scope: Record<string, DefaultValue>
 }
 
+export interface ResolvedScopedSlot {
+  scopeName: string
+  contents: ElementChild[]
+}
+
+function resolveVFor(
+  acc: ResolvedChild[],
+  vFor: VForDirective,
+  el: Element,
+  scope: Record<string, DefaultValue>
+): ResolvedChild[] {
+  // Remove if v-for expression is invalid or iteratee type looks cannot iterate.
+  const iteratee = vFor.right && evalWithScope(vFor.right, scope)
+  const isValidIteratee = (value: any) => {
+    return isObject(value) || typeof value === 'number'
+  }
+  if (!iteratee || !iteratee.isSuccess || !isValidIteratee(iteratee.value)) {
+    return acc
+  }
+
+  const unwrapped = el.name === 'template' ? el.children : [el]
+
+  return reduceVFor(
+    iteratee.value,
+    (acc, ...iteraterValues: any[]) => {
+      const newScope = { ...scope }
+      vFor.left.forEach((name, i) => {
+        newScope[name] = iteraterValues[i]
+      })
+      return unwrapped.reduce((acc, node) => {
+        return resolveControlDirectives(
+          acc,
+          {
+            el: node,
+            scope: newScope
+          },
+          true
+        )
+      }, acc)
+    },
+    acc
+  )
+}
+
+function resolveVIf(
+  acc: ResolvedChild[],
+  vIf: Directive,
+  el: Element,
+  scope: Record<string, DefaultValue>
+): ResolvedChild[] {
+  return directiveValue(vIf, scope)
+    ? acc.concat(unwrapTemplate(el, scope))
+    : acc
+}
+
+function resolveVElse(
+  acc: ResolvedChild[],
+  vElse: Directive,
+  el: Element,
+  scope: Record<string, DefaultValue>
+): ResolvedChild[] {
+  const isElement = (node: ElementChild): node is Element => {
+    return node.type === 'Element'
+  }
+  const elements = acc.map(({ el }) => el).filter(isElement)
+
+  if (!shouldAppearVElse(scope, elements)) {
+    return acc
+  }
+
+  if (vElse.name === 'else') {
+    // v-else
+    return acc.concat(unwrapTemplate(el, scope))
+  } else {
+    // v-else-if
+    return resolveVIf(acc, vElse, el, scope)
+  }
+}
+
+export function resolveScopedSlots(
+  el: Element
+): Record<string, ResolvedScopedSlot> | undefined {
+  let scopedSlots: Record<string, ResolvedScopedSlot> | undefined
+
+  el.children.forEach(child => {
+    if (child.type !== 'Element') return
+
+    const slotScope = child.startTag.attributes.find(
+      attr => !attr.directive && attr.name === 'slot-scope'
+    )
+    const slotScopeName = slotScope && slotScope.value
+    if (!slotScopeName) return
+
+    const slot = child.startTag.attributes.find(
+      attr => !attr.directive && attr.name === 'slot'
+    )
+    const slotName = (slot && slot.value) || 'default'
+
+    const contents = child.name === 'template' ? child.children : [child]
+
+    if (!scopedSlots) {
+      scopedSlots = {}
+    }
+
+    scopedSlots[slotName] = {
+      scopeName: slotScopeName,
+      contents
+    }
+  })
+
+  return scopedSlots
+}
+
 /**
  * Resolve v-if/-else/-else-if and v-for,
  * so that add or remove AST node from final output.
  */
 export function resolveControlDirectives(
   acc: ResolvedChild[],
-  item: ResolvedChild
+  item: ResolvedChild,
+  iteratingByVFor: boolean = false
 ): ResolvedChild[] {
   const { el: child, scope } = item
   if (child.type === 'Element') {
     const attrs = child.startTag.attributes
 
     // v-for
-    const vFor = findDirective(attrs, d => d.name === 'for') as
-      | VForDirective
-      | undefined
-    if (vFor) {
-      // Remove if v-for expression is invalid or iteratee type looks cannot iterate.
-      const iteratee = vFor.right && evalWithScope(vFor.right, scope)
-      const isValidIteratee = (value: any) => {
-        return isObject(value) || typeof value === 'number'
-      }
-      if (
-        !iteratee ||
-        !iteratee.isSuccess ||
-        !isValidIteratee(iteratee.value)
-      ) {
-        return acc
-      }
-
-      const vForIndex = attrs.indexOf(vFor)
-      const cloneNode = clone(child, {
-        startTag: clone(child.startTag, {
-          // Need to remove v-for directive to avoid infinite loop.
-          attributes: [
-            ...attrs.slice(0, vForIndex),
-            ...attrs.slice(vForIndex + 1)
-          ]
-        })
-      })
-      return reduceVFor(
-        iteratee.value,
-        (acc, ...iteraterValues: any[]) => {
-          const newScope = { ...scope }
-          vFor.left.forEach((name, i) => {
-            newScope[name] = iteraterValues[i]
-          })
-          return resolveControlDirectives(acc, {
-            el: cloneNode,
-            scope: newScope
-          })
-        },
-        acc
-      )
+    const vFor = findDirective(
+      attrs,
+      (d): d is VForDirective => d.name === 'for'
+    )
+    if (!iteratingByVFor && vFor) {
+      return resolveVFor(acc, vFor, child, scope)
     }
 
     // v-if
     const vIf = findDirective(attrs, d => d.name === 'if')
     if (vIf) {
-      return directiveValue(vIf, scope) ? acc.concat(item) : acc
+      return resolveVIf(acc, vIf, child, scope)
     }
 
     // v-else or v-else-if
@@ -145,24 +232,30 @@ export function resolveControlDirectives(
       return d.name === 'else' || d.name === 'else-if'
     })
     if (vElse) {
-      const isElement = (node: ElementChild): node is Element => {
-        return node.type === 'Element'
-      }
-      const elements = acc.map(({ el }) => el).filter(isElement)
-
-      if (!shouldAppearVElse(scope, elements)) {
-        return acc
-      }
-
-      if (vElse.name === 'else') {
-        return acc.concat(item)
-      }
-
-      return directiveValue(vElse, scope) ? acc.concat(item) : acc
+      return resolveVElse(acc, vElse, child, scope)
     }
   }
 
   return acc.concat(item)
+}
+
+function unwrapTemplate(
+  el: Element,
+  scope: Record<string, DefaultValue>
+): ResolvedChild[] {
+  if (el.name !== 'template') {
+    return [
+      {
+        el,
+        scope
+      }
+    ]
+  }
+
+  return el.children.map(child => ({
+    el: child,
+    scope
+  }))
 }
 
 /**
@@ -207,6 +300,21 @@ function parseStyleText(cssText: string): Record<string, string> {
   return res
 }
 
+export function convertToSlotScope(
+  attrs: (Attribute | Directive)[],
+  scope: Record<string, DefaultValue>
+): Record<string, DefaultValue> {
+  const slotScope: Record<string, any> = {}
+  attrs.forEach(attr => {
+    if (!attr.directive) {
+      slotScope[attr.name] = attr.value === null ? true : attr.value
+    } else if (attr.name === 'bind' && attr.argument) {
+      slotScope[attr.argument] = directiveValue(attr, scope)
+    }
+  })
+  return slotScope
+}
+
 export function convertToVNodeData(
   tag: string,
   attrs: (Attribute | Directive)[],
@@ -226,6 +334,8 @@ export function convertToVNodeData(
         acc.staticClass = attr.value || undefined
       } else if (attr.name === 'style') {
         acc.staticStyle = parseStyleText(attr.value || '')
+      } else if (attr.name === 'slot') {
+        acc.slot = attr.value || undefined
       } else if (isValidAttributeName(attr.name)) {
         acc.attrs![attr.name] = attr.value || ''
       }

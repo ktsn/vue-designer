@@ -75,7 +75,7 @@ export default Vue.extend({
 </script>
 
 
-<style lang="scss" scoped>
+<style scoped>
 .style-declaration-prop::after {
   content: ':';
 }
@@ -85,6 +85,6 @@ export default Vue.extend({
 }
 
 .style-declaration-prop-text {
-  color: #058136;
+  color: var(--vd-color-accent);
 }
 </style>

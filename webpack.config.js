@@ -7,7 +7,7 @@ const basePath = path.resolve(__dirname)
 
 const baseConfig = {
   context: path.join(basePath, 'src'),
-  entry: './view/main.ts',
+  entry: ['./view/main.ts', './view/global.css'],
   output: {
     path: path.join(basePath, 'lib'),
     filename: 'vue-designer-view.js'
@@ -30,18 +30,8 @@ const baseConfig = {
         }
       },
       {
-        test: /\.scss$/,
-        use: [
-          'vue-style-loader',
-          'css-loader',
-          {
-            loader: 'sass-loader',
-            options: {
-              data: '@import "view/globals";',
-              includePaths: [path.join(basePath, 'src')]
-            }
-          }
-        ]
+        test: /\.css$/,
+        use: ['vue-style-loader', 'css-loader']
       },
       {
         test: /\.vue$/,

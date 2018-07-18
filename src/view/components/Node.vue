@@ -7,9 +7,11 @@ import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import {
   convertToVNodeData,
   resolveControlDirectives,
-  ResolvedChild
+  ResolvedChild,
+  resolveScopedSlots
 } from '../rendering'
 import { DraggingPlace } from '../store/modules/project/types'
+import { mapValues } from '@/utils'
 
 export default Vue.extend({
   name: 'Node',
@@ -31,11 +33,27 @@ export default Vue.extend({
       type: Array as { (): ChildComponent[] },
       required: true
     },
+    slots: {
+      type: Object as { (): Record<string, VNode[]> },
+      required: true
+    },
+    scopedSlots: {
+      type: Object,
+      required: true
+    },
     selectable: Boolean,
     selected: Boolean
   },
 
   computed: {
+    vnodeTag(): string | typeof Vue {
+      if (this.nodeUri) {
+        return ContainerVueComponent
+      }
+
+      return this.data.name
+    },
+
     vnodeData(): VNodeData {
       const { data: node, scope, selectable } = this
       const data = convertToVNodeData(
@@ -54,12 +72,45 @@ export default Vue.extend({
         }
       }
 
-      // If there is matched nodeUri, the vnode will be ContainerVueComponent
-      if (this.nodeUri) {
+      const tag = this.vnodeTag
+      if (tag === ContainerVueComponent) {
         data.props = {
           uri: this.nodeUri,
           propsData: data.attrs
         }
+      }
+
+      const scopedSlots = resolveScopedSlots(node)
+      if (scopedSlots) {
+        const h = this.$createElement
+        data.scopedSlots = mapValues(scopedSlots, ({ scopeName, contents }) => {
+          return (props: any) => {
+            const newScope = {
+              ...scope,
+              [scopeName]: props
+            }
+            const resolved = contents.reduce<ResolvedChild[]>((acc, child) => {
+              return resolveControlDirectives(acc, {
+                el: child,
+                scope: newScope
+              })
+            }, [])
+
+            return resolved.map(c => {
+              return h(Child, {
+                props: {
+                  uri: this.uri,
+                  data: c.el,
+                  scope: c.scope,
+                  childComponents: this.childComponents,
+                  slots: this.slots,
+                  scopedSlots: this.scopedSlots
+                },
+                on: this.$listeners
+              })
+            })
+          }
+        })
       }
 
       return data
@@ -81,12 +132,21 @@ export default Vue.extend({
      * Returns children which is resolved v-for, v-if and its family.
      */
     resolvedChildren(): ResolvedChild[] {
-      return this.data.children.reduce<ResolvedChild[]>((acc, child) => {
-        return resolveControlDirectives(acc, {
-          el: child,
-          scope: this.scope
+      return this.data.children
+        .filter(child => {
+          return (
+            child.type !== 'Element' ||
+            !child.startTag.attributes.some(
+              attr => !attr.directive && attr.name === 'slot-scope'
+            )
+          )
         })
-      }, [])
+        .reduce<ResolvedChild[]>((acc, child) => {
+          return resolveControlDirectives(acc, {
+            el: child,
+            scope: this.scope
+          })
+        }, [])
     }
   },
 
@@ -144,18 +204,21 @@ export default Vue.extend({
   },
 
   render(h): VNode {
-    const { uri, data, childComponents } = this
+    const { uri, childComponents, slots, scopedSlots } = this
 
     return h(
-      this.nodeUri ? ContainerVueComponent : data.name,
+      this.vnodeTag,
       this.vnodeData,
       this.resolvedChildren.map(c => {
+        // Slot name will be resolved in <Child> component
         return h(Child, {
           props: {
             uri,
             data: c.el,
             scope: c.scope,
-            childComponents
+            childComponents,
+            slots,
+            scopedSlots
           },
           on: this.$listeners
         })

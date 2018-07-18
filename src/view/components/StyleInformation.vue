@@ -124,7 +124,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .style-information,
 .declaration-list {
   margin: 0;
@@ -135,7 +135,7 @@ export default Vue.extend({
 .rule:not(:first-child) {
   margin-top: 13px;
   padding-top: 10px;
-  border-top: 1px solid #dfdfdf;
+  border-top: 1px solid var(--vd-border-color);
 }
 
 .rule::after {

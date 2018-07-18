@@ -1,3 +1,4 @@
+import * as path from 'path'
 import { MessageBus } from 'meck'
 import { Events, Commands } from './types'
 import {
@@ -19,6 +20,10 @@ import {
 import { AssetResolver } from '../asset-resolver'
 import { mapValues } from '../utils'
 
+function isInterested(uri: string): boolean {
+  return path.extname(uri) === '.vue'
+}
+
 export function observeServerEvents(
   bus: MessageBus<Events, Commands>,
   assetResolver: AssetResolver,
@@ -26,6 +31,7 @@ export function observeServerEvents(
   activeUri: string | undefined
 ): void {
   let lastActiveUri: string | undefined = activeUri
+  let sharedStyle: string = ''
 
   const vueFileToPayload = (vueFile: VueFile) => {
     return _vueFileToPayload(vueFile, assetResolver)
@@ -33,9 +39,15 @@ export function observeServerEvents(
 
   bus.on('initClient', () => {
     bus.emit('initProject', mapValues(vueFiles, vueFileToPayload))
+    bus.emit('initSharedStyle', sharedStyle)
     if (lastActiveUri) {
       bus.emit('changeDocument', lastActiveUri)
     }
+  })
+
+  bus.on('loadSharedStyle', style => {
+    sharedStyle = style
+    bus.emit('initSharedStyle', style)
   })
 
   bus.on('selectNode', payload => {
@@ -110,8 +122,10 @@ export function observeServerEvents(
   })
 
   bus.on('changeActiveEditor', uri => {
-    lastActiveUri = uri
-    bus.emit('changeDocument', uri)
+    if (isInterested(uri)) {
+      lastActiveUri = uri
+      bus.emit('changeDocument', uri)
+    }
   })
 
   bus.on('updateEditor', ({ uri, code }) => {

@@ -52,7 +52,7 @@ export default Vue.extend({
 })
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .catalog-list {
   margin: 0;
   padding: 0;
@@ -66,7 +66,7 @@ export default Vue.extend({
 
 .catalog-item-inner {
   padding: 10px 0;
-  border-top: 1px solid #dfdfdf;
+  border-top: 1px solid var(--vd-border-color);
 }
 
 .catalog-item:first-child .catalog-item-inner {
@@ -90,7 +90,7 @@ export default Vue.extend({
 .catalog-component-name {
   display: table-cell;
   font-weight: bold;
-  font-size: rem(12);
+  font-size: var(--vd-font-size-small);
   text-align: left;
   vertical-align: middle;
   word-wrap: break-word;

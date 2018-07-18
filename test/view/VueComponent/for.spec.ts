@@ -104,4 +104,19 @@ describe('VueComponent v-for', () => {
     const list = wrapper.findAll('li')
     expect(list.length).toBe(0)
   })
+
+  it('repeats template element children', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        h('template', [vFor(['i'], '3')], [
+          h('strong', [], ['first - ', exp('i')]),
+          h('small', [], ['second - ', exp('i')])
+        ])
+      ])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.html()).toMatchSnapshot()
+  })
 })

@@ -1,3 +1,13 @@
+<a name="0.6.1"></a>
+## [0.6.1](https://github.com/ktsn/vue-designer/compare/v0.6.0...v0.6.1) (2018-07-19)
+
+
+### Bug Fixes
+
+* coerce empty string to `true` when prop type is boolean ([#49](https://github.com/ktsn/vue-designer/issues/49)) ([2edc911](https://github.com/ktsn/vue-designer/commit/2edc911))
+* ensure to update guide of selected node when its layout is changed
+
+
 <a name="0.6.0"></a>
 # [0.6.0](https://github.com/ktsn/vue-designer/compare/v0.5.0...v0.6.0) (2018-07-18)
 

@@ -21,11 +21,7 @@
           @add="$emit('add')"
         />
 
-        <div
-          v-if="selectedPath.length > 0"
-          :style="selectedStyle"
-          class="renderer-selected"
-        />
+        <RendererGuide />
       </Viewport>
     </div>
   </div>
@@ -35,6 +31,7 @@
 import Vue from 'vue'
 import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
+import RendererGuide from './RendererGuide.vue'
 import { ScopedDocument, DocumentScope } from '../store/modules/project/types'
 import { Element } from '@/parser/template/types'
 
@@ -45,7 +42,8 @@ export default Vue.extend({
 
   components: {
     Viewport,
-    VueComponent
+    VueComponent,
+    RendererGuide
   },
 
   props: {
@@ -55,10 +53,6 @@ export default Vue.extend({
     },
     scope: {
       type: Object as () => DocumentScope,
-      required: true
-    },
-    selectedPath: {
-      type: Array as () => number[],
       required: true
     },
     width: {
@@ -82,13 +76,6 @@ export default Vue.extend({
   data() {
     return {
       rendererSize: {
-        width: 0,
-        height: 0
-      },
-
-      selectedBounds: {
-        left: 0,
-        top: 0,
         width: 0,
         height: 0
       },
@@ -150,16 +137,6 @@ export default Vue.extend({
         x: size.width / 2,
         y: size.height / 2
       }
-    },
-
-    selectedStyle(): Record<string, string> {
-      const { selectedBounds: bounds } = this
-      return {
-        left: bounds.left + 'px',
-        top: bounds.top + 'px',
-        width: bounds.width + 'px',
-        height: bounds.height + 'px'
-      }
     }
   },
 
@@ -171,21 +148,12 @@ export default Vue.extend({
       ast: Element
       element: HTMLElement
     }): void {
-      const viewport = this.$refs.viewport as Vue
-      const viewportBounds = viewport.$el.getBoundingClientRect()
-      const bounds = element.getBoundingClientRect()
-
-      // The bounds are modified by the current scale.
-      // To show the selected border with accurate bounds,
-      // we need to get original bounds by dividing them by the scale.
-      this.selectedBounds = {
-        left: (bounds.left - viewportBounds.left) / this.scale,
-        top: (bounds.top - viewportBounds.top) / this.scale,
-        width: bounds.width / this.scale,
-        height: bounds.height / this.scale
-      }
-
-      this.$emit('select', ast)
+      const viewport = (this.$refs.viewport as Vue).$el
+      this.$emit('select', {
+        ast,
+        element,
+        viewport
+      })
     }
   },
 
@@ -241,12 +209,5 @@ export default Vue.extend({
 
 .renderer-scroll-content {
   position: relative;
-}
-
-.renderer-selected {
-  position: absolute;
-  box-sizing: border-box;
-  border: 1px solid var(--vd-color-selected-border);
-  pointer-events: none;
 }
 </style>

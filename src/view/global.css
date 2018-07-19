@@ -9,6 +9,9 @@
   --vd-border-color: #ccc;
   --vd-color-bg-pane: #f5f5f5;
   --vd-color-selected-border: #0f2fff;
+  --vd-color-guide-margin: rgba(249, 205, 158, 0.5);
+  --vd-color-guide-border: rgba(254, 232, 183, 0.4);
+  --vd-color-guide-padding: rgba(195, 207, 138, 0.3);
   --vd-color-unresolved: rgba(119, 166, 255, 0.3);
   --vd-font-size: 16px;
   --vd-font-size-small: 12px;

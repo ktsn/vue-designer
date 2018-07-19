@@ -6,15 +6,14 @@
           v-if="renderingDocument"
           :document="renderingDocument"
           :scope="scope"
-          :selected-path="selectedPath"
           :width="width"
           :height="height"
           :scale="scale"
           :shared-style="sharedStyle"
-          @select="select"
+          @select="onSelectNode"
           @dragover="setDraggingPlace"
           @add="applyDraggingElement"
-          @resize="onResize"
+          @resize="resize"
           @zoom="zoom"
         />
       </div>
@@ -24,7 +23,7 @@
           :width="width"
           :height="height"
           :scale="scale"
-          @resize="onResize"
+          @resize="resize"
           @zoom="zoom"
         />
       </div>
@@ -67,7 +66,7 @@
         <div class="information-pane-item">
           <ComponentCatalog
             :components="catalog"
-            @dragstart="onStartDragging"
+            @dragstart="startDragging"
             @dragend="endDragging"
           />
         </div>
@@ -93,9 +92,11 @@ import ComponentCatalog from './ComponentCatalog.vue'
 import Toolbar from './Toolbar.vue'
 import { ScopedDocument } from '../store/modules/project/types'
 import { mapper } from '../store'
+import { Element } from '@/parser/template/types'
 
 const projectMapper = mapper.module('project')
 const viewportMapper = mapper.module('viewport')
+const guideMapper = mapper.module('guide')
 
 export default Vue.extend({
   name: 'PageMain',
@@ -155,18 +156,19 @@ export default Vue.extend({
 
     ...viewportMapper.mapActions(['resize', 'zoom']),
 
-    onStartDragging(uri: string): void {
-      // Deselect to avoid showing incorrect bounds
-      this.select(undefined)
+    ...guideMapper.mapActions(['selectTarget']),
 
-      this.startDragging(uri)
-    },
-
-    onResize(size: { width: number; height: number }): void {
-      // Deselect to avoid showing incorrect bounds
-      this.select(undefined)
-
-      this.resize(size)
+    onSelectNode({
+      ast,
+      element,
+      viewport
+    }: {
+      ast: Element
+      element: HTMLElement
+      viewport: HTMLElement
+    }): void {
+      this.select(ast)
+      this.selectTarget(element, viewport)
     }
   }
 })

@@ -38,10 +38,17 @@ export default Vue.extend({
       const values: Record<string, any> = {}
 
       Object.keys(this.scope.props).forEach(name => {
-        values[name] =
-          name in this.propsData
-            ? this.propsData[name]
-            : this.scope.props[name].value
+        const prop = this.scope.props[name]
+
+        if (name in this.propsData) {
+          const propValue = this.propsData[name]
+
+          // Coerce empty string to `true` when it is declared as boolean prop
+          values[name] =
+            prop.type === 'Boolean' && propValue === '' ? true : propValue
+        } else {
+          values[name] = prop.value
+        }
       })
 
       Object.keys(this.scope.data).forEach(name => {

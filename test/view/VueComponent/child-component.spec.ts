@@ -129,6 +129,43 @@ describe('VueComponent child components', () => {
     expect(wrapper.find('h1').text()).toBe('hello from parent')
   })
 
+  it('passes empty valued attribute as `true` value', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [], [
+        h('Foo', [a('enabled', null)], [])
+      ])
+    ])
+
+    const components = {
+      'file:///Foo.vue': {
+        // prettier-ignore
+        template: createTemplate([
+          h('h1', [], [exp('enabled && \'Success\'')])
+        ]),
+        props: [
+          {
+            name: 'enabled',
+            type: 'Boolean'
+          }
+        ]
+      }
+    }
+    const wrapper = render(
+      template,
+      [],
+      [],
+      [
+        {
+          name: 'Foo',
+          uri: 'file:///Foo.vue'
+        }
+      ],
+      components
+    )
+    expect(wrapper.find('h1').text()).toBe('Success')
+  })
+
   it('passes v-bind values as props to a child component', () => {
     // prettier-ignore
     const template = createTemplate([

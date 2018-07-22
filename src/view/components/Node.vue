@@ -59,6 +59,7 @@ export default Vue.extend({
       const data = convertToVNodeData(
         node.name,
         node.startTag.attributes,
+        node.startTag.directives,
         scope
       )
 
@@ -135,10 +136,7 @@ export default Vue.extend({
       return this.data.children
         .filter(child => {
           return (
-            child.type !== 'Element' ||
-            !child.startTag.attributes.some(
-              attr => !attr.directive && attr.name === 'slot-scope'
-            )
+            child.type !== 'Element' || !child.startTag.attributes['slot-scope']
           )
         })
         .reduce<ResolvedChild[]>((acc, child) => {

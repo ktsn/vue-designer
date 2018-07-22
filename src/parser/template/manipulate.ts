@@ -118,17 +118,17 @@ export function resolveAsset(
   resolver: AssetResolver
 ): t.Template {
   return visitElements(template, el => {
-    if (el.name === 'img') {
-      const resolvedAttrs = el.startTag.attributes.map(attr => {
-        if (attr.name !== 'src' || !attr.value) return attr
-
-        return clone(attr, {
-          value: resolver.pathToUrl(attr.value, baseUrl)
-        })
+    const src = el.startTag.attributes.src
+    if (el.name === 'img' && src && src.value) {
+      const resolvedSrc = clone(src, {
+        value: resolver.pathToUrl(src.value, baseUrl)
       })
+
       return clone(el, {
         startTag: clone(el.startTag, {
-          attributes: resolvedAttrs
+          attributes: clone(el.startTag.attributes, {
+            src: resolvedSrc
+          })
         })
       })
     }
@@ -136,16 +136,19 @@ export function resolveAsset(
 }
 
 export function addScope(node: t.Template, scope: string): t.Template {
+  const scopeName = scopePrefix + scope
+
   return visitElements(node, el => {
     return clone(el, {
       startTag: clone(el.startTag, {
-        attributes: el.startTag.attributes.concat({
-          type: 'Attribute',
-          directive: false,
-          index: -1,
-          name: scopePrefix + scope,
-          value: null,
-          range: [-1, -1]
+        attributes: clone(el.startTag.attributes, {
+          [scopeName]: {
+            type: 'Attribute',
+            attrIndex: -1,
+            name: scopeName,
+            value: null,
+            range: [-1, -1]
+          }
         })
       })
     })

@@ -47,7 +47,7 @@ const Child = Vue.extend({
     const { data, scope } = props
     switch (data.type) {
       case 'Element':
-        const slot = data.startTag.attributes.find(attr => attr.name === 'slot')
+        const slot = data.startTag.attributes.slot
         const slotName = slot && slot.value
 
         // Replace AST <template> with actual <template> element
@@ -71,7 +71,7 @@ const Child = Vue.extend({
         return h(data.name === 'slot' ? NodeSlot : ContainerNode, {
           props,
           on: listeners,
-          slot: slotName
+          slot: slotName || 'default'
         })
       case 'TextNode':
         return [data.text]

@@ -92,7 +92,7 @@ export function createTemplate(
 ): Template {
   return {
     type: 'Template',
-    attributes: [],
+    attributes: {},
     children: processRootChildren(children),
     range: [-1, -1]
   }
@@ -104,8 +104,16 @@ export function h(
   children: (Element | ExpressionNode | string)[],
   options: { selfClosing?: boolean; hasEndTag?: boolean } = {}
 ): Element {
+  const attrs: Record<string, Attribute> = {}
+  const dirs: Directive[] = []
   attributes.forEach((attr, i) => {
-    attr.index = i
+    attr.attrIndex = i
+
+    if (attr.type === 'Attribute') {
+      attrs[attr.name] = attr
+    } else {
+      dirs.push(attr)
+    }
   })
 
   const selfClosing = options.selfClosing || false
@@ -117,7 +125,8 @@ export function h(
     name: tag,
     startTag: {
       type: 'StartTag',
-      attributes,
+      attributes: attrs,
+      directives: dirs,
       selfClosing,
       range: [-1, -1]
     },
@@ -135,8 +144,7 @@ export function h(
 export function a(name: string, value: string | null): Attribute {
   return {
     type: 'Attribute',
-    directive: false,
-    index: -1,
+    attrIndex: -1,
     name,
     value,
     range: [-1, -1]
@@ -159,9 +167,8 @@ export function d(
     options = {}
   }
   return {
-    type: 'Attribute',
-    directive: true,
-    index: 0,
+    type: 'Directive',
+    attrIndex: 0,
     name,
     argument: options.argument || null,
     modifiers: options.modifiers || [],

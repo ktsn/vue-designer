@@ -8,12 +8,7 @@ export function transformTemplate(body: RootElement, code: string): t.Template {
   return {
     type: 'Template',
     range: body.range,
-    attributes: body.startTag.attributes
-      .filter(attr => !attr.directive)
-      .map((attr, i) => {
-        const a = attr as AST.VAttribute
-        return attribute(i, a.key.name, a.value && a.value.value, attr.range)
-      }),
+    attributes: transformAttributes(body.startTag.attributes),
     children: body.children.map((child, i) => transformChild(child, code, [i]))
   }
 }
@@ -26,7 +21,8 @@ function transformElement(
   const attrs = el.startTag.attributes
 
   const start = startTag(
-    attrs.map((attr, i) => transformAttribute(attr, i, code)),
+    transformAttributes(attrs),
+    transformDirectives(attrs, code),
     el.startTag.selfClosing,
     el.startTag.range
   )
@@ -43,25 +39,43 @@ function transformElement(
   )
 }
 
-function transformAttribute(
-  attr: AST.VAttribute | AST.VDirective,
-  index: number,
-  code: string
-): t.Attribute | t.Directive {
-  if (attr.directive) {
-    if (attr.key.name === 'for') {
-      return transformVForDirective(attr, index, code)
-    } else {
-      return transformDirective(attr, index, code)
+function transformAttributes(
+  attrs: (AST.VAttribute | AST.VDirective)[]
+): Record<string, t.Attribute> {
+  const res: Record<string, t.Attribute> = {}
+
+  attrs.forEach((attr, index) => {
+    if (attr.directive) {
+      return
     }
-  } else {
-    return attribute(
+    res[attr.key.name] = attribute(
       index,
       attr.key.name,
       attr.value && attr.value.value,
       attr.range
     )
-  }
+  })
+
+  return res
+}
+
+function transformDirectives(
+  attrs: (AST.VAttribute | AST.VDirective)[],
+  code: string
+): t.Directive[] {
+  return attrs
+    .map((attr, index) => {
+      if (!attr.directive) {
+        return null
+      }
+
+      if (attr.key.name === 'for') {
+        return transformVForDirective(attr, index, code)
+      } else {
+        return transformDirective(attr, index, code)
+      }
+    })
+    .filter((dir): dir is t.Directive => dir !== null)
 }
 
 function transformDirective(
@@ -145,13 +159,15 @@ function element(
 }
 
 function startTag(
-  attributes: (t.Attribute | t.Directive)[],
+  attributes: Record<string, t.Attribute>,
+  directives: t.Directive[],
   selfClosing: boolean,
   range: [number, number]
 ): t.StartTag {
   return {
     type: 'StartTag',
     attributes,
+    directives,
     selfClosing,
     range
   }
@@ -191,15 +207,14 @@ function expressionNode(
 }
 
 function attribute(
-  index: number,
+  attrIndex: number,
   name: string,
   value: string | null,
   range: [number, number]
 ): t.Attribute {
   return {
     type: 'Attribute',
-    directive: false,
-    index,
+    attrIndex,
     name,
     value,
     range
@@ -207,7 +222,7 @@ function attribute(
 }
 
 function directive(
-  index: number,
+  attrIndex: number,
   name: string,
   argument: string | null,
   modifiers: string[],
@@ -215,9 +230,8 @@ function directive(
   range: [number, number]
 ): t.Directive {
   return {
-    type: 'Attribute',
-    directive: true,
-    index,
+    type: 'Directive',
+    attrIndex,
     name,
     argument,
     modifiers,
@@ -227,15 +241,14 @@ function directive(
 }
 
 function vForDirective(
-  index: number,
+  attrIndex: number,
   left: string[],
   right: string | null,
   range: [number, number]
 ): t.VForDirective {
   return {
-    type: 'Attribute',
-    directive: true,
-    index,
+    type: 'Directive',
+    attrIndex,
     name: 'for',
     argument: null,
     modifiers: [],

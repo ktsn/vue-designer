@@ -17,11 +17,11 @@ describe('Scope attribute', () => {
     const ast = transformTemplate(program.templateBody!, code)
 
     const scope = '1a2s3d'
+    const scopeName = 'data-scope-' + scope
     const scopeAttr: Attribute = {
       type: 'Attribute',
-      directive: false,
-      index: -1,
-      name: 'data-scope-' + scope,
+      attrIndex: -1,
+      name: scopeName,
       value: null,
       range: [-1, -1]
     }
@@ -29,9 +29,9 @@ describe('Scope attribute', () => {
     const result = addScope(ast, scope)
 
     const expected: any = ast
-    expected.children[1].startTag.attributes.push(scopeAttr) // #foo
-    expected.children[1].children[1].startTag.attributes.push(scopeAttr) // .bar
-    expected.children[1].children[3].startTag.attributes.push(scopeAttr) // [data-v-abcde]
+    expected.children[1].startTag.attributes[scopeName] = scopeAttr // #foo
+    expected.children[1].children[1].startTag.attributes[scopeName] = scopeAttr // .bar
+    expected.children[1].children[3].startTag.attributes[scopeName] = scopeAttr // [data-v-abcde]
 
     expect(result).toEqual(expected)
   })

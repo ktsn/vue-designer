@@ -17,16 +17,14 @@ describe('Template asset resolution', () => {
     const attrs = img.startTag.attributes
 
     expect(img.name).toBe('img')
-    expect(attrs.length).toBe(2)
+    expect(Object.keys(attrs).length).toBe(2)
 
     // should convert src value
-    expect(attrs[0].name).toBe('src')
-    expect(attrs[0].value).toBe(
+    expect(attrs.src.value).toBe(
       '/assets?path=' + encodeURIComponent('/path/to/assets/logo.png')
     )
 
     // should not touch other attribute
-    expect(attrs[1].name).toBe('alt')
-    expect(attrs[1].value).toBe('test')
+    expect(attrs.alt.value).toBe('test')
   })
 })

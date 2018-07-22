@@ -126,7 +126,8 @@ export class ProjectGetters extends Getters<ProjectState>() {
       name: localName || dragging.displayName,
       startTag: {
         type: 'StartTag',
-        attributes: [],
+        attributes: {},
+        directives: [],
         selfClosing: false,
         range: [-1, -1]
       },

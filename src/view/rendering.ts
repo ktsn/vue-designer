@@ -9,26 +9,7 @@ import {
 } from '@/parser/template/types'
 import { DefaultValue } from '@/parser/script/types'
 import { evalWithScope } from './eval'
-import { isObject, range } from '@/utils'
-
-function findDirective<T extends Directive>(
-  attrs: (Attribute | Directive)[],
-  fn: (directive: Directive) => directive is T
-): T | undefined
-function findDirective(
-  attrs: (Attribute | Directive)[],
-  fn: (directive: Directive) => boolean
-): Directive | undefined
-function findDirective(
-  attrs: (Attribute | Directive)[],
-  fn: (directive: Directive) => boolean
-): Directive | undefined {
-  return attrs.find(
-    (attr): attr is Directive => {
-      return attr.directive && fn(attr)
-    }
-  )
-}
+import { isObject, range, mapValues } from '@/utils'
 
 function directiveValue(
   dir: Directive,
@@ -61,8 +42,7 @@ function shouldAppearVElse(
       return acc
     }
 
-    const lastVIf = findDirective(
-      last.startTag.attributes,
+    const lastVIf = last.startTag.directives.find(
       dir => dir.name === 'if' || dir.name === 'else-if'
     )
 
@@ -173,15 +153,13 @@ export function resolveScopedSlots(
   el.children.forEach(child => {
     if (child.type !== 'Element') return
 
-    const slotScope = child.startTag.attributes.find(
-      attr => !attr.directive && attr.name === 'slot-scope'
-    )
+    const attrs = child.startTag.attributes
+
+    const slotScope = attrs['slot-scope']
     const slotScopeName = slotScope && slotScope.value
     if (!slotScopeName) return
 
-    const slot = child.startTag.attributes.find(
-      attr => !attr.directive && attr.name === 'slot'
-    )
+    const slot = attrs.slot
     const slotName = (slot && slot.value) || 'default'
 
     const contents = child.name === 'template' ? child.children : [child]
@@ -210,25 +188,22 @@ export function resolveControlDirectives(
 ): ResolvedChild[] {
   const { el: child, scope } = item
   if (child.type === 'Element') {
-    const attrs = child.startTag.attributes
+    const dirs = child.startTag.directives
 
     // v-for
-    const vFor = findDirective(
-      attrs,
-      (d): d is VForDirective => d.name === 'for'
-    )
+    const vFor = dirs.find((d): d is VForDirective => d.name === 'for')
     if (!iteratingByVFor && vFor) {
       return resolveVFor(acc, vFor, child, scope)
     }
 
     // v-if
-    const vIf = findDirective(attrs, d => d.name === 'if')
+    const vIf = dirs.find(d => d.name === 'if')
     if (vIf) {
       return resolveVIf(acc, vIf, child, scope)
     }
 
     // v-else or v-else-if
-    const vElse = findDirective(attrs, d => {
+    const vElse = dirs.find(d => {
       return d.name === 'else' || d.name === 'else-if'
     })
     if (vElse) {
@@ -301,14 +276,13 @@ function parseStyleText(cssText: string): Record<string, string> {
 }
 
 export function convertToSlotScope(
-  attrs: (Attribute | Directive)[],
+  attrs: Record<string, Attribute>,
+  dirs: Directive[],
   scope: Record<string, DefaultValue>
 ): Record<string, DefaultValue> {
-  const slotScope: Record<string, any> = {}
-  attrs.forEach(attr => {
-    if (!attr.directive) {
-      slotScope[attr.name] = attr.value === null ? true : attr.value
-    } else if (attr.name === 'bind' && attr.argument) {
+  const slotScope: Record<string, any> = mapValues(attrs, attr => attr.value)
+  dirs.forEach(attr => {
+    if (attr.name === 'bind' && attr.argument) {
       slotScope[attr.argument] = directiveValue(attr, scope)
     }
   })
@@ -317,7 +291,8 @@ export function convertToSlotScope(
 
 export function convertToVNodeData(
   tag: string,
-  attrs: (Attribute | Directive)[],
+  attributes: Record<string, Attribute>,
+  directives: Directive[],
   scope: Record<string, DefaultValue>
 ): VNodeData {
   const initial: VNodeData = {
@@ -327,70 +302,69 @@ export function convertToVNodeData(
     directives: []
   }
 
-  return attrs.reduce((acc, attr) => {
-    // Normal attribute
-    if (!attr.directive) {
-      if (attr.name === 'class') {
-        acc.staticClass = attr.value || undefined
-      } else if (attr.name === 'style') {
-        acc.staticStyle = parseStyleText(attr.value || '')
-      } else if (attr.name === 'slot') {
-        acc.slot = attr.value || undefined
-      } else if (isValidAttributeName(attr.name)) {
-        acc.attrs![attr.name] = attr.value || ''
-      }
-      return acc
+  const data = Object.keys(attributes).reduce((acc, key) => {
+    const attr = attributes[key]
+    if (attr.name === 'class') {
+      acc.staticClass = attr.value || undefined
+    } else if (attr.name === 'style') {
+      acc.staticStyle = parseStyleText(attr.value || '')
+    } else if (attr.name === 'slot') {
+      acc.slot = attr.value || undefined
+    } else if (isValidAttributeName(attr.name)) {
+      acc.attrs![attr.name] = attr.value || ''
     }
+    return acc
+  }, initial)
 
-    // Directive
-    const value = directiveValue(attr, scope)
-    if (attr.name === 'bind' && attr.argument) {
-      if (attr.argument === 'class') {
+  return directives.reduce((acc, dir) => {
+    const value = directiveValue(dir, scope)
+    if (dir.name === 'bind' && dir.argument) {
+      if (dir.argument === 'class') {
         acc.class.push(value)
-      } else if (attr.argument === 'style') {
+      } else if (dir.argument === 'style') {
         acc.style = value as any
-      } else if (isValidAttributeName(attr.argument)) {
-        acc.attrs![attr.argument] = value
+      } else if (isValidAttributeName(dir.argument)) {
+        acc.attrs![dir.argument] = value
       }
-    } else if (attr.name === 'model') {
-      resolveVModel(acc, tag, attrs, value)
-    } else if (attr.name === 'text') {
+    } else if (dir.name === 'model') {
+      resolveVModel(acc, tag, attributes, value)
+    } else if (dir.name === 'text') {
       acc.domProps!.textContent = value
-    } else if (attr.name === 'html') {
+    } else if (dir.name === 'html') {
       acc.domProps!.innerHTML = value
-    } else if (attr.name === 'show') {
+    } else if (dir.name === 'show') {
       const modifierMap: Record<string, boolean> = {}
-      attr.modifiers.forEach(modifier => {
+      dir.modifiers.forEach(modifier => {
         modifierMap[modifier] = true
       })
 
       acc.directives!.push({
         name: 'show',
-        expression: attr.expression,
+        expression: dir.expression,
         oldValue: undefined,
-        arg: attr.argument || '',
+        arg: dir.argument || '',
         modifiers: modifierMap,
         value
       })
     }
     return acc
-  }, initial)
+  }, data)
 }
 
 function resolveVModel(
   data: VNodeData,
   tag: string,
-  attrs: (Attribute | Directive)[],
+  attrs: Record<string, Attribute>,
   value: any
 ): void {
   if (tag === 'input') {
-    const type = attrs.find(a => !a.directive && a.name === 'type')
+    const type = attrs.type
     if (type) {
       if (type.value === 'checkbox') {
         if (typeof value === 'boolean') {
           data.domProps!.checked = value
         } else if (Array.isArray(value)) {
-          const valueAttr = attrs.find(a => !a.directive && a.name === 'value')
+          const valueAttr = attrs.value
           if (valueAttr) {
             data.domProps!.checked = value.indexOf(valueAttr.value) >= 0
           }
@@ -399,7 +373,7 @@ function resolveVModel(
       }
 
       if (type.value === 'radio') {
-        const valueAttr = attrs.find(a => !a.directive && a.name === 'value')
+        const valueAttr = attrs.value
         if (valueAttr) {
           data.domProps!.checked = valueAttr.value === value
         }

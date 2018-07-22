@@ -36,14 +36,13 @@ function matchSelector(
   selector: style.Selector,
   template: template.Template
 ): boolean {
-  const attrMap = target.startTag.attributes.reduce<
-    Map<string, template.Attribute>
-  >((map, attr) => {
-    if (!attr.directive) {
-      map.set(attr.name, attr)
-    }
-    return map
-  }, new Map())
+  const entries = Object.keys(target.startTag.attributes).map(
+    (key): [string, template.Attribute] => [
+      key,
+      target.startTag.attributes[key]
+    ]
+  )
+  const attrMap = new Map(entries)
 
   // TODO: resolve some pseudo class (e.g. :nth-child, :not and :matches)
   return (
@@ -232,29 +231,27 @@ class StyleMap {
   getCandidateRules(el: template.Element): style.Rule[] {
     const tagMatched = this.tagMap.get(el.name) || []
 
-    const attrsMatched = el.startTag.attributes.reduce<style.Rule[]>(
-      (acc, attr) => {
-        if (attr.directive) return acc
+    const keys = Object.keys(el.startTag.attributes)
+    const attrsMatched = keys.reduce<style.Rule[]>((acc, key) => {
+      const attr = el.startTag.attributes[key]
 
-        if (attr.value) {
-          if (attr.name === 'id') {
-            acc = acc.concat(this.idMap.get(attr.value) || [])
-          }
-
-          if (attr.name === 'class') {
-            const matched = attr.value
-              .split(/\s+/)
-              .reduce<style.Rule[]>((acc, c) => {
-                return acc.concat(this.classMap.get(c) || [])
-              }, [])
-            acc = acc.concat(matched)
-          }
+      if (attr.value) {
+        if (attr.name === 'id') {
+          acc = acc.concat(this.idMap.get(attr.value) || [])
         }
 
-        return acc.concat(this.attributeMap.get(attr.name) || [])
-      },
-      []
-    )
+        if (attr.name === 'class') {
+          const matched = attr.value
+            .split(/\s+/)
+            .reduce<style.Rule[]>((acc, c) => {
+              return acc.concat(this.classMap.get(c) || [])
+            }, [])
+          acc = acc.concat(matched)
+        }
+      }
+
+      return acc.concat(this.attributeMap.get(attr.name) || [])
+    }, [])
 
     return [...tagMatched, ...attrsMatched, ...this.universals]
   }

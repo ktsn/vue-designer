@@ -141,11 +141,27 @@ function createVSCodeCommandEmitter(): CommandEmitter<Commands> {
   })
 }
 
+function getWebViewContent(port: number): string {
+  return `<style>
+  html, body, iframe {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    border-width: 0;
+    background-color: #fff;
+  }
+  </style>
+  <body>
+    <iframe src="http://localhost:${port}" sandbox="allow-scripts"></iframe>
+  </body>`
+}
+
 export function activate(context: vscode.ExtensionContext) {
   const vueFiles: Record<string, VueFile> = {}
   const assetResolver = new AssetResolver()
 
-  const previewUri = vscode.Uri.parse('vue-designer://authority/vue-designer')
   const server = startStaticServer(assetResolver)
   const wsServer = startWebSocketServer(server)
 
@@ -163,52 +179,23 @@ export function activate(context: vscode.ExtensionContext) {
     : (server.address() as AddressInfo).port
   console.log(`Vue Designer server listening at http://localhost:${serverPort}`)
 
-  class TextDocumentContentProvider
-    implements vscode.TextDocumentContentProvider {
-    public provideTextDocumentContent(): string {
-      return `<style>
-      html, body, iframe {
-        overflow: hidden;
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        width: 100%;
-        border-width: 0;
-        background-color: #fff;
-      }
-      </style>
-      <body>
-        <iframe src="http://localhost:${serverPort}"></iframe>
-      </body>`
-    }
-  }
-
-  const provider = new TextDocumentContentProvider()
-  const registration = vscode.workspace.registerTextDocumentContentProvider(
-    'vue-designer',
-    provider
-  )
-
   const disposable = vscode.commands.registerCommand(
     'extension.openVueDesigner',
     () => {
-      return vscode.commands
-        .executeCommand(
-          'vscode.previewHtml',
-          previewUri,
-          vscode.ViewColumn.Two,
-          'Vue Designer'
-        )
-        .then(
-          () => {},
-          reason => {
-            vscode.window.showErrorMessage(reason)
-          }
-        )
+      const panel = vscode.window.createWebviewPanel(
+        'vueDesigner',
+        'Vue Designer',
+        vscode.ViewColumn.Two,
+        {
+          enableScripts: true
+        }
+      )
+
+      panel.webview.html = getWebViewContent(serverPort)
     }
   )
 
-  context.subscriptions.push(disposable, registration, bus, {
+  context.subscriptions.push(disposable, bus, {
     dispose: () => server.close()
   })
 }

@@ -216,4 +216,3 @@ export default Vue.extend({
   cursor: nwse-resize;
 }
 </style>
-

@@ -161,7 +161,7 @@ describe('InputJson', () => {
           }
         }
       })
-      const bar = wrapper.findAll(InputJson).at(1)
+      const bar = wrapper.findAll(InputJson).at(2)
       const ctrl = new InputJsonController(bar)
 
       ctrl.clickEdit()
@@ -188,7 +188,7 @@ describe('InputJson', () => {
           }
         }
       })
-      const second = wrapper.findAll(InputJson).at(1)
+      const second = wrapper.findAll(InputJson).at(2)
       const ctrl = new InputJsonController(second)
 
       ctrl.clickEdit()
@@ -233,7 +233,7 @@ describe('InputJson', () => {
           }
         }
       })
-      const child = wrapper.find(InputJson)
+      const child = wrapper.findAll(InputJson).at(1)
       const ctrl = new InputJsonController(child)
 
       ctrl.clickEdit()

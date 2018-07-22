@@ -100,18 +100,20 @@ function extractComponents(
   }
 
   return prop.value.properties
-    .map((p): ChildComponent | undefined => {
-      if (!isStaticProperty(p) || !t.isIdentifier(p.value)) {
-        return undefined
-      }
+    .map(
+      (p): ChildComponent | undefined => {
+        if (!isStaticProperty(p) || !t.isIdentifier(p.value)) {
+          return undefined
+        }
 
-      return findMatchingComponent(
-        getStaticKeyName(p.key as StaticKey),
-        p.value.name,
-        imports,
-        localPathToUri
-      )
-    })
+        return findMatchingComponent(
+          getStaticKeyName(p.key as StaticKey),
+          p.value.name,
+          imports,
+          localPathToUri
+        )
+      }
+    )
     .filter(<T>(p: T | undefined): p is T => p !== undefined)
 }
 
@@ -127,29 +129,31 @@ function extractLazyAddComponents(
 
   // Extract all `this.$options.components.LocalComponentName = ComponentName`
   return func.body.body
-    .map((st): ChildComponent | undefined => {
-      // We leave this chack as loosely since the user may not write
-      // `this.$options.components.LocalComponentName = ComponentName`
-      // but assign `components` to another variable to save key types.
-      // If there are false positive in this check, they probably be
-      // proned by maching with imported components in later.
-      if (
-        !t.isExpressionStatement(st) ||
-        !t.isAssignmentExpression(st.expression) ||
-        !t.isIdentifier(st.expression.right) || // = ComponentName
-        !t.isMemberExpression(st.expression.left) ||
-        !t.isIdentifier(st.expression.left.property) // .LocalComponentName
-      ) {
-        return undefined
-      }
+    .map(
+      (st): ChildComponent | undefined => {
+        // We leave this chack as loosely since the user may not write
+        // `this.$options.components.LocalComponentName = ComponentName`
+        // but assign `components` to another variable to save key types.
+        // If there are false positive in this check, they probably be
+        // proned by maching with imported components in later.
+        if (
+          !t.isExpressionStatement(st) ||
+          !t.isAssignmentExpression(st.expression) ||
+          !t.isIdentifier(st.expression.right) || // = ComponentName
+          !t.isMemberExpression(st.expression.left) ||
+          !t.isIdentifier(st.expression.left.property) // .LocalComponentName
+        ) {
+          return undefined
+        }
 
-      return findMatchingComponent(
-        st.expression.right.name,
-        st.expression.left.property.name,
-        imports,
-        localPathToUri
-      )
-    })
+        return findMatchingComponent(
+          st.expression.right.name,
+          st.expression.left.property.name,
+          imports,
+          localPathToUri
+        )
+      }
+    )
     .filter(<T>(p: T | undefined): p is T => p !== undefined)
 }
 
@@ -402,8 +406,8 @@ function getLiteralValue(node: t.Node): DefaultValue {
 export function findComponentOptions(
   body: t.Statement[]
 ): t.ObjectExpression | undefined {
-  const exported = body.find((n): n is t.ExportDefaultDeclaration =>
-    t.isExportDefaultDeclaration(n)
+  const exported = body.find(
+    (n): n is t.ExportDefaultDeclaration => t.isExportDefaultDeclaration(n)
   )
   if (!exported) return undefined
 

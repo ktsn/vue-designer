@@ -88,5 +88,3 @@ export default Vue.extend({
   box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.1);
 }
 </style>
-
-

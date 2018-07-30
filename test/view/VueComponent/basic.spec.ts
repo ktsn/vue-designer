@@ -13,9 +13,7 @@ describe('VueComponent basic', () => {
   })
 
   it('should render empty value attribute', () => {
-    const template = createTemplate([
-      h('p', [a('data-scope-123456', null)], [])
-    ])
+    const template = createTemplate([h('p', [a('data-scope-123456')], [])])
 
     const p = render(template).find('p')
     expect(p.attributes()!['data-scope-123456']).toBe('')

@@ -10,7 +10,7 @@ describe('VueComponent error handling', () => {
     //   </div>
     const template = createTemplate([
       h('div', [], [
-        h('p', [a('<', null)], [])
+        h('p', [a('<')], [])
       ])
     ])
 

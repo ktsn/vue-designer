@@ -132,7 +132,7 @@ describe('VueComponent v-model', () => {
   it('resolves multiple select v-model', () => {
     // prettier-ignore
     const template = createTemplate([
-      h('select', [d('model', 'selected'), a('multiple', null)], [
+      h('select', [d('model', 'selected'), a('multiple')], [
         h('option', [a('value', 'foo')], []),
         h('option', [a('value', 'bar')], []),
         h('option', [a('value', 'baz')], [])

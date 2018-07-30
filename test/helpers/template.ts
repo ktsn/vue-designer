@@ -131,7 +131,7 @@ export function h(
       range: [-1, -1]
     },
     endTag: !hasEndTag
-      ? null
+      ? undefined
       : {
           type: 'EndTag',
           range: [-1, -1]
@@ -141,7 +141,7 @@ export function h(
   }
 }
 
-export function a(name: string, value: string | null): Attribute {
+export function a(name: string, value?: string): Attribute {
   return {
     type: 'Attribute',
     attrIndex: -1,
@@ -166,18 +166,26 @@ export function d(
     expression = options
     options = {}
   }
+
+  const modifiers: Record<string, true> = {}
+  if (options.modifiers) {
+    options.modifiers.forEach(key => {
+      modifiers[key] = true
+    })
+  }
+
   return {
     type: 'Directive',
     attrIndex: 0,
     name,
-    argument: options.argument || null,
-    modifiers: options.modifiers || [],
-    expression: expression || null,
+    argument: options.argument,
+    modifiers,
+    expression: expression,
     range: [-1, -1]
   }
 }
 
-export function vFor(left: string[], right: string | null): VForDirective {
+export function vFor(left: string[], right?: string): VForDirective {
   const dir = d('for') as VForDirective
   dir.left = left
   dir.right = right

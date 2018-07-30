@@ -70,7 +70,7 @@ describe('VueComponent v-for', () => {
     // prettier-ignore
     const template = createTemplate([
       h('ul', [], [
-        h('li', [vFor([], null)], [])
+        h('li', [vFor([])], [])
       ])
     ])
 

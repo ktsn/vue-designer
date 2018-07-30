@@ -33,7 +33,7 @@ function transformElement(
     path,
     el.name,
     start,
-    end,
+    end || undefined,
     el.children.map((child, i) => transformChild(child, code, path.concat(i))),
     el.range
   )
@@ -51,7 +51,7 @@ function transformAttributes(
     res[attr.key.name] = attribute(
       index,
       attr.key.name,
-      attr.value && attr.value.value,
+      attr.value ? attr.value.value : undefined,
       attr.range
     )
   })
@@ -84,11 +84,11 @@ function transformDirective(
   code: string
 ): t.Directive {
   const exp = node.value && node.value.expression
-  const expStr = exp ? extractExpression(exp, code) : null
+  const expStr = exp ? extractExpression(exp, code) : undefined
   return directive(
     index,
     node.key.name,
-    node.key.argument,
+    node.key.argument || undefined,
     node.key.modifiers,
     expStr,
     node.range
@@ -110,7 +110,7 @@ function transformVForDirective(
   return vForDirective(
     index,
     exp ? exp.left.map(l => extractExpression(l, code)) : [],
-    exp && extractExpression(exp.right, code),
+    exp ? extractExpression(exp.right, code) : undefined,
     node.range
   )
 }
@@ -143,7 +143,7 @@ function element(
   path: number[],
   name: string,
   startTag: t.StartTag,
-  endTag: t.EndTag | null,
+  endTag: t.EndTag | undefined,
   children: t.ElementChild[],
   range: [number, number]
 ): t.Element {
@@ -209,7 +209,7 @@ function expressionNode(
 function attribute(
   attrIndex: number,
   name: string,
-  value: string | null,
+  value: string | undefined,
   range: [number, number]
 ): t.Attribute {
   return {
@@ -224,17 +224,21 @@ function attribute(
 function directive(
   attrIndex: number,
   name: string,
-  argument: string | null,
+  argument: string | undefined,
   modifiers: string[],
-  expression: string | null,
+  expression: string | undefined,
   range: [number, number]
 ): t.Directive {
+  const mod: Record<string, boolean> = {}
+  modifiers.forEach(m => {
+    mod[m] = true
+  })
   return {
     type: 'Directive',
     attrIndex,
     name,
     argument,
-    modifiers,
+    modifiers: mod,
     expression,
     range
   }
@@ -243,16 +247,14 @@ function directive(
 function vForDirective(
   attrIndex: number,
   left: string[],
-  right: string | null,
+  right: string | undefined,
   range: [number, number]
 ): t.VForDirective {
   return {
     type: 'Directive',
     attrIndex,
     name: 'for',
-    argument: null,
-    modifiers: [],
-    expression: null,
+    modifiers: {},
     left,
     right,
     range

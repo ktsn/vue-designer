@@ -133,7 +133,7 @@ describe('VueComponent child components', () => {
     // prettier-ignore
     const template = createTemplate([
       h('div', [], [
-        h('Foo', [a('enabled', null)], [])
+        h('Foo', [a('enabled')], [])
       ])
     ])
 

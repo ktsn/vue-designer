@@ -17,7 +17,7 @@ export interface Element extends BaseNode {
   path: number[]
   name: string
   startTag: StartTag
-  endTag: EndTag | null
+  endTag?: EndTag
   children: ElementChild[]
 }
 
@@ -48,21 +48,21 @@ export interface Attribute extends BaseNode {
   type: 'Attribute'
   attrIndex: number
   name: string
-  value: string | null
+  value?: string
 }
 
 export interface Directive extends BaseNode {
   type: 'Directive'
   attrIndex: number
   name: string
-  argument: string | null
-  modifiers: string[]
-  expression: string | null
+  argument?: string
+  modifiers: Record<string, boolean>
+  expression?: string
   value?: any
 }
 
 export interface VForDirective extends Directive {
   name: 'for'
   left: string[]
-  right: string | null
+  right?: string
 }

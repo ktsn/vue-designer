@@ -42,7 +42,7 @@ describe('Template AST transformer', () => {
         [
           a('id', 'test'),
           a('title', 'title'),
-          a('foo', null)
+          a('foo')
         ],
         []
       )

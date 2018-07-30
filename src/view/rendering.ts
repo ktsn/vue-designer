@@ -16,7 +16,7 @@ function directiveValue(
   scope: Record<string, DefaultValue>
 ): DefaultValue {
   const exp = dir.expression
-  if (exp === null) {
+  if (exp === undefined) {
     return undefined
   }
 
@@ -333,17 +333,12 @@ export function convertToVNodeData(
     } else if (dir.name === 'html') {
       acc.domProps!.innerHTML = value
     } else if (dir.name === 'show') {
-      const modifierMap: Record<string, boolean> = {}
-      dir.modifiers.forEach(modifier => {
-        modifierMap[modifier] = true
-      })
-
       acc.directives!.push({
         name: 'show',
         expression: dir.expression,
         oldValue: undefined,
         arg: dir.argument || '',
-        modifiers: modifierMap,
+        modifiers: dir.modifiers,
         value
       })
     }

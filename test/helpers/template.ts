@@ -92,7 +92,7 @@ export function createTemplate(
 ): Template {
   return {
     type: 'Template',
-    attributes: {},
+    attrs: {},
     children: processRootChildren(children),
     range: [-1, -1]
   }
@@ -125,7 +125,7 @@ export function h(
     name: tag,
     startTag: {
       type: 'StartTag',
-      attributes: attrs,
+      attrs,
       directives: dirs,
       selfClosing,
       range: [-1, -1]

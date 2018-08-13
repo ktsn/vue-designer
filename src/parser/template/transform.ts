@@ -8,7 +8,7 @@ export function transformTemplate(body: RootElement, code: string): t.Template {
   return {
     type: 'Template',
     range: body.range,
-    attributes: transformAttributes(body.startTag.attributes),
+    attrs: transformAttributes(body.startTag.attributes),
     children: body.children.map((child, i) => transformChild(child, code, [i]))
   }
 }
@@ -159,14 +159,14 @@ function element(
 }
 
 function startTag(
-  attributes: Record<string, t.Attribute>,
+  attrs: Record<string, t.Attribute>,
   directives: t.Directive[],
   selfClosing: boolean,
   range: [number, number]
 ): t.StartTag {
   return {
     type: 'StartTag',
-    attributes,
+    attrs,
     directives,
     selfClosing,
     range

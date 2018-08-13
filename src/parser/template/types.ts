@@ -8,7 +8,7 @@ interface BaseNode extends Range {
 
 export interface Template extends BaseNode {
   type: 'Template'
-  attributes: Record<string, Attribute>
+  attrs: Record<string, Attribute>
   children: ElementChild[]
 }
 
@@ -23,7 +23,7 @@ export interface Element extends BaseNode {
 
 export interface StartTag extends BaseNode {
   type: 'StartTag'
-  attributes: Record<string, Attribute>
+  attrs: Record<string, Attribute>
   directives: Directive[]
   selfClosing: boolean
 }

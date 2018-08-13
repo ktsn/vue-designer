@@ -22,16 +22,15 @@ describe('Scope attribute', () => {
       type: 'Attribute',
       attrIndex: -1,
       name: scopeName,
-      value: null,
       range: [-1, -1]
     }
 
     const result = addScope(ast, scope)
 
     const expected: any = ast
-    expected.children[1].startTag.attributes[scopeName] = scopeAttr // #foo
-    expected.children[1].children[1].startTag.attributes[scopeName] = scopeAttr // .bar
-    expected.children[1].children[3].startTag.attributes[scopeName] = scopeAttr // [data-v-abcde]
+    expected.children[1].startTag.attrs[scopeName] = scopeAttr // #foo
+    expected.children[1].children[1].startTag.attrs[scopeName] = scopeAttr // .bar
+    expected.children[1].children[3].startTag.attrs[scopeName] = scopeAttr // [data-v-abcde]
 
     expect(result).toEqual(expected)
   })

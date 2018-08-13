@@ -153,7 +153,7 @@ export function resolveScopedSlots(
   el.children.forEach(child => {
     if (child.type !== 'Element') return
 
-    const attrs = child.startTag.attributes
+    const attrs = child.startTag.attrs
 
     const slotScope = attrs['slot-scope']
     const slotScopeName = slotScope && slotScope.value

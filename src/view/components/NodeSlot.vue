@@ -42,7 +42,7 @@ export default Vue.extend({
     const { data, scope, slots, scopedSlots } = props
 
     const slotScope = convertToSlotScope(
-      data.startTag.attributes,
+      data.startTag.attrs,
       data.startTag.directives,
       scope
     )

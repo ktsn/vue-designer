@@ -6,7 +6,7 @@ import { parse as parseScript } from 'babylon'
 import * as Babel from '@babel/types'
 import postcssParse from 'postcss-safe-parser'
 import hashsum from 'hash-sum'
-import { Template } from './template/types'
+import { TETemplate } from './template/types'
 import { transformTemplate } from './template/transform'
 import { resolveAsset as resolveTemplateAsset } from './template/manipulate'
 import { Prop, Data, ChildComponent } from './script/types'
@@ -15,18 +15,18 @@ import {
   extractProps,
   extractData
 } from './script/manipulate'
-import { Style } from './style/types'
+import { STStyle } from './style/types'
 import { resolveAsset as resolveStyleAsset } from './style/manipulate'
 import { transformStyle } from './style/transform'
 import { AssetResolver } from '../asset-resolver'
 
 export interface VueFilePayload {
   uri: string
-  template: Template | undefined
+  template: TETemplate | undefined
   props: Prop[]
   data: Data[]
   childComponents: ChildComponent[]
-  styles: Style[]
+  styles: STStyle[]
   scopeId: string
 }
 
@@ -34,12 +34,12 @@ export interface VueFile {
   uri: URL
   name: string
   code: string
-  template: Template | undefined
+  template: TETemplate | undefined
   script: Babel.Program
   props: Prop[]
   data: Data[]
   childComponents: ChildComponent[]
-  styles: Style[]
+  styles: STStyle[]
 }
 
 export function parseVueFile(code: string, uri: string): VueFile {
@@ -102,7 +102,7 @@ export function vueFileToPayload(
   }
 }
 
-function parseTemplateBlock(template: string): Template | undefined {
+function parseTemplateBlock(template: string): TETemplate | undefined {
   // TODO: Use parsed SFCBlock after it is fixed that the issue vue-template-compiler
   // breaks original source position by deindent
   const code = template.replace(/<script.*>[\s\S]*<\/script>/, matched => {

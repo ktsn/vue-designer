@@ -1,22 +1,22 @@
 import { Range } from '../modifier'
 
-export interface HasChildren<T extends ChildNode> {
+export interface HasChildren<T extends STChild> {
   children: T[]
 }
 
-export interface Style extends Range, HasChildren<AtRule | Rule> {
+export interface STStyle extends Range, HasChildren<STAtRule | STRule> {
   path: [number]
 }
 
-export interface Rule extends Range, HasChildren<Declaration> {
+export interface STRule extends Range, HasChildren<STDeclaration> {
   type: 'Rule'
   before: string
   after: string
   path: number[]
-  selectors: Selector[]
+  selectors: STSelector[]
 }
 
-export interface Declaration extends Range {
+export interface STDeclaration extends Range {
   type: 'Declaration'
   before: string
   after: string
@@ -26,7 +26,7 @@ export interface Declaration extends Range {
   important: boolean
 }
 
-export interface AtRule extends Range, HasChildren<ChildNode> {
+export interface STAtRule extends Range, HasChildren<STChild> {
   type: 'AtRule'
   before: string
   after: string
@@ -35,58 +35,58 @@ export interface AtRule extends Range, HasChildren<ChildNode> {
   params: string
 }
 
-export type ChildNode = AtRule | Rule | Declaration
+export type STChild = STAtRule | STRule | STDeclaration
 
-export interface Selector {
+export interface STSelector {
   type: 'Selector'
   universal: boolean
   tag?: string
   id?: string
   class: string[]
-  attributes: Attribute[]
-  pseudoClass: PseudoClass[]
-  pseudoElement?: PseudoElement
-  leftCombinator?: Combinator
+  attributes: STAttribute[]
+  pseudoClass: STPseudoClass[]
+  pseudoElement?: STPseudoElement
+  leftCombinator?: STCombinator
 }
 
-export interface PseudoClass {
+export interface STPseudoClass {
   type: 'PseudoClass'
   value: string
-  params: Selector[]
+  params: STSelector[]
 }
 
-export interface PseudoElement {
+export interface STPseudoElement {
   type: 'PseudoElement'
   value: string
-  pseudoClass: PseudoClass[]
+  pseudoClass: STPseudoClass[]
 }
 
-export type AttributeOperator = '=' | '~=' | '|=' | '^=' | '$=' | '*='
+export type STAttributeOperator = '=' | '~=' | '|=' | '^=' | '$=' | '*='
 
-export interface Attribute {
+export interface STAttribute {
   type: 'Attribute'
-  operator?: AttributeOperator
+  operator?: STAttributeOperator
   name: string
   value?: string
   insensitive: boolean
 }
 
-export interface Combinator {
+export interface STCombinator {
   type: 'Combinator'
   operator: string
-  left: Selector
+  left: STSelector
 }
 
 /*
  * Used to print in the preview
  */
-export interface RuleForPrint {
+export interface STRuleForPrint {
   path: number[]
   selectors: string[]
-  children: DeclarationForPrint[]
+  children: STDeclarationForPrint[]
 }
 
-export interface DeclarationForPrint {
+export interface STDeclarationForPrint {
   path: number[]
   prop: string
   value: string
@@ -95,13 +95,13 @@ export interface DeclarationForPrint {
 /**
  * Used to update ast
  */
-export interface DeclarationForAdd {
+export interface STDeclarationForAdd {
   prop: string
   value: string
   important: boolean
 }
 
-export interface DeclarationForUpdate {
+export interface STDeclarationForUpdate {
   path: number[]
   prop?: string
   value?: string

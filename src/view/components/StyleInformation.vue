@@ -32,7 +32,7 @@
 import Vue from 'vue'
 import StyleValue from './StyleValue.vue'
 import StyleDeclaration from './StyleDeclaration.vue'
-import { RuleForPrint } from '@/parser/style/types'
+import { STRuleForPrint } from '@/parser/style/types'
 
 export default Vue.extend({
   name: 'StyleInformation',
@@ -44,7 +44,7 @@ export default Vue.extend({
 
   props: {
     rules: {
-      type: Array as () => RuleForPrint[],
+      type: Array as () => STRuleForPrint[],
       required: true
     }
   },
@@ -75,7 +75,7 @@ export default Vue.extend({
       this.$emit('remove-declaration', { path })
     },
 
-    onClickRule(rule: RuleForPrint): void {
+    onClickRule(rule: STRuleForPrint): void {
       if (this.endingInput) return
 
       this.$emit('add-declaration', {

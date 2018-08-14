@@ -1,5 +1,5 @@
 import { parse } from 'vue-eslint-parser'
-import { Attribute } from '@/parser/template/types'
+import { TEAttribute } from '@/parser/template/types'
 import { transformTemplate } from '@/parser/template/transform'
 import { addScope } from '@/parser/template/manipulate'
 
@@ -18,7 +18,7 @@ describe('Scope attribute', () => {
 
     const scope = '1a2s3d'
     const scopeName = 'data-scope-' + scope
-    const scopeAttr: Attribute = {
+    const scopeAttr: TEAttribute = {
       type: 'Attribute',
       attrIndex: -1,
       name: scopeName,

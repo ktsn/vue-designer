@@ -4,22 +4,22 @@ import { clone, unquote } from '../../utils'
 import { AssetResolver } from '../../asset-resolver'
 
 interface StyleVisitor {
-  atRule?(atRule: t.AtRule): t.AtRule | void
-  rule?(rule: t.Rule): t.Rule | void
-  declaration?(decl: t.Declaration): t.Declaration | void
-  lastSelector?(selector: t.Selector, rule: t.Rule): t.Selector | void
+  atRule?(atRule: t.STAtRule): t.STAtRule | void
+  rule?(rule: t.STRule): t.STRule | void
+  declaration?(decl: t.STDeclaration): t.STDeclaration | void
+  lastSelector?(selector: t.STSelector, rule: t.STRule): t.STSelector | void
 }
 
 export const scopePrefix = 'data-scope-'
 
-function visitStyle(style: t.Style, visitor: StyleVisitor): t.Style {
+function visitStyle(style: t.STStyle, visitor: StyleVisitor): t.STStyle {
   function apply<T>(node: T, visitor?: (node: T) => T | void): T {
     return visitor ? visitor(node) || node : node
   }
 
   function loop(
-    node: t.AtRule | t.Rule | t.Declaration
-  ): t.AtRule | t.Rule | t.Declaration {
+    node: t.STAtRule | t.STRule | t.STDeclaration
+  ): t.STAtRule | t.STRule | t.STDeclaration {
     switch (node.type) {
       case 'AtRule':
         return clone(apply(node, visitor.atRule), {
@@ -45,22 +45,20 @@ function visitStyle(style: t.Style, visitor: StyleVisitor): t.Style {
 }
 
 export function visitLastSelectors(
-  root: t.Style,
-  fn: (selector: t.Selector, rule: t.Rule) => t.Selector | void
-): t.Style {
+  root: t.STStyle,
+  fn: (selector: t.STSelector, rule: t.STRule) => t.STSelector | void
+): t.STStyle {
   return visitStyle(root, { lastSelector: fn })
 }
 
 /**
  * Excludes selectors in @keyframes
  */
-function isInterestSelector(rule: t.Rule, root: t.Style): boolean {
+function isInterestSelector(rule: t.STRule, root: t.STStyle): boolean {
   const atRules = rule.path
     .slice(1)
-    .reduce<t.ChildNode[]>((nodes, index) => {
-      const prev = (nodes[nodes.length - 1] || root) as t.HasChildren<
-        t.ChildNode
-      >
+    .reduce<t.STChild[]>((nodes, index) => {
+      const prev = (nodes[nodes.length - 1] || root) as t.HasChildren<t.STChild>
       assert(
         'children' in prev,
         '[style manipulate] the rule probably has an invalid path.'
@@ -68,16 +66,16 @@ function isInterestSelector(rule: t.Rule, root: t.Style): boolean {
 
       return nodes.concat(prev.children[index])
     }, [])
-    .filter((n): n is t.AtRule => n.type === 'AtRule')
+    .filter((n): n is t.STAtRule => n.type === 'AtRule')
 
   return atRules.every(r => !/-?keyframes$/.test(r.name))
 }
 
 export function resolveAsset(
-  style: t.Style,
+  style: t.STStyle,
   basePath: string,
   resolver: AssetResolver
-): t.Style {
+): t.STStyle {
   return visitStyle(style, {
     declaration: decl => {
       const value = decl.value
@@ -95,7 +93,7 @@ export function resolveAsset(
   })
 }
 
-export function addScope(node: t.Style, scope: string): t.Style {
+export function addScope(node: t.STStyle, scope: string): t.STStyle {
   const keyframes = new Map<string, string>()
 
   const keyframesReplaced = visitStyle(node, {
@@ -156,9 +154,9 @@ export function addScope(node: t.Style, scope: string): t.Style {
 }
 
 export function getNode(
-  styles: t.Style[],
+  styles: t.STStyle[],
   path: number[]
-): t.ChildNode | undefined {
+): t.STChild | undefined {
   return path.reduce<any>(
     (acc, i) => {
       if (!acc) return
@@ -172,9 +170,9 @@ export function getNode(
 }
 
 export function getDeclaration(
-  styles: t.Style[],
+  styles: t.STStyle[],
   path: number[]
-): t.Declaration | undefined {
+): t.STDeclaration | undefined {
   const res = getNode(styles, path)
   return res && res.type === 'Declaration' ? res : undefined
 }

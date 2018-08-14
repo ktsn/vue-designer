@@ -1,18 +1,18 @@
 import { VNodeData } from 'vue'
 import { name as validateName } from 'xml-name-validator'
 import {
-  Directive,
-  ElementChild,
-  VForDirective,
-  Element,
-  StartTag
+  TEDirective,
+  TEChild,
+  TEForDirective,
+  TEElement,
+  TEStartTag
 } from '@/parser/template/types'
 import { DefaultValue } from '@/parser/script/types'
 import { evalWithScope } from './eval'
 import { isObject, range, mapValues } from '@/utils'
 
 function attributeValue(
-  startTag: StartTag,
+  startTag: TEStartTag,
   key: string,
   scope: Record<string, DefaultValue>
 ): DefaultValue {
@@ -29,7 +29,7 @@ function attributeValue(
 }
 
 function directiveValue(
-  dir: Directive,
+  dir: TEDirective,
   scope: Record<string, DefaultValue>
 ): DefaultValue {
   const exp = dir.expression
@@ -47,12 +47,12 @@ function directiveValue(
 
 function shouldAppearVElse(
   scope: Record<string, DefaultValue>,
-  stack: Element[]
+  stack: TEElement[]
 ): boolean {
   function loop(
     acc: boolean,
     scope: Record<string, DefaultValue>,
-    stack: Element[]
+    stack: TEElement[]
   ): boolean {
     const last = stack[stack.length - 1]
     if (!last) {
@@ -79,19 +79,19 @@ function shouldAppearVElse(
 }
 
 export interface ResolvedChild {
-  el: ElementChild
+  el: TEChild
   scope: Record<string, DefaultValue>
 }
 
 export interface ResolvedScopedSlot {
   scopeName: string
-  contents: ElementChild[]
+  contents: TEChild[]
 }
 
 function resolveVFor(
   acc: ResolvedChild[],
-  vFor: VForDirective,
-  el: Element,
+  vFor: TEForDirective,
+  el: TEElement,
   scope: Record<string, DefaultValue>
 ): ResolvedChild[] {
   // Remove if v-for expression is invalid or iteratee type looks cannot iterate.
@@ -129,8 +129,8 @@ function resolveVFor(
 
 function resolveVIf(
   acc: ResolvedChild[],
-  vIf: Directive,
-  el: Element,
+  vIf: TEDirective,
+  el: TEElement,
   scope: Record<string, DefaultValue>
 ): ResolvedChild[] {
   return directiveValue(vIf, scope)
@@ -140,11 +140,11 @@ function resolveVIf(
 
 function resolveVElse(
   acc: ResolvedChild[],
-  vElse: Directive,
-  el: Element,
+  vElse: TEDirective,
+  el: TEElement,
   scope: Record<string, DefaultValue>
 ): ResolvedChild[] {
-  const isElement = (node: ElementChild): node is Element => {
+  const isElement = (node: TEChild): node is TEElement => {
     return node.type === 'Element'
   }
   const elements = acc.map(({ el }) => el).filter(isElement)
@@ -163,7 +163,7 @@ function resolveVElse(
 }
 
 export function resolveScopedSlots(
-  el: Element
+  el: TEElement
 ): Record<string, ResolvedScopedSlot> | undefined {
   let scopedSlots: Record<string, ResolvedScopedSlot> | undefined
 
@@ -208,7 +208,7 @@ export function resolveControlDirectives(
     const dirs = child.startTag.directives
 
     // v-for
-    const vFor = dirs.find((d): d is VForDirective => d.name === 'for')
+    const vFor = dirs.find((d): d is TEForDirective => d.name === 'for')
     if (!iteratingByVFor && vFor) {
       return resolveVFor(acc, vFor, child, scope)
     }
@@ -232,7 +232,7 @@ export function resolveControlDirectives(
 }
 
 function unwrapTemplate(
-  el: Element,
+  el: TEElement,
   scope: Record<string, DefaultValue>
 ): ResolvedChild[] {
   if (el.name !== 'template') {
@@ -293,7 +293,7 @@ function parseStyleText(cssText: string): Record<string, string> {
 }
 
 export function convertToSlotScope(
-  startTag: StartTag,
+  startTag: TEStartTag,
   scope: Record<string, DefaultValue>
 ): Record<string, DefaultValue> {
   return {
@@ -304,7 +304,7 @@ export function convertToSlotScope(
 
 export function convertToVNodeData(
   tag: string,
-  startTag: StartTag,
+  startTag: TEStartTag,
   scope: Record<string, DefaultValue>
 ): VNodeData {
   const { attrs, props, domProps, directives } = startTag
@@ -373,7 +373,7 @@ export function convertToVNodeData(
 function resolveVModel(
   data: VNodeData,
   tag: string,
-  startTag: StartTag,
+  startTag: TEStartTag,
   scope: Record<string, DefaultValue>,
   modelValue: any
 ): void {

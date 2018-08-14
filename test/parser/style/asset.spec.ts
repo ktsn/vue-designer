@@ -1,7 +1,7 @@
 import { AssetResolver } from '@/asset-resolver'
 import { createStyle, rule, selector, declaration } from '../../helpers/style'
 import { resolveAsset } from '@/parser/style/manipulate'
-import { Rule } from '@/parser/style/types'
+import { STRule } from '@/parser/style/types'
 
 describe('Style asset resolution', () => {
   const basePath = '/path/to/components'
@@ -16,7 +16,7 @@ describe('Style asset resolution', () => {
     ])
 
     const resolved = resolveAsset(style, basePath, asset)
-    const decl = (resolved.children[0] as Rule).children[0]
+    const decl = (resolved.children[0] as STRule).children[0]
     expect(decl.prop).toBe('background')
     expect(decl.value).toBe(
       'url("/assets?path=' + encodeURIComponent('/path/to/assets/bg.png') + '")'
@@ -38,7 +38,7 @@ describe('Style asset resolution', () => {
     ])
 
     const resolved = resolveAsset(style, basePath, asset)
-    const decls = (resolved.children[0] as Rule).children
+    const decls = (resolved.children[0] as STRule).children
     expect(decls.length).toBe(2)
     expect(decls[0].prop).toBe('font-size')
     expect(decls[0].value).toBe('18px')

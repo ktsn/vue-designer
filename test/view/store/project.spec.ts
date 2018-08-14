@@ -9,7 +9,7 @@ import { createStyle, rule, selector } from '../../helpers/style'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
 import { ClientConnection } from '@/view/communication'
 import { StyleMatcher } from '@/view/store/style-matcher'
-import { RuleForPrint } from '@/parser/style/types'
+import { STRuleForPrint } from '@/parser/style/types'
 
 describe('Store project getters', () => {
   describe('scopedDocuments', () => {
@@ -328,7 +328,7 @@ describe('Store project actions', () => {
   })
 
   describe('matchSelectedNodeWithStyles', () => {
-    const emptyRule: RuleForPrint = {
+    const emptyRule: STRuleForPrint = {
       path: [0, 0],
       selectors: ['div'],
       children: []

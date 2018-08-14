@@ -1,5 +1,5 @@
 import { VueFilePayload } from './parser/vue-file'
-import { DeclarationForUpdate, DeclarationForAdd } from './parser/style/types'
+import { STDeclarationForUpdate, STDeclarationForAdd } from './parser/style/types'
 
 export type ServerPayload = InitProject | InitSharedStyle | ChangeDocument
 export type ClientPayload =
@@ -42,7 +42,7 @@ export interface AddDeclaration {
   type: 'AddDeclaration'
   uri: string
   path: number[]
-  declaration: DeclarationForAdd
+  declaration: STDeclarationForAdd
 }
 
 export interface RemoveDeclaration {
@@ -54,5 +54,5 @@ export interface RemoveDeclaration {
 export interface UpdateDeclaration {
   type: 'UpdateDeclaration'
   uri: string
-  declaration: DeclarationForUpdate
+  declaration: STDeclarationForUpdate
 }

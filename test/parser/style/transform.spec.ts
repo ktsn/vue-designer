@@ -12,9 +12,9 @@ import {
   assertStyleNode
 } from '../../helpers/style'
 import { transformStyle } from '@/parser/style/transform'
-import { Style, Rule } from '@/parser/style/types'
+import { STStyle, STRule } from '@/parser/style/types'
 
-function getAst(code: string): Style {
+function getAst(code: string): STStyle {
   const root = parse(code)
   return transformStyle(root, code, 0)
 }
@@ -23,7 +23,7 @@ describe('Style AST transformer', () => {
   it('should transform rules', () => {
     const ast = getAst(`a { color: cyan; }`)
 
-    const expected: Style = createStyle([
+    const expected: STStyle = createStyle([
       rule([selector({ tag: 'a' })], [declaration('color', 'cyan')])
     ])
 
@@ -168,7 +168,7 @@ describe('Style AST transformer', () => {
 
   it('should transform node position', () => {
     const ast = getAst('.foo {\n  color: red;\n}\n.bar {}')
-    const rule = ast.children[0] as Rule
+    const rule = ast.children[0] as STRule
 
     expect(ast.range).toEqual([0, 30])
     expect(rule.range).toEqual([0, 22])

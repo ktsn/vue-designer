@@ -1,8 +1,8 @@
 import assert from 'assert'
 import { Actions } from 'sinai'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 import { getNode } from '@/parser/template/manipulate'
-import { DeclarationForUpdate } from '@/parser/style/types'
+import { STDeclarationForUpdate } from '@/parser/style/types'
 import { ClientConnection } from '@/view/communication'
 import { StyleMatcher } from '@/view/store/style-matcher'
 import { transformRuleForPrint } from '@/parser/style/transform'
@@ -56,7 +56,7 @@ export class ProjectActions extends Actions<
     })
   }
 
-  select(node: Element | undefined): void {
+  select(node: TEElement | undefined): void {
     const { state, getters, mutations } = this
     const current = getters.currentDocument
     if (!current) return
@@ -142,7 +142,7 @@ export class ProjectActions extends Actions<
         const last = node.path[node.path.length - 1]
         insertInto = node.path.slice(0, -1).concat(last + 1)
       } else if (place === 'first') {
-        const el = node as Element
+        const el = node as TEElement
         assert(
           el.type === 'Element',
           `[store/project] node type must be 'Element' when place is 'first' but received '${
@@ -151,7 +151,7 @@ export class ProjectActions extends Actions<
         )
         insertInto = el.path.concat(0)
       } else {
-        const el = node as Element
+        const el = node as TEElement
         assert(
           el.type === 'Element',
           `[store/project] node type must be 'Element' when place is 'last' but received '${
@@ -207,7 +207,7 @@ export class ProjectActions extends Actions<
   }): void {
     if (!this.state.currentUri) return
 
-    const updater: DeclarationForUpdate = {
+    const updater: STDeclarationForUpdate = {
       path: payload.path
     }
 

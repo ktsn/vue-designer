@@ -1,5 +1,5 @@
 import { VueFilePayload } from '@/parser/vue-file'
-import { RuleForPrint } from '@/parser/style/types'
+import { STRuleForPrint } from '@/parser/style/types'
 import { DocumentScope } from './types'
 
 export class ProjectState {
@@ -10,5 +10,5 @@ export class ProjectState {
   draggingUri: string | undefined = undefined
   selectedPath: number[] = []
   draggingPath: number[] = []
-  matchedRules: RuleForPrint[] = []
+  matchedRules: STRuleForPrint[] = []
 }

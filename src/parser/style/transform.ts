@@ -9,7 +9,7 @@ export function transformStyle(
   root: postcss.Root,
   code: string,
   index: number
-): t.Style {
+): t.STStyle {
   if (!root.nodes) {
     return {
       path: [index],
@@ -29,7 +29,7 @@ export function transformStyle(
       }
     })
     .filter(
-      (node): node is t.AtRule | t.Rule => {
+      (node): node is t.STAtRule | t.STRule => {
         return node !== undefined
       }
     )
@@ -45,7 +45,7 @@ function transformAtRule(
   atRule: postcss.AtRule,
   path: number[],
   code: string
-): t.AtRule {
+): t.STAtRule {
   const isNotComment = <T extends postcss.Node>(
     node: T | postcss.Comment
   ): node is T => {
@@ -72,7 +72,7 @@ function transformRule(
   rule: postcss.Rule,
   path: number[],
   code: string
-): t.Rule {
+): t.STRule {
   const decls = rule.nodes ? rule.nodes.filter(isDeclaration) : []
   const root = selectorParser().astSync(rule.selector)
 
@@ -93,16 +93,16 @@ function transformRule(
   }
 }
 
-function transformSelector(nodes: selectorParser.Node[]): t.Selector {
+function transformSelector(nodes: selectorParser.Node[]): t.STSelector {
   const [first, ...tail] = nodes
   return transformSelectorElement(emptySelector(), first, tail)
 }
 
 function transformSelectorElement(
-  current: t.Selector,
+  current: t.STSelector,
   el: selectorParser.Node | undefined,
   rest: selectorParser.Node[]
-): t.Selector {
+): t.STSelector {
   if (!el) {
     return current
   }
@@ -146,7 +146,7 @@ function transformSelectorElement(
   return transformSelectorElement(current, first, tail)
 }
 
-function transformPseudoClass(node: selectorParser.Pseudo): t.PseudoClass {
+function transformPseudoClass(node: selectorParser.Pseudo): t.STPseudoClass {
   const params = node.nodes as selectorParser.Selector[]
 
   return {
@@ -157,10 +157,10 @@ function transformPseudoClass(node: selectorParser.Pseudo): t.PseudoClass {
 }
 
 function transformPseudoElement(
-  parent: t.Selector,
+  parent: t.STSelector,
   el: selectorParser.Pseudo,
   rest: selectorParser.Node[]
-): t.Selector {
+): t.STSelector {
   const rawPseudoClass = takeWhile(rest, isPseudoClass)
 
   parent.pseudoElement = {
@@ -178,7 +178,7 @@ function transformPseudoElement(
   return transformSelectorElement(parent, first, tail)
 }
 
-function transformAttribute(attr: selectorParser.Attribute): t.Attribute {
+function transformAttribute(attr: selectorParser.Attribute): t.STAttribute {
   return {
     type: 'Attribute',
     operator: attr.operator,
@@ -190,8 +190,8 @@ function transformAttribute(attr: selectorParser.Attribute): t.Attribute {
 
 function transformCombinator(
   comb: selectorParser.Combinator,
-  left: t.Selector
-): t.Combinator {
+  left: t.STSelector
+): t.STCombinator {
   return {
     type: 'Combinator',
     operator: comb.value,
@@ -203,7 +203,7 @@ function transformDeclaration(
   decl: postcss.Declaration,
   path: number[],
   code: string
-): t.Declaration {
+): t.STDeclaration {
   return {
     type: 'Declaration',
     path,
@@ -220,7 +220,7 @@ function transformChild(
   child: postcss.AtRule | postcss.Rule | postcss.Declaration,
   path: number[],
   code: string
-): t.ChildNode {
+): t.STChild {
   switch (child.type) {
     case 'atrule':
       return transformAtRule(child, path, code)
@@ -259,7 +259,7 @@ function toOffset(line: number, column: number, code: string): number {
   return beforeLength + column - 1
 }
 
-export function transformRuleForPrint(rule: t.Rule): t.RuleForPrint {
+export function transformRuleForPrint(rule: t.STRule): t.STRuleForPrint {
   return {
     path: rule.path,
     selectors: rule.selectors.map(genSelector),
@@ -272,7 +272,7 @@ export function transformRuleForPrint(rule: t.Rule): t.RuleForPrint {
   }
 }
 
-function emptySelector(): t.Selector {
+function emptySelector(): t.STSelector {
   return {
     type: 'Selector',
     universal: false,

@@ -1,10 +1,10 @@
-import { Template } from '@/parser/template/types'
+import { TETemplate } from '@/parser/template/types'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 
 export interface ScopedDocument {
   uri: string
   displayName: string
-  template: Template | undefined
+  template: TETemplate | undefined
   props: Prop[]
   data: Data[]
   childComponents: ChildComponent[]

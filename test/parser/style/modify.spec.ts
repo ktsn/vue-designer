@@ -4,13 +4,13 @@ import {
   removeDeclaration,
   insertDeclaration
 } from '@/parser/style/modify'
-import { Style } from '@/parser/style/types'
+import { STStyle } from '@/parser/style/types'
 import { transformStyle } from '@/parser/style/transform'
 import { modify } from '@/parser/modifier'
 import { declaration } from '../../helpers/style'
 
 describe('Style modifier', () => {
-  function parse(code: string): Style[] {
+  function parse(code: string): STStyle[] {
     return [transformStyle(_parse(code), code, 0)]
   }
 

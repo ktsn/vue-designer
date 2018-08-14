@@ -1,27 +1,27 @@
 import { Range } from '../modifier'
 
-export type ElementChild = Element | TextNode | ExpressionNode
+export type TEChild = TEElement | TETextNode | TEExpressionNode
 
-interface BaseNode extends Range {
+interface TEBaseNode extends Range {
   type: string
 }
 
-export interface Template extends BaseNode {
+export interface TETemplate extends TEBaseNode {
   type: 'Template'
-  attrs: Record<string, Attribute>
-  children: ElementChild[]
+  attrs: Record<string, TEAttribute>
+  children: TEChild[]
 }
 
-export interface Element extends BaseNode {
+export interface TEElement extends TEBaseNode {
   type: 'Element'
   path: number[]
   name: string
-  startTag: StartTag
-  endTag?: EndTag
-  children: ElementChild[]
+  startTag: TEStartTag
+  endTag?: TEEndTag
+  children: TEChild[]
 }
 
-export interface StartTag extends BaseNode {
+export interface TEStartTag extends TEBaseNode {
   type: 'StartTag'
 
   // It simply maps attributes with the following rule:
@@ -31,38 +31,38 @@ export interface StartTag extends BaseNode {
   // 4. Other directives are in `directives`
   // `attrs` and `props` may include `class` and `style` unlike Vue.js template compiler.
   // Object style v-bind (v-bind="obj") is not supported yet. It will be in `directives`.
-  attrs: Record<string, Attribute>
-  props: Record<string, Directive>
-  domProps: Record<string, Directive>
-  directives: Directive[]
+  attrs: Record<string, TEAttribute>
+  props: Record<string, TEDirective>
+  domProps: Record<string, TEDirective>
+  directives: TEDirective[]
 
   selfClosing: boolean
 }
 
-export interface EndTag extends BaseNode {
+export interface TEEndTag extends TEBaseNode {
   type: 'EndTag'
 }
 
-export interface TextNode extends BaseNode {
+export interface TETextNode extends TEBaseNode {
   type: 'TextNode'
   path: number[]
   text: string
 }
 
-export interface ExpressionNode extends BaseNode {
+export interface TEExpressionNode extends TEBaseNode {
   type: 'ExpressionNode'
   path: number[]
   expression: string
 }
 
-export interface Attribute extends BaseNode {
+export interface TEAttribute extends TEBaseNode {
   type: 'Attribute'
   attrIndex: number
   name: string
   value?: string
 }
 
-export interface Directive extends BaseNode {
+export interface TEDirective extends TEBaseNode {
   type: 'Directive'
   attrIndex: number
   name: string
@@ -72,7 +72,7 @@ export interface Directive extends BaseNode {
   value?: any
 }
 
-export interface VForDirective extends Directive {
+export interface TEForDirective extends TEDirective {
   name: 'for'
   left: string[]
   right?: string

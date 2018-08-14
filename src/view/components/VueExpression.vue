@@ -4,7 +4,7 @@ import { DefaultValue } from '@/parser/script/types'
 import { evalWithScope, EvalSuccess } from '../eval'
 
 export default Vue.extend({
-  name: 'VueVueExpression',
+  name: 'VueExpression',
   functional: true,
 
   props: {

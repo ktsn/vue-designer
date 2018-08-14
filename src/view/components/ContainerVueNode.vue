@@ -1,5 +1,5 @@
 <template>
-  <Node
+  <VueNode
     v-bind="$props"
     :selectable="currentUri === uri"
     :selected="selected"
@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import Node from './Node.vue'
+import VueNode from './VueNode.vue'
 import { Element } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import { mapper } from '../store'
@@ -17,10 +17,10 @@ import { mapper } from '../store'
 const projectMapper = mapper.module('project')
 
 export default Vue.extend({
-  name: 'ContainerNode',
+  name: 'ContainerVueNode',
 
   beforeCreate() {
-    this.$options.components!.Node = Node
+    this.$options.components!.VueNode = VueNode
   },
 
   props: {

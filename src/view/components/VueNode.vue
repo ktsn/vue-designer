@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue, { VNode, VNodeData } from 'vue'
 import ContainerVueComponent from './ContainerVueComponent.vue'
-import Child from './Child.vue'
+import VueChild from './VueChild.vue'
 import { Element } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import {
@@ -14,7 +14,7 @@ import { DraggingPlace } from '../store/modules/project/types'
 import { mapValues } from '@/utils'
 
 export default Vue.extend({
-  name: 'Node',
+  name: 'VueNode',
 
   props: {
     uri: {
@@ -93,7 +93,7 @@ export default Vue.extend({
             }, [])
 
             return resolved.map(c => {
-              return h(Child, {
+              return h(VueChild, {
                 props: {
                   uri: this.uri,
                   data: c.el,
@@ -201,8 +201,8 @@ export default Vue.extend({
       this.vnodeTag,
       this.vnodeData,
       this.resolvedChildren.map(c => {
-        // Slot name will be resolved in <Child> component
-        return h(Child, {
+        // Slot name will be resolved in <VueChild> component
+        return h(VueChild, {
           props: {
             uri,
             data: c.el,

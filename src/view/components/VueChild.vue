@@ -1,14 +1,14 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import NodeSlot from './NodeSlot.vue'
-import ContainerNode from './ContainerNode.vue'
-import Expression from './Expression.vue'
+import VueSlot from './VueSlot.vue'
+import ContainerVueNode from './ContainerVueNode.vue'
+import VueExpression from './VueExpression.vue'
 import { ElementChild } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 
 // Assign to a constant to recursively use this component
-const Child = Vue.extend({
-  name: 'Child',
+const VueChild = Vue.extend({
+  name: 'VueChild',
   functional: true,
 
   props: {
@@ -57,7 +57,7 @@ const Child = Vue.extend({
             'template',
             { slot: slotName },
             data.children.map(child => {
-              return h(Child, {
+              return h(VueChild, {
                 props: {
                   ...props,
                   data: child
@@ -68,7 +68,7 @@ const Child = Vue.extend({
           )
         }
 
-        return h(data.name === 'slot' ? NodeSlot : ContainerNode, {
+        return h(data.name === 'slot' ? VueSlot : ContainerVueNode, {
           props,
           on: listeners,
           slot: slotName || 'default'
@@ -76,7 +76,7 @@ const Child = Vue.extend({
       case 'TextNode':
         return [data.text]
       case 'ExpressionNode':
-        return h(Expression, {
+        return h(VueExpression, {
           props: {
             expression: data.expression,
             scope
@@ -87,5 +87,5 @@ const Child = Vue.extend({
     }
   }
 })
-export default Child
+export default VueChild
 </script>

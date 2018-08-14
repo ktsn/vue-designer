@@ -56,12 +56,7 @@ export default Vue.extend({
 
     vnodeData(): VNodeData {
       const { data: node, scope, selectable } = this
-      const data = convertToVNodeData(
-        node.name,
-        node.startTag.attrs,
-        node.startTag.directives,
-        scope
-      )
+      const data = convertToVNodeData(node.name, node.startTag, scope)
 
       if (selectable) {
         // The vnode may be a native element or ContainerVueComponent,

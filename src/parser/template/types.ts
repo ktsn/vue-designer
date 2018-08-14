@@ -24,6 +24,8 @@ export interface Element extends BaseNode {
 export interface StartTag extends BaseNode {
   type: 'StartTag'
   attrs: Record<string, Attribute>
+  props: Record<string, Directive>
+  domProps: Record<string, Directive>
   directives: Directive[]
   selfClosing: boolean
 }

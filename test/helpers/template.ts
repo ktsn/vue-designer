@@ -105,12 +105,20 @@ export function h(
   options: { selfClosing?: boolean; hasEndTag?: boolean } = {}
 ): Element {
   const attrs: Record<string, Attribute> = {}
+  const props: Record<string, Directive> = {}
+  const domProps: Record<string, Directive> = {}
   const dirs: Directive[] = []
   attributes.forEach((attr, i) => {
     attr.attrIndex = i
 
     if (attr.type === 'Attribute') {
       attrs[attr.name] = attr
+    } else if (attr.name === 'bind' && attr.argument !== undefined) {
+      if (attr.modifiers.prop) {
+        domProps[attr.argument] = attr
+      } else {
+        props[attr.argument] = attr
+      }
     } else {
       dirs.push(attr)
     }
@@ -126,6 +134,8 @@ export function h(
     startTag: {
       type: 'StartTag',
       attrs,
+      props,
+      domProps,
       directives: dirs,
       selfClosing,
       range: [-1, -1]

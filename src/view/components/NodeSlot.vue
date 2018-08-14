@@ -41,11 +41,7 @@ export default Vue.extend({
   render(h, { props }): any /* VNode[] */ {
     const { data, scope, slots, scopedSlots } = props
 
-    const slotScope = convertToSlotScope(
-      data.startTag.attrs,
-      data.startTag.directives,
-      scope
-    )
+    const slotScope = convertToSlotScope(data.startTag, scope)
 
     const slotName = String(slotScope.name || 'default')
     delete slotScope.name

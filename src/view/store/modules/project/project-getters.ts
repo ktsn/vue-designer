@@ -127,6 +127,8 @@ export class ProjectGetters extends Getters<ProjectState>() {
       startTag: {
         type: 'StartTag',
         attrs: {},
+        props: {},
+        domProps: {},
         directives: [],
         selfClosing: false,
         range: [-1, -1]

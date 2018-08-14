@@ -5,10 +5,14 @@ type RootElement = AST.VElement & AST.HasConcreteInfo
 type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
 
 export function transformTemplate(body: RootElement, code: string): t.Template {
+  const transformed = body.startTag.attributes.map((attr, index) =>
+    transformAttribute(attr, index, code)
+  )
+  const attrs = extractAttrs(transformed)
   return {
     type: 'Template',
     range: body.range,
-    attrs: transformAttributes(body.startTag.attributes),
+    attrs,
     children: body.children.map((child, i) => transformChild(child, code, [i]))
   }
 }
@@ -18,11 +22,15 @@ function transformElement(
   code: string,
   path: number[]
 ): t.Element {
-  const attrs = el.startTag.attributes
+  const attrs = el.startTag.attributes.map((attr, index) =>
+    transformAttribute(attr, index, code)
+  )
 
   const start = startTag(
-    transformAttributes(attrs),
-    transformDirectives(attrs, code),
+    extractAttrs(attrs),
+    extractProps(attrs),
+    extractDomProps(attrs),
+    extractDirectives(attrs),
     el.startTag.selfClosing,
     el.startTag.range
   )
@@ -39,80 +47,98 @@ function transformElement(
   )
 }
 
-function transformAttributes(
-  attrs: (AST.VAttribute | AST.VDirective)[]
+function extractAttrs(
+  attrs: (t.Attribute | t.Directive)[]
 ): Record<string, t.Attribute> {
   const res: Record<string, t.Attribute> = {}
 
-  attrs.forEach((attr, index) => {
-    if (attr.directive) {
-      return
+  attrs.forEach(attr => {
+    if (attr.type === 'Attribute') {
+      res[attr.name] = attr
     }
-    res[attr.key.name] = attribute(
-      index,
-      attr.key.name,
-      attr.value ? attr.value.value : undefined,
-      attr.range
-    )
   })
 
   return res
 }
 
-function transformDirectives(
-  attrs: (AST.VAttribute | AST.VDirective)[],
-  code: string
+function extractProps(
+  attrs: (t.Attribute | t.Directive)[]
+): Record<string, t.Directive> {
+  const res: Record<string, t.Directive> = {}
+
+  attrs.forEach(attr => {
+    if (isProp(attr)) {
+      res[attr.argument!] = attr
+    }
+  })
+
+  return res
+}
+
+function extractDomProps(
+  attrs: (t.Attribute | t.Directive)[]
+): Record<string, t.Directive> {
+  const res: Record<string, t.Directive> = {}
+
+  attrs.forEach(attr => {
+    if (isDomProp(attr)) {
+      res[attr.argument!] = attr
+    }
+  })
+
+  return res
+}
+
+function extractDirectives(
+  attrs: (t.Attribute | t.Directive)[]
 ): t.Directive[] {
-  return attrs
-    .map((attr, index) => {
-      if (!attr.directive) {
-        return null
-      }
-
-      if (attr.key.name === 'for') {
-        return transformVForDirective(attr, index, code)
-      } else {
-        return transformDirective(attr, index, code)
-      }
-    })
-    .filter((dir): dir is t.Directive => dir !== null)
-}
-
-function transformDirective(
-  node: AST.VDirective,
-  index: number,
-  code: string
-): t.Directive {
-  const exp = node.value && node.value.expression
-  const expStr = exp ? extractExpression(exp, code) : undefined
-  return directive(
-    index,
-    node.key.name,
-    node.key.argument || undefined,
-    node.key.modifiers,
-    expStr,
-    node.range
+  return attrs.filter(
+    (attr): attr is t.Directive => {
+      return attr.type === 'Directive' && !isProp(attr) && !isDomProp(attr)
+    }
   )
 }
 
-function transformVForDirective(
-  node: AST.VDirective,
+function transformAttribute(
+  attr: AST.VAttribute | AST.VDirective,
   index: number,
   code: string
-): t.VForDirective {
-  const exp =
-    node.value &&
-    node.value.expression &&
-    node.value.expression.type === 'VForExpression'
-      ? node.value.expression
-      : null
+): t.Attribute | t.Directive {
+  if (attr.directive) {
+    if (attr.key.name === 'for') {
+      const exp =
+        attr.value &&
+        attr.value.expression &&
+        attr.value.expression.type === 'VForExpression'
+          ? attr.value.expression
+          : null
 
-  return vForDirective(
-    index,
-    exp ? exp.left.map(l => extractExpression(l, code)) : [],
-    exp ? extractExpression(exp.right, code) : undefined,
-    node.range
-  )
+      return vForDirective(
+        index,
+        exp ? exp.left.map(l => extractExpression(l, code)) : [],
+        exp ? extractExpression(exp.right, code) : undefined,
+        attr.range
+      )
+    } else {
+      const exp = attr.value && attr.value.expression
+      const expStr = exp ? extractExpression(exp, code) : undefined
+      return directive(
+        index,
+        attr.key.name,
+        attr.key.argument || undefined,
+        attr.key.modifiers,
+        expStr,
+        attr.range
+      )
+    }
+  } else {
+    return attribute(
+      index,
+      attr.key.name,
+      attr.value ? attr.value.value : undefined,
+      attr.range
+    )
+  }
 }
 
 function transformChild(
@@ -139,6 +165,24 @@ function extractExpression(node: AST.HasLocation, code: string): string {
   return code.slice(node.range[0], node.range[1])
 }
 
+function isProp(attr: t.Attribute | t.Directive): attr is t.Directive {
+  return (
+    attr.type === 'Directive' &&
+    attr.name === 'bind' &&
+    !attr.modifiers.prop &&
+    attr.argument !== undefined
+  )
+}
+
+function isDomProp(attr: t.Attribute | t.Directive): attr is t.Directive {
+  return (
+    attr.type === 'Directive' &&
+    attr.name === 'bind' &&
+    attr.modifiers.prop &&
+    attr.argument !== undefined
+  )
+}
+
 function element(
   path: number[],
   name: string,
@@ -160,6 +204,8 @@ function element(
 
 function startTag(
   attrs: Record<string, t.Attribute>,
+  props: Record<string, t.Directive>,
+  domProps: Record<string, t.Directive>,
   directives: t.Directive[],
   selfClosing: boolean,
   range: [number, number]
@@ -167,6 +213,8 @@ function startTag(
   return {
     type: 'StartTag',
     attrs,
+    props,
+    domProps,
     directives,
     selfClosing,
     range

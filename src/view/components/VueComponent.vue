@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import Child from './Child.vue'
+import VueChild from './VueChild.vue'
 import { Template } from '@/parser/template/types'
 import { ChildComponent } from '@/parser/script/types'
 import { DocumentScope } from '@/view/store/modules/project/types'
@@ -72,7 +72,7 @@ export default Vue.extend({
         }, [])
         .forEach(child => {
           return children.push(
-            h(Child, {
+            h(VueChild, {
               props: {
                 uri: this.uri,
                 data: child.el,

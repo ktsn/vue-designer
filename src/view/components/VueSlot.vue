@@ -1,12 +1,12 @@
 <script lang="ts">
 import Vue, { VNode, VNodeChildrenArrayContents } from 'vue'
-import Child from './Child.vue'
+import VueChild from './VueChild.vue'
 import { Element } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import { convertToSlotScope } from '@/view/rendering'
 
 export default Vue.extend({
-  name: 'NodeSlot',
+  name: 'VueSlot',
   functional: true,
 
   props: {
@@ -59,7 +59,7 @@ export default Vue.extend({
 
     // placeholder content
     return props.data.children.map(child => {
-      return h(Child, {
+      return h(VueChild, {
         props: {
           uri: props.uri,
           data: child,

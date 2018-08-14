@@ -72,6 +72,25 @@ describe('Template AST transformer', () => {
     assertWithoutRange(transformTemplate(ast, code), expected)
   })
 
+  it('should transform v-bind.prop directive', () => {
+    const code = '<template><div :lang.prop="en"></div></template>'
+    const program = parse(code, {})
+    const ast = program.templateBody!
+
+    // prettier-ignore
+    const expected = createTemplate([
+      h(
+        'div',
+        [
+          d('bind', { argument: 'lang', modifiers: ['prop'] }, 'en')
+        ],
+        []
+      )
+    ])
+
+    assertWithoutRange(transformTemplate(ast, code), expected)
+  })
+
   it('should evaluate literal value of directives', () => {
     const code = '<template><p v-if="true">test</p></template>'
     const program = parse(code, {})

@@ -19,6 +19,19 @@ describe('VueComponent v-bind', () => {
     expect(wrapper.find('input').attributes()!.value).toBe('default value')
   })
 
+  it('should bind properties with v-bind', () => {
+    // prettier-ignore
+    const template = createTemplate([
+      h('div', [
+        a('class', 'foo'),
+        d('bind', { argument: 'innerHTML', modifiers: ['prop'] }, '"<p>Hi</p>"')
+      ], [])
+    ])
+
+    const wrapper = render(template)
+    expect(wrapper.find('.foo').html()).toBe('<div class="foo"><p>Hi</p></div>')
+  })
+
   it('should merge a bound class with a static class', () => {
     // prettier-ignore
     const template = createTemplate([

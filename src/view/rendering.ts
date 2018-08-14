@@ -336,6 +336,8 @@ export function convertToVNodeData(
     } else if (prop.argument === 'style') {
       data.style = value as any
     } else if (isValidAttributeName(prop.argument!)) {
+      // We need to assign the value into `attrs` here
+      // to simulate vue-template-compiler.
       data.attrs![prop.argument!] = value
     }
   })

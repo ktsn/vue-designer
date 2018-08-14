@@ -14,7 +14,7 @@ describe('Template asset resolution', () => {
 
     const resolved = resolveAsset(template, basePath, asset)
     const img = resolved.children[0] as Element
-    const attrs = img.startTag.attributes
+    const attrs = img.startTag.attrs
 
     expect(img.name).toBe('img')
     expect(Object.keys(attrs).length).toBe(2)

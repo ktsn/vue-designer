@@ -51,7 +51,7 @@ describe('Modifier', () => {
     const ast: any = transformTemplate(template, code)
 
     const actual = modify(code, [
-      remove(ast.children[0].startTag.attributes.id),
+      remove(ast.children[0].startTag.attrs.id),
       replace(ast.children[0].children[0].children[0], 'Hi'),
       insertBefore(ast.children[0].children[1], 'Test')
     ])

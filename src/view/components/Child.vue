@@ -47,7 +47,7 @@ const Child = Vue.extend({
     const { data, scope } = props
     switch (data.type) {
       case 'Element':
-        const slot = data.startTag.attributes.slot
+        const slot = data.startTag.attrs.slot
         const slotName = slot && slot.value
 
         // Replace AST <template> with actual <template> element

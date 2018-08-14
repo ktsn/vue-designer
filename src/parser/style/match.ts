@@ -36,10 +36,10 @@ function matchSelector(
   selector: style.Selector,
   template: template.Template
 ): boolean {
-  const entries = Object.keys(target.startTag.attributes).map(
+  const entries = Object.keys(target.startTag.attrs).map(
     (key): [string, template.Attribute] => [
       key,
-      target.startTag.attributes[key]
+      target.startTag.attrs[key]
     ]
   )
   const attrMap = new Map(entries)
@@ -231,9 +231,9 @@ class StyleMap {
   getCandidateRules(el: template.Element): style.Rule[] {
     const tagMatched = this.tagMap.get(el.name) || []
 
-    const keys = Object.keys(el.startTag.attributes)
+    const keys = Object.keys(el.startTag.attrs)
     const attrsMatched = keys.reduce<style.Rule[]>((acc, key) => {
-      const attr = el.startTag.attributes[key]
+      const attr = el.startTag.attrs[key]
 
       if (attr.value) {
         if (attr.name === 'id') {

@@ -56,12 +56,7 @@ export default Vue.extend({
 
     vnodeData(): VNodeData {
       const { data: node, scope, selectable } = this
-      const data = convertToVNodeData(
-        node.name,
-        node.startTag.attributes,
-        node.startTag.directives,
-        scope
-      )
+      const data = convertToVNodeData(node.name, node.startTag, scope)
 
       if (selectable) {
         // The vnode may be a native element or ContainerVueComponent,
@@ -135,9 +130,7 @@ export default Vue.extend({
     resolvedChildren(): ResolvedChild[] {
       return this.data.children
         .filter(child => {
-          return (
-            child.type !== 'Element' || !child.startTag.attributes['slot-scope']
-          )
+          return child.type !== 'Element' || !child.startTag.attrs['slot-scope']
         })
         .reduce<ResolvedChild[]>((acc, child) => {
           return resolveControlDirectives(acc, {

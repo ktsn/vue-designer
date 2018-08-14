@@ -118,7 +118,7 @@ export function resolveAsset(
   resolver: AssetResolver
 ): t.Template {
   return visitElements(template, el => {
-    const src = el.startTag.attributes.src
+    const src = el.startTag.attrs.src
     if (el.name === 'img' && src && src.value) {
       const resolvedSrc = clone(src, {
         value: resolver.pathToUrl(src.value, baseUrl)
@@ -126,7 +126,7 @@ export function resolveAsset(
 
       return clone(el, {
         startTag: clone(el.startTag, {
-          attributes: clone(el.startTag.attributes, {
+          attrs: clone(el.startTag.attrs, {
             src: resolvedSrc
           })
         })
@@ -141,12 +141,11 @@ export function addScope(node: t.Template, scope: string): t.Template {
   return visitElements(node, el => {
     return clone(el, {
       startTag: clone(el.startTag, {
-        attributes: clone(el.startTag.attributes, {
+        attrs: clone(el.startTag.attrs, {
           [scopeName]: {
             type: 'Attribute',
             attrIndex: -1,
             name: scopeName,
-            value: null,
             range: [-1, -1]
           }
         })

@@ -5,14 +5,14 @@ import * as template from '../template/types'
 import { getNode } from '../template/manipulate'
 import { range } from '../../utils'
 
-export function createStyleMatcher(styles: style.Style[]) {
+export function createStyleMatcher(styles: style.STStyle[]) {
   const map = new StyleMap(styles)
 
   return function matchStyle(
-    template: template.Template,
+    template: template.TETemplate,
     targetPath: number[]
-  ): style.Rule[] {
-    const target = getNode(template, targetPath) as template.Element
+  ): style.STRule[] {
+    const target = getNode(template, targetPath) as template.TEElement
     assert(
       target,
       '[style matcher] Target node is not found. path: ' +
@@ -32,15 +32,12 @@ export function createStyleMatcher(styles: style.Style[]) {
 }
 
 function matchSelector(
-  target: template.Element,
-  selector: style.Selector,
-  template: template.Template
+  target: template.TEElement,
+  selector: style.STSelector,
+  template: template.TETemplate
 ): boolean {
   const entries = Object.keys(target.startTag.attrs).map(
-    (key): [string, template.Attribute] => [
-      key,
-      target.startTag.attrs[key]
-    ]
+    (key): [string, template.TEAttribute] => [key, target.startTag.attrs[key]]
   )
   const attrMap = new Map(entries)
 
@@ -54,13 +51,13 @@ function matchSelector(
   )
 }
 
-function matchSelectorByTag(tag: string, selector: style.Selector): boolean {
+function matchSelectorByTag(tag: string, selector: style.STSelector): boolean {
   return !selector.tag || tag === selector.tag
 }
 
 function matchSelectorById(
-  attrs: Map<string, template.Attribute>,
-  selector: style.Selector
+  attrs: Map<string, template.TEAttribute>,
+  selector: style.STSelector
 ): boolean {
   if (!selector.id) {
     return true
@@ -71,8 +68,8 @@ function matchSelectorById(
 }
 
 function matchSelectorByClass(
-  attrs: Map<string, template.Attribute>,
-  selector: style.Selector
+  attrs: Map<string, template.TEAttribute>,
+  selector: style.STSelector
 ): boolean {
   if (selector.class.length === 0) {
     return true
@@ -88,8 +85,8 @@ function matchSelectorByClass(
 }
 
 function matchSelectorByAttribute(
-  attrs: Map<string, template.Attribute>,
-  selector: style.Selector
+  attrs: Map<string, template.TEAttribute>,
+  selector: style.STSelector
 ): boolean {
   if (selector.attributes.length === 0) {
     return true
@@ -135,9 +132,9 @@ function matchSelectorByAttribute(
 }
 
 function matchCombinator(
-  origin: template.Element,
-  selector: style.Selector,
-  template: template.Template
+  origin: template.TEElement,
+  selector: style.STSelector,
+  template: template.TETemplate
 ): boolean {
   const comb = selector.leftCombinator
   if (!comb) {
@@ -148,7 +145,7 @@ function matchCombinator(
   const { path } = origin
   const parentPath = path.slice(0, -1)
   const last = path[path.length - 1]
-  const isElement = (el: any): el is template.Element =>
+  const isElement = (el: any): el is template.TEElement =>
     el && el.type === 'Element'
 
   switch (comb.operator) {
@@ -157,7 +154,7 @@ function matchCombinator(
       return isElement(next) && matchSelector(next, comb.left, template)
     }
     case '+': {
-      const next = range(1, last).reduce<template.Element | undefined>(
+      const next = range(1, last).reduce<template.TEElement | undefined>(
         (acc, offset) => {
           if (acc) return acc
           const node = getNode(template, parentPath.concat(last - offset))
@@ -194,13 +191,13 @@ function isSubset(target: string[], superSet: string[]): boolean {
 }
 
 class StyleMap {
-  private idMap = new Map<string, style.Rule[]>()
-  private classMap = new Map<string, style.Rule[]>()
-  private attributeMap = new Map<string, style.Rule[]>()
-  private tagMap = new Map<string, style.Rule[]>()
-  private universals: style.Rule[] = []
+  private idMap = new Map<string, style.STRule[]>()
+  private classMap = new Map<string, style.STRule[]>()
+  private attributeMap = new Map<string, style.STRule[]>()
+  private tagMap = new Map<string, style.STRule[]>()
+  private universals: style.STRule[] = []
 
-  constructor(styles: style.Style[]) {
+  constructor(styles: style.STStyle[]) {
     styles.forEach(style => {
       visitLastSelectors(style, (selector, rule) => {
         // Register each rule to map keyed by the most right selector string.
@@ -228,11 +225,11 @@ class StyleMap {
     })
   }
 
-  getCandidateRules(el: template.Element): style.Rule[] {
+  getCandidateRules(el: template.TEElement): style.STRule[] {
     const tagMatched = this.tagMap.get(el.name) || []
 
     const keys = Object.keys(el.startTag.attrs)
-    const attrsMatched = keys.reduce<style.Rule[]>((acc, key) => {
+    const attrsMatched = keys.reduce<style.STRule[]>((acc, key) => {
       const attr = el.startTag.attrs[key]
 
       if (attr.value) {
@@ -243,7 +240,7 @@ class StyleMap {
         if (attr.name === 'class') {
           const matched = attr.value
             .split(/\s+/)
-            .reduce<style.Rule[]>((acc, c) => {
+            .reduce<style.STRule[]>((acc, c) => {
               return acc.concat(this.classMap.get(c) || [])
             }, [])
           acc = acc.concat(matched)
@@ -257,9 +254,9 @@ class StyleMap {
   }
 
   private registerRule(
-    map: Map<string, style.Rule[]>,
+    map: Map<string, style.STRule[]>,
     key: string,
-    rule: style.Rule
+    rule: style.STRule
   ): void {
     const list = map.get(key) || []
     map.set(key, list.concat(rule))

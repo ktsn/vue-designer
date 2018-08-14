@@ -2,7 +2,7 @@
 import Vue, { VNode, VNodeData } from 'vue'
 import ContainerVueComponent from './ContainerVueComponent.vue'
 import VueChild from './VueChild.vue'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import {
   convertToVNodeData,
@@ -22,7 +22,7 @@ export default Vue.extend({
       required: true
     },
     data: {
-      type: Object as { (): Element },
+      type: Object as { (): TEElement },
       required: true
     },
     scope: {

@@ -1,7 +1,7 @@
 import { AssetResolver } from '@/asset-resolver'
 import { createTemplate, h, a } from '../../helpers/template'
 import { resolveAsset } from '@/parser/template/manipulate'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 
 describe('Template asset resolution', () => {
   const basePath = '/path/to/component'
@@ -13,7 +13,7 @@ describe('Template asset resolution', () => {
     ])
 
     const resolved = resolveAsset(template, basePath, asset)
-    const img = resolved.children[0] as Element
+    const img = resolved.children[0] as TEElement
     const attrs = img.startTag.attrs
 
     expect(img.name).toBe('img')

@@ -3,7 +3,7 @@ import Vue, { VNode } from 'vue'
 import VueSlot from './VueSlot.vue'
 import ContainerVueNode from './ContainerVueNode.vue'
 import VueExpression from './VueExpression.vue'
-import { ElementChild } from '@/parser/template/types'
+import { TEChild } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 
 // Assign to a constant to recursively use this component
@@ -18,7 +18,7 @@ const VueChild = Vue.extend({
     },
 
     data: {
-      type: Object as { (): ElementChild },
+      type: Object as { (): TEChild },
       required: true
     },
 

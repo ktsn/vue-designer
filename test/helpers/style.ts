@@ -1,18 +1,18 @@
 import { AttributeOperator } from 'postcss-selector-parser'
 import {
-  Style,
-  Declaration,
-  Rule,
-  Combinator,
-  Selector,
-  AtRule,
-  PseudoClass,
-  PseudoElement,
-  Attribute,
-  ChildNode
+  STStyle,
+  STDeclaration,
+  STRule,
+  STCombinator,
+  STSelector,
+  STAtRule,
+  STPseudoClass,
+  STPseudoElement,
+  STAttribute,
+  STChild
 } from '@/parser/style/types'
 
-export function createStyle(children: (AtRule | Rule)[]): Style {
+export function createStyle(children: (STAtRule | STRule)[]): STStyle {
   modifyPath(children)
   return {
     path: [0],
@@ -21,8 +21,11 @@ export function createStyle(children: (AtRule | Rule)[]): Style {
   }
 }
 
-function modifyPath(nodes: (AtRule | Rule | Declaration)[]): void {
-  function loop(nodes: (AtRule | Rule | Declaration)[], path: number[]): void {
+function modifyPath(nodes: (STAtRule | STRule | STDeclaration)[]): void {
+  function loop(
+    nodes: (STAtRule | STRule | STDeclaration)[],
+    path: number[]
+  ): void {
     nodes.forEach((node, i) => {
       const nextPath = path.concat(i)
       node.path = nextPath
@@ -38,8 +41,8 @@ function modifyPath(nodes: (AtRule | Rule | Declaration)[]): void {
 export function atRule(
   name: string,
   params: string,
-  children: ChildNode[] = []
-): AtRule {
+  children: STChild[] = []
+): STAtRule {
   return {
     type: 'AtRule',
     path: [],
@@ -53,9 +56,9 @@ export function atRule(
 }
 
 export function rule(
-  selectors: Selector[],
-  children: Declaration[] = []
-): Rule {
+  selectors: STSelector[],
+  children: STDeclaration[] = []
+): STRule {
   return {
     type: 'Rule',
     path: [],
@@ -68,10 +71,10 @@ export function rule(
 }
 
 export function selector(
-  options: Partial<Selector>,
-  next?: Combinator
-): Selector {
-  const s: Selector = {
+  options: Partial<STSelector>,
+  next?: STCombinator
+): STSelector {
+  const s: STSelector = {
     type: 'Selector',
     universal: options.universal || false,
     class: options.class || [],
@@ -103,7 +106,7 @@ export function attribute(
   operator?: AttributeOperator,
   value?: string,
   insensitive: boolean = false
-): Attribute {
+): STAttribute {
   return {
     type: 'Attribute',
     name,
@@ -113,7 +116,7 @@ export function attribute(
   }
 }
 
-export function combinator(operator: string, next: Selector): Combinator {
+export function combinator(operator: string, next: STSelector): STCombinator {
   return {
     type: 'Combinator',
     operator,
@@ -125,7 +128,7 @@ export function declaration(
   prop: string,
   value: string,
   important: boolean = false
-): Declaration {
+): STDeclaration {
   return {
     type: 'Declaration',
     path: [],
@@ -138,7 +141,10 @@ export function declaration(
   }
 }
 
-export function pClass(value: string, params: Selector[] = []): PseudoClass {
+export function pClass(
+  value: string,
+  params: STSelector[] = []
+): STPseudoClass {
   return {
     type: 'PseudoClass',
     value,
@@ -148,8 +154,8 @@ export function pClass(value: string, params: Selector[] = []): PseudoClass {
 
 export function pElement(
   value: string,
-  pseudoClass: PseudoClass[] = []
-): PseudoElement {
+  pseudoClass: STPseudoClass[] = []
+): STPseudoElement {
   return {
     type: 'PseudoElement',
     value,
@@ -157,7 +163,7 @@ export function pElement(
   }
 }
 
-export function assertStyleNode(result: Style, expected: Style): void {
+export function assertStyleNode(result: STStyle, expected: STStyle): void {
   expect(exclude(result)).toEqual(exclude(expected))
 }
 

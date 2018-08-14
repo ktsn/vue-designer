@@ -10,7 +10,7 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import VueNode from './VueNode.vue'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import { mapper } from '../store'
 
@@ -30,7 +30,7 @@ export default Vue.extend({
     },
 
     data: {
-      type: Object as { (): Element },
+      type: Object as { (): TEElement },
       required: true
     },
 

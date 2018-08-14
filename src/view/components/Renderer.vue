@@ -33,7 +33,7 @@ import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
 import RendererGuide from './RendererGuide.vue'
 import { ScopedDocument, DocumentScope } from '../store/modules/project/types'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 
 const scrollContentPadding = 100
 
@@ -145,7 +145,7 @@ export default Vue.extend({
       ast,
       element
     }: {
-      ast: Element
+      ast: TEElement
       element: HTMLElement
     }): void {
       const viewport = (this.$refs.viewport as Vue).$el

@@ -5,13 +5,13 @@ import { AssetResolver } from '../../asset-resolver'
 import { clone } from '../../utils'
 
 export function getNode(
-  root: t.Template,
+  root: t.TETemplate,
   path: number[]
-): t.ElementChild | undefined {
+): t.TEChild | undefined {
   function loop(
-    current: t.ElementChild,
+    current: t.TEChild,
     rest: number[]
-  ): t.ElementChild | undefined {
+  ): t.TEChild | undefined {
     // If `rest` does not have any items,
     // `current` is the node we are looking for.
     if (rest.length === 0) {
@@ -37,11 +37,11 @@ export function getNode(
 }
 
 export function insertNode(
-  root: t.Template,
+  root: t.TETemplate,
   path: number[],
-  el: t.ElementChild
-): t.Template {
-  function loop<T extends t.Element | t.Template>(
+  el: t.TEChild
+): t.TETemplate {
+  function loop<T extends t.TEElement | t.TETemplate>(
     parent: T,
     index: number,
     rest: number[]
@@ -65,7 +65,7 @@ export function insertNode(
       })
     }
 
-    const child = parent.children[index] as t.Element
+    const child = parent.children[index] as t.TEElement
     assert(
       child,
       "[template] cannot reach to the path '" +
@@ -92,10 +92,10 @@ export function insertNode(
 }
 
 export function visitElements(
-  node: t.Template,
-  fn: (el: t.Element) => t.Element | void
-): t.Template {
-  function loop(node: t.ElementChild): t.ElementChild {
+  node: t.TETemplate,
+  fn: (el: t.TEElement) => t.TEElement | void
+): t.TETemplate {
+  function loop(node: t.TEChild): t.TEChild {
     switch (node.type) {
       case 'Element':
         const newNode = clone(node, {
@@ -113,10 +113,10 @@ export function visitElements(
 }
 
 export function resolveAsset(
-  template: t.Template,
+  template: t.TETemplate,
   baseUrl: string,
   resolver: AssetResolver
-): t.Template {
+): t.TETemplate {
   return visitElements(template, el => {
     const src = el.startTag.attrs.src
     if (el.name === 'img' && src && src.value) {
@@ -135,7 +135,7 @@ export function resolveAsset(
   })
 }
 
-export function addScope(node: t.Template, scope: string): t.Template {
+export function addScope(node: t.TETemplate, scope: string): t.TETemplate {
   const scopeName = scopePrefix + scope
 
   return visitElements(node, el => {

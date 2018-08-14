@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue, { VNode, VNodeChildrenArrayContents } from 'vue'
 import VueChild from './VueChild.vue'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
 import { convertToSlotScope } from '@/view/rendering'
 
@@ -15,7 +15,7 @@ export default Vue.extend({
       required: true
     },
     data: {
-      type: Object as { (): Element },
+      type: Object as { (): TEElement },
       required: true
     },
     scope: {

@@ -1,8 +1,8 @@
 import {
-  Style,
-  DeclarationForUpdate,
-  DeclarationForAdd,
-  Declaration
+  STStyle,
+  STDeclarationForUpdate,
+  STDeclarationForAdd,
+  STDeclaration
 } from './types'
 import { getDeclaration, getNode } from './manipulate'
 import {
@@ -17,8 +17,8 @@ import { genDeclaration, genRule } from './codegen'
 import { clone } from '../../utils'
 
 export function insertDeclaration(
-  styles: Style[],
-  decl: DeclarationForAdd,
+  styles: STStyle[],
+  decl: STDeclarationForAdd,
   to: number[]
 ): Modifier | Modifier[] {
   const target = getDeclaration(styles, to)
@@ -41,7 +41,7 @@ export function insertDeclaration(
 
   const rule = getNode(styles, parentPath)
   if (rule && rule.type === 'Rule') {
-    const d: Declaration = {
+    const d: STDeclaration = {
       type: 'Declaration',
       path: to,
       before: '',
@@ -64,7 +64,7 @@ export function insertDeclaration(
   return empty
 }
 
-export function removeDeclaration(styles: Style[], path: number[]): Modifier {
+export function removeDeclaration(styles: STStyle[], path: number[]): Modifier {
   const target = getDeclaration(styles, path)
   return target
     ? removeRange(target.range[0] - target.before.length, target.range[1])
@@ -72,8 +72,8 @@ export function removeDeclaration(styles: Style[], path: number[]): Modifier {
 }
 
 export function updateDeclaration(
-  styles: Style[],
-  decl: DeclarationForUpdate
+  styles: STStyle[],
+  decl: STDeclarationForUpdate
 ): Modifier[] {
   const target = getDeclaration(styles, decl.path)
   return target ? replace(target, genDeclaration(clone(target, decl))) : [empty]

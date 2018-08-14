@@ -1,7 +1,7 @@
 import assert from 'assert'
 import * as t from './types'
 
-export function genStyle(ast: t.Style): string {
+export function genStyle(ast: t.STStyle): string {
   return ast.children
     .map(node => {
       switch (node.type) {
@@ -18,7 +18,7 @@ export function genStyle(ast: t.Style): string {
     .join('\n')
 }
 
-function genAtRule(atRule: t.AtRule): string {
+function genAtRule(atRule: t.STAtRule): string {
   let buf = `@${atRule.name} ${atRule.params}`
 
   if (atRule.children.length > 0) {
@@ -49,14 +49,14 @@ function genAtRule(atRule: t.AtRule): string {
   return buf
 }
 
-export function genRule(rule: t.Rule): string {
+export function genRule(rule: t.STRule): string {
   const selectors = rule.selectors.map(genSelector).join(', ')
   const declarations = rule.children.map(genDeclaration).join(' ')
 
   return `${selectors} {${declarations}}`
 }
 
-export function genSelector(s: t.Selector): string {
+export function genSelector(s: t.STSelector): string {
   let buf = ''
   if (s.universal) {
     buf += '*'
@@ -112,7 +112,7 @@ export function genSelector(s: t.Selector): string {
   return buf
 }
 
-function genPseudoClass(node: t.PseudoClass): string {
+function genPseudoClass(node: t.STPseudoClass): string {
   if (node.params.length > 0) {
     const selectors = node.params.map(genSelector).join(', ')
     return ':' + node.value + '(' + selectors + ')'
@@ -121,7 +121,7 @@ function genPseudoClass(node: t.PseudoClass): string {
   }
 }
 
-export function genDeclaration(decl: t.Declaration): string {
+export function genDeclaration(decl: t.STDeclaration): string {
   let buf = decl.prop + ': ' + decl.value
 
   if (decl.important) {

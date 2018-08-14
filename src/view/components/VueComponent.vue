@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import VueChild from './VueChild.vue'
-import { Template } from '@/parser/template/types'
+import { TETemplate } from '@/parser/template/types'
 import { ChildComponent } from '@/parser/script/types'
 import { DocumentScope } from '@/view/store/modules/project/types'
 import { resolveControlDirectives, ResolvedChild } from '../rendering'
@@ -14,7 +14,7 @@ export default Vue.extend({
       type: String,
       required: true
     },
-    template: Object as { (): Template | undefined },
+    template: Object as { (): TETemplate | undefined },
     styles: {
       type: String,
       required: true

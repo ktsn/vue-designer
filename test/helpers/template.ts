@@ -1,14 +1,14 @@
 import { store as createStore, module } from 'sinai'
 import { mount, Wrapper } from '@vue/test-utils'
 import {
-  Template,
-  Element,
-  ExpressionNode,
-  Attribute,
-  Directive,
-  VForDirective,
-  ElementChild,
-  TextNode
+  TETemplate,
+  TEElement,
+  TEExpressionNode,
+  TEAttribute,
+  TEDirective,
+  TEForDirective,
+  TEChild,
+  TETextNode
 } from '@/parser/template/types'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { VueFilePayload } from '@/parser/vue-file'
@@ -17,7 +17,7 @@ import { project } from '@/view/store/modules/project'
 import { mapValues } from '@/utils'
 
 export function render(
-  template: Template,
+  template: TETemplate,
   props: Prop[] = [],
   data: Data[] = [],
   childComponents: ChildComponent[] = [],
@@ -68,8 +68,8 @@ export function render(
 }
 
 function processRootChildren(
-  children: (Element | ExpressionNode | string)[]
-): ElementChild[] {
+  children: (TEElement | TEExpressionNode | string)[]
+): TEChild[] {
   return children.map((c, i) => {
     const node = strToTextNode(c)
     modifyChildPath(node, [i])
@@ -77,7 +77,10 @@ function processRootChildren(
   })
 }
 
-function modifyChildPath(child: ElementChild, path: number[]): ElementChild {
+function modifyChildPath(
+  child: TEChild,
+  path: number[]
+): TEChild {
   child.path = path
   if (child.type === 'Element') {
     child.children.forEach((c, i) => {
@@ -88,8 +91,8 @@ function modifyChildPath(child: ElementChild, path: number[]): ElementChild {
 }
 
 export function createTemplate(
-  children: (Element | ExpressionNode | string)[]
-): Template {
+  children: (TEElement | TEExpressionNode | string)[]
+): TETemplate {
   return {
     type: 'Template',
     attrs: {},
@@ -100,14 +103,14 @@ export function createTemplate(
 
 export function h(
   tag: string,
-  attributes: (Attribute | Directive)[],
-  children: (Element | ExpressionNode | string)[],
+  attributes: (TEAttribute | TEDirective)[],
+  children: (TEElement | TEExpressionNode | string)[],
   options: { selfClosing?: boolean; hasEndTag?: boolean } = {}
-): Element {
-  const attrs: Record<string, Attribute> = {}
-  const props: Record<string, Directive> = {}
-  const domProps: Record<string, Directive> = {}
-  const dirs: Directive[] = []
+): TEElement {
+  const attrs: Record<string, TEAttribute> = {}
+  const props: Record<string, TEDirective> = {}
+  const domProps: Record<string, TEDirective> = {}
+  const dirs: TEDirective[] = []
   attributes.forEach((attr, i) => {
     attr.attrIndex = i
 
@@ -151,7 +154,7 @@ export function h(
   }
 }
 
-export function a(name: string, value?: string): Attribute {
+export function a(name: string, value?: string): TEAttribute {
   return {
     type: 'Attribute',
     attrIndex: -1,
@@ -161,17 +164,17 @@ export function a(name: string, value?: string): Attribute {
   }
 }
 
-export function d(name: string, expression: string): Directive
+export function d(name: string, expression: string): TEDirective
 export function d(
   name: string,
   options?: { argument?: string; modifiers?: string[] },
   expression?: string
-): Directive
+): TEDirective
 export function d(
   name: string,
   options: { argument?: string; modifiers?: string[] } | string = {},
   expression?: any
-): Directive {
+): TEDirective {
   if (typeof options === 'string') {
     expression = options
     options = {}
@@ -195,14 +198,14 @@ export function d(
   }
 }
 
-export function vFor(left: string[], right?: string): VForDirective {
-  const dir = d('for') as VForDirective
+export function vFor(left: string[], right?: string): TEForDirective {
+  const dir = d('for') as TEForDirective
   dir.left = left
   dir.right = right
   return dir
 }
 
-export function exp(expression: string): ExpressionNode {
+export function exp(expression: string): TEExpressionNode {
   return {
     type: 'ExpressionNode',
     path: [],
@@ -211,7 +214,7 @@ export function exp(expression: string): ExpressionNode {
   }
 }
 
-function strToTextNode<T>(str: T | string): T | TextNode {
+function strToTextNode<T>(str: T | string): T | TETextNode {
   return typeof str === 'string'
     ? {
         type: 'TextNode' as 'TextNode',
@@ -222,7 +225,10 @@ function strToTextNode<T>(str: T | string): T | TextNode {
     : str
 }
 
-export function assertWithoutRange(result: Template, expected: Template): void {
+export function assertWithoutRange(
+  result: TETemplate,
+  expected: TETemplate
+): void {
   expect(excludeRange(result)).toEqual(excludeRange(expected))
 }
 

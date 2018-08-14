@@ -8,7 +8,7 @@ import {
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
 import { VueFilePayload } from '@/parser/vue-file'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 import { mapValues } from '@/utils'
 
 export class ProjectGetters extends Getters<ProjectState>() {
@@ -113,7 +113,7 @@ export class ProjectGetters extends Getters<ProjectState>() {
     }, undefined)
   }
 
-  get nodeOfDragging(): Element | undefined {
+  get nodeOfDragging(): TEElement | undefined {
     const dragging = this.draggingScopedDocument
     if (!dragging) {
       return

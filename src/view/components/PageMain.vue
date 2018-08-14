@@ -92,7 +92,7 @@ import ComponentCatalog from './ComponentCatalog.vue'
 import Toolbar from './Toolbar.vue'
 import { ScopedDocument } from '../store/modules/project/types'
 import { mapper } from '../store'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 
 const projectMapper = mapper.module('project')
 const viewportMapper = mapper.module('viewport')
@@ -163,7 +163,7 @@ export default Vue.extend({
       element,
       viewport
     }: {
-      ast: Element
+      ast: TEElement
       element: HTMLElement
       viewport: HTMLElement
     }): void {

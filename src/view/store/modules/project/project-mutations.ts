@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import { Mutations } from 'sinai'
 import { VueFilePayload } from '@/parser/vue-file'
-import { Element } from '@/parser/template/types'
+import { TEElement } from '@/parser/template/types'
 import { insertNode } from '@/parser/template/manipulate'
-import { RuleForPrint } from '@/parser/style/types'
+import { STRuleForPrint } from '@/parser/style/types'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { ProjectState } from './project-state'
 import { DocumentScopeItem } from './types'
@@ -28,7 +28,7 @@ export class ProjectMutations extends Mutations<ProjectState>() {
     state.matchedRules = []
   }
 
-  addElement({ path, node }: { path: number[]; node: Element }): void {
+  addElement({ path, node }: { path: number[]; node: TEElement }): void {
     const { state } = this
     const uri = state.currentUri
     if (uri) {
@@ -62,7 +62,7 @@ export class ProjectMutations extends Mutations<ProjectState>() {
     this.state.draggingPath = path
   }
 
-  setMatchedRules(rules: RuleForPrint[]): void {
+  setMatchedRules(rules: STRuleForPrint[]): void {
     this.state.matchedRules = rules
   }
 

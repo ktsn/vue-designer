@@ -1,4 +1,4 @@
-import { Template, TextNode, ElementChild, Element } from './types'
+import { TETemplate, TETextNode, TEChild, TEElement } from './types'
 import { getNode } from './manipulate'
 import {
   insertBefore,
@@ -9,7 +9,7 @@ import {
 } from '../modifier'
 
 export function insertToTemplate(
-  template: Template,
+  template: TETemplate,
   path: number[],
   value: string
 ): Modifier {
@@ -65,7 +65,7 @@ export function insertToTemplate(
     return insertAfter(last, pre + value + post)
   }
 
-  const parent = getNode(template, parentPath) as Element | undefined
+  const parent = getNode(template, parentPath) as TEElement | undefined
   if (parent) {
     const pre = '\n' + indent + singleIndentStr
     const post = '\n' + indent
@@ -75,14 +75,14 @@ export function insertToTemplate(
   return empty
 }
 
-function inferTemplateIndentAt(template: Template, path: number[]): string {
+function inferTemplateIndentAt(template: TETemplate, path: number[]): string {
   if (path.length === 0) {
     return ''
   }
 
   const parentPath = path.slice(0, -1)
 
-  let node: TextNode | undefined, iterating: ElementChild | undefined
+  let node: TETextNode | undefined, iterating: TEChild | undefined
   for (let i = 0; (iterating = getNode(template, parentPath.concat(i))); i++) {
     if (iterating.type === 'TextNode') {
       node = iterating

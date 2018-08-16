@@ -1,9 +1,46 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`VueComponent slot renders named slot content 1`] = `"<div><style></style><div class=\\"\\"><style></style><div data-scope-scope-id=\\"\\" class=\\"\\"><p data-scope-scope-id=\\"\\" class=\\"\\">foo content</p><p class=\\"\\">named</p></div></div></div>"`;
+exports[`VueComponent slot renders named slot content 1`] = `
+<div>
+  <style></style>
+  <div class="">
+    <style></style>
+    <div data-scope-scope-id="" class="">
+      <p data-scope-scope-id="" class="">foo content</p>
+      <p class="">named</p>
+    </div>
+  </div>
+</div>
+`;
 
-exports[`VueComponent slot renders placeholder slot content 1`] = `"<div><style></style><div class=\\"\\"><p class=\\"\\">placeholder content</p></div></div>"`;
+exports[`VueComponent slot renders placeholder slot content 1`] = `
+<div>
+  <style></style>
+  <div class="">
+    <p class="">placeholder content</p>
+  </div>
+</div>
+`;
 
-exports[`VueComponent slot renders slot content 1`] = `"<div><style></style><div class=\\"\\"><style></style><div data-scope-scope-id=\\"\\" class=\\"\\"><p data-scope-scope-id=\\"\\" class=\\"\\">foo content</p><p class=\\"\\">injected</p></div></div></div>"`;
+exports[`VueComponent slot renders slot content 1`] = `
+<div>
+  <style></style>
+  <div class="">
+    <style></style>
+    <div data-scope-scope-id="" class="">
+      <p data-scope-scope-id="" class="">foo content</p>
+      <p class="">injected</p>
+    </div>
+  </div>
+</div>
+`;
 
-exports[`VueComponent slot resolves template element children as the named slot 1`] = `"<div><style></style><div class=\\"\\"><style></style><div data-scope-scope-id=\\"\\" class=\\"\\"><strong class=\\"\\">named</strong><span class=\\"\\">content</span></div></div></div>"`;
+exports[`VueComponent slot resolves template element children as the named slot 1`] = `
+<div>
+  <style></style>
+  <div class="">
+    <style></style>
+    <div data-scope-scope-id="" class=""><strong class="">named</strong><span class="">content</span></div>
+  </div>
+</div>
+`;

@@ -1,5 +1,12 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`VueComponent v-if gathers the contents in the template element 1`] = `"<div><style></style><p class=\\"\\">foo</p>barbaz</div>"`;
+exports[`VueComponent v-if gathers the contents in the template element 1`] = `
+<div>
+  <style></style>
+  <p class="">foo</p>barbaz</div>
+`;
 
-exports[`VueComponent v-if gathers the contents in the template element 2`] = `"<div><style></style>baz</div>"`;
+exports[`VueComponent v-if gathers the contents in the template element 2`] = `
+<div>
+  <style></style>baz</div>
+`;

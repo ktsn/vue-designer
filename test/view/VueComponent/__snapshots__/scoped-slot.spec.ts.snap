@@ -1,7 +1,39 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`VueComponent scoped slot renders named scoped slot content 1`] = `"<div><style></style><div class=\\"\\"><style></style><div data-scope-scope-id=\\"\\" class=\\"\\"><p data-scope-scope-id=\\"\\" class=\\"\\">foo content</p><p slot-scope=\\"props\\" class=\\"\\"><span class=\\"\\">test1</span></p><p slot-scope=\\"props\\" class=\\"\\"><span class=\\"\\">test2</span></p></div></div></div>"`;
+exports[`VueComponent scoped slot renders named scoped slot content 1`] = `
+<div>
+  <style></style>
+  <div class="">
+    <style></style>
+    <div data-scope-scope-id="" class="">
+      <p data-scope-scope-id="" class="">foo content</p>
+      <p slot-scope="props" class=""><span class="">test1</span></p>
+      <p slot-scope="props" class=""><span class="">test2</span></p>
+    </div>
+  </div>
+</div>
+`;
 
-exports[`VueComponent scoped slot renders scoped slot content 1`] = `"<div><style></style><div class=\\"\\"><style></style><div data-scope-scope-id=\\"\\" class=\\"\\"><p data-scope-scope-id=\\"\\" class=\\"\\">foo content</p><p slot-scope=\\"props\\" class=\\"\\"><span class=\\"\\">test</span></p></div></div></div>"`;
+exports[`VueComponent scoped slot renders scoped slot content 1`] = `
+<div>
+  <style></style>
+  <div class="">
+    <style></style>
+    <div data-scope-scope-id="" class="">
+      <p data-scope-scope-id="" class="">foo content</p>
+      <p slot-scope="props" class=""><span class="">test</span></p>
+    </div>
+  </div>
+</div>
+`;
 
-exports[`VueComponent scoped slot resolves template element children as a slot 1`] = `"<div><style></style><div class=\\"\\"><style></style><div data-scope-scope-id=\\"\\" class=\\"\\"><strong class=\\"\\">named</strong><span class=\\"\\"><span class=\\"\\">test</span></span></div></div></div>"`;
+exports[`VueComponent scoped slot resolves template element children as a slot 1`] = `
+<div>
+  <style></style>
+  <div class="">
+    <style></style>
+    <div data-scope-scope-id="" class=""><strong class="">named</strong><span class=""><span class="">test</span></span>
+    </div>
+  </div>
+</div>
+`;

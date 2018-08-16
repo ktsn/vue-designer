@@ -3,7 +3,7 @@ iconsWrapper.style.display = 'none'
 
 // Load all the SVG symbols
 const icons = (require as any).context(
-  'raw-loader!material-design-icons/sprites/svg-sprite',
+  '!raw-loader!material-design-icons/sprites/svg-sprite',
   false,
   /svg-sprite-(\w+)-symbol\.svg$/i
 )

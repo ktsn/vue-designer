@@ -1,3 +1,4 @@
+import './global.css'
 import './lib/drag-and-drop'
 import './load-icons'
 

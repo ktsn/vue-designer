@@ -9,6 +9,6 @@
   },
   "exclude": [
     "src/view/**",
-    "test/**"
+    "tests/**"
   ]
 }

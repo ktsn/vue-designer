@@ -26,8 +26,7 @@
     "build": "tsc --sourceMap false -p tsconfig.main.json && vue-cli-service build --no-clean",
     "test": "vue-cli-service test:unit -w 2",
     "test:watch": "vue-cli-service test:unit --watch",
-    "test:coverage": "vue-cli-service test:unit --coverage -w 2",
-    "format": "prettier --write \"{src,test}/**/*.{ts,tsx,vue}\""
+    "test:coverage": "vue-cli-service test:unit --coverage -w 2"
   },
   "repository": "https://github.com/ktsn/vue-designer",
   "license": "MIT",

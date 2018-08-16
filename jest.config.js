@@ -7,8 +7,8 @@ module.exports = {
   },
 
   transformIgnorePatterns: ['node_modules/(?!(sinai/lib)/)'],
-  setupFiles: ['<rootDir>/test/setup.ts'],
-  testRegex: '/test/.+\\.spec\\.(js|ts)x?$',
+  setupFiles: ['<rootDir>/tests/setup.ts'],
+  testRegex: '/tests/.+\\.spec\\.(js|ts)x?$',
 
   moduleNameMapper: {
     '^@/(.+)$': '<rootDir>/src/$1',

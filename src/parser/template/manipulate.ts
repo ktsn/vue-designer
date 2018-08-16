@@ -8,10 +8,7 @@ export function getNode(
   root: t.TETemplate,
   path: number[]
 ): t.TEChild | undefined {
-  function loop(
-    current: t.TEChild,
-    rest: number[]
-  ): t.TEChild | undefined {
+  function loop(current: t.TEChild, rest: number[]): t.TEChild | undefined {
     // If `rest` does not have any items,
     // `current` is the node we are looking for.
     if (rest.length === 0) {

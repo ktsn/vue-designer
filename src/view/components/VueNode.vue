@@ -41,8 +41,14 @@ export default Vue.extend({
       type: Object,
       required: true
     },
-    selectable: Boolean,
-    selected: Boolean
+    selectable: {
+      type: Boolean,
+      default: false
+    },
+    selected: {
+      type: Boolean,
+      default: false
+    }
   },
 
   computed: {

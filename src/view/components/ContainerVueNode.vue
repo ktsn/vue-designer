@@ -19,10 +19,6 @@ const projectMapper = mapper.module('project')
 export default Vue.extend({
   name: 'ContainerVueNode',
 
-  beforeCreate() {
-    this.$options.components!.VueNode = VueNode
-  },
-
   props: {
     uri: {
       type: String,
@@ -69,6 +65,10 @@ export default Vue.extend({
         return acc && p === this.selectedPath[i]
       }, true)
     }
+  },
+
+  beforeCreate() {
+    this.$options.components!.VueNode = VueNode
   }
 })
 </script>

@@ -99,6 +99,10 @@ function extractComponents(
     return []
   }
 
+  function notUndef<T>(p: T | undefined): p is T {
+    return p !== undefined
+  }
+
   return prop.value.properties
     .map(
       (p): ChildComponent | undefined => {
@@ -114,7 +118,7 @@ function extractComponents(
         )
       }
     )
-    .filter(<T>(p: T | undefined): p is T => p !== undefined)
+    .filter(notUndef)
 }
 
 function extractLazyAddComponents(
@@ -125,6 +129,10 @@ function extractLazyAddComponents(
   const func = normalizeMethod(prop)
   if (!func || !t.isBlockStatement(func.body)) {
     return []
+  }
+
+  function notUndef<T>(p: T | undefined): p is T {
+    return p !== undefined
   }
 
   // Extract all `this.$options.components.LocalComponentName = ComponentName`
@@ -154,7 +162,7 @@ function extractLazyAddComponents(
         )
       }
     )
-    .filter(<T>(p: T | undefined): p is T => p !== undefined)
+    .filter(notUndef)
 }
 
 function getImportDeclarations(
@@ -395,9 +403,11 @@ function getLiteralValue(node: t.Node): DefaultValue {
 
   // Array literal
   if (t.isArrayExpression(node)) {
-    return node.elements
-      .filter(<T>(x: T | null): x is T => !!x)
-      .map(getLiteralValue)
+    function notNull<T>(x: T | null): x is T {
+      return !!x
+    }
+
+    return node.elements.filter(notNull).map(getLiteralValue)
   }
 
   return undefined

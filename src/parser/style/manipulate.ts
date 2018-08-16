@@ -36,6 +36,8 @@ function visitStyle(style: t.STStyle, visitor: StyleVisitor): t.STStyle {
         })
       case 'Declaration':
         return apply(node, visitor.declaration)
+      default:
+        return assert.fail('Unexpected node type: ' + (node as any).type)
     }
   }
 
@@ -159,11 +161,10 @@ export function getNode(
 ): t.STChild | undefined {
   return path.reduce<any>(
     (acc, i) => {
-      if (!acc) return
-
-      if (acc.children) {
+      if (acc && acc.children) {
         return acc.children[i]
       }
+      return undefined
     },
     { children: styles }
   )

@@ -82,5 +82,5 @@ $ npm run test:watch
 $ npm run test:coverage
 
 # format sources with prettier
-$ npm run format
+$ npm run lint:fix
 ```

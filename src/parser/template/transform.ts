@@ -1,3 +1,4 @@
+import assert from 'assert'
 import { AST } from 'vue-eslint-parser'
 import * as t from './types'
 
@@ -161,6 +162,8 @@ function transformChild(
         exp ? extractExpression(exp, code) : '',
         child.range
       )
+    default:
+      return assert.fail('Unexpected node type: ' + (child as any).type)
   }
 }
 

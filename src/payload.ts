@@ -1,5 +1,8 @@
 import { VueFilePayload } from './parser/vue-file'
-import { STDeclarationForUpdate, STDeclarationForAdd } from './parser/style/types'
+import {
+  STDeclarationForUpdate,
+  STDeclarationForAdd
+} from './parser/style/types'
 
 export type ServerPayload = InitProject | InitSharedStyle | ChangeDocument
 export type ClientPayload =

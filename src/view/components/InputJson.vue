@@ -8,9 +8,9 @@
       >{{ field.name }}</span>
       <input
         v-else
+        v-model="editingName"
         class="input-json-label editing"
         type="text"
-        v-model="editingName"
         @keydown.enter="apply"
         @keydown.esc="cancel"
       >
@@ -18,16 +18,16 @@
       <!-- Object value -->
       <span
         v-if="!editing"
-        class="input-json-value"
         :class="valueType"
+        class="input-json-value"
       >
         {{ formattedValue }}
       </span>
       <input
         v-else
+        v-model="editingValue"
         class="input-json-value editing"
         type="text"
-        v-model="editingValue"
         @keydown.enter="apply"
         @keydown.esc="cancel"
       >
@@ -76,8 +76,12 @@
     </div>
 
     <!-- Children -->
-    <ul v-if="children" class="input-json-children">
-      <li v-for="child in children" :key="child.name">
+    <ul
+      v-if="children"
+      class="input-json-children">
+      <li
+        v-for="child in children"
+        :key="child.name">
         <InputJson
           :renamable="valueType === 'object'"
           :field="child"
@@ -124,7 +128,10 @@ export default Vue.extend({
       }
     },
 
-    renamable: Boolean
+    renamable: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -281,7 +288,6 @@ export default Vue.extend({
           name,
           value: newValue
         })
-        return
       }
     }
   }

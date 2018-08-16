@@ -284,7 +284,7 @@ describe('Style matcher', () => {
         ])
       ])
 
-      let res = matcher(template, [0, 2])
+      const res = matcher(template, [0, 2])
       expect(res.length).toBe(1)
       expect(res[0]).toEqual(sibling)
     })

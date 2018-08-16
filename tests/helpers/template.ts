@@ -77,10 +77,7 @@ function processRootChildren(
   })
 }
 
-function modifyChildPath(
-  child: TEChild,
-  path: number[]
-): TEChild {
+function modifyChildPath(child: TEChild, path: number[]): TEChild {
   child.path = path
   if (child.type === 'Element') {
     child.children.forEach((c, i) => {
@@ -193,7 +190,7 @@ export function d(
     name,
     argument: options.argument,
     modifiers,
-    expression: expression,
+    expression,
     range: [-1, -1]
   }
 }

@@ -7,13 +7,13 @@
   >{{ value }}</button>
   <div
     v-else
+    ref="input"
     class="style-value editing"
     contenteditable="true"
-    ref="input"
     @input="input"
     @keypress.prevent.enter="endEdit"
     @blur="endEdit"
-  ></div>
+  />
 </template>
 
 <script lang="ts">
@@ -29,7 +29,10 @@ export default Vue.extend({
       required: true
     },
 
-    autoFocus: Boolean
+    autoFocus: {
+      type: Boolean,
+      default: false
+    }
   },
 
   data() {
@@ -44,6 +47,12 @@ export default Vue.extend({
       if (input && newValue !== input.textContent) {
         input.textContent = newValue
       }
+    }
+  },
+
+  mounted() {
+    if (this.autoFocus) {
+      this.startEdit()
     }
   },
 
@@ -72,12 +81,6 @@ export default Vue.extend({
     input(event: Event): void {
       const el = event.currentTarget as HTMLDivElement
       this.$emit('input', el.textContent)
-    }
-  },
-
-  mounted() {
-    if (this.autoFocus) {
-      this.startEdit()
     }
   }
 })

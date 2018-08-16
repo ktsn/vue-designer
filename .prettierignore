@@ -1,3 +1,4 @@
 *.json
-lib/
+/lib/
+/src/view/lib/
 CHANGELOG.md

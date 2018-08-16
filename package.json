@@ -27,7 +27,7 @@
     "test": "vue-cli-service test:unit -w 2",
     "test:watch": "vue-cli-service test:unit --watch",
     "test:coverage": "vue-cli-service test:unit --coverage -w 2",
-    "format": "prettier --write \"{src,test}/**/*.{ts,vue}\""
+    "format": "prettier --write \"{src,test}/**/*.{ts,tsx,vue}\""
   },
   "repository": "https://github.com/ktsn/vue-designer",
   "license": "MIT",

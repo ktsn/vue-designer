@@ -5,6 +5,8 @@ module.exports = {
   filenameHashing: false,
   productionSourceMap: false,
 
+  lintOnSave: process.env.NODE_ENV !== 'production',
+
   css: {
     extract: false
   },

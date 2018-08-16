@@ -37,6 +37,13 @@ jobs:
           at: ~/repo
       - run: npm run build
 
+  lint:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm run lint
+
   test:
     <<: *defaults
     steps:
@@ -58,6 +65,9 @@ workflows:
     jobs:
       - install
       - build:
+          requires:
+            - install
+      - lint:
           requires:
             - install
       - test:

@@ -1,4 +1,7 @@
-import { STDeclarationForUpdate, STDeclarationForAdd } from '../parser/style/types'
+import {
+  STDeclarationForUpdate,
+  STDeclarationForAdd
+} from '../parser/style/types'
 import { VueFilePayload } from '../parser/vue-file'
 
 export interface Events {

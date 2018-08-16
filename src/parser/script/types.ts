@@ -1,5 +1,7 @@
+/* eslint-disable typescript/no-empty-interface */
 interface RecordDefaultValue extends Record<string, DefaultValue> {}
 interface ArrayDefaultValue extends Array<DefaultValue> {}
+/* eslint-enable typescript/no-empty-interface */
 
 export type DefaultValue =
   | RecordDefaultValue

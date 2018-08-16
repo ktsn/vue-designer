@@ -1,8 +1,9 @@
 <template>
   <ul class="catalog-list">
     <li
+      v-for="c in components"
+      :key="c.uri" 
       class="catalog-item"
-      v-for="c in components" :key="c.uri"
       draggable="true"
       @dragstart="onDragStart($event, c)"
       @dragend="onDragEnd()"

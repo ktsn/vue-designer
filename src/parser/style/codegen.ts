@@ -10,7 +10,7 @@ export function genStyle(ast: t.STStyle): string {
         case 'Rule':
           return genRule(node)
         default:
-          assert.fail(
+          return assert.fail(
             `[style codegen] Unexpected node type ${(node as any).type} on root`
           )
       }
@@ -32,7 +32,7 @@ function genAtRule(atRule: t.STAtRule): string {
           case 'Declaration':
             return genDeclaration(child)
           default:
-            assert.fail(
+            return assert.fail(
               `[style codegen] Unexpected node type ${
                 (child as any).type
               } as child of AtRule`

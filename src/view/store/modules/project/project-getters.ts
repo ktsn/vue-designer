@@ -110,6 +110,7 @@ export class ProjectGetters extends Getters<ProjectState>() {
       if (comp.uri === dragging.uri) {
         return comp.name
       }
+      return undefined
     }, undefined)
   }
 

@@ -65,6 +65,12 @@ export default Vue.extend({
     }
   },
 
+  watch: {
+    width: 'resetSize',
+    height: 'resetSize',
+    scale: 'resetScale'
+  },
+
   methods: {
     resetSize(): void {
       this.dirtyWidth = this.width
@@ -102,12 +108,6 @@ export default Vue.extend({
         this.$emit('zoom', scale / 100)
       }
     }
-  },
-
-  watch: {
-    width: 'resetSize',
-    height: 'resetSize',
-    scale: 'resetScale'
   }
 })
 </script>

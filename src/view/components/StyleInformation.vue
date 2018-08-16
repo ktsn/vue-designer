@@ -1,17 +1,25 @@
 <template>
   <ul class="style-information">
     <li
-      class="rule"
       v-for="rule in rules"
       :key="rule.path.join('.')"
+      class="rule"
       @click="onClickRule(rule)"
     >
       <p class="selector-list">
-        <span class="selector" v-for="s in rule.selectors" :key="s">{{ s }}</span>
+        <span 
+          v-for="s in rule.selectors" 
+          :key="s" 
+          class="selector">{{ s }}</span>
       </p>
 
-      <ul class="declaration-list" @click.stop>
-        <li class="declaration" v-for="d in rule.children" :key="d.path.join('.')">
+      <ul 
+        class="declaration-list" 
+        @click.stop>
+        <li 
+          v-for="d in rule.children" 
+          :key="d.path.join('.')" 
+          class="declaration">
           <StyleDeclaration
             :prop="d.prop"
             :value="d.value"
@@ -54,6 +62,19 @@ export default Vue.extend({
       autoFocusOnNextRender: false,
       endingInput: false
     }
+  },
+
+  watch: {
+    rules(): void {
+      this.$nextTick(() => {
+        this.autoFocusOnNextRender = false
+      })
+    }
+  },
+
+  created() {
+    const vm: any = this
+    vm.endingInputTimer = null
   },
 
   methods: {
@@ -107,19 +128,6 @@ export default Vue.extend({
         this.endingInput = false
       }, delayToEndEdit)
     }
-  },
-
-  watch: {
-    rules(): void {
-      this.$nextTick(() => {
-        this.autoFocusOnNextRender = false
-      })
-    }
-  },
-
-  created() {
-    const vm: any = this
-    vm.endingInputTimer = null
   }
 })
 </script>

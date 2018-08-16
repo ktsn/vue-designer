@@ -1,15 +1,17 @@
 <template>
   <!-- Since viewport is aligned by center, the offset needs to be multiplied by 2 in default scale -->
   <Resizable
-    class="viewport-wrapper"
     :width="width"
     :height="height"
     :offset-weight="2 / scale"
     :style="viewportStyle"
+    class="viewport-wrapper"
     @resize="$emit('resize', arguments[0])"
   >
     <!-- Hack for avoiding template compile error of style elements -->
-    <div is="style" :text-content.prop="sharedStyle" />
+    <div 
+      is="style" 
+      :text-content.prop="sharedStyle" />
 
     <div class="viewport">
       <slot />

@@ -61,9 +61,13 @@ export function observeServerEvents(
       return
     }
 
+    function notUndef<T>(n: T | undefined): n is T {
+      return n !== undefined
+    }
+
     const styleRules = payload.stylePaths
       .map(path => getStyleNode(vueFile.styles, path))
-      .filter(<T>(n: T | undefined): n is T => n !== undefined)
+      .filter(notUndef)
 
     const highlightRanges = [element, ...styleRules].map(node => {
       return node.range

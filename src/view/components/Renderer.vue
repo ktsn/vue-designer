@@ -1,6 +1,10 @@
 <template>
-  <div class="renderer" @click="$emit('select')">
-    <div class="renderer-scroll-content" :style="scrollContentStyle">
+  <div 
+    class="renderer" 
+    @click="$emit('select')">
+    <div 
+      :style="scrollContentStyle" 
+      class="renderer-scroll-content">
       <Viewport
         ref="viewport"
         :width="width"
@@ -140,23 +144,6 @@ export default Vue.extend({
     }
   },
 
-  methods: {
-    onSelectNode({
-      ast,
-      element
-    }: {
-      ast: TEElement
-      element: HTMLElement
-    }): void {
-      const viewport = (this.$refs.viewport as Vue).$el
-      this.$emit('select', {
-        ast,
-        element,
-        viewport
-      })
-    }
-  },
-
   watch: {
     scrollContentCenter(
       { x, y }: { x: number; y: number },
@@ -193,6 +180,23 @@ export default Vue.extend({
       el.scrollLeft += delta.left
       el.scrollTop += delta.top
       this.deltaScrollOffset = null
+    }
+  },
+
+  methods: {
+    onSelectNode({
+      ast,
+      element
+    }: {
+      ast: TEElement
+      element: HTMLElement
+    }): void {
+      const viewport = (this.$refs.viewport as Vue).$el
+      this.$emit('select', {
+        ast,
+        element,
+        viewport
+      })
     }
   }
 })

@@ -14,7 +14,10 @@ export default Vue.extend({
       type: String,
       required: true
     },
-    template: Object as { (): TETemplate | undefined },
+    template: {
+      type: Object as { (): TETemplate | undefined },
+      default: undefined
+    },
     styles: {
       type: String,
       required: true

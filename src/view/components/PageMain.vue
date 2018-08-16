@@ -29,7 +29,10 @@
       </div>
     </div>
 
-    <div v-if="document" class="information-pane" :class="{ open: openPane }">
+    <div 
+      v-if="document" 
+      :class="{ open: openPane }" 
+      class="information-pane">
       <p class="information-pane-title">
         {{ documentName }}
       </p>
@@ -48,7 +51,9 @@
               @remove-declaration="removeDeclaration"
               @update-declaration="updateDeclaration"
             />
-            <p class="not-found" v-else>Not found</p>
+            <p 
+              v-else 
+              class="not-found">Not found</p>
           </div>
         </div>
 
@@ -58,8 +63,12 @@
             @update-prop="updatePropValue"
             @update-data="updateDataValue"
           >
-            <p class="not-found" slot="not-found-prop">Not found</p>
-            <p class="not-found" slot="not-found-data">Not found</p>
+            <p 
+              slot="not-found-prop" 
+              class="not-found">Not found</p>
+            <p 
+              slot="not-found-data" 
+              class="not-found">Not found</p>
           </ScopeInformation>
         </div>
 
@@ -73,10 +82,10 @@
       </div>
 
       <button
+        :aria-pressed="String(openPane)"
         class="information-pane-toggle"
         type="button"
         aria-label="Toggle information pane"
-        :aria-pressed="String(openPane)"
         @click="openPane = !openPane"
       />
     </div>

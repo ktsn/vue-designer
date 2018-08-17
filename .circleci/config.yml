@@ -14,16 +14,16 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v2-dependencies-{{ checksum "package-lock.json" }}
+            - v2-dependencies-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
             - v2-dependencies-
 
-      - run: npm install
+      - run: yarn install
 
       - save_cache:
           paths:
             - node_modules
-          key: v2-dependencies-{{ checksum "package-lock.json" }}
+          key: v2-dependencies-{{ checksum "yarn.lock" }}
 
       - persist_to_workspace:
           root: ~/repo
@@ -35,28 +35,28 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: npm run build
+      - run: yarn build
 
   lint:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: npm run lint
+      - run: yarn lint
 
   test:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: npm run test
+      - run: yarn test
 
   coverage:
     <<: *defaults
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: npm run test:coverage
+      - run: yarn test:coverage
       - run: ./node_modules/.bin/codecov
 
 workflows:

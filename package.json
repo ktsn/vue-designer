@@ -15,8 +15,8 @@
     "Other"
   ],
   "scripts": {
-    "vscode:prepublish": "npm run clean && npm run build",
-    "preversion": "npm run test",
+    "vscode:prepublish": "yarn clean && yarn build",
+    "preversion": "yarn test",
     "version": "conventional-changelog -p angular -s -i CHANGELOG.md",
     "postinstall": "node ./node_modules/vscode/bin/install",
     "clean": "rimraf lib",

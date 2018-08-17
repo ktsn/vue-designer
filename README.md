@@ -49,7 +49,7 @@ For typings of external packages that does not exist should be in `types/(packag
 
 To debug on VSCode, follow the below steps:
 
-1.  Run `npm run watch` to start dev server.
+1.  Run `yarn watch` to start dev server.
 2.  Open VSCode and show debug pane on the left side of the editor.
 3.  Run `Launch Extension` so that it opens a new window with enabling local Vue Designer.
 4.  Select `Open Vue Designer` on command pallete.
@@ -67,20 +67,20 @@ If you want to use dev tools for client code, add the following configuration in
 
 ```sh
 # build sources
-$ npm run build
+$ yarn build
 
 # build and watch sources
-$ npm run watch
+$ yarn watch
 
 # run test
-$ npm run test
+$ yarn test
 
 # run test with watching
-$ npm run test:watch
+$ yarn test:watch
 
 # run test with coverage report
-$ npm run test:coverage
+$ yarn test:coverage
 
 # format sources with prettier
-$ npm run lint:fix
+$ yarn lint:fix
 ```

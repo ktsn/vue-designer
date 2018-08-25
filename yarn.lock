@@ -131,7 +131,7 @@
     esutils "^2.0.2"
     js-tokens "^4.0.0"
 
-"@babel/parser@7.0.0-rc.3":
+"@babel/parser@7.0.0-rc.3", "@babel/parser@^7.0.0-rc.3":
   version "7.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/@babel/parser/-/parser-7.0.0-rc.3.tgz#859d7b60ef6b939aab5f6d4f4bffbb7bafdc418b"
 
@@ -189,7 +189,7 @@
     lodash "^4.2.0"
     to-fast-properties "^2.0.0"
 
-"@babel/types@7.0.0-rc.3", "@babel/types@^7.0.0-rc.3":
+"@babel/types@7.0.0-rc.3", "@babel/types@^7.0.0-beta.54", "@babel/types@^7.0.0-rc.3":
   version "7.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/@babel/types/-/types-7.0.0-rc.3.tgz#877ebc543b139f4a1e4c9bd8849c25ab9aea8f41"
   dependencies:
@@ -215,6 +215,12 @@
 "@nodelib/fs.stat@^1.0.1":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@nodelib/fs.stat/-/fs.stat-1.1.0.tgz#50c1e2260ac0ed9439a181de3725a0168d59c48a"
+
+"@types/babel__parser@^7.0.0":
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/@types/babel__parser/-/babel__parser-7.0.0.tgz#0c7a8e317eff2747a94bc5a116e010a363cbab27"
+  dependencies:
+    "@babel/types" "^7.0.0-beta.54"
 
 "@types/eslint-scope@^3.7.0":
   version "3.7.0"
@@ -1093,10 +1099,6 @@ babylon@7.0.0-beta.44:
 babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
-
-babylon@^7.0.0-beta.40:
-  version "7.0.0-beta.47"
-  resolved "https://registry.yarnpkg.com/babylon/-/babylon-7.0.0-beta.47.tgz#6d1fa44f0abec41ab7c780481e62fd9aafbdea80"
 
 balanced-match@^1.0.0:
   version "1.0.0"

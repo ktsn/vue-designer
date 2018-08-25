@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { parse } from 'babylon'
+import { parse } from '@babel/parser'
 import { ChildComponent } from '@/parser/script/types'
 import { extractChildComponents } from '@/parser/script/manipulate'
 
@@ -140,7 +140,7 @@ describe('Script components parser', () => {
 
     const { program } = parse(code, {
       sourceType: 'module',
-      plugins: ['typescript'] as any[]
+      plugins: ['typescript']
     })
     const components = extractChildComponents(program, hostUri, pathToUri)
     const expected: ChildComponent[] = [

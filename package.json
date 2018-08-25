@@ -67,8 +67,8 @@
     "vscode": "^1.23.0"
   },
   "dependencies": {
+    "@babel/parser": "^7.0.0-rc.3",
     "@babel/types": "^7.0.0-rc.3",
-    "babylon": "^7.0.0-beta.40",
     "eslint": "^5.3.0",
     "hash-sum": "^1.0.2",
     "meck": "^0.1.1",
@@ -81,6 +81,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0-rc.3",
+    "@types/babel__parser": "^7.0.0",
     "@types/eslint-scope": "^3.7.0",
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/jest": "^23.3.1",

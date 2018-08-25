@@ -7,19 +7,22 @@
       @click="onClickRule(rule)"
     >
       <p class="selector-list">
-        <span 
-          v-for="s in rule.selectors" 
-          :key="s" 
-          class="selector">{{ s }}</span>
+        <span
+          v-for="s in rule.selectors"
+          :key="s"
+          class="selector"
+        >{{ s }}</span>
       </p>
 
-      <ul 
-        class="declaration-list" 
-        @click.stop>
-        <li 
-          v-for="d in rule.children" 
-          :key="d.path.join('.')" 
-          class="declaration">
+      <ul
+        class="declaration-list"
+        @click.stop
+      >
+        <li
+          v-for="d in rule.children"
+          :key="d.path.join('.')"
+          class="declaration"
+        >
           <StyleDeclaration
             :prop="d.prop"
             :value="d.value"
@@ -38,7 +41,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import StyleValue from './StyleValue.vue'
 import StyleDeclaration from './StyleDeclaration.vue'
 import { STRuleForPrint } from '@/parser/style/types'
 
@@ -46,7 +48,6 @@ export default Vue.extend({
   name: 'StyleInformation',
 
   components: {
-    StyleValue,
     StyleDeclaration
   },
 

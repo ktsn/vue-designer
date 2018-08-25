@@ -78,10 +78,12 @@
     <!-- Children -->
     <ul
       v-if="children"
-      class="input-json-children">
+      class="input-json-children"
+    >
       <li
         v-for="child in children"
-        :key="child.name">
+        :key="child.name"
+      >
         <InputJson
           :renamable="valueType === 'object'"
           :field="child"

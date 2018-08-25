@@ -29,10 +29,11 @@
       </div>
     </div>
 
-    <div 
-      v-if="document" 
-      :class="{ open: openPane }" 
-      class="information-pane">
+    <div
+      v-if="document"
+      :class="{ open: openPane }"
+      class="information-pane"
+    >
       <p class="information-pane-title">
         {{ documentName }}
       </p>
@@ -51,9 +52,10 @@
               @remove-declaration="removeDeclaration"
               @update-declaration="updateDeclaration"
             />
-            <p 
-              v-else 
-              class="not-found">Not found</p>
+            <p
+              v-else
+              class="not-found"
+            >Not found</p>
           </div>
         </div>
 
@@ -63,12 +65,18 @@
             @update-prop="updatePropValue"
             @update-data="updateDataValue"
           >
-            <p 
-              slot="not-found-prop" 
-              class="not-found">Not found</p>
-            <p 
-              slot="not-found-data" 
-              class="not-found">Not found</p>
+            <p
+              slot="not-found-prop"
+              class="not-found"
+            >
+              Not found
+            </p>
+            <p
+              slot="not-found-data"
+              class="not-found"
+            >
+              Not found
+            </p>
           </ScopeInformation>
         </div>
 

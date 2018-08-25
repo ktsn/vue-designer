@@ -2762,7 +2762,7 @@ eslint-config-ktsn@^2.0.1:
   dependencies:
     eslint-plugin-prettier "^2.6.2"
 
-eslint-loader@^2.0.0:
+eslint-loader@^2.0.0, eslint-loader@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/eslint-loader/-/eslint-loader-2.1.0.tgz#61334c548aeb0b8e20ec3a552fb7a88c47261c6a"
   dependencies:

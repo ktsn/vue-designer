@@ -9,9 +9,10 @@
     @resize="$emit('resize', arguments[0])"
   >
     <!-- Hack for avoiding template compile error of style elements -->
-    <div 
-      is="style" 
-      :text-content.prop="sharedStyle" />
+    <div
+      is="style"
+      :text-content.prop="sharedStyle"
+    />
 
     <div class="viewport">
       <slot />

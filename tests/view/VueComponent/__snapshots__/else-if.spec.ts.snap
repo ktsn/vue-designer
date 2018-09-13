@@ -2,5 +2,6 @@
 
 exports[`VueComponent v-else-if resolves template children as the else-if block 1`] = `
 <div>
-  <style></style><strong class="">Bar</strong>Content</div>
+  <style></style><strong class="">Bar</strong>Content
+</div>
 `;

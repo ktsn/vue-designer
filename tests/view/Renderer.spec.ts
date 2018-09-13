@@ -41,7 +41,6 @@ describe('Renderer', () => {
       propsData: {
         document: {},
         scope: emptyScope,
-        selectedPath: [],
         width: 800,
         height: 600,
         scale: 1,
@@ -59,7 +58,6 @@ describe('Renderer', () => {
       propsData: {
         document: {},
         scope: emptyScope,
-        selectedPath: [],
         width: 800,
         height: 1200,
         scale: 1,
@@ -77,7 +75,6 @@ describe('Renderer', () => {
       propsData: {
         document: {},
         scope: emptyScope,
-        selectedPath: [],
         width: 500,
         height: 500,
         scale: 2,

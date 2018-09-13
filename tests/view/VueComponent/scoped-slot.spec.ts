@@ -80,8 +80,8 @@ describe('VueComponent scoped slot', () => {
     const template = createTemplate([
       h('Foo', [], [
         h('template', [a('slot-scope', 'props')], [
-          h('strong', [], ['named']),
-          h('span', [], [exp('props.foo')])
+          h('div', [], ['named']),
+          h('div', [], [exp('props.foo')])
         ])
       ])
     ])

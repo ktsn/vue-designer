@@ -32,7 +32,10 @@ exports[`VueComponent scoped slot resolves template element children as a slot 1
   <style></style>
   <div class="">
     <style></style>
-    <div data-scope-scope-id="" class=""><strong class="">named</strong><span class=""><span class="">test</span></span></div>
+    <div data-scope-scope-id="" class="">
+      <div class="">named</div>
+      <div class=""><span class="">test</span></div>
+    </div>
   </div>
 </div>
 `;

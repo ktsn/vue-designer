@@ -110,8 +110,8 @@ describe('VueComponent v-for', () => {
     const template = createTemplate([
       h('div', [], [
         h('template', [vFor(['i'], '3')], [
-          h('strong', [], ['first - ', exp('i')]),
-          h('small', [], ['second - ', exp('i')])
+          h('div', [], ['first - ', exp('i')]),
+          h('div', [], ['second - ', exp('i')])
         ])
       ])
     ])

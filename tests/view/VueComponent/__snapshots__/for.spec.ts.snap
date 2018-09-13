@@ -3,6 +3,13 @@
 exports[`VueComponent v-for repeats template element children 1`] = `
 <div>
   <style></style>
-  <div class=""><strong class="">first - <span class="">1</span></strong><small class="">second - <span class="">1</span></small><strong class="">first - <span class="">2</span></strong><small class="">second - <span class="">2</span></small><strong class="">first - <span class="">3</span></strong><small class="">second - <span class="">3</span></small></div>
+  <div class="">
+    <div class="">first - <span class="">1</span></div>
+    <div class="">second - <span class="">1</span></div>
+    <div class="">first - <span class="">2</span></div>
+    <div class="">second - <span class="">2</span></div>
+    <div class="">first - <span class="">3</span></div>
+    <div class="">second - <span class="">3</span></div>
+  </div>
 </div>
 `;

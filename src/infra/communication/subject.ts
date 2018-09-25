@@ -1,4 +1,4 @@
-import { Observer } from './observer'
+import { Observer } from './types'
 
 export class Subject<T> {
   private observers = new Set<Observer<T>>()

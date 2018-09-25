@@ -1,9 +1,6 @@
 import assert from 'assert'
 import { Subject } from './subject'
-import { Observer } from './observer'
-
-type Resolver<T> = Record<string, (...args: any[]) => T | T[] | undefined>
-type Mutator = Record<string, (...args: any[]) => void>
+import { Observer, Resolver, Mutator } from './types'
 
 export interface WebSocketServer {
   on(event: 'connection', cb: (socket: WebSocket) => void): void

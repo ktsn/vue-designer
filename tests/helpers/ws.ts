@@ -13,17 +13,32 @@ export class MockWebSocketServer extends EventEmitter
 class MockWebSocketClient {
   connection: MockWebSocket
   received: any[] = []
+  private closed = false
 
   constructor() {
     this.connection = new MockWebSocket(this)
   }
 
   send(payload: any): void {
+    this.assertConnection()
     this.connection.emit('message', JSON.stringify(payload))
   }
 
   close(): void {
+    this.assertConnection()
     this.connection.emit('close')
+    this.closed = true
+  }
+
+  pushMessage(payload: string): void {
+    this.assertConnection()
+    this.received.push(JSON.parse(payload))
+  }
+
+  assertConnection(): void {
+    if (this.closed) {
+      throw new Error('already closed')
+    }
   }
 }
 
@@ -33,6 +48,6 @@ class MockWebSocket extends EventEmitter implements WebSocket {
   }
 
   send(payload: string): void {
-    this.client.received.push(JSON.parse(payload))
+    this.client.pushMessage(payload)
   }
 }

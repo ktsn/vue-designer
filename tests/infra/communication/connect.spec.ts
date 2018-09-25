@@ -184,5 +184,18 @@ describe('Communication infra', () => {
       expect(res.type).toBe('subject:remove')
       expect(res.data).toEqual(data)
     })
+
+    it('unsubscribe observer after the connection is closed', () => {
+      const ws = mockServer.connectClient()
+
+      const data = {
+        id: '1',
+        value: 'updated'
+      }
+
+      ws.close()
+      mockSubject.notifyUpdate(data)
+      expect(ws.received.length).toBe(0)
+    })
   })
 })

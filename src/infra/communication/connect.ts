@@ -38,13 +38,15 @@ function listenMessage(
 ) {
   ws.on('message', message => {
     const data = JSON.parse(message.toString())
+
+    assert(typeof data.type === 'string')
+    assert(Array.isArray(data.args))
+    assert('requestId' in data)
+
     const [type, method] = data.type.split(':')
     const target = type === 'resolver' ? resolver : mutator
 
     assert(type === 'resolver' || type === 'mutator')
-    assert(Array.isArray(data.args))
-    assert(typeof data.requestId === 'string')
-    assert(typeof method === 'string')
     assert(typeof target[method] === 'function')
 
     const res = target[method].apply(target, data.args)

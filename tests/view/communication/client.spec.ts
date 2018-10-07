@@ -1,4 +1,7 @@
-import { CommunicationClient } from '@/view/communication/client'
+import {
+  CommunicationClient,
+  CommunicationClientObserver
+} from '@/view/communication/client'
 import { MockWebSocketClient } from '../../helpers/ws'
 
 describe('CommunicationClient', () => {
@@ -124,6 +127,68 @@ describe('CommunicationClient', () => {
         data: mutator.update(2, 'updated'),
         requestId: p.requestId
       })
+    })
+  })
+
+  describe('subject', () => {
+    let observer: Required<CommunicationClientObserver<Foo>>
+    let unobserve: () => void
+    beforeEach(() => {
+      observer = {
+        onAdd: jest.fn(),
+        onUpdate: jest.fn(),
+        onRemove: jest.fn()
+      }
+      unobserve = client.observe(observer)
+    })
+
+    afterEach(() => {
+      unobserve()
+    })
+
+    it('observes add event', () => {
+      const dummy = new Foo(4, 'new')
+
+      mockWs.receive({
+        type: 'subject:add',
+        data: dummy
+      })
+
+      expect(observer.onAdd).toHaveBeenCalledWith(dummy)
+    })
+
+    it('observes update event', () => {
+      const dummy = dummyData[1]
+
+      mockWs.receive({
+        type: 'subject:update',
+        data: dummy
+      })
+
+      expect(observer.onUpdate).toHaveBeenCalledWith(dummy)
+    })
+
+    it('observes remove event', () => {
+      const dummy = dummyData[0]
+
+      mockWs.receive({
+        type: 'subject:remove',
+        data: dummy
+      })
+
+      expect(observer.onRemove).toHaveBeenCalledWith(dummy)
+    })
+
+    it('never call observer after unsubscribed', () => {
+      const dummy = new Foo(4, 'new')
+      unobserve()
+
+      mockWs.receive({
+        type: 'subject:add',
+        data: dummy
+      })
+
+      expect(observer.onAdd).not.toHaveBeenCalled()
     })
   })
 })

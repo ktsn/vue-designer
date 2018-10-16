@@ -1,41 +1,23 @@
 import assert from 'assert'
-import { Subject } from './subject'
-import { Observer, Resolver, Mutator } from './types'
+import { WebSocketServer, WebSocket, Resolver, Mutator } from './types'
 
-export interface WebSocketServer {
-  on(event: 'connection', cb: (socket: WebSocket) => void): void
-}
-
-export interface WebSocket {
-  send(payload: string): void
-  on(event: 'message', cb: (message: string) => void): void
-  once(event: 'close', cb: () => void): void
-}
-
-export interface ConnectConfig<T> {
-  resolver: Resolver<T>
+export interface ConnectConfig {
+  resolver: Resolver
   mutator: Mutator
-  subject: Subject<T>
   server: WebSocketServer
 }
 
-export function connectWsServer<T>({
+export function connectWsServer({
   resolver,
   mutator,
-  subject,
   server
-}: ConnectConfig<T>): void {
+}: ConnectConfig): void {
   server.on('connection', ws => {
-    connectSubject(ws, subject)
     listenMessage(ws, resolver, mutator)
   })
 }
 
-function listenMessage(
-  ws: WebSocket,
-  resolver: Resolver<{}>,
-  mutator: Mutator
-) {
+function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
   ws.on('message', message => {
     const data = JSON.parse(message.toString())
 
@@ -57,41 +39,5 @@ function listenMessage(
         requestId: data.requestId
       })
     )
-  })
-}
-
-function connectSubject(ws: WebSocket, subject: Subject<{}>): void {
-  const observer: Observer<{}> = {
-    onAdd(data) {
-      ws.send(
-        JSON.stringify({
-          type: 'subject:add',
-          data
-        })
-      )
-    },
-
-    onUpdate(data) {
-      ws.send(
-        JSON.stringify({
-          type: 'subject:update',
-          data
-        })
-      )
-    },
-
-    onRemove(data) {
-      ws.send(
-        JSON.stringify({
-          type: 'subject:remove',
-          data
-        })
-      )
-    }
-  }
-
-  subject.on(observer)
-  ws.once('close', () => {
-    subject.off(observer)
   })
 }

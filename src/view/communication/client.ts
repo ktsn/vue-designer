@@ -1,18 +1,12 @@
 import assert from 'assert'
 import { Resolver, Mutator } from '@/infra/communication/types'
 
-type ResolverModel<R extends Resolver<{}>> = R extends Resolver<infer T>
-  ? T
-  : never
-
 type Arguments<F extends Function> = F extends (...args: infer T) => any
   ? T
   : never
 
-export interface CommunicationClientObserver<T> {
-  onAdd?: (value: T) => void
-  onUpdate?: (value: T) => void
-  onRemove?: (value: T) => void
+export type CommunicationClientObserver<T extends Record<string, any>> = {
+  [K in keyof T]: (data: T[K]) => void
 }
 
 export interface CommunicationClientConfig {
@@ -26,19 +20,19 @@ export interface WebSocketClient {
 }
 
 export class CommunicationClient<
-  R extends Resolver<{}>,
+  R extends Resolver,
   M extends Mutator,
-  T = ResolverModel<R>
+  S extends Record<string, any>
 > {
   private ws: WebSocketClient
   private nextRequestId = 1
-  private observers: Set<CommunicationClientObserver<T>> = new Set()
+  private observers: Set<CommunicationClientObserver<S>> = new Set()
 
   private onEvent = (payload: string) => {
     const data = JSON.parse(payload)
 
     assert(typeof data.type === 'string')
-    const [type, operation] = data.type.split(':')
+    const [type, method] = data.type.split(':')
 
     if (type !== 'subject') {
       return
@@ -46,25 +40,8 @@ export class CommunicationClient<
 
     assert('data' in data)
 
-    let getMethod: (
-      ob: CommunicationClientObserver<T>
-    ) => ((value: T) => void) | undefined
-    switch (operation) {
-      case 'add':
-        getMethod = ob => ob.onAdd
-        break
-      case 'update':
-        getMethod = ob => ob.onUpdate
-        break
-      case 'remove':
-        getMethod = ob => ob.onRemove
-        break
-      default:
-        assert.fail('Unexpected type name: ' + data.type)
-    }
-
     this.observers.forEach(ob => {
-      const f = getMethod(ob)
+      const f = ob[method]
       if (f) {
         f(data.data)
       }
@@ -92,7 +69,7 @@ export class CommunicationClient<
     return this.genericRequest('mutator', key, args, this.nextRequestId++)
   }
 
-  observe(observer: CommunicationClientObserver<T>): () => void {
+  observe(observer: CommunicationClientObserver<S>): () => void {
     this.observers.add(observer)
     return () => {
       this.observers.delete(observer)

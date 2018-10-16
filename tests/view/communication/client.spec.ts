@@ -28,8 +28,14 @@ describe('CommunicationClient', () => {
     }
   }
 
+  interface SubjectType {
+    foo: {
+      message: string
+    }
+  }
+
   let dummyData: Foo[]
-  let client: CommunicationClient<typeof resolver, typeof mutator>
+  let client: CommunicationClient<typeof resolver, typeof mutator, SubjectType>
   let mockWs: MockWebSocketClient
 
   beforeEach(() => {
@@ -131,13 +137,11 @@ describe('CommunicationClient', () => {
   })
 
   describe('subject', () => {
-    let observer: Required<CommunicationClientObserver<Foo>>
+    let observer: CommunicationClientObserver<SubjectType>
     let unobserve: () => void
     beforeEach(() => {
       observer = {
-        onAdd: jest.fn(),
-        onUpdate: jest.fn(),
-        onRemove: jest.fn()
+        foo: jest.fn()
       }
       unobserve = client.observe(observer)
     })
@@ -147,48 +151,26 @@ describe('CommunicationClient', () => {
     })
 
     it('observes add event', () => {
-      const dummy = new Foo(4, 'new')
+      const dummy = { message: 'test' }
 
       mockWs.receive({
-        type: 'subject:add',
+        type: 'subject:foo',
         data: dummy
       })
 
-      expect(observer.onAdd).toHaveBeenCalledWith(dummy)
-    })
-
-    it('observes update event', () => {
-      const dummy = dummyData[1]
-
-      mockWs.receive({
-        type: 'subject:update',
-        data: dummy
-      })
-
-      expect(observer.onUpdate).toHaveBeenCalledWith(dummy)
-    })
-
-    it('observes remove event', () => {
-      const dummy = dummyData[0]
-
-      mockWs.receive({
-        type: 'subject:remove',
-        data: dummy
-      })
-
-      expect(observer.onRemove).toHaveBeenCalledWith(dummy)
+      expect(observer.foo).toHaveBeenCalledWith(dummy)
     })
 
     it('never call observer after unsubscribed', () => {
-      const dummy = new Foo(4, 'new')
+      const dummy = { message: 'bar' }
       unobserve()
 
       mockWs.receive({
-        type: 'subject:add',
+        type: 'subject:foo',
         data: dummy
       })
 
-      expect(observer.onAdd).not.toHaveBeenCalled()
+      expect(observer.foo).not.toHaveBeenCalled()
     })
   })
 })

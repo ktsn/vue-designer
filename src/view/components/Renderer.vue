@@ -206,7 +206,7 @@ export default Vue.extend({
 
 <style scoped>
 .renderer {
-  all: initial;
+  all: unset;
   overflow: auto;
   display: block;
   height: 100%;

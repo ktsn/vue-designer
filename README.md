@@ -84,3 +84,15 @@ $ yarn test:coverage
 # format sources with prettier
 $ yarn lint:fix
 ```
+
+### Release
+
+```sh
+$ npm version XXX # -> update version & generate changelog
+
+# after edit changelog if needed
+$ git add CHANGELOG.md
+$ git commit -m "changelog vXXX"
+
+$ vsce publish
+```

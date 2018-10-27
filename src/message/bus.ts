@@ -96,7 +96,11 @@ export function observeServerEvents(
       : component.name
 
     const modifier: Modifiers = [
-      insertToTemplate(vueFile.template!, payload.path, `<${componentName} />`)
+      insertToTemplate(
+        vueFile.template!,
+        payload.path,
+        `<${componentName}></${componentName}>`
+      )
     ]
 
     if (!existingComponent) {

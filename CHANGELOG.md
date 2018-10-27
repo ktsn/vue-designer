@@ -1,3 +1,15 @@
+<a name="0.6.2"></a>
+## [0.6.2](https://github.com/ktsn/vue-designer/compare/v0.6.1...v0.6.2) (2018-10-27)
+
+
+### Bug Fixes
+
+* avoid applying props / data when compositing ([#66](https://github.com/ktsn/vue-designer/issues/66)) ([f5f6d50](https://github.com/ktsn/vue-designer/commit/f5f6d50))
+* prefer non-self-closing tag when adding a component ([#65](https://github.com/ktsn/vue-designer/issues/65)) ([fd2fd4a](https://github.com/ktsn/vue-designer/commit/fd2fd4a))
+* unset renderer style rather than set to initial ([#64](https://github.com/ktsn/vue-designer/issues/64)) ([59b0a90](https://github.com/ktsn/vue-designer/commit/59b0a90))
+
+
+
 <a name="0.6.1"></a>
 ## [0.6.1](https://github.com/ktsn/vue-designer/compare/v0.6.0...v0.6.1) (2018-07-19)
 

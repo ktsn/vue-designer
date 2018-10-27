@@ -92,7 +92,7 @@ $ npm version XXX # -> update version & generate changelog
 
 # after edit changelog if needed
 $ git add CHANGELOG.md
-$ git commit -m "changelog vXXX"
+$ git commit -m "docs: changelog vXXX"
 
 $ vsce publish
 ```

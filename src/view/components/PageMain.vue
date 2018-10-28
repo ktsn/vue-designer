@@ -18,7 +18,7 @@
         />
       </div>
 
-      <div class="page-layout-toolbar">
+      <div class="vd-reset page-layout-toolbar">
         <Toolbar
           :width="width"
           :height="height"
@@ -32,7 +32,7 @@
     <div
       v-if="document"
       :class="{ open: openPane }"
-      class="information-pane"
+      class="vd-reset information-pane"
     >
       <p class="information-pane-title">
         {{ documentName }}

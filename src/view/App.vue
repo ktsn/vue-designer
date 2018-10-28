@@ -16,19 +16,3 @@ export default Vue.extend({
   }
 })
 </script>
-
-<style>
-body {
-  padding: 0;
-  margin: 0;
-  background-color: #ddd;
-}
-</style>
-
-<style scoped>
-#app {
-  font-family: sans-serif;
-  font-size: var(--vd-font-size);
-  color: var(--vd-text-color);
-}
-</style>

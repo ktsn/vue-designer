@@ -1,3 +1,15 @@
+<a name="0.6.3"></a>
+## [0.6.3](https://github.com/ktsn/vue-designer/compare/v0.6.2...v0.6.3) (2018-10-28)
+
+
+### Bug Fixes
+
+* add space between toolbar items ([4203ca2](https://github.com/ktsn/vue-designer/commit/4203ca2))
+* improve component catalog style ([1f85488](https://github.com/ktsn/vue-designer/commit/1f85488))
+* make font-size in body element work in preview ([61f66b5](https://github.com/ktsn/vue-designer/commit/61f66b5))
+
+
+
 <a name="0.6.2"></a>
 ## [0.6.2](https://github.com/ktsn/vue-designer/compare/v0.6.1...v0.6.2) (2018-10-27)
 

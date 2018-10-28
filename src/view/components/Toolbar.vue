@@ -144,6 +144,10 @@ export default Vue.extend({
   vertical-align: middle;
 }
 
+.toolbar-input-char {
+  margin: 0 5px;
+}
+
 .viewport-size-input {
   width: 3.2em;
   text-align: center;

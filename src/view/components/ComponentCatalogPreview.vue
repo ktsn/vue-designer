@@ -62,16 +62,18 @@ export default Vue.extend({
   box-sizing: border-box;
   border: 1px solid var(--vd-border-color);
   background-color: #fff;
-  height: 50px;
-  width: 50px;
+  height: 0;
+  width: 100%;
+  padding-bottom: 100%;
 }
 
 .preview-content {
   position: absolute;
   top: 0;
   left: 0;
-  width: 500px;
-  transform: scale(0.25);
+  width: 200%;
+  height: 200%;
+  transform: scale(0.5);
   transform-origin: left top;
 }
 </style>

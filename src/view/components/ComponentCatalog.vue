@@ -2,20 +2,16 @@
   <ul class="catalog-list">
     <li
       v-for="c in components"
-      :key="c.uri" 
+      :key="c.uri"
       class="catalog-item"
       draggable="true"
       @dragstart="onDragStart($event, c)"
       @dragend="onDragEnd()"
     >
-      <div class="catalog-item-inner">
-        <div class="catalog-item-layout">
-          <div class="catalog-preview">
-            <ComponentCatalogPreview :component="c" />
-          </div>
-          <p class="catalog-component-name">{{ c.displayName }}</p>
-        </div>
+      <div class="catalog-preview">
+        <ComponentCatalogPreview :component="c" />
       </div>
+      <p class="catalog-component-name">{{ c.displayName }}</p>
     </li>
   </ul>
 </template>
@@ -55,45 +51,33 @@ export default Vue.extend({
 
 <style scoped>
 .catalog-list {
+  display: flex;
+  flex-wrap: wrap;
   margin: 0;
-  padding: 0;
+  padding: 7.5px;
   list-style: none;
 }
 
 .catalog-item {
-  padding: 0 15px;
+  padding: 7.5px;
+  width: 50%;
+  box-sizing: border-box;
   position: relative;
-}
-
-.catalog-item-inner {
-  padding: 10px 0;
-  border-top: 1px solid var(--vd-border-color);
 }
 
 .catalog-item:first-child .catalog-item-inner {
   border-top-width: 0;
 }
 
-.catalog-item-layout {
-  display: table;
-  table-layout: fixed;
-  box-sizing: border-box;
+.catalog-preview {
   width: 100%;
 }
 
-.catalog-preview {
-  display: table-cell;
-  padding-right: 15px;
-  width: 50px;
-  vertical-align: middle;
-}
-
 .catalog-component-name {
-  display: table-cell;
-  font-weight: bold;
-  font-size: var(--vd-font-size-small);
-  text-align: left;
-  vertical-align: middle;
+  margin-top: 5px;
+  margin-bottom: 0;
+  font-size: var(--vd-font-size);
+  text-align: center;
   word-wrap: break-word;
   overflow-wrap: break-word;
 }

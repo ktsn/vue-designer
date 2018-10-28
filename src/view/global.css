@@ -25,7 +25,14 @@ body {
 }
 
 .vd-reset {
+  all: initial;
   font-family: sans-serif;
   font-size: var(--vd-font-size);
   color: var(--vd-text-color);
+}
+
+.vd-reset *,
+.vd-reset *::before,
+.vd-reset *::after {
+  box-sizing: border-box;
 }

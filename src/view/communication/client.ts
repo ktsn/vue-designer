@@ -38,8 +38,6 @@ export class CommunicationClient<
       return
     }
 
-    assert('data' in data)
-
     this.observers.forEach(ob => {
       const f = ob[method]
       if (f) {
@@ -100,7 +98,6 @@ export class CommunicationClient<
           return
         }
 
-        assert('data' in data)
         assert('requestId' in data)
 
         if (data.requestId === requestId) {

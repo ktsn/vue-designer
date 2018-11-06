@@ -40,4 +40,11 @@ function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
       })
     )
   })
+
+  ws.on('error', err => {
+    // To avoid clashing extension by ECONNRESET error...
+    // https://github.com/websockets/ws/issues/1256
+    if ((err as any).code === 'ECONNRESET') return
+    throw err
+  })
 }

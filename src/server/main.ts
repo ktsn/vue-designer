@@ -3,9 +3,6 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as http from 'http'
 import WebSocket from 'ws'
-import { EventObserver, CommandEmitter } from 'meck'
-import { ClientPayload, ServerPayload } from '../payload'
-import { Events, Commands } from '../message/types'
 import { AssetResolver } from '../asset-resolver'
 
 function readContent(
@@ -75,70 +72,5 @@ export function startWebSocketServer(http: http.Server): WebSocket.Server {
     host: 'localhost',
     server: http,
     path: '/api'
-  })
-}
-
-export function wsEventObserver(
-  server: WebSocket.Server
-): EventObserver<Events> {
-  return new EventObserver(emit => {
-    server.on('connection', ws => {
-      console.log('Client connected')
-      emit('initClient', undefined)
-
-      ws.on('message', data => {
-        const payload: ClientPayload = JSON.parse(data.toString())
-        console.log('[receive] ' + payload.type, payload)
-
-        switch (payload.type) {
-          case 'SelectNode':
-            return emit('selectNode', payload)
-          case 'AddNode':
-            return emit('addNode', payload)
-          case 'AddDeclaration':
-            return emit('addDeclaration', payload)
-          case 'RemoveDeclaration':
-            return emit('removeDeclaration', payload)
-          case 'UpdateDeclaration':
-            return emit('updateDeclaration', payload)
-          default:
-            throw new Error(
-              'Unexpected client payload: ' + (payload as any).type
-            )
-        }
-      })
-
-      ws.on('error', err => {
-        // To avoid clashing extension by ECONNRESET error...
-        // https://github.com/websockets/ws/issues/1256
-        if ((err as any).code === 'ECONNRESET') return
-        throw err
-      })
-    })
-  })
-}
-
-export function wsCommandEmiter(
-  server: WebSocket.Server
-): CommandEmitter<Commands> {
-  function send(payload: ServerPayload): void {
-    console.log('[send] ' + payload.type, payload)
-    server.clients.forEach(ws => {
-      ws.send(JSON.stringify(payload))
-    })
-  }
-
-  return new CommandEmitter(observe => {
-    observe('initProject', payload => {
-      send({ type: 'InitProject', vueFiles: payload })
-    })
-
-    observe('initSharedStyle', payload => {
-      send({ type: 'InitSharedStyle', style: payload })
-    })
-
-    observe('changeDocument', payload => {
-      send({ type: 'ChangeDocument', uri: payload })
-    })
   })
 }

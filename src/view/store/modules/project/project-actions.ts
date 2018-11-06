@@ -3,15 +3,19 @@ import { Actions } from 'sinai'
 import { TEElement } from '@/parser/template/types'
 import { getNode } from '@/parser/template/manipulate'
 import { STDeclarationForUpdate } from '@/parser/style/types'
-import { ClientConnection } from '@/view/communication'
+import { CommunicationClient } from '@/view/communication/client'
 import { StyleMatcher } from '@/view/store/style-matcher'
 import { transformRuleForPrint } from '@/parser/style/transform'
 import { ProjectState } from './project-state'
 import { ProjectGetters } from './project-getters'
 import { ProjectMutations } from './project-mutations'
 import { DraggingPlace } from './types'
+import { ResolverType } from '@/resolver'
+import { MutatorType } from '@/mutator'
+import { SubjectTypes } from '@/subject-types'
+import { VueFilePayload } from '@/parser/vue-file'
 
-let connection: ClientConnection
+let client: CommunicationClient<ResolverType, MutatorType, SubjectTypes>
 let styleMatcher: StyleMatcher
 let draggingTimer: any
 const draggingInterval = 80
@@ -22,37 +26,50 @@ export class ProjectActions extends Actions<
   ProjectMutations
 >() {
   init(payload: {
-    connection: ClientConnection
+    client: CommunicationClient<ResolverType, MutatorType, SubjectTypes>
     styleMatcher: StyleMatcher
   }): void {
-    connection = payload.connection
+    client = payload.client
     styleMatcher = payload.styleMatcher
 
-    connection.onMessage(data => {
-      switch (data.type) {
-        case 'InitProject':
-          this.mutations.setDocuments(data.vueFiles)
-          styleMatcher.clear()
-          Object.keys(data.vueFiles).forEach(key => {
-            const file = data.vueFiles[key]
-            styleMatcher.register(file.uri, file.styles)
+    const initVueFiles = (vueFiles: Record<string, VueFilePayload>) => {
+      this.mutations.setDocuments(vueFiles)
+      styleMatcher.clear()
+      Object.keys(vueFiles).forEach(key => {
+        const file = vueFiles[key]
+        styleMatcher.register(file.uri, file.styles)
 
-            this.mutations.refreshScope({
-              uri: key,
-              props: file.props,
-              data: file.data
-            })
-          })
-          this.matchSelectedNodeWithStyles()
-          break
-        case 'InitSharedStyle':
-          this.mutations.setSharedStyle(data.style)
-          break
-        case 'ChangeDocument':
-          this.mutations.changeDocument(data.uri)
-          break
-        default: // Do nothing
+        this.mutations.refreshScope({
+          uri: key,
+          props: file.props,
+          data: file.data
+        })
+      })
+      this.matchSelectedNodeWithStyles()
+    }
+
+    client.observe({
+      initProject: ({ vueFiles }) => {
+        initVueFiles(vueFiles)
+      },
+
+      initSharedStyle: ({ style }) => {
+        this.mutations.setSharedStyle(style)
+      },
+
+      changeDocument: ({ uri }) => {
+        this.mutations.changeDocument(uri)
       }
+    })
+
+    client.onReady(() => {
+      client.resolve('init').then(({ vueFiles, sharedStyle, activeUri }) => {
+        initVueFiles(vueFiles)
+        this.mutations.setSharedStyle(sharedStyle)
+        if (activeUri) {
+          this.mutations.changeDocument(activeUri)
+        }
+      })
     })
   }
 
@@ -66,8 +83,7 @@ export class ProjectActions extends Actions<
     mutations.select(path)
     this.matchSelectedNodeWithStyles()
 
-    connection.send({
-      type: 'SelectNode',
+    client.mutate('selectNode', {
       uri: current.uri,
       templatePath: path,
       stylePaths: state.matchedRules.map(r => r.path)
@@ -85,11 +101,10 @@ export class ProjectActions extends Actions<
       return
     }
 
-    connection.send({
-      type: 'AddNode',
+    client.mutate('addNode', {
       path,
-      currentUri,
-      nodeUri
+      uri: currentUri,
+      insertNodeUri: nodeUri
     })
 
     mutations.addElement({
@@ -177,8 +192,7 @@ export class ProjectActions extends Actions<
   addDeclaration({ path }: { path: number[] }): void {
     if (!this.state.currentUri) return
 
-    connection.send({
-      type: 'AddDeclaration',
+    client.mutate('addDeclaration', {
       uri: this.state.currentUri,
       path,
       declaration: {
@@ -193,8 +207,7 @@ export class ProjectActions extends Actions<
   removeDeclaration({ path }: { path: number[] }): void {
     if (!this.state.currentUri) return
 
-    connection.send({
-      type: 'RemoveDeclaration',
+    client.mutate('removeDeclaration', {
       uri: this.state.currentUri,
       path
     })
@@ -229,8 +242,7 @@ export class ProjectActions extends Actions<
       }
     }
 
-    connection.send({
-      type: 'UpdateDeclaration',
+    client.mutate('updateDeclaration', {
       uri: this.state.currentUri,
       declaration: updater
     })

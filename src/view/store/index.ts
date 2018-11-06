@@ -1,9 +1,12 @@
 import Vue from 'vue'
 import { store as createStore, install, createMapper } from 'sinai'
 import rootModule from './modules'
-import { ClientConnection } from '../communication'
+import { CommunicationClient } from '../communication/client'
 import { StyleMatcher } from './style-matcher'
 import { BoundsCalculator } from './bounds-calculator'
+import { ResolverType } from '@/resolver'
+import { MutatorType } from '@/mutator'
+import { SubjectTypes } from '@/subject-types'
 
 Vue.use(install)
 
@@ -12,14 +15,17 @@ export const store = createStore(rootModule, {
 })
 export const mapper = createMapper<typeof store>()
 
-const connection = new ClientConnection()
+const ws = new WebSocket(`ws://localhost:${location.port}/api`)
+const client = new CommunicationClient<ResolverType, MutatorType, SubjectTypes>(
+  {
+    ws
+  }
+)
 const styleMatcher = new StyleMatcher()
 const boundsCalculator = new BoundsCalculator()
 
-connection.connect(location.port)
-
 store.actions.project.init({
-  connection,
+  client,
   styleMatcher
 })
 

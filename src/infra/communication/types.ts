@@ -6,6 +6,7 @@ export interface WebSocketServer {
 export interface WebSocket {
   send(payload: string): void
   on(event: 'message', cb: (message: string) => void): void
+  on(event: 'error', cb: (error: Error) => void): void
   once(event: 'close', cb: () => void): void
 }
 

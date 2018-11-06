@@ -5,6 +5,8 @@ type Arguments<F extends Function> = F extends (...args: infer T) => any
   ? T
   : never
 
+type Unwrap<T> = T extends Promise<infer R> ? R : T
+
 export type CommunicationClientObserver<T extends Record<string, any>> = {
   [K in keyof T]: (data: T[K]) => void
 }
@@ -56,14 +58,14 @@ export class CommunicationClient<
   resolve<K extends keyof R>(
     key: K,
     ...args: Arguments<R[K]>
-  ): Promise<ReturnType<R[K]>> {
+  ): Promise<Unwrap<ReturnType<R[K]>>> {
     return this.genericRequest('resolver', key, args, this.nextRequestId++)
   }
 
   mutate<K extends keyof M>(
     key: K,
     ...args: Arguments<M[K]>
-  ): Promise<ReturnType<M[K]>> {
+  ): Promise<Unwrap<ReturnType<M[K]>>> {
     return this.genericRequest('mutator', key, args, this.nextRequestId++)
   }
 
@@ -86,7 +88,7 @@ export class CommunicationClient<
     key: K,
     args: Arguments<T[K]>,
     requestId: number
-  ): Promise<ReturnType<T[K]>> {
+  ): Promise<Unwrap<ReturnType<T[K]>>> {
     return new Promise(resolve => {
       const combinedType = type + ':' + key
 

@@ -18,7 +18,7 @@ export function connectWsServer({
 }
 
 function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
-  ws.on('message', message => {
+  ws.on('message', async message => {
     const data = JSON.parse(message.toString())
 
     assert(typeof data.type === 'string')
@@ -31,7 +31,7 @@ function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
     assert(type === 'resolver' || type === 'mutator')
     assert(typeof target[method] === 'function')
 
-    const res = target[method].apply(target, data.args)
+    const res = await target[method].apply(target, data.args)
     ws.send(
       JSON.stringify({
         type: data.type,

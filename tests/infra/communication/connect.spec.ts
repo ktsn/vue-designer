@@ -33,6 +33,10 @@ describe('Communication infra', () => {
 
       all(): Foo[] {
         return dummyData
+      },
+
+      promise(id: string): Promise<Foo | undefined> {
+        return Promise.resolve(dummyData.find(d => d.id === id))
       }
     }
 
@@ -44,7 +48,7 @@ describe('Communication infra', () => {
       })
     })
 
-    it('resolves a value with a resolver method', () => {
+    it('resolves a value with a resolver method', async () => {
       const ws = mockServer.connectClient()
 
       ws.send({
@@ -52,6 +56,8 @@ describe('Communication infra', () => {
         args: ['2'],
         requestId: '1'
       })
+
+      await Promise.resolve()
 
       expect(ws.received.length).toBe(1)
       const res = ws.received[0]
@@ -61,7 +67,7 @@ describe('Communication infra', () => {
       expect(res.requestId).toBe('1')
     })
 
-    it('resolves values with a resolver method', () => {
+    it('resolves values with a resolver method', async () => {
       const ws = mockServer.connectClient()
 
       ws.send({
@@ -70,12 +76,33 @@ describe('Communication infra', () => {
         requestId: '2'
       })
 
+      await Promise.resolve()
+
       expect(ws.received.length).toBe(1)
       const res = ws.received[0]
 
       expect(res.type).toBe('resolver:all')
       expect(res.data).toEqual(dummyData)
       expect(res.requestId).toBe('2')
+    })
+
+    it('resolves returned promise', async () => {
+      const ws = mockServer.connectClient()
+
+      ws.send({
+        type: 'resolver:promise',
+        args: ['2'],
+        requestId: '3'
+      })
+
+      await Promise.resolve()
+
+      expect(ws.received.length).toBe(1)
+      const res = ws.received[0]
+
+      expect(res.type).toBe('resolver:promise')
+      expect(res.data).toEqual(dummyData[1])
+      expect(res.requestId).toBe('3')
     })
   })
 
@@ -97,7 +124,7 @@ describe('Communication infra', () => {
       })
     })
 
-    it('mutates a value with a mutator method', () => {
+    it('mutates a value with a mutator method', async () => {
       const ws = mockServer.connectClient()
 
       ws.send({
@@ -105,6 +132,8 @@ describe('Communication infra', () => {
         args: ['2', 'updated'],
         requestId: '1'
       })
+
+      await Promise.resolve()
 
       expect(ws.received.length).toBe(1)
       const res = ws.received[0]

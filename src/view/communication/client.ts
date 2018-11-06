@@ -16,8 +16,9 @@ export interface CommunicationClientConfig {
 }
 
 export interface WebSocketClient {
-  addEventListener(event: 'message', fn: (payload: string) => void): void
-  removeEventListener(event: 'message', fn: (payload: string) => void): void
+  addEventListener(event: 'open', fn: () => void): void
+  addEventListener(event: 'message', fn: (event: MessageEvent) => void): void
+  removeEventListener(event: 'message', fn: (event: MessageEvent) => void): void
   send(payload: string): void
 }
 
@@ -53,6 +54,10 @@ export class CommunicationClient<
 
     // Observe the events from subject
     this.ws.addEventListener('message', this.onEvent)
+  }
+
+  onReady(fn: () => void): void {
+    this.ws.addEventListener('open', fn)
   }
 
   resolve<K extends keyof R>(

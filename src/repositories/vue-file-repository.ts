@@ -72,7 +72,11 @@ export class VueFileRepository {
       : component.name
 
     const modifier: Modifiers = [
-      insertToTemplate(target.template!, path, `<${componentName} />`)
+      insertToTemplate(
+        target.template!,
+        path,
+        `<${componentName}></${componentName}>`
+      )
     ]
 
     if (!existingComponent) {

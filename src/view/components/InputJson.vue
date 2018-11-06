@@ -6,14 +6,13 @@
         v-if="!renamable || !editing"
         class="input-json-label"
       >{{ field.name }}</span>
-      <input
+      <InputComposition
         v-else
         v-model="editingName"
         class="input-json-label editing"
         type="text"
-        @keydown.enter="apply"
-        @keydown.esc="cancel"
-      >
+        @keydown="onKeydownInput"
+      />
 
       <!-- Object value -->
       <span
@@ -23,14 +22,13 @@
       >
         {{ formattedValue }}
       </span>
-      <input
+      <InputComposition
         v-else
         v-model="editingValue"
         class="input-json-value editing"
         type="text"
-        @keydown.enter="apply"
-        @keydown.esc="cancel"
-      >
+        @keydown="onKeydownInput"
+      />
 
       <!-- Actions -->
       <div class="input-json-actions">
@@ -97,6 +95,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import BaseIcon from './BaseIcon.vue'
+import InputComposition from './InputComposition.vue'
 import { clone } from '@/utils'
 
 type ValueType =
@@ -118,7 +117,8 @@ export default Vue.extend({
   name: 'InputJson',
 
   components: {
-    BaseIcon
+    BaseIcon,
+    InputComposition
   },
 
   props: {
@@ -242,6 +242,18 @@ export default Vue.extend({
     apply(): void {
       this.editing = false
       this.onChange()
+    },
+
+    onKeydownInput(_: string, event: KeyboardEvent): void {
+      switch (event.key) {
+        case 'Enter':
+          this.apply()
+          break
+        case 'Escape':
+          this.cancel()
+          break
+        default:
+      }
     },
 
     onChange(): void {

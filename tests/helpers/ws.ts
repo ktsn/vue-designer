@@ -25,14 +25,19 @@ export class MockWebSocketClient extends EventEmitter
   }
 
   receive(payload: any): void {
-    this.emit('message', JSON.stringify(payload))
+    this.emit('message', { data: JSON.stringify(payload) })
   }
 
-  addEventListener(event: 'message', cb: (payload: string) => void): void {
+  addEventListener(event: 'open', cb: () => void): void
+  addEventListener(event: 'message', cb: (event: MessageEvent) => void): void
+  addEventListener(event: string, cb: (...args: any[]) => void): void {
     this.on(event, cb)
   }
 
-  removeEventListener(event: 'message', cb: (payload: string) => void): void {
+  removeEventListener(
+    event: 'message',
+    cb: (event: MessageEvent) => void
+  ): void {
     this.removeListener(event, cb)
   }
 }

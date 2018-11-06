@@ -31,8 +31,8 @@ export class CommunicationClient<
   private nextRequestId = 1
   private observers: Set<CommunicationClientObserver<S>> = new Set()
 
-  private onEvent = (payload: string) => {
-    const data = JSON.parse(payload)
+  private onEvent = (event: MessageEvent) => {
+    const data = JSON.parse(event.data)
 
     assert(typeof data.type === 'string')
     const [type, method] = data.type.split(':')
@@ -97,8 +97,8 @@ export class CommunicationClient<
     return new Promise(resolve => {
       const combinedType = type + ':' + key
 
-      const receive = (payload: string): void => {
-        const data = JSON.parse(payload)
+      const receive = (event: MessageEvent): void => {
+        const data = JSON.parse(event.data)
 
         assert(typeof data.type === 'string')
         if (data.type !== combinedType) {

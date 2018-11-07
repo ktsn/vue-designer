@@ -1,3 +1,4 @@
+import { EventEmitter } from 'events'
 import { VueFile, resolveImportPath, parseVueFile } from '../parser/vue-file'
 import { Modifiers, modify } from '../parser/modifier'
 import { insertToTemplate } from '../parser/template/modify'
@@ -17,11 +18,12 @@ export interface VueFileRepositoryFs {
   writeFile(uri: string, code: string): Promise<void>
 }
 
-export class VueFileRepository {
+export class VueFileRepository extends EventEmitter {
   // Vue file uri -> VueFile
   private files: Map<string, VueFile>
 
   constructor(private fs: VueFileRepositoryFs) {
+    super()
     this.files = new Map()
   }
 
@@ -73,7 +75,7 @@ export class VueFileRepository {
 
     const modifier: Modifiers = [
       insertToTemplate(
-        target.template!,
+        target.template,
         path,
         `<${componentName}></${componentName}>`
       )
@@ -137,12 +139,21 @@ export class VueFileRepository {
     this.save(uri, updated)
   }
 
+  on(event: 'update', fn: () => void): this {
+    return super.on(event, fn)
+  }
+
+  destroy(): void {
+    this.removeAllListeners()
+  }
+
   private set(uri: string, code: string): void {
     this.files.set(uri, parseVueFile(code, uri))
   }
 
   private save(uri: string, code: string): void {
     this.set(uri, code)
+    this.emit('update')
     // We don't wait until the file is saved
     this.fs.writeFile(uri, code)
   }

@@ -115,6 +115,11 @@ function connectToSubject(
     return _vueFileToPayload(vueFile, assetResolver)
   }
 
+  vueFiles.on('update', () => {
+    // TODO: change this notification more clean and optimized way
+    subject.notify('initProject', { vueFiles: vueFiles.map(vueFileToPayload) })
+  })
+
   watcher.onDidEditComponent(async uri => {
     await vueFiles.read(uri.toString())
     // TODO: change this notification more clean and optimized way
@@ -219,6 +224,9 @@ export async function activate(context: vscode.ExtensionContext) {
     },
     {
       dispose: () => watcher.destroy()
+    },
+    {
+      dispose: () => vueFiles.destroy()
     }
   )
 }

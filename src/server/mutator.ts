@@ -1,9 +1,9 @@
-import { VueFileRepository } from './repositories/vue-file-repository'
-import { EditorRepository } from './repositories/editor-repository'
+import { VueFileRepository } from '../repositories/vue-file-repository'
+import { EditorRepository } from '../repositories/editor-repository'
 import {
   STDeclarationForAdd,
   STDeclarationForUpdate
-} from './parser/style/types'
+} from '../parser/style/types'
 
 interface SelectNodePayload {
   uri: string

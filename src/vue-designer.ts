@@ -13,9 +13,9 @@ import {
 } from './parser/vue-file'
 import { Subject } from './infra/communication/subject'
 import { connectWsServer } from './infra/communication/connect'
-import { mutator } from './mutator'
-import { resolver } from './resolver'
-import { SubjectTypes } from './subject-types'
+import { mutator } from './server/mutator'
+import { resolver } from './server/resolver'
+import { SubjectType } from './server/subject-type'
 
 function createVSCodeWatcher(
   rootPath: string,
@@ -104,7 +104,7 @@ function createHighlight(): vscode.TextEditorDecorationType {
 }
 
 function connectToSubject(
-  subject: Subject<SubjectTypes>,
+  subject: Subject<SubjectType>,
   watcher: Watcher,
   assetResolver: AssetResolver,
   vueFiles: VueFileRepository,
@@ -186,7 +186,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const server = startStaticServer(assetResolver)
   const wsServer = startWebSocketServer(server)
-  const subject = new Subject<SubjectTypes>(wsServer)
+  const subject = new Subject<SubjectType>(wsServer)
 
   connectWsServer({
     resolver: resolver(vueFiles, setting, editor, assetResolver),

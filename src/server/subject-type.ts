@@ -1,6 +1,6 @@
-import { VueFilePayload } from './parser/vue-file'
+import { VueFilePayload } from '../parser/vue-file'
 
-export interface SubjectTypes {
+export interface SubjectType {
   initProject: {
     vueFiles: Record<string, VueFilePayload>
   }

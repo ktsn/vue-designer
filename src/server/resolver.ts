@@ -1,8 +1,8 @@
-import { VueFileRepository } from './repositories/vue-file-repository'
-import { SettingRepository } from './repositories/setting-repository'
-import { EditorRepository } from './repositories/editor-repository'
-import { VueFilePayload, vueFileToPayload } from './parser/vue-file'
-import { AssetResolver } from './asset-resolver'
+import { VueFileRepository } from '../repositories/vue-file-repository'
+import { SettingRepository } from '../repositories/setting-repository'
+import { EditorRepository } from '../repositories/editor-repository'
+import { VueFilePayload, vueFileToPayload } from '../parser/vue-file'
+import { AssetResolver } from '../asset-resolver'
 
 interface InitialData {
   vueFiles: Record<string, VueFilePayload>

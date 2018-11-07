@@ -10,12 +10,12 @@ import { ProjectState } from './project-state'
 import { ProjectGetters } from './project-getters'
 import { ProjectMutations } from './project-mutations'
 import { DraggingPlace } from './types'
-import { ResolverType } from '@/resolver'
-import { MutatorType } from '@/mutator'
-import { SubjectTypes } from '@/subject-types'
+import { ResolverType } from '@/server/resolver'
+import { MutatorType } from '@/server/mutator'
+import { SubjectType } from '@/server/subject-type'
 import { VueFilePayload } from '@/parser/vue-file'
 
-let client: CommunicationClient<ResolverType, MutatorType, SubjectTypes>
+let client: CommunicationClient<ResolverType, MutatorType, SubjectType>
 let styleMatcher: StyleMatcher
 let draggingTimer: any
 const draggingInterval = 80
@@ -26,7 +26,7 @@ export class ProjectActions extends Actions<
   ProjectMutations
 >() {
   init(payload: {
-    client: CommunicationClient<ResolverType, MutatorType, SubjectTypes>
+    client: CommunicationClient<ResolverType, MutatorType, SubjectType>
     styleMatcher: StyleMatcher
   }): void {
     client = payload.client

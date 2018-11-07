@@ -4,9 +4,9 @@ import rootModule from './modules'
 import { CommunicationClient } from '../communication/client'
 import { StyleMatcher } from './style-matcher'
 import { BoundsCalculator } from './bounds-calculator'
-import { ResolverType } from '@/resolver'
-import { MutatorType } from '@/mutator'
-import { SubjectTypes } from '@/subject-types'
+import { ResolverType } from '@/server/resolver'
+import { MutatorType } from '@/server/mutator'
+import { SubjectType } from '@/server/subject-type'
 
 Vue.use(install)
 
@@ -16,11 +16,9 @@ export const store = createStore(rootModule, {
 export const mapper = createMapper<typeof store>()
 
 const ws = new WebSocket(`ws://localhost:${location.port}/api`)
-const client = new CommunicationClient<ResolverType, MutatorType, SubjectTypes>(
-  {
-    ws
-  }
-)
+const client = new CommunicationClient<ResolverType, MutatorType, SubjectType>({
+  ws
+})
 const styleMatcher = new StyleMatcher()
 const boundsCalculator = new BoundsCalculator()
 

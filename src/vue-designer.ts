@@ -13,6 +13,7 @@ import {
 } from './parser/vue-file'
 import { Subject } from './infra/communication/subject'
 import { connectWsServer } from './infra/communication/connect'
+import { enableLogging } from './infra/communication/logger'
 import { mutator } from './server/mutator'
 import { resolver } from './server/resolver'
 import { SubjectType } from './server/subject-type'
@@ -185,7 +186,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const assetResolver = new AssetResolver()
 
   const server = startStaticServer(assetResolver)
-  const wsServer = startWebSocketServer(server)
+  const wsServer = enableLogging(startWebSocketServer(server))
   const subject = new Subject<SubjectType>(wsServer)
 
   connectWsServer({

@@ -3,7 +3,7 @@ import { WebSocketServer, WebSocket } from './types'
 export function enableLogging(ws: WebSocketServer): WebSocketServer {
   return {
     get clients() {
-      return ws.clients
+      return new Set(Array.from(ws.clients.values()).map(enableSocketLogging))
     },
 
     on(event, fn) {

@@ -1,11 +1,16 @@
 import { EventEmitter } from 'events'
-import { WebSocket, WebSocketServer } from '@/infra/communication/connect'
+import { WebSocket, WebSocketServer } from '@/infra/communication/types'
 import { WebSocketClient } from '@/view/communication/client'
 
 export class MockWebSocketServer extends EventEmitter
   implements WebSocketServer {
+  clients = new Set<WebSocket>()
+
   connectClient(): MockWebSocketClientForServer {
     const client = new MockWebSocketClientForServer()
+
+    this.clients.add(client.connection)
+
     this.emit('connection', client.connection)
     return client
   }
@@ -20,14 +25,19 @@ export class MockWebSocketClient extends EventEmitter
   }
 
   receive(payload: any): void {
-    this.emit('message', JSON.stringify(payload))
+    this.emit('message', { data: JSON.stringify(payload) })
   }
 
-  addEventListener(event: 'message', cb: (payload: string) => void): void {
+  addEventListener(event: 'open', cb: () => void): void
+  addEventListener(event: 'message', cb: (event: MessageEvent) => void): void
+  addEventListener(event: string, cb: (...args: any[]) => void): void {
     this.on(event, cb)
   }
 
-  removeEventListener(event: 'message', cb: (payload: string) => void): void {
+  removeEventListener(
+    event: 'message',
+    cb: (event: MessageEvent) => void
+  ): void {
     this.removeListener(event, cb)
   }
 }

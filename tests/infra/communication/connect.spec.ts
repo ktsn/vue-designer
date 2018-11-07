@@ -1,4 +1,3 @@
-import { Subject } from '@/infra/communication/subject'
 import { connectWsServer } from '@/infra/communication/connect'
 import { MockWebSocketServer } from '../../helpers/ws'
 
@@ -9,12 +8,10 @@ describe('Communication infra', () => {
   }
 
   let mockServer: MockWebSocketServer
-  let mockSubject: Subject<any>
   let dummyData: Foo[]
 
   beforeEach(() => {
     mockServer = new MockWebSocketServer()
-    mockSubject = new Subject()
 
     dummyData = [
       {
@@ -36,6 +33,10 @@ describe('Communication infra', () => {
 
       all(): Foo[] {
         return dummyData
+      },
+
+      promise(id: string): Promise<Foo | undefined> {
+        return Promise.resolve(dummyData.find(d => d.id === id))
       }
     }
 
@@ -43,12 +44,11 @@ describe('Communication infra', () => {
       connectWsServer({
         resolver,
         mutator: {},
-        subject: mockSubject,
         server: mockServer
       })
     })
 
-    it('resolves a value with a resolver method', () => {
+    it('resolves a value with a resolver method', async () => {
       const ws = mockServer.connectClient()
 
       ws.send({
@@ -56,6 +56,8 @@ describe('Communication infra', () => {
         args: ['2'],
         requestId: '1'
       })
+
+      await Promise.resolve()
 
       expect(ws.received.length).toBe(1)
       const res = ws.received[0]
@@ -65,7 +67,7 @@ describe('Communication infra', () => {
       expect(res.requestId).toBe('1')
     })
 
-    it('resolves values with a resolver method', () => {
+    it('resolves values with a resolver method', async () => {
       const ws = mockServer.connectClient()
 
       ws.send({
@@ -74,12 +76,33 @@ describe('Communication infra', () => {
         requestId: '2'
       })
 
+      await Promise.resolve()
+
       expect(ws.received.length).toBe(1)
       const res = ws.received[0]
 
       expect(res.type).toBe('resolver:all')
       expect(res.data).toEqual(dummyData)
       expect(res.requestId).toBe('2')
+    })
+
+    it('resolves returned promise', async () => {
+      const ws = mockServer.connectClient()
+
+      ws.send({
+        type: 'resolver:promise',
+        args: ['2'],
+        requestId: '3'
+      })
+
+      await Promise.resolve()
+
+      expect(ws.received.length).toBe(1)
+      const res = ws.received[0]
+
+      expect(res.type).toBe('resolver:promise')
+      expect(res.data).toEqual(dummyData[1])
+      expect(res.requestId).toBe('3')
     })
   })
 
@@ -97,12 +120,11 @@ describe('Communication infra', () => {
       connectWsServer({
         resolver: {},
         mutator,
-        subject: mockSubject,
         server: mockServer
       })
     })
 
-    it('mutates a value with a mutator method', () => {
+    it('mutates a value with a mutator method', async () => {
       const ws = mockServer.connectClient()
 
       ws.send({
@@ -110,6 +132,8 @@ describe('Communication infra', () => {
         args: ['2', 'updated'],
         requestId: '1'
       })
+
+      await Promise.resolve()
 
       expect(ws.received.length).toBe(1)
       const res = ws.received[0]
@@ -121,81 +145,6 @@ describe('Communication infra', () => {
         id: '2',
         value: 'updated'
       })
-    })
-  })
-
-  describe('subject', () => {
-    beforeEach(() => {
-      connectWsServer({
-        resolver: {},
-        mutator: {},
-        subject: mockSubject,
-        server: mockServer
-      })
-    })
-
-    it('notifies that some value is added', () => {
-      const ws = mockServer.connectClient()
-
-      const data = {
-        id: '3',
-        value: 'test'
-      }
-
-      mockSubject.notifyAdd(data)
-
-      expect(ws.received.length).toBe(1)
-      const res = ws.received[0]
-
-      expect(res.type).toBe('subject:add')
-      expect(res.data).toEqual(data)
-    })
-
-    it('notifies that some value is updateded', () => {
-      const ws = mockServer.connectClient()
-
-      const data = {
-        id: '2',
-        value: 'test'
-      }
-
-      mockSubject.notifyUpdate(data)
-
-      expect(ws.received.length).toBe(1)
-      const res = ws.received[0]
-
-      expect(res.type).toBe('subject:update')
-      expect(res.data).toEqual(data)
-    })
-
-    it('notifies that some value is removed', () => {
-      const ws = mockServer.connectClient()
-
-      const data = {
-        id: '1',
-        value: 'test'
-      }
-
-      mockSubject.notifyRemove(data)
-
-      expect(ws.received.length).toBe(1)
-      const res = ws.received[0]
-
-      expect(res.type).toBe('subject:remove')
-      expect(res.data).toEqual(data)
-    })
-
-    it('unsubscribe observer after the connection is closed', () => {
-      const ws = mockServer.connectClient()
-
-      const data = {
-        id: '1',
-        value: 'updated'
-      }
-
-      ws.close()
-      mockSubject.notifyUpdate(data)
-      expect(ws.received.length).toBe(0)
     })
   })
 })

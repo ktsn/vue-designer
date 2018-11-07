@@ -1,18 +1,14 @@
 import assert from 'assert'
 import { Resolver, Mutator } from '@/infra/communication/types'
 
-type ResolverModel<R extends Resolver<{}>> = R extends Resolver<infer T>
-  ? T
-  : never
-
 type Arguments<F extends Function> = F extends (...args: infer T) => any
   ? T
   : never
 
-export interface CommunicationClientObserver<T> {
-  onAdd?: (value: T) => void
-  onUpdate?: (value: T) => void
-  onRemove?: (value: T) => void
+type Unwrap<T> = T extends Promise<infer R> ? R : T
+
+export type CommunicationClientObserver<T extends Record<string, any>> = {
+  [K in keyof T]: (data: T[K]) => void
 }
 
 export interface CommunicationClientConfig {
@@ -20,51 +16,33 @@ export interface CommunicationClientConfig {
 }
 
 export interface WebSocketClient {
-  addEventListener(event: 'message', fn: (payload: string) => void): void
-  removeEventListener(event: 'message', fn: (payload: string) => void): void
+  addEventListener(event: 'open', fn: () => void): void
+  addEventListener(event: 'message', fn: (event: MessageEvent) => void): void
+  removeEventListener(event: 'message', fn: (event: MessageEvent) => void): void
   send(payload: string): void
 }
 
 export class CommunicationClient<
-  R extends Resolver<{}>,
+  R extends Resolver,
   M extends Mutator,
-  T = ResolverModel<R>
+  S extends Record<string, any>
 > {
   private ws: WebSocketClient
   private nextRequestId = 1
-  private observers: Set<CommunicationClientObserver<T>> = new Set()
+  private observers: Set<CommunicationClientObserver<S>> = new Set()
 
-  private onEvent = (payload: string) => {
-    const data = JSON.parse(payload)
+  private onEvent = (event: MessageEvent) => {
+    const data = JSON.parse(event.data)
 
     assert(typeof data.type === 'string')
-    const [type, operation] = data.type.split(':')
+    const [type, method] = data.type.split(':')
 
     if (type !== 'subject') {
       return
     }
 
-    assert('data' in data)
-
-    let getMethod: (
-      ob: CommunicationClientObserver<T>
-    ) => ((value: T) => void) | undefined
-    switch (operation) {
-      case 'add':
-        getMethod = ob => ob.onAdd
-        break
-      case 'update':
-        getMethod = ob => ob.onUpdate
-        break
-      case 'remove':
-        getMethod = ob => ob.onRemove
-        break
-      default:
-        assert.fail('Unexpected type name: ' + data.type)
-    }
-
     this.observers.forEach(ob => {
-      const f = getMethod(ob)
+      const f = ob[method]
       if (f) {
         f(data.data)
       }
@@ -78,21 +56,25 @@ export class CommunicationClient<
     this.ws.addEventListener('message', this.onEvent)
   }
 
+  onReady(fn: () => void): void {
+    this.ws.addEventListener('open', fn)
+  }
+
   resolve<K extends keyof R>(
     key: K,
     ...args: Arguments<R[K]>
-  ): Promise<ReturnType<R[K]>> {
+  ): Promise<Unwrap<ReturnType<R[K]>>> {
     return this.genericRequest('resolver', key, args, this.nextRequestId++)
   }
 
   mutate<K extends keyof M>(
     key: K,
     ...args: Arguments<M[K]>
-  ): Promise<ReturnType<M[K]>> {
+  ): Promise<Unwrap<ReturnType<M[K]>>> {
     return this.genericRequest('mutator', key, args, this.nextRequestId++)
   }
 
-  observe(observer: CommunicationClientObserver<T>): () => void {
+  observe(observer: CommunicationClientObserver<S>): () => void {
     this.observers.add(observer)
     return () => {
       this.observers.delete(observer)
@@ -111,19 +93,18 @@ export class CommunicationClient<
     key: K,
     args: Arguments<T[K]>,
     requestId: number
-  ): Promise<ReturnType<T[K]>> {
+  ): Promise<Unwrap<ReturnType<T[K]>>> {
     return new Promise(resolve => {
       const combinedType = type + ':' + key
 
-      const receive = (payload: string): void => {
-        const data = JSON.parse(payload)
+      const receive = (event: MessageEvent): void => {
+        const data = JSON.parse(event.data)
 
         assert(typeof data.type === 'string')
         if (data.type !== combinedType) {
           return
         }
 
-        assert('data' in data)
         assert('requestId' in data)
 
         if (data.requestId === requestId) {

@@ -7,7 +7,7 @@ import { ProjectMutations } from '@/view/store/modules/project/project-mutations
 import { createTemplate, h } from '../../helpers/template'
 import { createStyle, rule, selector } from '../../helpers/style'
 import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
-import { ClientConnection } from '@/view/communication'
+import { CommunicationClient } from '@/view/communication/client'
 import { StyleMatcher } from '@/view/store/style-matcher'
 import { STRuleForPrint } from '@/parser/style/types'
 
@@ -245,13 +245,17 @@ describe('Store project getters', () => {
 })
 
 describe('Store project actions', () => {
-  let mock: { connection: ClientConnection; styleMatcher: StyleMatcher }
+  let mock: {
+    client: CommunicationClient<any, any, any>
+    styleMatcher: StyleMatcher
+  }
 
   beforeEach(() => {
     mock = {
-      connection: {
-        send: jest.fn(),
-        onMessage: jest.fn()
+      client: {
+        onReady: jest.fn(),
+        mutate: jest.fn(),
+        observe: jest.fn()
       } as any,
 
       styleMatcher: {
@@ -275,8 +279,7 @@ describe('Store project actions', () => {
         value: 'red'
       })
 
-      expect(mock.connection.send).toHaveBeenCalledWith({
-        type: 'UpdateDeclaration',
+      expect(mock.client.mutate).toHaveBeenCalledWith('updateDeclaration', {
         uri: actions.state.currentUri,
         declaration: {
           path: [0, 0, 0],
@@ -299,8 +302,7 @@ describe('Store project actions', () => {
         value: 'red !important'
       })
 
-      expect(mock.connection.send).toHaveBeenCalledWith({
-        type: 'UpdateDeclaration',
+      expect(mock.client.mutate).toHaveBeenCalledWith('updateDeclaration', {
         uri: actions.state.currentUri,
         declaration: {
           path: [0, 0, 0],
@@ -323,7 +325,7 @@ describe('Store project actions', () => {
         value: 'red'
       })
 
-      expect(mock.connection.send).not.toHaveBeenCalled()
+      expect(mock.client.mutate).not.toHaveBeenCalled()
     })
   })
 

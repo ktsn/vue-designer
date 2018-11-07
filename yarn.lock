@@ -6206,11 +6206,6 @@ mdn-data@~1.1.0:
   resolved "https://registry.yarnpkg.com/mdn-data/-/mdn-data-1.1.4.tgz#50b5d4ffc4575276573c4eedb8780812a8419f01"
   integrity sha512-FSYbp3lyKjyj3E7fMl6rYvUdX0FBXaluGqlFoYESWQlyUTq8R+wp0rkFxoYFqZlHCvsUXGjyJmLQSnXToYhOSA==
 
-meck@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/meck/-/meck-0.1.1.tgz#7248f2b190e994009a9519d7178e1975faad73af"
-  integrity sha512-iC6j8LcJSxpr8vla+4aYcLZo0Y/Bz84Y6fgENVvMlOyBxx/3CCO7q2YPTXWIlRfhweT84DYSoIY7Om/N70MiPw==
-
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"

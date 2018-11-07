@@ -1,42 +1,24 @@
 import assert from 'assert'
-import { Subject } from './subject'
-import { Observer, Resolver, Mutator } from './types'
+import { WebSocketServer, WebSocket, Resolver, Mutator } from './types'
 
-export interface WebSocketServer {
-  on(event: 'connection', cb: (socket: WebSocket) => void): void
-}
-
-export interface WebSocket {
-  send(payload: string): void
-  on(event: 'message', cb: (message: string) => void): void
-  once(event: 'close', cb: () => void): void
-}
-
-export interface ConnectConfig<T> {
-  resolver: Resolver<T>
+export interface ConnectConfig {
+  resolver: Resolver
   mutator: Mutator
-  subject: Subject<T>
   server: WebSocketServer
 }
 
-export function connectWsServer<T>({
+export function connectWsServer({
   resolver,
   mutator,
-  subject,
   server
-}: ConnectConfig<T>): void {
+}: ConnectConfig): void {
   server.on('connection', ws => {
-    connectSubject(ws, subject)
     listenMessage(ws, resolver, mutator)
   })
 }
 
-function listenMessage(
-  ws: WebSocket,
-  resolver: Resolver<{}>,
-  mutator: Mutator
-) {
-  ws.on('message', message => {
+function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
+  ws.on('message', async message => {
     const data = JSON.parse(message.toString())
 
     assert(typeof data.type === 'string')
@@ -49,7 +31,7 @@ function listenMessage(
     assert(type === 'resolver' || type === 'mutator')
     assert(typeof target[method] === 'function')
 
-    const res = target[method].apply(target, data.args)
+    const res = await target[method].apply(target, data.args)
     ws.send(
       JSON.stringify({
         type: data.type,
@@ -58,40 +40,11 @@ function listenMessage(
       })
     )
   })
-}
 
-function connectSubject(ws: WebSocket, subject: Subject<{}>): void {
-  const observer: Observer<{}> = {
-    onAdd(data) {
-      ws.send(
-        JSON.stringify({
-          type: 'subject:add',
-          data
-        })
-      )
-    },
-
-    onUpdate(data) {
-      ws.send(
-        JSON.stringify({
-          type: 'subject:update',
-          data
-        })
-      )
-    },
-
-    onRemove(data) {
-      ws.send(
-        JSON.stringify({
-          type: 'subject:remove',
-          data
-        })
-      )
-    }
-  }
-
-  subject.on(observer)
-  ws.once('close', () => {
-    subject.off(observer)
+  ws.on('error', err => {
+    // To avoid clashing extension by ECONNRESET error...
+    // https://github.com/websockets/ws/issues/1256
+    if ((err as any).code === 'ECONNRESET') return
+    throw err
   })
 }

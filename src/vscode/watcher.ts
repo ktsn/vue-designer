@@ -58,7 +58,7 @@ export class Watcher extends vscode.Disposable {
     const uris = this.sharedStyleUris.map(uri => uri.toString())
 
     const interpolate = (uri: vscode.Uri): void => {
-      if (uris.indexOf(uri.toString()) > 0) {
+      if (uris.indexOf(uri.toString()) >= 0) {
         fn()
       }
     }

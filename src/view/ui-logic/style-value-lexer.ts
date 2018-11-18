@@ -32,7 +32,7 @@ interface Numeric extends Range {
 }
 
 /**
- * Character that divides value or a part of it: ",", "/", "(", ")"
+ * Character that divides value or a part of it: ",", "+", "-", "*", "/", "(", ")"
  */
 interface Divider extends Range {
   type: 'divider'
@@ -95,6 +95,40 @@ function failure(ctx: LexerContext, message: string): LexerFailure {
   }
 }
 
+function seqResult<T>(result: LexerResult<T>[]): LexerResult<T[]> {
+  const [head, ...tail] = result
+  if (!head) {
+    throw new Error('lexer results must have at least one item.')
+  }
+
+  if (!head.success) {
+    return head
+  }
+
+  return tail.reduce<LexerResult<T[]>>(
+    (acc, res) => {
+      if (!acc.success) {
+        return acc
+      }
+
+      if (!res.success) {
+        return res
+      }
+
+      return {
+        ...acc,
+        value: acc.value.concat(res.value),
+        range: [acc.range[0], res.range[1]],
+        context: res.context
+      }
+    },
+    {
+      ...head,
+      value: [head.value]
+    }
+  )
+}
+
 function empty<T>(x: T): Lexer<T> {
   return ctx => success(ctx, x, 0)
 }
@@ -135,33 +169,7 @@ function seq<T>(...xs: Lexer<T>[]): Lexer<T[]> {
     return process(acc.concat(result), result.context, tail)
   }
 
-  return ctx => {
-    const initial: LexerSuccess<T[]> = {
-      success: true,
-      value: [],
-      range: [ctx.position, ctx.position],
-      context: ctx
-    }
-
-    const result = process([], ctx, xs)
-
-    return result.reduce<LexerResult<T[]>>((acc, res) => {
-      if (!acc.success) {
-        return acc
-      }
-
-      if (!res.success) {
-        return res
-      }
-
-      return {
-        ...acc,
-        value: acc.value.concat(res.value),
-        range: [acc.range[0], res.range[1]],
-        context: res.context
-      }
-    }, initial)
-  }
+  return ctx => seqResult(process([], ctx, xs))
 }
 
 function joinSeq(...xs: Lexer<string>[]): Lexer<string> {
@@ -176,6 +184,22 @@ function joinSeq(...xs: Lexer<string>[]): Lexer<string> {
       return result
     }
   }
+}
+
+function many<T>(lexer: Lexer<T>): Lexer<T[]> {
+  const process = (
+    acc: LexerResult<T>[],
+    ctx: LexerContext
+  ): LexerResult<T>[] => {
+    const result = lexer(ctx)
+    if (result.success) {
+      return process(acc.concat(result), result.context)
+    } else {
+      return acc
+    }
+  }
+
+  return ctx => seqResult(process([], ctx))
 }
 
 function or<T>(...xs: Lexer<T>[]): Lexer<T> {
@@ -206,7 +230,12 @@ function or<T>(...xs: Lexer<T>[]): Lexer<T> {
   }
 }
 
-function option<T>(lexer: Lexer<T>, defaultValue: T): Lexer<T> {
+function option<T>(lexer: Lexer<T>): Lexer<T | null>
+function option<T>(lexer: Lexer<T>, defaultValue: T): Lexer<T>
+function option<T>(
+  lexer: Lexer<T>,
+  defaultValue: T | null = null
+): Lexer<T | null> {
   return or(lexer, empty(defaultValue))
 }
 
@@ -231,42 +260,22 @@ const digits: Lexer<string> = regexp(/^\d+/)
 
 /**
  * https://www.w3.org/TR/css-syntax-3/#ident-token-diagram
+ * Much looser than spec
  */
-const identToken: Lexer<Textual> = map(
-  regexp(/^[a-zA-Z_-]+/),
-  (value, res): Textual => {
-    return {
-      type: 'textual',
-      value,
-      quote: '',
-      range: res.range
-    }
-  }
-)
+const identTokenLike: Lexer<string> = regexp(/^-?[a-zA-Z_#][\w-]*/)
 
 /**
  * https://www.w3.org/TR/css-syntax-3/#string-token-diagram
  */
-const stringToken: Lexer<Textual> = map(
-  or(
-    seq(string("'"), regexp(/^[^'\\]*/), string("'")),
-    seq(string('"'), regexp(/^[^"\\]*/), string('"'))
-  ),
-
-  (value, res): Textual => {
-    return {
-      type: 'textual',
-      quote: value[0] as '"' | "'",
-      value: value[1],
-      range: res.range
-    }
-  }
+const stringToken: Lexer<string> = or(
+  joinSeq(string("'"), regexp(/^[^'\\]*/), string("'")),
+  joinSeq(string('"'), regexp(/^[^"\\]*/), string('"'))
 )
 
 /**
  * https://www.w3.org/TR/css-syntax-3/#number-token-diagram
  */
-const numberToken = joinSeq(
+const numberToken: Lexer<string> = joinSeq(
   or(string('+'), string('-'), empty('')),
   or(
     joinSeq(digits, string('.'), digits),
@@ -283,11 +292,22 @@ const numberToken = joinSeq(
   )
 )
 
-const unit = regexp(/^(%|[a-zA-Z]+)/)
+const unit: Lexer<string> = regexp(/^(%|[a-zA-Z]+)/)
 
-const textual: Lexer<Textual> = or(identToken, stringToken)
+const textual: Lexer<Lex> = map(
+  or(identTokenLike, stringToken),
+  (value, res): Textual => {
+    const quote: any = value[0] === '"' || value[0] === "'" ? value[0] : ''
+    return {
+      type: 'textual',
+      quote,
+      value: quote !== '' ? value.slice(1, value.length - 1) : value,
+      range: res.range
+    }
+  }
+)
 
-const numeric: Lexer<Numeric> = map(
+const numeric: Lexer<Lex> = map(
   seq(numberToken, option(unit, '')),
   (value, res): Numeric => {
     const [num, unit] = value
@@ -303,7 +323,29 @@ const numeric: Lexer<Numeric> = map(
   }
 )
 
-const lexer: Lexer<Lex> = or<Lex>(numeric, textual)
+const divider: Lexer<Lex> = map(
+  regexp(/^[,()+\-*/]/),
+  (value, res): Divider => {
+    return {
+      type: 'divider',
+      value,
+      range: res.range
+    }
+  }
+)
+
+const whitespace: Lexer<Lex> = map(
+  regexp(/^\s+/),
+  (value, res): Whitespace => {
+    return {
+      type: 'whitespace',
+      value,
+      range: res.range
+    }
+  }
+)
+
+const lexer: Lexer<Lex[]> = many(or(numeric, whitespace, divider, textual))
 
 export function lexStyleValue(value: string): Lex[] {
   const ctx = {
@@ -319,5 +361,5 @@ export function lexStyleValue(value: string): Lex[] {
     )
   }
 
-  return [result.value]
+  return result.value
 }

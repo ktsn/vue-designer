@@ -156,3 +156,119 @@ describe('numeric', () => {
     ])
   })
 })
+
+describe('complex', () => {
+  it('multiple word', () => {
+    const result = lexStyleValue('1px solid #ccc')
+    expect(result).toEqual([
+      {
+        type: 'numeric',
+        value: 1,
+        numberToken: '',
+        unit: 'px',
+        range: [0, 3]
+      },
+      {
+        type: 'whitespace',
+        value: ' ',
+        range: [3, 4]
+      },
+      {
+        type: 'textual',
+        value: 'solid',
+        quote: '',
+        range: [4, 9]
+      },
+      {
+        type: 'whitespace',
+        value: ' ',
+        range: [9, 10]
+      },
+      {
+        type: 'textual',
+        value: '#ccc',
+        quote: '',
+        range: [10, 14]
+      }
+    ])
+  })
+
+  it('function', () => {
+    const result = lexStyleValue('calc(10px + 100%)')
+    expect(result).toEqual([
+      {
+        type: 'textual',
+        value: 'calc',
+        quote: '',
+        range: [0, 4]
+      },
+      {
+        type: 'divider',
+        value: '(',
+        range: [4, 5]
+      },
+      {
+        type: 'numeric',
+        value: 10,
+        numberToken: '',
+        unit: 'px',
+        range: [5, 9]
+      },
+      {
+        type: 'whitespace',
+        value: ' ',
+        range: [9, 10]
+      },
+      {
+        type: 'divider',
+        value: '+',
+        range: [10, 11]
+      },
+      {
+        type: 'whitespace',
+        value: ' ',
+        range: [11, 12]
+      },
+      {
+        type: 'numeric',
+        value: 100,
+        numberToken: '',
+        unit: '%',
+        range: [12, 16]
+      },
+      {
+        type: 'divider',
+        value: ')',
+        range: [16, 17]
+      }
+    ])
+  })
+
+  it('multiple section', () => {
+    const result = lexStyleValue('color, background-color')
+    expect(result).toEqual([
+      {
+        type: 'textual',
+        value: 'color',
+        quote: '',
+        range: [0, 5]
+      },
+      {
+        type: 'divider',
+        value: ',',
+        range: [5, 6]
+      },
+      {
+        type: 'whitespace',
+        value: ' ',
+        range: [6, 7]
+      },
+      {
+        type: 'textual',
+        value: 'background-color',
+        quote: '',
+        range: [7, 23]
+      }
+    ])
+  })
+})

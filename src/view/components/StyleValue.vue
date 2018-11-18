@@ -18,7 +18,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { selectNodeContents } from '@/view/editing'
+import { selectNodeContents } from '@/view/ui-logic/editing'
 
 export default Vue.extend({
   name: 'StyleValue',

@@ -4,7 +4,7 @@ import VueChild from './VueChild.vue'
 import { TETemplate } from '@/parser/template/types'
 import { ChildComponent } from '@/parser/script/types'
 import { DocumentScope } from '@/view/store/modules/project/types'
-import { resolveControlDirectives, ResolvedChild } from '../rendering'
+import { resolveControlDirectives, ResolvedChild } from '../ui-logic/rendering'
 
 export default Vue.extend({
   name: 'VueComponent',

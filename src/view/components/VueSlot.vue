@@ -3,7 +3,7 @@ import Vue, { VNode, VNodeChildrenArrayContents } from 'vue'
 import VueChild from './VueChild.vue'
 import { TEElement } from '@/parser/template/types'
 import { DefaultValue, ChildComponent } from '@/parser/script/types'
-import { convertToSlotScope } from '@/view/rendering'
+import { convertToSlotScope } from '@/view/ui-logic/rendering'
 
 export default Vue.extend({
   name: 'VueSlot',

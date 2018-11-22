@@ -11,14 +11,18 @@
     class="style-value editing"
     contenteditable="true"
     @input="input"
-    @keypress.prevent.enter="endEdit"
+    @keydown="onKeyDown"
     @blur="endEdit"
   />
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { selectNodeContents } from '@/view/ui-logic/editing'
+import {
+  selectNodeContents,
+  updateStyleValue,
+  getTextOffset
+} from '@/view/ui-logic/editing'
 
 export default Vue.extend({
   name: 'StyleValue',
@@ -81,6 +85,75 @@ export default Vue.extend({
     input(event: Event): void {
       const el = event.currentTarget as HTMLDivElement
       this.$emit('input', el.textContent)
+    },
+
+    update(offset: number): void {
+      const start = this.getSelectionStartOffset()
+      if (start === undefined) {
+        return
+      }
+
+      const { value, range } = updateStyleValue(this.value, start, offset)
+
+      if (!range) {
+        return
+      }
+
+      this.$emit('input', value)
+
+      this.$el.textContent = value
+      this.selectTextRange(range[0], range[1])
+    },
+
+    getSelectionStartOffset(): number | undefined {
+      const selection = window.getSelection()
+      for (let i = 0; i < selection.rangeCount; i++) {
+        const range = selection.getRangeAt(i)
+        if (this.$el.contains(range.startContainer)) {
+          // Ensure the $el only one text node
+          return getTextOffset(range.startContainer, range.startOffset)
+        }
+      }
+      return undefined
+    },
+
+    selectTextRange(start: number, end: number): void {
+      const selection = window.getSelection()
+      selection.removeAllRanges()
+
+      // Ensure the $el can be only one text node
+      const text = this.$el.childNodes[0]
+      if (!text) {
+        return
+      }
+
+      const range = new Range()
+      range.setStart(text, start)
+      range.setEnd(text, end)
+
+      selection.removeAllRanges()
+      selection.addRange(range)
+    },
+
+    onKeyDown(event: KeyboardEvent): void {
+      switch (event.key) {
+        case 'Enter':
+          event.preventDefault()
+          this.endEdit(event)
+          break
+        case 'Up':
+        case 'ArrowUp':
+          event.preventDefault()
+          this.update(1)
+          break
+        case 'Down':
+        case 'ArrowDown':
+          event.preventDefault()
+          this.update(-1)
+          break
+        default:
+        // Nothing
+      }
     }
   }
 })

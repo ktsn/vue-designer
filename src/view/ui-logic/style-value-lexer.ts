@@ -26,7 +26,6 @@ interface Textual extends Range {
  */
 interface Numeric extends Range {
   type: 'numeric'
-  numberToken: '-' | '+' | ''
   value: number
   unit: string
 }
@@ -311,12 +310,10 @@ const numeric: Lexer<Lex> = map(
   seq(numberToken, option(unit, '')),
   (value, res): Numeric => {
     const [num, unit] = value
-    const numberToken: any = num[0] === '+' || num[0] === '-' ? num[0] : ''
 
     return {
       type: 'numeric',
       value: parseFloat(num),
-      numberToken,
       unit,
       range: res.range
     }
@@ -362,4 +359,18 @@ export function lexStyleValue(value: string): Lex[] {
   }
 
   return result.value
+}
+
+export function lexToString(lex: Lex): string {
+  switch (lex.type) {
+    case 'textual':
+      return lex.quote + lex.value + lex.quote
+    case 'numeric':
+      return lex.value.toString() + lex.unit
+    case 'divider':
+    case 'whitespace':
+      return lex.value
+    default:
+      return ''
+  }
 }

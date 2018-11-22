@@ -45,7 +45,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 123,
-        numberToken: '',
         unit: '',
         range: [0, 3]
       }
@@ -58,7 +57,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: -123,
-        numberToken: '-',
         unit: '',
         range: [0, 4]
       }
@@ -71,7 +69,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 123,
-        numberToken: '+',
         unit: '',
         range: [0, 4]
       }
@@ -84,7 +81,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 1.234,
-        numberToken: '',
         unit: '',
         range: [0, 5]
       }
@@ -97,7 +93,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 0.5,
-        numberToken: '',
         unit: '',
         range: [0, 2]
       }
@@ -110,7 +105,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 12e5,
-        numberToken: '',
         unit: '',
         range: [0, 4]
       }
@@ -123,7 +117,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 123e-10,
-        numberToken: '',
         unit: '',
         range: [0, 7]
       }
@@ -136,7 +129,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 100,
-        numberToken: '',
         unit: '%',
         range: [0, 4]
       }
@@ -149,7 +141,6 @@ describe('numeric', () => {
       {
         type: 'numeric',
         value: 1.5,
-        numberToken: '',
         unit: 'rem',
         range: [0, 6]
       }
@@ -164,7 +155,6 @@ describe('complex', () => {
       {
         type: 'numeric',
         value: 1,
-        numberToken: '',
         unit: 'px',
         range: [0, 3]
       },
@@ -210,7 +200,6 @@ describe('complex', () => {
       {
         type: 'numeric',
         value: 10,
-        numberToken: '',
         unit: 'px',
         range: [5, 9]
       },
@@ -232,7 +221,6 @@ describe('complex', () => {
       {
         type: 'numeric',
         value: 100,
-        numberToken: '',
         unit: '%',
         range: [12, 16]
       },

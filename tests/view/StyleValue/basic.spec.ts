@@ -84,7 +84,7 @@ describe('StyleValue basic', () => {
     await wrapper.vm.$nextTick()
 
     wrapper.trigger('keypress', {
-      keyCode: 13
+      key: 'Enter'
     })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
     expect(wrapper.emitted('input-end')[0]).toEqual(['20px'])

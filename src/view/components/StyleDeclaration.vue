@@ -1,19 +1,23 @@
 <template>
   <div class="style-declaration">
-    <span class="style-declaration-prop"><StyleValue
-      :auto-focus="autoFocusProp"
-      :value="prop"
-      class="style-declaration-prop-text"
-      @input-start="$emit('input-start')"
-      @input="inputProp"
-      @input-end="finishInputProp"
-    /></span>
-    <span class="style-declaration-value"><StyleValue
-      :value="value"
-      @input-start="$emit('input-start')"
-      @input="inputValue"
-      @input-end="finishInputValue"
-    /></span>
+    <span class="style-declaration-prop">
+      <StyleValue
+        :auto-focus="autoFocusProp"
+        :value="prop"
+        class="style-declaration-prop-text"
+        @input-start="$emit('input-start')"
+        @input="inputProp"
+        @input-end="finishInputProp"
+      />
+    </span>
+    <span class="style-declaration-value">
+      <StyleValue
+        :value="value"
+        @input-start="$emit('input-start')"
+        @input="inputValue"
+        @input-end="finishInputValue"
+      />
+    </span>
   </div>
 </template>
 
@@ -81,6 +85,7 @@ export default Vue.extend({
 <style scoped>
 .style-declaration-prop::after {
   content: ':';
+  margin-right: 0.3em;
 }
 
 .style-declaration-value::after {

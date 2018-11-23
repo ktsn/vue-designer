@@ -9,7 +9,7 @@ import {
   resolveControlDirectives,
   ResolvedChild,
   resolveScopedSlots
-} from '../rendering'
+} from '../ui-logic/rendering'
 import { DraggingPlace } from '../store/modules/project/types'
 import { mapValues } from '@/utils'
 

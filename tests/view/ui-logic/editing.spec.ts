@@ -1,4 +1,31 @@
-import { updateStyleValue } from '@/view/ui-logic/editing'
+import { updateStyleValue, getTextOffset } from '@/view/ui-logic/editing'
+
+describe('getTextOffset', () => {
+  it('just uses given offset if the node is text node', () => {
+    const text = document.createTextNode('test')
+    const offset = getTextOffset(text, 3)
+    expect(offset).toBe(3)
+  })
+
+  it('converts node offset to text offset', () => {
+    const root = document.createElement('div')
+
+    const a = document.createElement('p')
+    a.textContent = 'test1'
+
+    const b = document.createTextNode('test2')
+
+    const c = document.createElement('div')
+    c.textContent = 'test3'
+
+    root.appendChild(a)
+    root.appendChild(b)
+    root.appendChild(c)
+
+    const offset = getTextOffset(root, 2)
+    expect(offset).toBe(10)
+  })
+})
 
 describe('updateStyleValue', () => {
   it('updates numeric value', () => {

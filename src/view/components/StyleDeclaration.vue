@@ -2,18 +2,19 @@
   <div class="style-declaration">
     <span class="style-declaration-prop">
       <StyleValue
-        :auto-focus="autoFocusProp"
+        :auto-focus="autoFocus === 'prop'"
         :value="prop"
         class="style-declaration-prop-text"
-        @input-start="$emit('input-start')"
+        @input-start="$emit('input-start:prop')"
         @input="inputProp"
         @input-end="finishInputProp"
       />
     </span>
     <span class="style-declaration-value">
       <StyleValue
+        :auto-focus="autoFocus === 'value'"
         :value="value"
-        @input-start="$emit('input-start')"
+        @input-start="$emit('input-start:value')"
         @input="inputValue"
         @input-end="finishInputValue"
       />
@@ -37,13 +38,18 @@ export default Vue.extend({
       type: String,
       required: true
     },
+
     value: {
       type: String,
       required: true
     },
-    autoFocusProp: {
-      type: Boolean,
-      default: false
+
+    autoFocus: {
+      type: String,
+      default: null,
+      validator(value: string) {
+        return value === 'prop' || value === 'value'
+      }
     }
   },
 
@@ -56,8 +62,8 @@ export default Vue.extend({
       this.$emit('update:value', value)
     },
 
-    finishInputProp(rawProp: string): void {
-      this.$emit('input-end')
+    finishInputProp(rawProp: string, meta: { reason: string }): void {
+      this.$emit('input-end:prop', meta)
 
       const prop = rawProp.trim()
       if (!prop) {
@@ -67,8 +73,8 @@ export default Vue.extend({
       }
     },
 
-    finishInputValue(rawValue: string): void {
-      this.$emit('input-end')
+    finishInputValue(rawValue: string, meta: { reason: string }): void {
+      this.$emit('input-end:value', meta)
 
       const value = rawValue.trim()
       if (!value) {

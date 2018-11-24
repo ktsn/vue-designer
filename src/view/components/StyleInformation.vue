@@ -1,10 +1,10 @@
 <template>
   <ul class="style-information">
     <li
-      v-for="rule in rules"
+      v-for="(rule, ruleIndex) in rules"
       :key="rule.path.join('.')"
       class="rule"
-      @click="onClickRule(rule)"
+      @click="onClickRule(rule, ruleIndex)"
     >
       <p class="selector-list">
         <span
@@ -19,19 +19,21 @@
         @click.stop
       >
         <li
-          v-for="d in rule.children"
-          :key="d.path.join('.')"
+          v-for="(decl, declIndex) in rule.children"
+          :key="decl.path.join('.')"
           class="declaration"
         >
           <StyleDeclaration
-            :prop="d.prop"
-            :value="d.value"
-            :auto-focus-prop="autoFocusOnNextRender"
-            @update:prop="updateDeclarationProp(d.path, arguments[0])"
-            @update:value="updateDeclarationValue(d.path, arguments[0])"
-            @remove="removeDeclaration(d.path)"
-            @input-start="onStartStyleInput"
-            @input-end="onEndStyleInput"
+            :prop="decl.prop"
+            :value="decl.value"
+            :auto-focus="shouldFocusFor(ruleIndex, declIndex)"
+            @update:prop="updateDeclarationProp(decl.path, arguments[0])"
+            @update:value="updateDeclarationValue(decl.path, arguments[0])"
+            @remove="removeDeclaration(decl.path)"
+            @input-start:prop="onStartStyleInput"
+            @input-start:value="onStartStyleInput"
+            @input-end:prop="onEndStyleInput(ruleIndex, declIndex, 'prop', arguments[0])"
+            @input-end:value="onEndStyleInput(ruleIndex, declIndex, 'value', arguments[0])"
           />
         </li>
       </ul>
@@ -60,16 +62,10 @@ export default Vue.extend({
 
   data() {
     return {
-      autoFocusOnNextRender: false,
+      autoFocusRule: undefined as
+        | { rule: number; declaration: number; type: 'prop' | 'value' }
+        | undefined,
       endingInput: false
-    }
-  },
-
-  watch: {
-    rules(): void {
-      this.$nextTick(() => {
-        this.autoFocusOnNextRender = false
-      })
     }
   },
 
@@ -97,13 +93,19 @@ export default Vue.extend({
       this.$emit('remove-declaration', { path })
     },
 
-    onClickRule(rule: STRuleForPrint): void {
+    onClickRule(rule: STRuleForPrint, index: number): void {
       if (this.endingInput) return
 
       this.$emit('add-declaration', {
         path: rule.path.concat(rule.children.length)
       })
-      this.autoFocusOnNextRender = true
+
+      // Focus on the new rule prop
+      this.autoFocusRule = {
+        rule: index,
+        declaration: rule.children.length,
+        type: 'prop'
+      }
     },
 
     /*
@@ -118,9 +120,21 @@ export default Vue.extend({
       clearTimeout(vm.endingInputTimer)
 
       this.endingInput = true
+      this.autoFocusRule = undefined
     },
 
-    onEndStyleInput(): void {
+    onEndStyleInput(
+      rule: number,
+      decl: number,
+      type: string,
+      meta: { reason: string }
+    ): void {
+      // If the user end the input by pressing enter or tab key,
+      // focus on the next form.
+      if (meta.reason === 'enter' || meta.reason === 'tab') {
+        this.focusOnNextRule(rule, decl, type)
+      }
+
       const delayToEndEdit = 200
       const vm: any = this
 
@@ -128,6 +142,38 @@ export default Vue.extend({
       vm.endingInputTimer = setTimeout(() => {
         this.endingInput = false
       }, delayToEndEdit)
+    },
+
+    focusOnNextRule(rule: number, decl: number, type: string): void {
+      if (type === 'prop') {
+        this.autoFocusRule = {
+          rule,
+          declaration: decl,
+          type: 'value'
+        }
+        return
+      }
+
+      if (type === 'value') {
+        this.autoFocusRule = {
+          rule,
+          declaration: decl + 1,
+          type: 'prop'
+        }
+
+        // If it is the last item, add a new rule
+        const targetRule = this.rules[rule]
+        if (decl + 1 === targetRule.children.length) {
+          this.$emit('add-declaration', {
+            path: targetRule.path.concat(targetRule.children.length)
+          })
+        }
+      }
+    },
+
+    shouldFocusFor(rule: number, decl: number): 'prop' | 'value' | null {
+      const f = this.autoFocusRule
+      return f && f.rule === rule && f.declaration === decl ? f.type : null
     }
   }
 })

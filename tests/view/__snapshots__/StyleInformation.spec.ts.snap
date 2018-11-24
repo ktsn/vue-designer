@@ -1,0 +1,22 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StyleInformation moving focus adds a new declaration and moves focus to it 1`] = `
+<div styledeclarationstub="true" prop="color" value="red"></div>
+<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<div styledeclarationstub="true" prop="property" value="value" autofocus="prop"></div>
+`;
+
+exports[`StyleInformation moving focus does not move focus if editing is ended by blur 1`] = `
+<div styledeclarationstub="true" prop="color" value="red"></div>
+<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+`;
+
+exports[`StyleInformation moving focus moves from prop to value 1`] = `
+<div styledeclarationstub="true" prop="color" value="red" autofocus="value"></div>
+<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+`;
+
+exports[`StyleInformation moving focus moves from value to next prop value 1`] = `
+<div styledeclarationstub="true" prop="color" value="red"></div>
+<div styledeclarationstub="true" prop="font-size" value="22px" autofocus="prop"></div>
+`;

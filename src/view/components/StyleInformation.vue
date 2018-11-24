@@ -62,7 +62,7 @@ export default Vue.extend({
 
   data() {
     return {
-      autoFocusRule: undefined as
+      autoFocusTarget: undefined as
         | { rule: number; declaration: number; type: 'prop' | 'value' }
         | undefined,
       endingInput: false
@@ -101,7 +101,7 @@ export default Vue.extend({
       })
 
       // Focus on the new declaration prop
-      this.autoFocusRule = {
+      this.autoFocusTarget = {
         rule: index,
         declaration: rule.children.length,
         type: 'prop'
@@ -120,7 +120,7 @@ export default Vue.extend({
       clearTimeout(vm.endingInputTimer)
 
       this.endingInput = true
-      this.autoFocusRule = undefined
+      this.autoFocusTarget = undefined
     },
 
     onEndStyleInput(
@@ -132,7 +132,7 @@ export default Vue.extend({
       // If the user end the input by pressing enter or tab key,
       // focus on the next form.
       if (meta.reason === 'enter' || meta.reason === 'tab') {
-        this.focusOnNextRule(rule, decl, type)
+        this.focusOnNextForm(rule, decl, type)
       }
 
       const delayToEndEdit = 200
@@ -144,9 +144,9 @@ export default Vue.extend({
       }, delayToEndEdit)
     },
 
-    focusOnNextRule(rule: number, decl: number, type: string): void {
+    focusOnNextForm(rule: number, decl: number, type: string): void {
       if (type === 'prop') {
-        this.autoFocusRule = {
+        this.autoFocusTarget = {
           rule,
           declaration: decl,
           type: 'value'
@@ -155,7 +155,7 @@ export default Vue.extend({
       }
 
       if (type === 'value') {
-        this.autoFocusRule = {
+        this.autoFocusTarget = {
           rule,
           declaration: decl + 1,
           type: 'prop'
@@ -172,7 +172,7 @@ export default Vue.extend({
     },
 
     shouldFocusFor(rule: number, decl: number): 'prop' | 'value' | null {
-      const f = this.autoFocusRule
+      const f = this.autoFocusTarget
       return f && f.rule === rule && f.declaration === decl ? f.type : null
     }
   }

@@ -59,7 +59,7 @@ describe('StyleValue basic', () => {
     expect(wrapper.emitted('input-start').length).toBe(1)
   })
 
-  it('should end editing when blured', () => {
+  it('should end editing when blured', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
         value: '20px'
@@ -68,8 +68,14 @@ describe('StyleValue basic', () => {
     wrapper.trigger('click')
     expect(wrapper.attributes()!.contenteditable).toBe('true')
 
+    await wrapper.vm.$nextTick()
+
     wrapper.trigger('blur')
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
+    expect(wrapper.emitted('input-end')[0]).toEqual([
+      '20px',
+      { reason: 'blur' }
+    ])
   })
 
   it('should end editing when pressed enter key', async () => {
@@ -87,7 +93,28 @@ describe('StyleValue basic', () => {
       key: 'Enter'
     })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
-    expect(wrapper.emitted('input-end')[0]).toEqual(['20px'])
+    expect(wrapper.emitted('input-end')[0]).toEqual([
+      '20px',
+      { reason: 'enter' }
+    ])
+  })
+
+  it('should end editing when pressed tab key', async () => {
+    const wrapper = mount(StyleValue, {
+      propsData: {
+        value: '20px'
+      }
+    })
+    wrapper.trigger('click')
+    expect(wrapper.attributes()!.contenteditable).toBe('true')
+
+    await wrapper.vm.$nextTick()
+
+    wrapper.trigger('keydown', {
+      key: 'Tab'
+    })
+    expect(wrapper.attributes()!.contenteditable).not.toBe('true')
+    expect(wrapper.emitted('input-end')[0]).toEqual(['20px', { reason: 'tab' }])
   })
 
   it('should update editing content when prop is updated', async () => {
@@ -115,6 +142,23 @@ describe('StyleValue basic', () => {
         value: 'red',
         autoFocus: true
       }
+    })
+
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.attributes()!.contenteditable).toBe('true')
+  })
+
+  it('should focus on input field by changing autoFocus prop', async () => {
+    const wrapper = mount(StyleValue, {
+      propsData: {
+        value: 'red',
+        autoFocus: true
+      }
+    })
+
+    wrapper.setProps({
+      autoFocus: true
     })
 
     await wrapper.vm.$nextTick()

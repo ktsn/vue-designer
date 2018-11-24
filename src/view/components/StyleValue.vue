@@ -12,7 +12,7 @@
     contenteditable="true"
     @input="input"
     @keydown="onKeyDown"
-    @blur="endEdit"
+    @blur="endEdit($event, 'blur')"
   />
 </template>
 
@@ -51,12 +51,15 @@ export default Vue.extend({
       if (input && newValue !== input.textContent) {
         input.textContent = newValue
       }
-    }
-  },
+    },
 
-  mounted() {
-    if (this.autoFocus) {
-      this.startEdit()
+    autoFocus: {
+      handler(value: boolean): void {
+        if (value) {
+          this.startEdit()
+        }
+      },
+      immediate: true
     }
   },
 
@@ -73,12 +76,12 @@ export default Vue.extend({
       })
     },
 
-    endEdit(event: Event): void {
+    endEdit(event: Event, reason: 'blur' | 'enter' | 'tab'): void {
       if (this.editing) {
         this.editing = false
 
         const el = event.currentTarget as HTMLDivElement
-        this.$emit('input-end', el.textContent)
+        this.$emit('input-end', el.textContent, { reason })
       }
     },
 
@@ -139,7 +142,11 @@ export default Vue.extend({
       switch (event.key) {
         case 'Enter':
           event.preventDefault()
-          this.endEdit(event)
+          this.endEdit(event, 'enter')
+          break
+        case 'Tab':
+          event.preventDefault()
+          this.endEdit(event, 'tab')
           break
         case 'Up':
         case 'ArrowUp':

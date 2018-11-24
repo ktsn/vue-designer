@@ -53,6 +53,14 @@ module.exports = {
 
   devServer: {
     port: 50000,
+
+    before: app => {
+      app.use((req, res, next) => {
+        res.header('Access-Control-Allow-Origin', '*')
+        next()
+      })
+    },
+
     proxy: {
       '/': {
         target: 'http://localhost:50001',

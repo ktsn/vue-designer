@@ -1,4 +1,4 @@
-import { shallowMount, Wrapper, WrapperArray } from '@vue/test-utils'
+import { shallowMount, Wrapper } from '@vue/test-utils'
 import StyleInformation from '@/view/components/StyleInformation.vue'
 import { STRuleForPrint } from '@/parser/style/types'
 

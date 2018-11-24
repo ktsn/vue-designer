@@ -100,7 +100,7 @@ export default Vue.extend({
         path: rule.path.concat(rule.children.length)
       })
 
-      // Focus on the new rule prop
+      // Focus on the new declaration prop
       this.autoFocusRule = {
         rule: index,
         declaration: rule.children.length,

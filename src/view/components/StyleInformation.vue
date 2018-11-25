@@ -6,7 +6,10 @@
       class="rule"
       @click="onClickRule(rule, ruleIndex)"
     >
-      <p class="selector-list">
+      <p
+        class="selector-list"
+        @click.stop="onClickSelectorList(rule, ruleIndex)"
+      >
         <span
           v-for="s in rule.selectors"
           :key="s"
@@ -14,14 +17,12 @@
         >{{ s }}</span>
       </p>
 
-      <ul
-        class="declaration-list"
-        @click.stop
-      >
+      <ul class="declaration-list">
         <li
           v-for="(decl, declIndex) in rule.children"
           :key="decl.path.join('.')"
           class="declaration"
+          @click.stop="onClickDeclaration(decl, ruleIndex, declIndex)"
         >
           <StyleDeclaration
             :prop="decl.prop"
@@ -44,7 +45,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import StyleDeclaration from './StyleDeclaration.vue'
-import { STRuleForPrint } from '@/parser/style/types'
+import { STRuleForPrint, STDeclarationForPrint } from '@/parser/style/types'
 
 export default Vue.extend({
   name: 'StyleInformation',
@@ -89,6 +90,26 @@ export default Vue.extend({
       })
     },
 
+    addDeclaration(
+      rulePath: number[],
+      ruleIndex: number,
+      declIndex: number
+    ): void {
+      this.$emit('add-declaration', {
+        path: rulePath.concat(declIndex)
+      })
+
+      // Focus on the new declaration prop after it is added
+      const unwatch = this.$watch('rules', () => {
+        this.autoFocusTarget = {
+          rule: ruleIndex,
+          declaration: declIndex,
+          type: 'prop'
+        }
+        unwatch()
+      })
+    },
+
     removeDeclaration(path: number[]): void {
       this.$emit('remove-declaration', { path })
     },
@@ -96,16 +117,24 @@ export default Vue.extend({
     onClickRule(rule: STRuleForPrint, index: number): void {
       if (this.endingInput) return
 
-      this.$emit('add-declaration', {
-        path: rule.path.concat(rule.children.length)
-      })
+      this.addDeclaration(rule.path, index, rule.children.length)
+    },
 
-      // Focus on the new declaration prop
-      this.autoFocusTarget = {
-        rule: index,
-        declaration: rule.children.length,
-        type: 'prop'
-      }
+    onClickSelectorList(rule: STRuleForPrint, index: number): void {
+      if (this.endingInput) return
+
+      this.addDeclaration(rule.path, index, 0)
+    },
+
+    onClickDeclaration(
+      decl: STDeclarationForPrint,
+      ruleIndex: number,
+      declIndex: number
+    ): void {
+      if (this.endingInput) return
+
+      const rulePath = decl.path.slice(0, -1)
+      this.addDeclaration(rulePath, ruleIndex, declIndex + 1)
     },
 
     /*

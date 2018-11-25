@@ -1,61 +1,61 @@
 import { shallowMount, Wrapper } from '@vue/test-utils'
 import StyleInformation from '@/view/components/StyleInformation.vue'
-import { STRuleForPrint } from '@/parser/style/types'
+import { STRuleForPrint, STDeclarationForPrint } from '@/parser/style/types'
 
 describe('StyleInformation', () => {
-  describe('moving focus', () => {
-    const StyleDeclaration = {
-      name: 'StyleDeclaration',
-      props: ['prop', 'value', 'autoFocus'],
-      render(this: any, h: Function) {
-        return h('div', {
-          attrs: {
-            styleDeclarationStub: true,
-            prop: this.prop,
-            value: this.value,
-            autoFocus: this.autoFocus
-          }
-        })
-      }
-    }
-
-    const rules: STRuleForPrint[] = [
-      {
-        path: [0],
-        selectors: ['a'],
-        children: [
-          {
-            path: [0, 0],
-            prop: 'color',
-            value: 'red'
-          },
-          {
-            path: [0, 1],
-            prop: 'font-size',
-            value: '22px'
-          }
-        ]
-      }
-    ]
-
-    const create = () => {
-      return shallowMount(StyleInformation, {
-        propsData: {
-          rules
-        },
-        stubs: {
-          StyleDeclaration
+  const StyleDeclaration = {
+    name: 'StyleDeclaration',
+    props: ['prop', 'value', 'autoFocus'],
+    render(this: any, h: Function) {
+      return h('div', {
+        attrs: {
+          styleDeclarationStub: true,
+          prop: this.prop,
+          value: this.value,
+          autoFocus: this.autoFocus
         }
       })
     }
+  }
 
-    const toDeclarationHtml = (wrapper: Wrapper<any>) => {
-      return wrapper
-        .findAll(StyleDeclaration)
-        .wrappers.map(w => w.html())
-        .join('\n')
+  const rules: STRuleForPrint[] = [
+    {
+      path: [0],
+      selectors: ['a'],
+      children: [
+        {
+          path: [0, 0],
+          prop: 'color',
+          value: 'red'
+        },
+        {
+          path: [0, 1],
+          prop: 'font-size',
+          value: '22px'
+        }
+      ]
     }
+  ]
 
+  const create = () => {
+    return shallowMount(StyleInformation, {
+      propsData: {
+        rules
+      },
+      stubs: {
+        StyleDeclaration
+      }
+    })
+  }
+
+  const toDeclarationHtml = (wrapper: Wrapper<any>) => {
+    return wrapper
+      .findAll('[styledeclarationstub]')
+      .wrappers.map(w => w.html())
+      .join('\n')
+  }
+
+  describe('moving focus', () => {
     it('does not move focus if editing is ended by blur', () => {
       const wrapper = create()
       wrapper
@@ -112,6 +112,78 @@ describe('StyleInformation', () => {
           }
         ]
       })
+
+      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+    })
+  })
+
+  describe('add a new declaration', () => {
+    const newDecl = {
+      path: [0, 99],
+      prop: 'font-weight',
+      value: 'bold'
+    }
+
+    const addTo = (decl: STDeclarationForPrint, index: number) => {
+      return [
+        {
+          ...rules[0],
+          children: [
+            ...rules[0].children.slice(0, index),
+            decl,
+            ...rules[0].children.slice(index)
+          ]
+        }
+      ]
+    }
+
+    it('adds to the first position', async () => {
+      const wrapper = create()
+      wrapper.find('.selector-list').trigger('click')
+
+      expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
+        path: [0, 0]
+      })
+
+      wrapper.setProps({
+        rules: addTo(newDecl, 0)
+      })
+
+      await wrapper.vm.$nextTick()
+
+      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+    })
+
+    it('adds to the last position', async () => {
+      const wrapper = create()
+      wrapper.find('.rule').trigger('click')
+
+      expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
+        path: [0, 2]
+      })
+
+      wrapper.setProps({
+        rules: addTo(newDecl, 2)
+      })
+
+      await wrapper.vm.$nextTick()
+
+      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+    })
+
+    it('inserts to the clicked position', async () => {
+      const wrapper = create()
+      wrapper.find('.declaration').trigger('click')
+
+      expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
+        path: [0, 1]
+      })
+
+      wrapper.setProps({
+        rules: addTo(newDecl, 1)
+      })
+
+      await wrapper.vm.$nextTick()
 
       expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
     })

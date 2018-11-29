@@ -1,5 +1,5 @@
 import { parseComponent } from 'vue-template-compiler'
-import { parse as _parse } from 'babylon'
+import { parse as _parse } from '@babel/parser'
 import { insertComponentScript } from '@/parser/script/modify'
 import { modify } from '@/parser/modifier'
 

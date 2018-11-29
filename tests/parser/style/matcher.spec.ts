@@ -167,7 +167,7 @@ describe('Style matcher', () => {
     it('should match with id and attribute', () => {
       // prettier-ignore
       const template = createTemplate([
-        h('div', [a('id', 'foo'), a('value', null)], [])
+        h('div', [a('id', 'foo'), a('value')], [])
       ])
 
       const res = matcher(template, [0])
@@ -192,8 +192,8 @@ describe('Style matcher', () => {
       // prettier-ignore
       const template = createTemplate([
         h('div', [
-          a('title', null),
-          a('value', null)
+          a('title'),
+          a('value')
         ], [])
       ])
 

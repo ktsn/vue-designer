@@ -1,4 +1,4 @@
-import { parse } from 'babylon'
+import { parse } from '@babel/parser'
 import { extractData } from '@/parser/script/manipulate'
 import { Data } from '@/parser/script/types'
 

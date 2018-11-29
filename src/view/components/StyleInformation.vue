@@ -156,11 +156,14 @@ export default Vue.extend({
       rule: number,
       decl: number,
       type: string,
-      meta: { reason: string }
+      meta: { reason: string; shiftKey: boolean }
     ): void {
       // If the user end the input by pressing enter or tab key,
       // focus on the next form.
-      if (meta.reason === 'enter' || meta.reason === 'tab') {
+      // If it is shift+tab, focus on the prev form.
+      if (meta.reason === 'tab' && meta.shiftKey) {
+        this.focusOnPrevForm(rule, decl, type)
+      } else if (meta.reason === 'enter' || meta.reason === 'tab') {
         this.focusOnNextForm(rule, decl, type)
       }
 
@@ -197,6 +200,32 @@ export default Vue.extend({
             path: targetRule.path.concat(targetRule.children.length)
           })
         }
+      }
+    },
+
+    focusOnPrevForm(rule: number, decl: number, type: string): void {
+      if (type === 'value') {
+        this.autoFocusTarget = {
+          rule,
+          declaration: decl,
+          type: 'prop'
+        }
+        return
+      }
+
+      if (type === 'prop') {
+        const nextDecl = decl - 1
+        if (nextDecl >= 0) {
+          this.autoFocusTarget = {
+            rule,
+            declaration: nextDecl,
+            type: 'value'
+          }
+          return
+        }
+
+        // Focus across another rule's declaration is not supported yet
+        this.autoFocusTarget = undefined
       }
     },
 

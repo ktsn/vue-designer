@@ -81,7 +81,12 @@ export default Vue.extend({
         this.editing = false
 
         const el = event.currentTarget as HTMLDivElement
-        this.$emit('input-end', el.textContent, { reason })
+        const anyEvent: any = event
+
+        this.$emit('input-end', el.textContent, {
+          reason,
+          shiftKey: !!anyEvent.shiftKey
+        })
       }
     },
 

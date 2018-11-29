@@ -74,7 +74,7 @@ describe('StyleValue basic', () => {
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
     expect(wrapper.emitted('input-end')[0]).toEqual([
       '20px',
-      { reason: 'blur' }
+      { reason: 'blur', shiftKey: false }
     ])
   })
 
@@ -95,7 +95,7 @@ describe('StyleValue basic', () => {
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
     expect(wrapper.emitted('input-end')[0]).toEqual([
       '20px',
-      { reason: 'enter' }
+      { reason: 'enter', shiftKey: false }
     ])
   })
 
@@ -114,7 +114,32 @@ describe('StyleValue basic', () => {
       key: 'Tab'
     })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
-    expect(wrapper.emitted('input-end')[0]).toEqual(['20px', { reason: 'tab' }])
+    expect(wrapper.emitted('input-end')[0]).toEqual([
+      '20px',
+      { reason: 'tab', shiftKey: false }
+    ])
+  })
+
+  it('should include shift key state when end editing', async () => {
+    const wrapper = mount(StyleValue, {
+      propsData: {
+        value: '20px'
+      }
+    })
+    wrapper.trigger('click')
+    expect(wrapper.attributes()!.contenteditable).toBe('true')
+
+    await wrapper.vm.$nextTick()
+
+    wrapper.trigger('keydown', {
+      key: 'Tab',
+      shiftKey: true
+    })
+    expect(wrapper.attributes()!.contenteditable).not.toBe('true')
+    expect(wrapper.emitted('input-end')[0]).toEqual([
+      '20px',
+      { reason: 'tab', shiftKey: true }
+    ])
   })
 
   it('should update editing content when prop is updated', async () => {

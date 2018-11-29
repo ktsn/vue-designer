@@ -76,12 +76,42 @@ describe('StyleInformation', () => {
       expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
     })
 
+    it('moves from value to prop', () => {
+      const wrapper = create()
+      wrapper
+        .findAll(StyleDeclaration)
+        .at(0)
+        .vm.$emit('input-end:value', { reason: 'tab', shiftKey: true })
+
+      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+    })
+
     it('moves from value to next prop value', () => {
       const wrapper = create()
       wrapper
         .findAll(StyleDeclaration)
         .at(0)
         .vm.$emit('input-end:value', { reason: 'enter' })
+
+      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+    })
+
+    it('moves from prop to prev declaration value', () => {
+      const wrapper = create()
+      wrapper
+        .findAll(StyleDeclaration)
+        .at(1)
+        .vm.$emit('input-end:prop', { reason: 'tab', shiftKey: true })
+
+      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+    })
+
+    it('removes focus if it cannot go back', () => {
+      const wrapper = create()
+      wrapper
+        .findAll(StyleDeclaration)
+        .at(0)
+        .vm.$emit('input-end:prop', { reason: 'tab', shiftKey: true })
 
       expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
     })

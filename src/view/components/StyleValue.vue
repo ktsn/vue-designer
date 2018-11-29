@@ -4,7 +4,9 @@
     class="style-value"
     @click="startEdit"
     @focus="startEdit"
-  >{{ value }}</button>
+  >
+    {{ value }}
+  </button>
   <div
     v-else
     ref="input"

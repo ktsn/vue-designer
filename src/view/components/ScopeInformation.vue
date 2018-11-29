@@ -1,7 +1,9 @@
 <template>
   <div class="information">
     <section class="information-group">
-      <h2 class="information-title">Props</h2>
+      <h2 class="information-title">
+        Props
+      </h2>
       <ul
         v-if="hasProps"
         class="information-list"
@@ -23,7 +25,9 @@
     </section>
 
     <section class="information-group">
-      <h2 class="information-title">Data</h2>
+      <h2 class="information-title">
+        Data
+      </h2>
       <ul
         v-if="hasData"
         class="information-list"

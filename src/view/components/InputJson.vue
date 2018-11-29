@@ -5,7 +5,9 @@
       <span
         v-if="!renamable || !editing"
         class="input-json-label"
-      >{{ field.name }}</span>
+      >
+        {{ field.name }}
+      </span>
       <InputComposition
         v-else
         v-model="editingName"
@@ -165,6 +167,8 @@ export default Vue.extend({
           }
         })
       }
+
+      return undefined
     },
 
     valueType(): ValueType {

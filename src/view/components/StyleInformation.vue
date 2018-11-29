@@ -14,7 +14,9 @@
           v-for="s in rule.selectors"
           :key="s"
           class="selector"
-        >{{ s }}</span>
+        >
+          {{ s }}
+        </span>
       </p>
 
       <ul class="declaration-list">

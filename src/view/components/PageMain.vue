@@ -43,7 +43,9 @@
           v-if="selectedPath.length > 0"
           class="style-information-wrapper information-pane-item"
         >
-          <p class="style-information-title">Node Styles</p>
+          <p class="style-information-title">
+            Node Styles
+          </p>
           <div class="style-information-list">
             <StyleInformation
               v-if="matchedRules.length > 0"
@@ -55,7 +57,9 @@
             <p
               v-else
               class="not-found"
-            >Not found</p>
+            >
+              Not found
+            </p>
           </div>
         </div>
 

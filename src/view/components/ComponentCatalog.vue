@@ -11,7 +11,9 @@
       <div class="catalog-preview">
         <ComponentCatalogPreview :component="c" />
       </div>
-      <p class="catalog-component-name">{{ c.displayName }}</p>
+      <p class="catalog-component-name">
+        {{ c.displayName }}
+      </p>
     </li>
   </ul>
 </template>

@@ -8,7 +8,9 @@
         @focus="selectAll($event.target)"
         @keydown.enter="applySize"
       >
-      <span class="toolbar-input-char">x</span>
+      <span class="toolbar-input-char">
+        x
+      </span>
       <input
         v-model="dirtyHeight"
         type="text"
@@ -26,7 +28,9 @@
         @focus="selectAll($event.target)"
         @keydown.enter="applyScale"
       >
-      <span class="toolbar-input-char">%</span>
+      <span class="toolbar-input-char">
+        %
+      </span>
     </div>
   </div>
 </template>

@@ -62,7 +62,10 @@ export default Vue.extend({
       this.$emit('update:value', value)
     },
 
-    finishInputProp(rawProp: string, meta: { reason: string }): void {
+    finishInputProp(
+      rawProp: string,
+      meta: { reason: string; shiftKey: boolean }
+    ): void {
       this.$emit('input-end:prop', meta)
 
       const prop = rawProp.trim()
@@ -73,7 +76,10 @@ export default Vue.extend({
       }
     },
 
-    finishInputValue(rawValue: string, meta: { reason: string }): void {
+    finishInputValue(
+      rawValue: string,
+      meta: { reason: string; shiftKey: boolean }
+    ): void {
       this.$emit('input-end:value', meta)
 
       const value = rawValue.trim()

@@ -2,10 +2,7 @@
   <div class="input-json">
     <div class="input-json-line">
       <!-- Object property key -->
-      <span
-        v-if="!renamable || !editing"
-        class="input-json-label"
-      >
+      <span v-if="!renamable || !editing" class="input-json-label">
         {{ field.name }}
       </span>
       <InputComposition
@@ -17,11 +14,7 @@
       />
 
       <!-- Object value -->
-      <span
-        v-if="!editing"
-        :class="valueType"
-        class="input-json-value"
-      >
+      <span v-if="!editing" :class="valueType" class="input-json-value">
         {{ formattedValue }}
       </span>
       <InputComposition
@@ -41,10 +34,7 @@
           aria-label="Edit"
           @click="startEditing"
         >
-          <BaseIcon
-            class="input-json-icon"
-            icon="create"
-          />
+          <BaseIcon class="input-json-icon" icon="create" />
         </button>
 
         <template v-else>
@@ -54,10 +44,7 @@
             aria-label="Cancel"
             @click="cancel"
           >
-            <BaseIcon
-              class="input-json-icon"
-              icon="clear"
-            />
+            <BaseIcon class="input-json-icon" icon="clear" />
           </button>
 
           <button
@@ -66,24 +53,15 @@
             aria-label="Apply"
             @click="apply"
           >
-            <BaseIcon
-              class="input-json-icon"
-              icon="done"
-            />
+            <BaseIcon class="input-json-icon" icon="done" />
           </button>
         </template>
       </div>
     </div>
 
     <!-- Children -->
-    <ul
-      v-if="children"
-      class="input-json-children"
-    >
-      <li
-        v-for="child in children"
-        :key="child.name"
-      >
+    <ul v-if="children" class="input-json-children">
+      <li v-for="child in children" :key="child.name">
         <InputJson
           :renamable="valueType === 'object'"
           :field="child"

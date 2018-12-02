@@ -1,10 +1,7 @@
 <!-- See also: view/load-icons.ts -->
 <template>
-  <svg class="base-icon">
-    <use :href="'#ic_' + icon + '_24px'" />
-  </svg>
+  <svg class="base-icon"><use :href="'#ic_' + icon + '_24px'" /></svg>
 </template>
-
 
 <script lang="ts">
 import Vue from 'vue'

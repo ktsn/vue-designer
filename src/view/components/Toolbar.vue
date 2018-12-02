@@ -7,17 +7,15 @@
         class="toolbar-input viewport-size-input"
         @focus="selectAll($event.target)"
         @keydown.enter="applySize"
-      >
-      <span class="toolbar-input-char">
-        x
-      </span>
+      />
+      <span class="toolbar-input-char">x</span>
       <input
         v-model="dirtyHeight"
         type="text"
         class="toolbar-input viewport-size-input"
         @focus="selectAll($event.target)"
         @keydown.enter="applySize"
-      >
+      />
     </div>
 
     <div class="toolbar-item">
@@ -27,10 +25,8 @@
         class="toolbar-input viewport-scale-input"
         @focus="selectAll($event.target)"
         @keydown.enter="applyScale"
-      >
-      <span class="toolbar-input-char">
-        %
-      </span>
+      />
+      <span class="toolbar-input-char">%</span>
     </div>
   </div>
 </template>
@@ -115,7 +111,6 @@ export default Vue.extend({
   }
 })
 </script>
-
 
 <style scoped>
 .toolbar {

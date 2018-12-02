@@ -1,12 +1,6 @@
 <template>
-  <div
-    class="renderer"
-    @click="$emit('select')"
-  >
-    <div
-      :style="scrollContentStyle"
-      class="renderer-scroll-content"
-    >
+  <div class="renderer" @click="$emit('select')">
+    <div :style="scrollContentStyle" class="renderer-scroll-content">
       <Viewport
         ref="viewport"
         :width="width"

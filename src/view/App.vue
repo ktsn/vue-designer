@@ -1,7 +1,5 @@
 <template>
-  <div id="app">
-    <PageMain />
-  </div>
+  <div id="app"><PageMain /></div>
 </template>
 
 <script lang="ts">

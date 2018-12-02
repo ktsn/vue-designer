@@ -1,3 +1,21 @@
+# [0.7.0](https://github.com/ktsn/vue-designer/compare/v0.6.3...v0.7.0) (2018-12-02)
+
+
+### Features
+
+* allow to update numeric style value by pressing up / down key ([#70](https://github.com/ktsn/vue-designer/issues/70)) ([2f33c62](https://github.com/ktsn/vue-designer/commit/2f33c62))
+* focus next item when the user finished to edit style value ([#71](https://github.com/ktsn/vue-designer/issues/71)) ([9709305](https://github.com/ktsn/vue-designer/commit/9709305))
+* focus previous style form by pressing shift+tab ([#74](https://github.com/ktsn/vue-designer/issues/74)) ([8e6dca4](https://github.com/ktsn/vue-designer/commit/8e6dca4))
+* allow to insert a new declaration to arbitrary position ([#73](https://github.com/ktsn/vue-designer/issues/73)) ([27bf37d](https://github.com/ktsn/vue-designer/commit/27bf37d))
+
+
+### Performance Improvements
+
+* minimize edited content in a file ([#77](https://github.com/ktsn/vue-designer/issues/77)) ([1eb1e94](https://github.com/ktsn/vue-designer/commit/1eb1e94))
+* only send updated or removed file on that case ([#76](https://github.com/ktsn/vue-designer/issues/76)) ([1d5b376](https://github.com/ktsn/vue-designer/commit/1d5b376))
+
+
+
 <a name="0.6.3"></a>
 ## [0.6.3](https://github.com/ktsn/vue-designer/compare/v0.6.2...v0.6.3) (2018-10-28)
 

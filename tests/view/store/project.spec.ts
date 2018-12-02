@@ -259,9 +259,71 @@ describe('Store project actions', () => {
       } as any,
 
       styleMatcher: {
-        match: jest.fn()
+        match: jest.fn(),
+        register: jest.fn(),
+        unregister: jest.fn()
       } as any
     }
+  })
+
+  describe('setDocument', () => {
+    it('sets the document and setup scope and matched styles', () => {
+      const setDocument = jest.fn()
+      const refreshScope = jest.fn()
+      const actions = stub(ProjectActions, {
+        mutations: {
+          setDocument,
+          refreshScope
+        }
+      })
+      actions.matchSelectedNodeWithStyles = jest.fn()
+
+      actions.init(mock)
+
+      const mockFile: any = {
+        uri: 'test://test.vue',
+        styles: { style: true },
+        props: { props: true },
+        data: { data: true }
+      }
+      actions.setDocument(mockFile)
+
+      expect(mock.styleMatcher.register).toHaveBeenCalledWith(
+        mockFile.uri,
+        mockFile.styles
+      )
+      expect(setDocument).toHaveBeenCalledWith(mockFile)
+      expect(refreshScope).toHaveBeenCalledWith({
+        uri: mockFile.uri,
+        props: mockFile.props,
+        data: mockFile.data
+      })
+      expect(actions.matchSelectedNodeWithStyles).toHaveBeenCalled()
+    })
+  })
+
+  describe('removeDocument', () => {
+    it('removes the document and cleanup scope and matched styles', () => {
+      const removeDocument = jest.fn()
+      const cleanScope = jest.fn()
+      const actions = stub(ProjectActions, {
+        mutations: {
+          removeDocument,
+          cleanScope
+        }
+      })
+      actions.matchSelectedNodeWithStyles = jest.fn()
+
+      actions.init(mock)
+
+      const uri = 'test://test.vue'
+      actions.removeDocument(uri)
+
+      expect(mock.styleMatcher.unregister).toHaveBeenCalledWith(uri)
+      expect(removeDocument).toHaveBeenCalledWith(uri)
+      expect(cleanScope).toHaveBeenCalledWith(uri)
+      expect(actions.matchSelectedNodeWithStyles).toHaveBeenCalled()
+    })
   })
 
   describe('updateDeclaration', () => {

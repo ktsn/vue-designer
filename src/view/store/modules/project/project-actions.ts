@@ -32,25 +32,9 @@ export class ProjectActions extends Actions<
     client = payload.client
     styleMatcher = payload.styleMatcher
 
-    const initVueFiles = (vueFiles: Record<string, VueFilePayload>) => {
-      this.mutations.setDocuments(vueFiles)
-      styleMatcher.clear()
-      Object.keys(vueFiles).forEach(key => {
-        const file = vueFiles[key]
-        styleMatcher.register(file.uri, file.styles)
-
-        this.mutations.refreshScope({
-          uri: key,
-          props: file.props,
-          data: file.data
-        })
-      })
-      this.matchSelectedNodeWithStyles()
-    }
-
     client.observe({
       initProject: ({ vueFiles }) => {
-        initVueFiles(vueFiles)
+        this.setDocuments(vueFiles)
       },
 
       initSharedStyle: ({ style }) => {
@@ -62,23 +46,61 @@ export class ProjectActions extends Actions<
       },
 
       saveDocument: ({ vueFile }) => {
-        this.mutations.setDocument(vueFile)
+        this.setDocument(vueFile)
       },
 
       removeDocument: ({ uri }) => {
-        this.mutations.removeDocument(uri)
+        this.removeDocument(uri)
       }
     })
 
     client.onReady(() => {
       client.resolve('init').then(({ vueFiles, sharedStyle, activeUri }) => {
-        initVueFiles(vueFiles)
+        this.setDocuments(vueFiles)
         this.mutations.setSharedStyle(sharedStyle)
         if (activeUri) {
           this.mutations.changeActiveDocument(activeUri)
         }
       })
     })
+  }
+
+  setDocuments(files: Record<string, VueFilePayload>): void {
+    styleMatcher.clear()
+    this.mutations.setDocuments(files)
+
+    Object.keys(files).forEach(key => {
+      const file = files[key]
+      styleMatcher.register(file.uri, file.styles)
+
+      this.mutations.refreshScope({
+        uri: key,
+        props: file.props,
+        data: file.data
+      })
+    })
+
+    this.matchSelectedNodeWithStyles()
+  }
+
+  setDocument(file: VueFilePayload): void {
+    styleMatcher.register(file.uri, file.styles)
+
+    this.mutations.setDocument(file)
+    this.mutations.refreshScope({
+      uri: file.uri,
+      props: file.props,
+      data: file.data
+    })
+    this.matchSelectedNodeWithStyles()
+  }
+
+  removeDocument(uri: string): void {
+    styleMatcher.unregister(uri)
+
+    this.mutations.removeDocument(uri)
+    this.mutations.cleanScope(uri)
+    this.matchSelectedNodeWithStyles()
   }
 
   select(node: TEElement | undefined): void {

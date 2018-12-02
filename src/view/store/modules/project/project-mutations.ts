@@ -123,6 +123,10 @@ export class ProjectMutations extends Mutations<ProjectState>() {
     update(scope.data, data)
   }
 
+  cleanScope(uri: string): void {
+    Vue.delete(this.state.documentScopes, uri)
+  }
+
   updatePropValue({ name, value }: { name: string; value: any }): void {
     const uri = this.state.currentUri
     if (!uri) return

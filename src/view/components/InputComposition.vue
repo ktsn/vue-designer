@@ -5,7 +5,7 @@
     v-on="listeners"
     @compositionstart="compositing = true"
     @compositionend="compositing = false"
-  >
+  />
 </template>
 
 <script lang="ts">

@@ -1,9 +1,5 @@
 <template>
-  <div
-    v-if="guide"
-    :style="wrapperStyle"
-    class="renderer-guide"
-  >
+  <div v-if="guide" :style="wrapperStyle" class="renderer-guide">
     <!-- <div class="renderer-guide-margin" :style="marginStyle" />
     <div class="renderer-guide-border" :style="borderStyle" />
     <div class="renderer-guide-padding" :style="paddingStyle" /> -->

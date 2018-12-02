@@ -9,14 +9,9 @@
     @resize="$emit('resize', arguments[0])"
   >
     <!-- Hack for avoiding template compile error of style elements -->
-    <div
-      is="style"
-      :text-content.prop="sharedStyle"
-    />
+    <div is="style" :text-content.prop="sharedStyle" />
 
-    <div class="viewport">
-      <slot />
-    </div>
+    <div class="viewport"><slot /></div>
 
     <!-- To detect mac trackpad's pinch, we need to listen wheel event with ctrl is pressed -->
     <GlobalEvents @wheel.ctrl.prevent="onZoom" />

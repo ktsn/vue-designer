@@ -3084,7 +3084,7 @@ escodegen@^1.9.1:
   optionalDependencies:
     source-map "~0.6.1"
 
-eslint-config-ktsn-typescript@^1.1.1:
+eslint-config-ktsn-typescript@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/eslint-config-ktsn-typescript/-/eslint-config-ktsn-typescript-1.1.4.tgz#4a405471a94f2ef2da3644e9f0ea9bb387050334"
   integrity sha512-Y74SuCfLq8jeSgR2vsHQJ6boumSV3ZkJRKl5SlarR1p5o3RJ7pJG1y7BCU6TmT3oCvQzjFZEcoytdo6weC83Dg==
@@ -3094,11 +3094,12 @@ eslint-config-ktsn-typescript@^1.1.1:
     typescript-eslint-parser "^18.0.0"
 
 eslint-config-ktsn-vue@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/eslint-config-ktsn-vue/-/eslint-config-ktsn-vue-1.0.1.tgz#bb82fec86da5307c115ca04be3db257d9b7b7534"
-  integrity sha512-2z49gopKzrzGnk0dOwD96TshxgRnEsepd/aCUD68+ktw70Fas7fow/+8U2lWHWb6k34tFMqTUYgFjxByuiribg==
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-ktsn-vue/-/eslint-config-ktsn-vue-1.1.0.tgz#faff7ec59ce3beef52113b5a328b122cf57795bc"
+  integrity sha512-qy1fH2s9+OjYkPWHOQcmG6EokvHG0fzEx9lDNd/DJp3dOD6aEb+22YK1cwEOuJS4rd7A80oHQv5kKgPmGWKvbg==
   dependencies:
-    eslint-config-ktsn-typescript "^1.1.1"
+    eslint-config-ktsn-typescript "^1.1.4"
+    eslint-config-prettier "^3.3.0"
     eslint-plugin-vue "^5.0.0-beta.1"
 
 eslint-config-ktsn@^2.0.1:
@@ -3107,6 +3108,13 @@ eslint-config-ktsn@^2.0.1:
   integrity sha512-D6J4qw2fn2gaQE2cF6qhWkV4VhEJKhsr61apfnUM+GR+MfOE4zHdNDJI12zIy2bxzYpolf9TI3eX0HK3lZUpgw==
   dependencies:
     eslint-plugin-prettier "^2.6.2"
+
+eslint-config-prettier@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-3.3.0.tgz#41afc8d3b852e757f06274ed6c44ca16f939a57d"
+  integrity sha512-Bc3bh5bAcKNvs3HOpSi6EfGA2IIp7EzWcg2tS4vP7stnXu/J1opihHDM7jI9JCIckyIDTgZLSWn7J3HY0j2JfA==
+  dependencies:
+    get-stdin "^6.0.0"
 
 eslint-loader@^2.1.0, eslint-loader@^2.1.1:
   version "2.1.1"
@@ -4027,6 +4035,11 @@ get-stdin@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/get-stdin/-/get-stdin-4.0.1.tgz#b968c6b0a04384324902e8bf1a5df32579a450fe"
   integrity sha1-uWjGsKBDhDJJAui/Gl3zJXmkUP4=
+
+get-stdin@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/get-stdin/-/get-stdin-6.0.0.tgz#9e09bf712b360ab9225e812048f71fde9c89657b"
+  integrity sha512-jp4tHawyV7+fkkSKyvjuLZswblUtz+SQKzSWnBbii16BuZksJlU1wuBYXY75r+duh/llF1ur6oNwi+2ZzjKZ7g==
 
 get-stream@^3.0.0:
   version "3.0.0"
@@ -7758,10 +7771,10 @@ prettier@1.13.7:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.13.7.tgz#850f3b8af784a49a6ea2d2eaa7ed1428a34b7281"
   integrity sha512-KIU72UmYPGk4MujZGYMFwinB7lOf2LsDNGSOC8ufevsrPLISrZbNJlWstRi3m0AMuszbH+EFSQ/r6w56RSPK6w==
 
-prettier@1.14.2:
-  version "1.14.2"
-  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.14.2.tgz#0ac1c6e1a90baa22a62925f41963c841983282f9"
-  integrity sha512-McHPg0n1pIke+A/4VcaS2en+pTNjy4xF+Uuq86u/5dyDO59/TtFZtQ708QIRkEZ3qwKz3GVkVa6mpxK/CpB8Rg==
+prettier@^1.15.3:
+  version "1.15.3"
+  resolved "https://registry.yarnpkg.com/prettier/-/prettier-1.15.3.tgz#1feaac5bdd181237b54dbe65d874e02a1472786a"
+  integrity sha512-gAU9AGAPMaKb3NNSUUuhhFAS7SCO4ALTN4nRIn6PJ075Qd28Yn2Ig2ahEJWdJwJmlEBTUfC7mMUSFy8MwsOCfg==
 
 pretty-error@^2.0.2:
   version "2.1.1"

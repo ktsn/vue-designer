@@ -10,11 +10,7 @@
         class="selector-list"
         @click.stop="onClickSelectorList(rule, ruleIndex)"
       >
-        <span
-          v-for="s in rule.selectors"
-          :key="s"
-          class="selector"
-        >
+        <span v-for="s in rule.selectors" :key="s" class="selector">
           {{ s }}
         </span>
       </p>
@@ -35,8 +31,12 @@
             @remove="removeDeclaration(decl.path)"
             @input-start:prop="onStartStyleInput"
             @input-start:value="onStartStyleInput"
-            @input-end:prop="onEndStyleInput(ruleIndex, declIndex, 'prop', arguments[0])"
-            @input-end:value="onEndStyleInput(ruleIndex, declIndex, 'value', arguments[0])"
+            @input-end:prop="
+              onEndStyleInput(ruleIndex, declIndex, 'prop', arguments[0])
+            "
+            @input-end:value="
+              onEndStyleInput(ruleIndex, declIndex, 'value', arguments[0])
+            "
           />
         </li>
       </ul>

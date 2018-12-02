@@ -1,13 +1,8 @@
 <template>
   <div class="information">
     <section class="information-group">
-      <h2 class="information-title">
-        Props
-      </h2>
-      <ul
-        v-if="hasProps"
-        class="information-list"
-      >
+      <h2 class="information-title">Props</h2>
+      <ul v-if="hasProps" class="information-list">
         <li
           v-for="(prop, name) in scope.props"
           :key="name"
@@ -19,33 +14,21 @@
           />
         </li>
       </ul>
-      <div v-else>
-        <slot name="not-found-prop" />
-      </div>
+      <div v-else><slot name="not-found-prop" /></div>
     </section>
 
     <section class="information-group">
-      <h2 class="information-title">
-        Data
-      </h2>
-      <ul
-        v-if="hasData"
-        class="information-list"
-      >
+      <h2 class="information-title">Data</h2>
+      <ul v-if="hasData" class="information-list">
         <li
           v-for="(d, name) in scope.data"
           :key="name"
           class="information-list-item"
         >
-          <InputJson
-            :field="{ name, value: d.value }"
-            @change="updateData"
-          />
+          <InputJson :field="{ name, value: d.value }" @change="updateData" />
         </li>
       </ul>
-      <div v-else>
-        <slot name="not-found-data" />
-      </div>
+      <div v-else><slot name="not-found-data" /></div>
     </section>
   </div>
 </template>

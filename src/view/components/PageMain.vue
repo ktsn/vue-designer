@@ -34,18 +34,14 @@
       :class="{ open: openPane }"
       class="vd-reset information-pane"
     >
-      <p class="information-pane-title">
-        {{ documentName }}
-      </p>
+      <p class="information-pane-title">{{ documentName }}</p>
 
       <div class="information-pane-scroller">
         <div
           v-if="selectedPath.length > 0"
           class="style-information-wrapper information-pane-item"
         >
-          <p class="style-information-title">
-            Node Styles
-          </p>
+          <p class="style-information-title">Node Styles</p>
           <div class="style-information-list">
             <StyleInformation
               v-if="matchedRules.length > 0"
@@ -54,12 +50,7 @@
               @remove-declaration="removeDeclaration"
               @update-declaration="updateDeclaration"
             />
-            <p
-              v-else
-              class="not-found"
-            >
-              Not found
-            </p>
+            <p v-else class="not-found">Not found</p>
           </div>
         </div>
 
@@ -69,18 +60,8 @@
             @update-prop="updatePropValue"
             @update-data="updateDataValue"
           >
-            <p
-              slot="not-found-prop"
-              class="not-found"
-            >
-              Not found
-            </p>
-            <p
-              slot="not-found-data"
-              class="not-found"
-            >
-              Not found
-            </p>
+            <p slot="not-found-prop" class="not-found">Not found</p>
+            <p slot="not-found-data" class="not-found">Not found</p>
           </ScopeInformation>
         </div>
 

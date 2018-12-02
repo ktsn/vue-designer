@@ -4,11 +4,13 @@ import {
   insertBefore,
   insertAfter,
   remove,
-  replace
+  replace,
+  insertAt,
+  reduce
 } from '@/parser/modifier'
 import { transformTemplate } from '@/parser/template/transform'
 
-describe('Modifier', () => {
+describe('modify', () => {
   it('should insert string before specified range', () => {
     const code = 'const foo = "World";'
     const actual = modify(code, [
@@ -99,5 +101,31 @@ describe('Modifier', () => {
     ])
     const expected = 'let ;'
     expect(actual).toBe(expected)
+  })
+})
+
+describe('reduce', () => {
+  it('flattens and sorts the modifiers', () => {
+    const modifiers = [
+      insertAt(9, 'test'),
+      remove({ range: [0, 4] }),
+      replace({ range: [5, 10] }, 'foo')
+    ]
+
+    const r = reduce(
+      modifiers,
+      (acc, m) => {
+        return {
+          pos: m.pos,
+          result: acc.result && acc.pos <= m.pos
+        }
+      },
+      {
+        pos: 0,
+        result: true
+      }
+    )
+
+    expect(r.result).toBe(true)
   })
 })

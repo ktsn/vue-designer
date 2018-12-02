@@ -1,12 +1,18 @@
-# Vue Designer
+<p>
+  <h1 align="center">Vue Designer</h1>
+</p>
 
 Vue component design tool.
 
-## Usage
+> This extension is still work in progress. If you have some feedbacks for this extension, it would be really helpful!
 
-Open the command pallete and select `Open Vue Designer`. Then you can see a preview pane of currently opened single file component (`.vue`).
+![demo](https://user-images.githubusercontent.com/5158436/49339360-c26e8780-f645-11e8-8115-3784eff63814.gif)
 
-This extension is still work in progress. If you have some feedbacks for this extension, it would be really helpful!
+## Quick Start
+
+- Download [VSCode Extension](https://marketplace.visualstudio.com/items?itemName=ktsn.vue-designer)
+
+- Open the command pallete and select `Open Vue Designer`. Then you can see a preview pane of currently opened single file component (`.vue`).
 
 ## Settings
 

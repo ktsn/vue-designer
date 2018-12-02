@@ -15,8 +15,15 @@ import {
 } from '../parser/style/modify'
 
 export interface VueFileRepositoryFs {
+  /**
+   * Read a file content as string.
+   */
   readFile(uri: string): Promise<string>
-  writeFile(uri: string, code: string): Promise<void>
+
+  /**
+   * Modify a file with specified modifiers.
+   */
+  modifyFile(uri: string, modifiers: Modifiers): Promise<void>
 }
 
 export class VueFileRepository extends EventEmitter {
@@ -74,7 +81,7 @@ export class VueFileRepository extends EventEmitter {
       ? existingComponent.name
       : component.name
 
-    const modifier: Modifiers = [
+    const modifiers: Modifiers = [
       insertToTemplate(
         target.template,
         path,
@@ -83,7 +90,7 @@ export class VueFileRepository extends EventEmitter {
     ]
 
     if (!existingComponent) {
-      modifier.push(
+      modifiers.push(
         insertComponentScript(
           target.script,
           target.code,
@@ -93,8 +100,7 @@ export class VueFileRepository extends EventEmitter {
       )
     }
 
-    const updated = modify(target.code, modifier)
-    this.save(uri, updated)
+    this.modify(uri, target.code, modifiers)
   }
 
   addStyleDeclaration(
@@ -108,9 +114,7 @@ export class VueFileRepository extends EventEmitter {
     }
 
     const { code, styles } = file
-    const added = modify(code, [insertDeclaration(styles, declaration, path)])
-
-    this.save(uri, added)
+    this.modify(uri, code, [insertDeclaration(styles, declaration, path)])
   }
 
   removeStyleDeclaration(uri: string, path: number[]): void {
@@ -120,9 +124,7 @@ export class VueFileRepository extends EventEmitter {
     }
 
     const { code, styles } = file
-    const removed = modify(code, [removeDeclaration(styles, path)])
-
-    this.save(uri, removed)
+    this.modify(uri, code, [removeDeclaration(styles, path)])
   }
 
   updateStyleDeclaration(
@@ -135,9 +137,7 @@ export class VueFileRepository extends EventEmitter {
     }
 
     const { code, styles } = file
-    const updated = modify(code, [updateDeclaration(styles, declaration)])
-
-    this.save(uri, updated)
+    this.modify(uri, code, [updateDeclaration(styles, declaration)])
   }
 
   on(event: 'update', fn: (vueFile: VueFile) => void): this {
@@ -152,14 +152,14 @@ export class VueFileRepository extends EventEmitter {
     this.files.set(uri, parseVueFile(code, uri))
   }
 
-  private save(uri: string, code: string): void {
-    this.set(uri, code)
+  private modify(uri: string, prevCode: string, modifiers: Modifiers): void {
+    this.set(uri, modify(prevCode, modifiers))
 
     const vueFile = this.get(uri)!
     assert(vueFile, `VueFile object '${uri}' not found after saving it`)
     this.emit('update', vueFile)
 
     // We don't wait until the file is saved
-    this.fs.writeFile(uri, code)
+    this.fs.modifyFile(uri, modifiers)
   }
 }

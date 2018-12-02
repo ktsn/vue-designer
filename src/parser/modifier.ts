@@ -58,6 +58,15 @@ export function modify(code: string, modfiers: Modifiers): string {
   return loop('', 0, ms[0], ms.slice(1))
 }
 
+export function reduce<T>(
+  modifiers: Modifiers,
+  fn: (acc: T, modifier: Modifier) => T,
+  initial: T
+): T {
+  const ms = flatten(modifiers).sort(modifierComperator)
+  return ms.reduce(fn, initial)
+}
+
 function modifierComperator(a: Modifier, b: Modifier): number {
   if (a.pos < b.pos) {
     return -1

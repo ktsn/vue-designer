@@ -1,3 +1,12 @@
+## [0.7.1](https://github.com/ktsn/vue-designer/compare/v0.7.0...v0.7.1) (2018-12-02)
+
+
+### Bug Fixes
+
+* handle deselect template nodes correctly ([8ee53ea](https://github.com/ktsn/vue-designer/commit/8ee53ea))
+
+
+
 # [0.7.0](https://github.com/ktsn/vue-designer/compare/v0.6.3...v0.7.0) (2018-12-02)
 
 

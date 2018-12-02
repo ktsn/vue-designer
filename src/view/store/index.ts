@@ -31,17 +31,23 @@ store.actions.guide.init(boundsCalculator)
 
 store.subscribe(path => {
   const mayRelayout = [
+    'project.setDocument',
     'project.addElement',
     'project.addChildComponent',
     'project.setSharedStyle',
     'project.refreshScope',
+    'project.cleanScope',
     'project.updatePropValue',
     'project.updateDataValue',
     'viewport.resize',
     'viewport.zoom'
   ]
 
-  const shouldReset = ['project.setDocuments', 'project.changeDocument']
+  const shouldReset = [
+    'project.setDocuments',
+    'project.removeDocument',
+    'project.changeActiveDocument'
+  ]
 
   const pathStr = path.join('.')
   const guideActions = store.actions.guide

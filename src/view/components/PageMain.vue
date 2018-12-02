@@ -158,19 +158,23 @@ export default Vue.extend({
 
     ...viewportMapper.mapActions(['resize', 'zoom']),
 
-    ...guideMapper.mapActions(['selectTarget']),
+    ...guideMapper.mapActions(['selectTarget', 'deselect']),
 
-    onSelectNode({
-      ast,
-      element,
-      viewport
-    }: {
-      ast: TEElement
-      element: HTMLElement
-      viewport: HTMLElement
-    }): void {
-      this.select(ast)
-      this.selectTarget(element, viewport)
+    onSelectNode(
+      data:
+        | {
+            ast: TEElement
+            element: HTMLElement
+            viewport: HTMLElement
+          }
+        | undefined
+    ): void {
+      this.select(data ? data.ast : undefined)
+      if (data) {
+        this.selectTarget(data.element, data.viewport)
+      } else {
+        this.deselect()
+      }
     }
   }
 })

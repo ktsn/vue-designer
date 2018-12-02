@@ -13,7 +13,15 @@ export class ProjectMutations extends Mutations<ProjectState>() {
     this.state.documents = vueFiles
   }
 
-  changeDocument(uri: string): void {
+  setDocument(vueFile: VueFilePayload): void {
+    Vue.set(this.state.documents, vueFile.uri, vueFile)
+  }
+
+  removeDocument(uri: string): void {
+    Vue.delete(this.state.documents, uri)
+  }
+
+  changeActiveDocument(uri: string): void {
     const { state } = this
     if (state.currentUri !== uri) {
       state.currentUri = uri

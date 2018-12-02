@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import * as path from 'path'
 import { AddressInfo } from 'net'
+import debounce from 'lodash.debounce'
 import { startStaticServer, startWebSocketServer } from './server/main'
 import { AssetResolver } from './asset-resolver'
 import { Watcher } from './vscode/watcher'
@@ -116,33 +117,30 @@ function connectToSubject(
     return _vueFileToPayload(vueFile, assetResolver)
   }
 
-  vueFiles.on('update', () => {
-    // TODO: change this notification more clean and optimized way
-    subject.notify('initProject', { vueFiles: vueFiles.map(vueFileToPayload) })
+  const notifySaveVueFileByUri = async (uri: vscode.Uri) => {
+    const vueFile = await vueFiles.read(uri.toString())
+    subject.notify('saveDocument', {
+      vueFile: vueFileToPayload(vueFile)
+    })
+  }
+
+  vueFiles.on('update', vueFile => {
+    subject.notify('saveDocument', {
+      vueFile: vueFileToPayload(vueFile)
+    })
   })
 
-  watcher.onDidEditComponent(async uri => {
-    await vueFiles.read(uri.toString())
-    // TODO: change this notification more clean and optimized way
-    subject.notify('initProject', { vueFiles: vueFiles.map(vueFileToPayload) })
-  })
+  // Since editing component will be happened in high frequency
+  // we need to debounce the notification to avoid high load.
+  watcher.onDidEditComponent(debounce(notifySaveVueFileByUri, 200))
 
-  watcher.onDidCreateComponent(async uri => {
-    await vueFiles.read(uri.toString())
-    // TODO: change this notification more clean and optimized way
-    subject.notify('initProject', { vueFiles: vueFiles.map(vueFileToPayload) })
-  })
-
-  watcher.onDidChangeComponent(async uri => {
-    await vueFiles.read(uri.toString())
-    // TODO: change this notification more clean and optimized way
-    subject.notify('initProject', { vueFiles: vueFiles.map(vueFileToPayload) })
-  })
+  watcher.onDidCreateComponent(notifySaveVueFileByUri)
+  watcher.onDidChangeComponent(notifySaveVueFileByUri)
 
   watcher.onDidDeleteComponent(uri => {
-    vueFiles.delete(uri.toString())
-    // TODO: change this notification more clean and optimized way
-    subject.notify('initProject', { vueFiles: vueFiles.map(vueFileToPayload) })
+    const uriStr = uri.toString()
+    vueFiles.delete(uriStr)
+    subject.notify('removeDocument', { uri: uriStr })
   })
 
   watcher.onDidChangeSharedStyle(async () => {
@@ -153,7 +151,7 @@ function connectToSubject(
 
   watcher.onDidSwitchComponent(uri => {
     editor.activeDocumentUrl = uri.toString()
-    subject.notify('changeDocument', { uri: editor.activeDocumentUrl })
+    subject.notify('changeActiveDocument', { uri: editor.activeDocumentUrl })
   })
 }
 

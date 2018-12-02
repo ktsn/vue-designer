@@ -1,3 +1,4 @@
+import assert from 'assert'
 import { EventEmitter } from 'events'
 import { VueFile, resolveImportPath, parseVueFile } from '../parser/vue-file'
 import { Modifiers, modify } from '../parser/modifier'
@@ -139,7 +140,7 @@ export class VueFileRepository extends EventEmitter {
     this.save(uri, updated)
   }
 
-  on(event: 'update', fn: () => void): this {
+  on(event: 'update', fn: (vueFile: VueFile) => void): this {
     return super.on(event, fn)
   }
 
@@ -153,7 +154,11 @@ export class VueFileRepository extends EventEmitter {
 
   private save(uri: string, code: string): void {
     this.set(uri, code)
-    this.emit('update')
+
+    const vueFile = this.get(uri)!
+    assert(vueFile, `VueFile object '${uri}' not found after saving it`)
+    this.emit('update', vueFile)
+
     // We don't wait until the file is saved
     this.fs.writeFile(uri, code)
   }

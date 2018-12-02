@@ -7,7 +7,13 @@ export interface SubjectType {
   initSharedStyle: {
     style: string
   }
-  changeDocument: {
+  changeActiveDocument: {
+    uri: string
+  }
+  saveDocument: {
+    vueFile: VueFilePayload
+  }
+  removeDocument: {
     uri: string
   }
 }

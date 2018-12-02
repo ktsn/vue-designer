@@ -57,8 +57,16 @@ export class ProjectActions extends Actions<
         this.mutations.setSharedStyle(style)
       },
 
-      changeDocument: ({ uri }) => {
-        this.mutations.changeDocument(uri)
+      changeActiveDocument: ({ uri }) => {
+        this.mutations.changeActiveDocument(uri)
+      },
+
+      saveDocument: ({ vueFile }) => {
+        this.mutations.setDocument(vueFile)
+      },
+
+      removeDocument: ({ uri }) => {
+        this.mutations.removeDocument(uri)
       }
     })
 
@@ -67,7 +75,7 @@ export class ProjectActions extends Actions<
         initVueFiles(vueFiles)
         this.mutations.setSharedStyle(sharedStyle)
         if (activeUri) {
-          this.mutations.changeDocument(activeUri)
+          this.mutations.changeActiveDocument(activeUri)
         }
       })
     })

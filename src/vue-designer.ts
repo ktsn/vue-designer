@@ -5,6 +5,7 @@ import debounce from 'lodash.debounce'
 import { startStaticServer, startWebSocketServer } from './server/main'
 import { AssetResolver } from './asset-resolver'
 import { Watcher } from './vscode/watcher'
+import { applyModifiers } from './vscode/modifier'
 import { VueFileRepository } from './repositories/vue-file-repository'
 import { SettingRepository } from './repositories/setting-repository'
 import { EditorRepository } from './repositories/editor-repository'
@@ -53,18 +54,8 @@ async function createVueFileRepository(): Promise<VueFileRepository> {
       return document.getText()
     },
 
-    async writeFile(uri, code) {
-      const parsedUri = vscode.Uri.parse(uri)
-      const doc = await vscode.workspace.openTextDocument(parsedUri)
-
-      const range = new vscode.Range(
-        doc.positionAt(0),
-        doc.positionAt(doc.getText().length)
-      )
-
-      const wsEdit = new vscode.WorkspaceEdit()
-      wsEdit.replace(parsedUri, range, code)
-      vscode.workspace.applyEdit(wsEdit)
+    modifyFile(uri, modifiers) {
+      return applyModifiers(uri, modifiers)
     }
   })
 

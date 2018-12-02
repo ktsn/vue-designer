@@ -25,7 +25,7 @@ export function render(
 ): Wrapper<VueComponent> {
   const store = createStore(module().child('project', project))
 
-  store.mutations.project.changeDocument('file:///Test.vue')
+  store.mutations.project.changeActiveDocument('file:///Test.vue')
   store.mutations.project.refreshScope({
     uri: 'file:///Test.vue',
     props,

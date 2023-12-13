@@ -164,7 +164,10 @@ export default Vue.extend({
 
       event.preventDefault()
       event.stopPropagation()
-      event.dataTransfer.dropEffect = 'copy'
+
+      if (event.dataTransfer) {
+        event.dataTransfer.dropEffect = 'copy'
+      }
 
       // Detect where the dragging node will be put
       const outRatio = 0.2

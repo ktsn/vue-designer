@@ -1,4 +1,3 @@
-import assert from 'assert'
 import * as t from './types'
 
 export function genStyle(ast: t.STStyle): string {
@@ -10,7 +9,7 @@ export function genStyle(ast: t.STStyle): string {
         case 'Rule':
           return genRule(node)
         default:
-          return assert.fail(
+          throw new Error(
             `[style codegen] Unexpected node type ${(node as any).type} on root`
           )
       }
@@ -32,7 +31,7 @@ function genAtRule(atRule: t.STAtRule): string {
           case 'Declaration':
             return genDeclaration(child)
           default:
-            return assert.fail(
+            throw new Error(
               `[style codegen] Unexpected node type ${
                 (child as any).type
               } as child of AtRule`

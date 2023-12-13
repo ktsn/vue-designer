@@ -1,4 +1,3 @@
-import assert from 'assert'
 import postcss from 'postcss'
 import selectorParser from 'postcss-selector-parser'
 import { genSelector } from './codegen'
@@ -121,7 +120,7 @@ function transformSelectorElement(
       if (isPseudoClass(el)) {
         current.pseudoClass.push(transformPseudoClass(el))
       } else {
-        assert.fail(
+        throw new Error(
           "[style] Unexpected selector node: it has type 'pseudo' but neither pseudo element nor pseudo class."
         )
       }
@@ -229,9 +228,9 @@ function transformChild(
     case 'decl':
       return transformDeclaration(child, path, code)
     default:
-      return assert.fail(
+      throw new Error(
         '[style] Unexpected child node type: ' + (child as any).type
-      ) as never
+      )
   }
 }
 

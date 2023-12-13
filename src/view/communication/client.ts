@@ -1,5 +1,5 @@
-import assert from 'assert'
 import { Resolver, Mutator } from '@/infra/communication/types'
+import { assert } from '@/utils'
 
 type Arguments<F extends Function> = F extends (...args: infer T) => any
   ? T
@@ -60,14 +60,14 @@ export class CommunicationClient<
     this.ws.addEventListener('open', fn)
   }
 
-  resolve<K extends keyof R>(
+  resolve<K extends keyof R & string>(
     key: K,
     ...args: Arguments<R[K]>
   ): Promise<Unwrap<ReturnType<R[K]>>> {
     return this.genericRequest('resolver', key, args, this.nextRequestId++)
   }
 
-  mutate<K extends keyof M>(
+  mutate<K extends keyof M & string>(
     key: K,
     ...args: Arguments<M[K]>
   ): Promise<Unwrap<ReturnType<M[K]>>> {
@@ -87,7 +87,7 @@ export class CommunicationClient<
 
   private genericRequest<
     T extends Record<string, (...args: any[]) => any>,
-    K extends keyof T
+    K extends keyof T & string
   >(
     type: string,
     key: K,

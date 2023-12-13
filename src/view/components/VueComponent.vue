@@ -1,5 +1,5 @@
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import Vue, { VNode, PropType } from 'vue'
 import VueChild from './VueChild.vue'
 import { TETemplate } from '@/parser/template/types'
 import { ChildComponent } from '@/parser/script/types'
@@ -31,8 +31,8 @@ export default Vue.extend({
       required: true
     },
     propsData: {
-      type: Object as { (): Record<string, any> },
-      default: () => ({})
+      type: Object as PropType<Record<string, any>>,
+      default: () => ({} as Record<string, any>)
     }
   },
 

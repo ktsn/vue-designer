@@ -1,3 +1,9 @@
+export function assert(condition: unknown, message?: string): asserts condition {
+  if (!condition) {
+    throw new Error(message)
+  }
+}
+
 export function mapValues<T, R>(
   record: Record<string, T>,
   fn: (value: T, key: string) => R

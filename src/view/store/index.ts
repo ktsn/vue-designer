@@ -29,7 +29,7 @@ store.actions.project.init({
 
 store.actions.guide.init(boundsCalculator)
 
-store.subscribe(path => {
+store.subscribe((path: any) => {
   const mayRelayout = [
     'project.setDocument',
     'project.addElement',

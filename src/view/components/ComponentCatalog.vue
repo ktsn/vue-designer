@@ -38,8 +38,10 @@ export default Vue.extend({
   methods: {
     onDragStart(event: DragEvent, component: ScopedDocument): void {
       const dt = event.dataTransfer
-      dt.effectAllowed = 'copy'
-      this.$emit('dragstart', component.uri)
+      if (dt) {
+        dt.effectAllowed = 'copy'
+        this.$emit('dragstart', component.uri)
+      }
     },
 
     onDragEnd(): void {

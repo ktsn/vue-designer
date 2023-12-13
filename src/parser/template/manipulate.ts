@@ -1,8 +1,7 @@
-import assert from 'assert'
 import * as t from './types'
 import { scopePrefix } from '../style/manipulate'
 import { AssetResolver } from '../../asset-resolver'
-import { clone } from '../../utils'
+import { assert, clone } from '../../utils'
 
 export function getNode(
   root: t.TETemplate,

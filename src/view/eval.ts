@@ -20,7 +20,7 @@ export function evalWithScope(expression: string, scope: object): EvalResult {
   } catch (error) {
     return {
       isSuccess: false,
-      error
+      error: error as Error
     }
   }
 }

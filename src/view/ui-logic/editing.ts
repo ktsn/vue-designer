@@ -5,10 +5,12 @@ export function selectNodeContents(el: Node): void {
   if (!('getSelection' in window)) return
 
   const selection = window.getSelection()
-  const range = new Range()
-  range.selectNodeContents(el)
-  selection.removeAllRanges()
-  selection.addRange(range)
+  if (selection) {
+    const range = new Range()
+    range.selectNodeContents(el)
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
 }
 
 export function getTextOffset(node: Node, offset?: number): number {

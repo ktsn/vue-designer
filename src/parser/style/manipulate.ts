@@ -1,6 +1,5 @@
 import * as t from './types'
-import assert from 'assert'
-import { clone, unquote } from '../../utils'
+import { assert, clone, unquote } from '../../utils'
 import { AssetResolver } from '../../asset-resolver'
 
 interface StyleVisitor {
@@ -37,7 +36,7 @@ function visitStyle(style: t.STStyle, visitor: StyleVisitor): t.STStyle {
       case 'Declaration':
         return apply(node, visitor.declaration)
       default:
-        return assert.fail('Unexpected node type: ' + (node as any).type)
+        throw new Error('Unexpected node type: ' + (node as any).type)
     }
   }
 

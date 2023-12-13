@@ -26,7 +26,7 @@ module.exports = {
     config
       .plugin('fork-ts-checker')
       .tap(args => {
-        args[0].tsconfig = path.resolve(__dirname, 'tsconfig.view.json')
+        args[0].typescript.configFile = path.resolve(__dirname, 'tsconfig.view.json')
         return args
       })
 
@@ -54,11 +54,12 @@ module.exports = {
   devServer: {
     port: 50000,
 
-    before: app => {
-      app.use((req, res, next) => {
+    setupMiddlewares: (middlewares, devServer) => {
+      devServer.app.get((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*')
         next()
       })
+      return middlewares
     },
 
     proxy: {

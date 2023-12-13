@@ -117,6 +117,10 @@ export default Vue.extend({
 
     getSelectionStartOffset(): number | undefined {
       const selection = window.getSelection()
+      if (!selection) {
+        return undefined
+      }
+
       for (let i = 0; i < selection.rangeCount; i++) {
         const range = selection.getRangeAt(i)
         if (this.$el.contains(range.startContainer)) {
@@ -129,6 +133,10 @@ export default Vue.extend({
 
     selectTextRange(start: number, end: number): void {
       const selection = window.getSelection()
+      if (!selection) {
+        return
+      }
+
       selection.removeAllRanges()
 
       // Ensure the $el can be only one text node

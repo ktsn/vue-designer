@@ -7,7 +7,7 @@ import { AssetResolver } from '../asset-resolver'
 
 function readContent(
   file: string,
-  cb: (err: Error, content: string) => void
+  cb: (err: Error | null, content: string) => void
 ): void {
   fs.readFile(path.join(__dirname, '..', file), 'utf8', cb)
 }

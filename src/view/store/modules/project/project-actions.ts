@@ -1,4 +1,3 @@
-import assert from 'assert'
 import { Actions } from 'sinai'
 import { TEElement } from '@/parser/template/types'
 import { getNode } from '@/parser/template/manipulate'
@@ -14,6 +13,7 @@ import { ResolverType } from '@/server/resolver'
 import { MutatorType } from '@/server/mutator'
 import { SubjectType } from '@/server/subject-type'
 import { VueFilePayload } from '@/parser/vue-file'
+import { assert } from '@/utils'
 
 let client: CommunicationClient<ResolverType, MutatorType, SubjectType>
 let styleMatcher: StyleMatcher

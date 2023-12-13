@@ -1,9 +1,8 @@
-import assert from 'assert'
 import * as style from './types'
 import { visitLastSelectors } from './manipulate'
 import * as template from '../template/types'
 import { getNode } from '../template/manipulate'
-import { range } from '../../utils'
+import { assert, range } from '../../utils'
 
 export function createStyleMatcher(styles: style.STStyle[]) {
   const map = new StyleMap(styles)

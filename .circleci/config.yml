@@ -51,14 +51,6 @@ jobs:
           at: ~/repo
       - run: yarn test
 
-  coverage:
-    <<: *defaults
-    steps:
-      - attach_workspace:
-          at: ~/repo
-      - run: yarn test:coverage
-      - run: ./node_modules/.bin/codecov
-
 workflows:
   version: 2
   build_and_test:
@@ -71,8 +63,5 @@ workflows:
           requires:
             - install
       - test:
-          requires:
-            - install
-      - coverage:
           requires:
             - install

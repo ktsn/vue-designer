@@ -84,9 +84,6 @@ $ yarn test
 # run test with watching
 $ yarn test:watch
 
-# run test with coverage report
-$ yarn test:coverage
-
 # format sources with prettier
 $ yarn lint:fix
 ```

@@ -21,7 +21,5 @@ module.exports = {
 
   moduleFileExtensions: ['ts', 'js', 'json', 'vue', 'jsx', 'tsx'],
 
-  collectCoverageFrom: ['src/**/*.{ts,tsx,vue}'],
-
   snapshotSerializers: ['jest-serializer-vue']
 }

@@ -1,10 +1,8 @@
 src
 test
 types
-coverage
 tsconfig.json
 tsconfig.main.json
-tsconfig.test.json
 tsconfig.view.json
 webpack.config.js
 .gitignore

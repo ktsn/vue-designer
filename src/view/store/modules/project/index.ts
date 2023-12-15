@@ -8,5 +8,5 @@ export const project = module({
   state: ProjectState,
   getters: ProjectGetters,
   mutations: ProjectMutations,
-  actions: ProjectActions
+  actions: ProjectActions,
 })

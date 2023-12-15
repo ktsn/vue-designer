@@ -8,7 +8,7 @@ import {
   TEDirective,
   TEForDirective,
   TEChild,
-  TETextNode
+  TETextNode,
 } from '@/parser/template/types'
 import { Prop, Data, ChildComponent } from '@/parser/script/types'
 import { VueFilePayload } from '@/parser/vue-file'
@@ -29,7 +29,7 @@ export function render(
   store.mutations.project.refreshScope({
     uri: 'file:///Test.vue',
     props,
-    data
+    data,
   })
 
   store.mutations.project.setDocuments(
@@ -41,17 +41,17 @@ export function render(
         data: doc.data || [],
         childComponents: doc.childComponents || [],
         styles: doc.styles || [],
-        scopeId: doc.scopeId || 'scope-id'
+        scopeId: doc.scopeId || 'scope-id',
       }
     })
   )
 
-  Object.keys(storeDocuments).forEach(uri => {
+  Object.keys(storeDocuments).forEach((uri) => {
     const doc = storeDocuments[uri]
     store.mutations.project.refreshScope({
       uri,
       props: doc.props || [],
-      data: doc.data || []
+      data: doc.data || [],
     })
   })
 
@@ -61,9 +61,9 @@ export function render(
       template,
       scope: store.getters.project.currentScope,
       childComponents,
-      styles: ''
+      styles: '',
     },
-    store
+    store,
   } as any)
 }
 
@@ -94,7 +94,7 @@ export function createTemplate(
     type: 'Template',
     attrs: {},
     children: processRootChildren(children),
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -138,16 +138,16 @@ export function h(
       domProps,
       directives: dirs,
       selfClosing,
-      range: [-1, -1]
+      range: [-1, -1],
     },
     endTag: !hasEndTag
       ? undefined
       : {
           type: 'EndTag',
-          range: [-1, -1]
+          range: [-1, -1],
         },
     children: children.map(strToTextNode),
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -157,7 +157,7 @@ export function a(name: string, value?: string): TEAttribute {
     attrIndex: -1,
     name,
     value,
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -179,7 +179,7 @@ export function d(
 
   const modifiers: Record<string, true> = {}
   if (options.modifiers) {
-    options.modifiers.forEach(key => {
+    options.modifiers.forEach((key) => {
       modifiers[key] = true
     })
   }
@@ -191,7 +191,7 @@ export function d(
     argument: options.argument,
     modifiers,
     expression,
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -207,7 +207,7 @@ export function exp(expression: string): TEExpressionNode {
     type: 'ExpressionNode',
     path: [],
     expression,
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -217,7 +217,7 @@ function strToTextNode<T>(str: T | string): T | TETextNode {
         type: 'TextNode' as 'TextNode',
         path: [],
         text: str,
-        range: [-1, -1] as [number, number]
+        range: [-1, -1] as [number, number],
       }
     : str
 }
@@ -237,7 +237,7 @@ function excludeRange(obj: any): any {
   }
 
   const res: any = {}
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     if (key !== 'range') {
       const value = obj[key]
       res[key] = excludeRange(value)

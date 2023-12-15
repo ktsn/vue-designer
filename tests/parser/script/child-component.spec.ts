@@ -26,8 +26,8 @@ describe('Script components parser', () => {
     const expected: ChildComponent[] = [
       {
         name: 'Foo',
-        uri: 'file:///path/to/Foo.vue'
-      }
+        uri: 'file:///path/to/Foo.vue',
+      },
     ]
     expect(components).toEqual(expected)
   })
@@ -44,8 +44,8 @@ describe('Script components parser', () => {
     const expected: ChildComponent[] = [
       {
         name: 'Foo',
-        uri: 'file:///path/to/Foo.ts'
-      }
+        uri: 'file:///path/to/Foo.ts',
+      },
     ]
     expect(components).toEqual(expected)
   })
@@ -64,8 +64,8 @@ describe('Script components parser', () => {
     const expected: ChildComponent[] = [
       {
         name: 'LocalFoo',
-        uri: 'file:///path/to/Foo.vue'
-      }
+        uri: 'file:///path/to/Foo.vue',
+      },
     ]
     expect(components).toEqual(expected)
   })
@@ -84,8 +84,8 @@ describe('Script components parser', () => {
     const expected: ChildComponent[] = [
       {
         name: 'local-foo',
-        uri: 'file:///path/to/Foo.vue'
-      }
+        uri: 'file:///path/to/Foo.vue',
+      },
     ]
     expect(components).toEqual(expected)
   })
@@ -99,8 +99,8 @@ describe('Script components parser', () => {
     const expected: ChildComponent[] = [
       {
         name: 'Self',
-        uri: hostUri
-      }
+        uri: hostUri,
+      },
     ]
     expect(components).toEqual(expected)
   })
@@ -121,8 +121,8 @@ describe('Script components parser', () => {
     const expected: ChildComponent[] = [
       {
         name: 'Recursive',
-        uri: 'file:///path/to/Recursive.vue'
-      }
+        uri: 'file:///path/to/Recursive.vue',
+      },
     ]
     expect(components).toEqual(expected)
   })
@@ -140,14 +140,14 @@ describe('Script components parser', () => {
 
     const { program } = parse(code, {
       sourceType: 'module',
-      plugins: ['typescript']
+      plugins: ['typescript'],
     })
     const components = extractChildComponents(program, hostUri, pathToUri)
     const expected: ChildComponent[] = [
       {
         name: 'Recursive',
-        uri: 'file:///path/to/Recursive.vue'
-      }
+        uri: 'file:///path/to/Recursive.vue',
+      },
     ]
     expect(components).toEqual(expected)
   })

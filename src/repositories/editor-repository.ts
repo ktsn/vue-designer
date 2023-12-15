@@ -48,10 +48,10 @@ export class EditorRepository {
     }
 
     const styleRules = stylePaths
-      .map(path => getStyleNode(vueFile.styles, path))
+      .map((path) => getStyleNode(vueFile.styles, path))
       .filter(notUndef)
 
-    const highlightRanges = [element, ...styleRules].map(node => {
+    const highlightRanges = [element, ...styleRules].map((node) => {
       return node.range
     })
 

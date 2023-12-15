@@ -16,7 +16,7 @@ export function insertComponentScript(
   if (!componentOptions) {
     return [
       insertComponentImport(ast, code, componentName, componentPath),
-      insertComponentOptions(options, code, componentName)
+      insertComponentOptions(options, code, componentName),
     ]
   }
 
@@ -25,7 +25,7 @@ export function insertComponentScript(
 
   return [
     insertComponentImport(ast, code, componentName, componentPath),
-    insertComponentOptionItem(value, code, componentName)
+    insertComponentOptionItem(value, code, componentName),
   ]
 }
 
@@ -40,7 +40,7 @@ function insertComponentImport(
     '[modifier] script block should have at least one statement.'
   )
 
-  const imports = ast.body.filter(el => t.isImportDeclaration(el))
+  const imports = ast.body.filter((el) => t.isImportDeclaration(el))
   const lastImport = imports[imports.length - 1]
 
   const indent = inferScriptIndent(code, lastImport || ast.body[0])

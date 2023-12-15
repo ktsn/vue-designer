@@ -18,7 +18,7 @@ export default Vue.extend({
 
   computed: {
     ...guideMapper.mapGetters({
-      guide: 'scaledTarget'
+      guide: 'scaledTarget',
     }),
 
     wrapperStyle(): Record<string, string> {
@@ -29,7 +29,7 @@ export default Vue.extend({
         left: guide.left + 'px',
         top: guide.top + 'px',
         width: guide.width + 'px',
-        height: guide.height + 'px'
+        height: guide.height + 'px',
       }
     },
 
@@ -45,7 +45,7 @@ export default Vue.extend({
         borderTopWidth: margin.top + 'px',
         borderBottomWidth: margin.bottom + 'px',
         borderLeftWidth: margin.left + 'px',
-        borderRightWidth: margin.right + 'px'
+        borderRightWidth: margin.right + 'px',
       }
     },
 
@@ -57,7 +57,7 @@ export default Vue.extend({
         borderTopWidth: border.top + 'px',
         borderBottomWidth: border.bottom + 'px',
         borderLeftWidth: border.left + 'px',
-        borderRightWidth: border.right + 'px'
+        borderRightWidth: border.right + 'px',
       }
     },
 
@@ -73,10 +73,10 @@ export default Vue.extend({
         borderTopWidth: padding.top + 'px',
         borderBottomWidth: padding.bottom + 'px',
         borderLeftWidth: padding.left + 'px',
-        borderRightWidth: padding.right + 'px'
+        borderRightWidth: padding.right + 'px',
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

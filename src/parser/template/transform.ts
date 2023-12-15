@@ -17,7 +17,7 @@ export function transformTemplate(
     type: 'Template',
     range: body.range,
     attrs,
-    children: body.children.map((child, i) => transformChild(child, code, [i]))
+    children: body.children.map((child, i) => transformChild(child, code, [i])),
   }
 }
 
@@ -56,7 +56,7 @@ function extractAttrs(
 ): Record<string, t.TEAttribute> {
   const res: Record<string, t.TEAttribute> = {}
 
-  attrs.forEach(attr => {
+  attrs.forEach((attr) => {
     if (attr.type === 'Attribute') {
       res[attr.name] = attr
     }
@@ -70,7 +70,7 @@ function extractProps(
 ): Record<string, t.TEDirective> {
   const res: Record<string, t.TEDirective> = {}
 
-  attrs.forEach(attr => {
+  attrs.forEach((attr) => {
     if (isProp(attr)) {
       res[attr.argument!] = attr
     }
@@ -84,7 +84,7 @@ function extractDomProps(
 ): Record<string, t.TEDirective> {
   const res: Record<string, t.TEDirective> = {}
 
-  attrs.forEach(attr => {
+  attrs.forEach((attr) => {
     if (isDomProp(attr)) {
       res[attr.argument!] = attr
     }
@@ -96,11 +96,9 @@ function extractDomProps(
 function extractDirectives(
   attrs: (t.TEAttribute | t.TEDirective)[]
 ): t.TEDirective[] {
-  return attrs.filter(
-    (attr): attr is t.TEDirective => {
-      return attr.type === 'Directive' && !isProp(attr) && !isDomProp(attr)
-    }
-  )
+  return attrs.filter((attr): attr is t.TEDirective => {
+    return attr.type === 'Directive' && !isProp(attr) && !isDomProp(attr)
+  })
 }
 
 function transformAttribute(
@@ -119,7 +117,7 @@ function transformAttribute(
 
       return vForDirective(
         index,
-        exp ? exp.left.map(l => extractExpression(l, code)) : [],
+        exp ? exp.left.map((l) => extractExpression(l, code)) : [],
         exp ? extractExpression(exp.right, code) : undefined,
         attr.range
       )
@@ -204,7 +202,7 @@ function element(
     startTag,
     endTag,
     children,
-    range
+    range,
   }
 }
 
@@ -223,14 +221,14 @@ function startTag(
     domProps,
     directives,
     selfClosing,
-    range
+    range,
   }
 }
 
 function endtag(range: [number, number]): t.TEEndTag {
   return {
     type: 'EndTag',
-    range
+    range,
   }
 }
 
@@ -243,7 +241,7 @@ function textNode(
     type: 'TextNode',
     path,
     text,
-    range
+    range,
   }
 }
 
@@ -256,7 +254,7 @@ function expressionNode(
     type: 'ExpressionNode',
     path,
     expression,
-    range
+    range,
   }
 }
 
@@ -271,7 +269,7 @@ function attribute(
     attrIndex,
     name,
     value,
-    range
+    range,
   }
 }
 
@@ -284,7 +282,7 @@ function directive(
   range: [number, number]
 ): t.TEDirective {
   const mod: Record<string, boolean> = {}
-  modifiers.forEach(m => {
+  modifiers.forEach((m) => {
     mod[m] = true
   })
   return {
@@ -294,7 +292,7 @@ function directive(
     argument,
     modifiers: mod,
     expression,
-    range
+    range,
   }
 }
 
@@ -311,6 +309,6 @@ function vForDirective(
     modifiers: {},
     left,
     right,
-    range
+    range,
   }
 }

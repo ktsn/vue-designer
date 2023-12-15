@@ -71,6 +71,6 @@ export function startWebSocketServer(http: http.Server): WebSocket.Server {
   return new WebSocket.Server({
     host: 'localhost',
     server: http,
-    path: '/api'
+    path: '/api',
   })
 }

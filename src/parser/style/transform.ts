@@ -13,7 +13,7 @@ export function transformStyle(
     return {
       path: [index],
       children: [],
-      range: [-1, -1]
+      range: [-1, -1],
     }
   }
   const children = root.nodes
@@ -27,16 +27,14 @@ export function transformStyle(
           return undefined
       }
     })
-    .filter(
-      (node): node is t.STAtRule | t.STRule => {
-        return node !== undefined
-      }
-    )
+    .filter((node): node is t.STAtRule | t.STRule => {
+      return node !== undefined
+    })
 
   return {
     path: [index],
     children,
-    range: toRange(root.source, code)
+    range: toRange(root.source, code),
   }
 }
 
@@ -63,7 +61,7 @@ function transformAtRule(
     children: children.map((child, i) => {
       return transformChild(child, path.concat(i), code)
     }),
-    range: toRange(atRule.source, code)
+    range: toRange(atRule.source, code),
   }
 }
 
@@ -80,7 +78,7 @@ function transformRule(
     path,
     before: rule.raws.before || '',
     after: rule.raws.after || '',
-    selectors: root.nodes.map(n => {
+    selectors: root.nodes.map((n) => {
       // A child of root node is always selector
       const selectors = (n as selectorParser.Selector).nodes
       return transformSelector(selectors)
@@ -88,7 +86,7 @@ function transformRule(
     children: decls.map((decl, i) => {
       return transformDeclaration(decl, path.concat(i), code)
     }),
-    range: toRange(rule.source, code)
+    range: toRange(rule.source, code),
   }
 }
 
@@ -151,7 +149,7 @@ function transformPseudoClass(node: selectorParser.Pseudo): t.STPseudoClass {
   return {
     type: 'PseudoClass',
     value: node.value.replace(/^:/, ''),
-    params: params.map(p => transformSelector(p.nodes))
+    params: params.map((p) => transformSelector(p.nodes)),
   }
 }
 
@@ -165,13 +163,13 @@ function transformPseudoElement(
   parent.pseudoElement = {
     type: 'PseudoElement',
     value: el.value.replace(/^:{1,2}/, ''),
-    pseudoClass: rawPseudoClass.map(transformPseudoClass)
+    pseudoClass: rawPseudoClass.map(transformPseudoClass),
   }
 
   // No simple selector can follows after a paseudo element
   const [first, ...tail] = dropWhile(
     rest.slice(rawPseudoClass.length),
-    el => !isCombinator(el)
+    (el) => !isCombinator(el)
   )
 
   return transformSelectorElement(parent, first, tail)
@@ -183,7 +181,7 @@ function transformAttribute(attr: selectorParser.Attribute): t.STAttribute {
     operator: attr.operator,
     name: attr.attribute,
     value: attr.raws.unquoted,
-    insensitive: attr.insensitive || false
+    insensitive: attr.insensitive || false,
   }
 }
 
@@ -194,7 +192,7 @@ function transformCombinator(
   return {
     type: 'Combinator',
     operator: comb.value,
-    left
+    left,
   }
 }
 
@@ -211,7 +209,7 @@ function transformDeclaration(
     prop: decl.prop,
     value: decl.value,
     important: decl.important || false, // decl.import is possibly undefined
-    range: toRange(decl.source, code)
+    range: toRange(decl.source, code),
   }
 }
 
@@ -262,12 +260,12 @@ export function transformRuleForPrint(rule: t.STRule): t.STRuleForPrint {
   return {
     path: rule.path,
     selectors: rule.selectors.map(genSelector),
-    children: rule.children.map(decl => ({
+    children: rule.children.map((decl) => ({
       path: decl.path,
       prop: decl.prop,
       value: decl.value,
-      important: decl.important
-    }))
+      important: decl.important,
+    })),
   }
 }
 
@@ -277,7 +275,7 @@ function emptySelector(): t.STSelector {
     universal: false,
     class: [],
     attributes: [],
-    pseudoClass: []
+    pseudoClass: [],
   }
 }
 

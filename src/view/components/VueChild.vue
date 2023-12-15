@@ -14,33 +14,33 @@ const VueChild = Vue.extend({
   props: {
     uri: {
       type: String,
-      required: true
+      required: true,
     },
 
     data: {
       type: Object as { (): TEChild },
-      required: true
+      required: true,
     },
 
     scope: {
       type: Object as { (): Record<string, DefaultValue> },
-      required: true
+      required: true,
     },
 
     childComponents: {
       type: Array as { (): ChildComponent[] },
-      required: true
+      required: true,
     },
 
     slots: {
       type: Object as { (): Record<string, VNode[]> },
-      required: true
+      required: true,
     },
 
     scopedSlots: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
 
   render(h, { props, listeners }): any /* VNode | VNode[] */ {
@@ -56,13 +56,13 @@ const VueChild = Vue.extend({
           return h(
             'template',
             { slot: slotName },
-            data.children.map(child => {
+            data.children.map((child) => {
               return h(VueChild, {
                 props: {
                   ...props,
-                  data: child
+                  data: child,
                 },
-                on: listeners
+                on: listeners,
               })
             })
           )
@@ -71,7 +71,7 @@ const VueChild = Vue.extend({
         return h(data.name === 'slot' ? VueSlot : ContainerVueNode, {
           props,
           on: listeners,
-          slot: slotName || 'default'
+          slot: slotName || 'default',
         })
       case 'TextNode':
         return [data.text]
@@ -79,13 +79,13 @@ const VueChild = Vue.extend({
         return h(VueExpression, {
           props: {
             expression: data.expression,
-            scope
-          }
+            scope,
+          },
         })
       default:
         return h()
     }
-  }
+  },
 })
 export default VueChild
 </script>

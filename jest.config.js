@@ -5,7 +5,7 @@ module.exports = {
   transform: {
     '^.+\\.vue$': '@vue/vue2-jest',
     '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$':
-      'jest-transform-stub'
+      'jest-transform-stub',
   },
 
   transformIgnorePatterns: ['node_modules/(?!(sinai/lib))'],
@@ -16,10 +16,10 @@ module.exports = {
 
   moduleNameMapper: {
     '^@/(.+)$': '<rootDir>/src/$1',
-    '^vue$': 'vue/dist/vue.runtime.common.js'
+    '^vue$': 'vue/dist/vue.runtime.common.js',
   },
 
   moduleFileExtensions: ['ts', 'js', 'json', 'vue', 'jsx', 'tsx'],
 
-  snapshotSerializers: ['jest-serializer-vue']
+  snapshotSerializers: ['jest-serializer-vue'],
 }

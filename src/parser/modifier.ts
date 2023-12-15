@@ -81,7 +81,7 @@ export function insertAt(pos: number, value: string): Modifier {
   return {
     type: 'Add',
     pos,
-    value
+    value,
   }
 }
 
@@ -97,7 +97,7 @@ export function removeRange(from: number, to: number): Modifier {
   return {
     type: 'Remove',
     pos: from,
-    length: to - from
+    length: to - from,
   }
 }
 

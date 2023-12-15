@@ -6,12 +6,12 @@ import { insertToTemplate } from '../parser/template/modify'
 import { insertComponentScript } from '../parser/script/modify'
 import {
   STDeclarationForAdd,
-  STDeclarationForUpdate
+  STDeclarationForUpdate,
 } from '../parser/style/types'
 import {
   insertDeclaration,
   removeDeclaration,
-  updateDeclaration
+  updateDeclaration,
 } from '../parser/style/modify'
 
 export interface VueFileRepositoryFs {
@@ -40,7 +40,7 @@ export class VueFileRepository extends EventEmitter {
     fs: VueFileRepositoryFs
   ): Promise<VueFileRepository> {
     const repo = new VueFileRepository(fs)
-    initialFiles.forEach(uri => repo.read(uri))
+    initialFiles.forEach((uri) => repo.read(uri))
     return repo
   }
 
@@ -73,7 +73,7 @@ export class VueFileRepository extends EventEmitter {
     const component = this.get(insertNodeUri)
     if (!component) return
 
-    const existingComponent = target.childComponents.find(child => {
+    const existingComponent = target.childComponents.find((child) => {
       return child.uri === component.uri.toString()
     })
 
@@ -86,7 +86,7 @@ export class VueFileRepository extends EventEmitter {
         target.template,
         path,
         `<${componentName}></${componentName}>`
-      )
+      ),
     ]
 
     if (!existingComponent) {

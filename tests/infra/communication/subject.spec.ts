@@ -24,7 +24,7 @@ describe('Communication infra Subjct', () => {
     const b = mockServer.connectClient()
 
     subject.notify('foo', {
-      message: 'test'
+      message: 'test',
     })
 
     expect(a.received.length).toBe(1)
@@ -32,14 +32,14 @@ describe('Communication infra Subjct', () => {
     expect(a.received[0]).toEqual({
       type: 'subject:foo',
       data: {
-        message: 'test'
-      }
+        message: 'test',
+      },
     })
     expect(b.received[0]).toEqual({
       type: 'subject:foo',
       data: {
-        message: 'test'
-      }
+        message: 'test',
+      },
     })
   })
 })

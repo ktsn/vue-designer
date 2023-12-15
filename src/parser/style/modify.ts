@@ -2,7 +2,7 @@ import {
   STStyle,
   STDeclarationForUpdate,
   STDeclarationForAdd,
-  STDeclaration
+  STDeclaration,
 } from './types'
 import { getDeclaration, getNode } from './manipulate'
 import {
@@ -11,7 +11,7 @@ import {
   replace,
   removeRange,
   insertBefore,
-  insertAfter
+  insertAfter,
 } from '../modifier'
 import { genDeclaration, genRule } from './codegen'
 import { clone } from '../../utils'
@@ -47,15 +47,15 @@ export function insertDeclaration(
       before: '',
       after: '',
       range: [-1, -1],
-      ...decl
+      ...decl,
     }
 
     const inserted = clone(rule, {
       children: [
         ...rule.children.slice(last),
         d,
-        ...rule.children.slice(last + 1)
-      ]
+        ...rule.children.slice(last + 1),
+      ],
     })
 
     return replace(rule, genRule(inserted))

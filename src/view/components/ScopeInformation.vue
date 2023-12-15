@@ -42,14 +42,14 @@ export default Vue.extend({
   name: 'ScopeInformation',
 
   components: {
-    InputJson
+    InputJson,
   },
 
   props: {
     scope: {
       type: Object as () => DocumentScope,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
@@ -59,24 +59,24 @@ export default Vue.extend({
 
     hasData(): boolean {
       return Object.keys(this.scope.data).length > 0
-    }
+    },
   },
 
   methods: {
     updateProp({ name, value }: { name: string; value: any }): void {
       this.$emit('update-prop', {
         name,
-        value
+        value,
       })
     },
 
     updateData({ name, value }: { name: string; value: any }): void {
       this.$emit('update-data', {
         name,
-        value
+        value,
       })
-    }
-  }
+    },
+  },
 })
 </script>
 

@@ -25,14 +25,14 @@ export default Vue.extend({
   name: 'ComponentCatalog',
 
   components: {
-    ComponentCatalogPreview
+    ComponentCatalogPreview,
   },
 
   props: {
     components: {
       type: Array as () => ScopedDocument[],
-      required: true
-    }
+      required: true,
+    },
   },
 
   methods: {
@@ -46,8 +46,8 @@ export default Vue.extend({
 
     onDragEnd(): void {
       this.$emit('dragend')
-    }
-  }
+    },
+  },
 })
 </script>
 

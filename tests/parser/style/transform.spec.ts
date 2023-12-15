@@ -9,7 +9,7 @@ import {
   attribute,
   pClass,
   pElement,
-  assertStyleNode
+  assertStyleNode,
 } from '../../helpers/style'
 import { transformStyle } from '@/parser/style/transform'
 import { STStyle, STRule } from '@/parser/style/types'
@@ -24,7 +24,7 @@ describe('Style AST transformer', () => {
     const ast = getAst(`a { color: cyan; }`)
 
     const expected: STStyle = createStyle([
-      rule([selector({ tag: 'a' })], [declaration('color', 'cyan')])
+      rule([selector({ tag: 'a' })], [declaration('color', 'cyan')]),
     ])
 
     assertStyleNode(ast, expected)
@@ -50,8 +50,8 @@ describe('Style AST transformer', () => {
               )
             )
           )
-        )
-      ])
+        ),
+      ]),
     ])
 
     assertStyleNode(ast, expected)
@@ -69,11 +69,11 @@ describe('Style AST transformer', () => {
             class: ['baz', 'qux'],
             attributes: [attribute('value', '*=', 'name')],
             pseudoClass: [pClass('hover')],
-            pseudoElement: pElement('before')
+            pseudoElement: pElement('before'),
           },
           combinator('>', selector({ tag: 'a', class: ['foo'] }))
-        )
-      ])
+        ),
+      ]),
     ])
 
     assertStyleNode(ast, expected)
@@ -86,9 +86,9 @@ describe('Style AST transformer', () => {
       rule([
         selector({
           class: ['foo'],
-          pseudoClass: [pClass('not', [selector({ class: ['bar'] })])]
-        })
-      ])
+          pseudoClass: [pClass('not', [selector({ class: ['bar'] })])],
+        }),
+      ]),
     ])
 
     assertStyleNode(ast, expected)
@@ -101,9 +101,9 @@ describe('Style AST transformer', () => {
       rule([
         selector({
           class: ['foo'],
-          pseudoElement: pElement('after')
-        })
-      ])
+          pseudoElement: pElement('after'),
+        }),
+      ]),
     ])
 
     assertStyleNode(ast, expected)
@@ -116,9 +116,9 @@ describe('Style AST transformer', () => {
       rule([
         selector({
           class: ['foo'],
-          pseudoElement: pElement('after', [pClass('hover')])
-        })
-      ])
+          pseudoElement: pElement('after', [pClass('hover')]),
+        }),
+      ]),
     ])
 
     assertStyleNode(ast, expected)
@@ -137,9 +137,9 @@ describe('Style AST transformer', () => {
         [selector({ tag: 'a' })],
         [
           declaration('color', 'cyan'),
-          declaration('text-decoration', 'underline', true)
+          declaration('text-decoration', 'underline', true),
         ]
-      )
+      ),
     ])
 
     assertStyleNode(ast, expected)
@@ -159,8 +159,8 @@ describe('Style AST transformer', () => {
     const expected = createStyle([
       atRule('import', "'foo'"),
       atRule('media', 'screen and (max-width: 767px)', [
-        rule([selector({ tag: 'h1' })], [declaration('font-size', '22px')])
-      ])
+        rule([selector({ tag: 'h1' })], [declaration('font-size', '22px')]),
+      ]),
     ])
 
     assertStyleNode(ast, expected)

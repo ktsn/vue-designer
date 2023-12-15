@@ -12,35 +12,35 @@ export default Vue.extend({
   props: {
     uri: {
       type: String,
-      required: true
+      required: true,
     },
     template: {
       type: Object as { (): TETemplate | undefined },
-      default: undefined
+      default: undefined,
     },
     styles: {
       type: String,
-      required: true
+      required: true,
     },
     scope: {
       type: Object as { (): DocumentScope },
-      required: true
+      required: true,
     },
     childComponents: {
       type: Array as { (): ChildComponent[] },
-      required: true
+      required: true,
     },
     propsData: {
       type: Object as PropType<Record<string, any>>,
-      default: () => ({} as Record<string, any>)
-    }
+      default: () => ({} as Record<string, any>),
+    },
   },
 
   computed: {
     scopeValues(): Record<string, any> {
       const values: Record<string, any> = {}
 
-      Object.keys(this.scope.props).forEach(name => {
+      Object.keys(this.scope.props).forEach((name) => {
         const prop = this.scope.props[name]
 
         if (name in this.propsData) {
@@ -54,12 +54,12 @@ export default Vue.extend({
         }
       })
 
-      Object.keys(this.scope.data).forEach(name => {
+      Object.keys(this.scope.data).forEach((name) => {
         values[name] = this.scope.data[name].value
       })
 
       return values
-    }
+    },
   },
 
   render(h): VNode {
@@ -70,10 +70,10 @@ export default Vue.extend({
         .reduce<ResolvedChild[]>((acc, child) => {
           return resolveControlDirectives(acc, {
             el: child,
-            scope: this.scopeValues
+            scope: this.scopeValues,
           })
         }, [])
-        .forEach(child => {
+        .forEach((child) => {
           return children.push(
             h(VueChild, {
               props: {
@@ -82,7 +82,7 @@ export default Vue.extend({
                 scope: child.scope,
                 childComponents: this.childComponents,
                 slots: this.$slots,
-                scopedSlots: this.$scopedSlots
+                scopedSlots: this.$scopedSlots,
               },
               on: {
                 select: (path: number[]) => {
@@ -95,14 +95,14 @@ export default Vue.extend({
 
                 add: () => {
                   this.$emit('add')
-                }
-              }
+                },
+              },
             })
           )
         })
     }
 
     return h('div', children)
-  }
+  },
 })
 </script>

@@ -37,8 +37,8 @@ describe('VueComponent v-if', () => {
       {
         name: 'foo',
         type: 'Number',
-        default: 123
-      }
+        default: 123,
+      },
     ]).find('p')
 
     expect(p.exists()).toBe(true)
@@ -58,8 +58,8 @@ describe('VueComponent v-if', () => {
       [
         {
           name: 'bar',
-          default: null
-        }
+          default: null,
+        },
       ]
     ).find('p')
 

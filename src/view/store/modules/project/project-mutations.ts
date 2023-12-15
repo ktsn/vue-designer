@@ -78,7 +78,7 @@ export class ProjectMutations extends Mutations<ProjectState>() {
   refreshScope({
     uri,
     props,
-    data
+    data,
   }: {
     uri: string
     props: Prop[]
@@ -90,11 +90,11 @@ export class ProjectMutations extends Mutations<ProjectState>() {
     ): void {
       const willRemove = Object.keys(scope)
 
-      next.forEach(item => {
+      next.forEach((item) => {
         if (!scope[item.name]) {
           Vue.set(scope, item.name, {
             type: null,
-            value: item.default
+            value: item.default,
           })
         }
 
@@ -106,7 +106,7 @@ export class ProjectMutations extends Mutations<ProjectState>() {
         }
       })
 
-      willRemove.forEach(key => {
+      willRemove.forEach((key) => {
         Vue.delete(scope, key)
       })
     }
@@ -115,7 +115,7 @@ export class ProjectMutations extends Mutations<ProjectState>() {
     if (!scope) {
       scope = Vue.set(this.state.documentScopes, uri, {
         props: {},
-        data: {}
+        data: {},
       })
     }
 

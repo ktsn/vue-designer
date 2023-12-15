@@ -10,8 +10,8 @@ describe('Get style node', () => {
         rule(
           [selector({ class: ['foo'] })],
           [declaration('color', 'blue'), declaration('font-size', '22px')]
-        )
-      ])
+        ),
+      ]),
     ]
 
     const result = getDeclaration(styles, [1, 1, 1])!
@@ -28,8 +28,8 @@ describe('Get style node', () => {
         rule(
           [selector({ class: ['foo'] })],
           [declaration('color', 'blue'), declaration('font-size', '22px')]
-        )
-      ])
+        ),
+      ]),
     ]
 
     const result = getDeclaration(styles, [1, 0])!
@@ -44,8 +44,8 @@ describe('Get style node', () => {
         rule(
           [selector({ class: ['foo'] })],
           [declaration('color', 'blue'), declaration('font-size', '22px')]
-        )
-      ])
+        ),
+      ]),
     ]
 
     const result = getDeclaration(styles, [0, 1, 1])!

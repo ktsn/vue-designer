@@ -10,7 +10,7 @@ export class Watcher extends vscode.Disposable {
       this.innerWatcher.dispose()
     })
 
-    this.sharedStyleUris = sharedStyleUris.map(stylePath => {
+    this.sharedStyleUris = sharedStyleUris.map((stylePath) => {
       return vscode.Uri.file(path.join(rootPath, stylePath))
     })
 
@@ -19,7 +19,7 @@ export class Watcher extends vscode.Disposable {
   }
 
   onDidSwitchComponent(fn: (uri: vscode.Uri) => void): void {
-    vscode.window.onDidChangeActiveTextEditor(editor => {
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
       if (editor && path.extname(editor.document.uri.fsPath) === '.vue') {
         fn(editor.document.uri)
       }
@@ -29,7 +29,7 @@ export class Watcher extends vscode.Disposable {
   onDidEditComponent(
     fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void
   ): void {
-    vscode.workspace.onDidChangeTextDocument(event => {
+    vscode.workspace.onDidChangeTextDocument((event) => {
       if (event.document !== vscode.window.activeTextEditor!.document) {
         return
       }
@@ -55,7 +55,7 @@ export class Watcher extends vscode.Disposable {
   }
 
   onDidChangeSharedStyle(fn: () => void): void {
-    const uris = this.sharedStyleUris.map(uri => uri.toString())
+    const uris = this.sharedStyleUris.map((uri) => uri.toString())
 
     const interpolate = (uri: vscode.Uri): void => {
       if (uris.indexOf(uri.toString()) >= 0) {
@@ -76,11 +76,11 @@ export class Watcher extends vscode.Disposable {
   private createVueListener(
     fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void
   ): (uri: vscode.Uri) => void {
-    return uri => {
+    return (uri) => {
       if (path.extname(uri.fsPath) !== '.vue') {
         return
       }
-      vscode.workspace.openTextDocument(uri).then(doc => {
+      vscode.workspace.openTextDocument(uri).then((doc) => {
         fn(uri, doc)
       })
     }

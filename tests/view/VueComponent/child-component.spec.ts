@@ -15,8 +15,8 @@ describe('VueComponent child components', () => {
         // prettier-ignore
         template: createTemplate([
           h('button', [], ['Component button'])
-        ])
-      }
+        ]),
+      },
     }
     const wrapper = render(
       template,
@@ -25,8 +25,8 @@ describe('VueComponent child components', () => {
       [
         {
           name: 'Foo',
-          uri: 'file:///Foo.vue'
-        }
+          uri: 'file:///Foo.vue',
+        },
       ],
       components
     )
@@ -57,10 +57,10 @@ describe('VueComponent child components', () => {
         data: [
           {
             name: 'bothValue',
-            default: 'should render child value'
-          }
-        ]
-      }
+            default: 'should render child value',
+          },
+        ],
+      },
     }
 
     const wrapper = render(
@@ -69,18 +69,18 @@ describe('VueComponent child components', () => {
       [
         {
           name: 'parentValue',
-          default: 'should not be rendered in child'
+          default: 'should not be rendered in child',
         },
         {
           name: 'bothValue',
-          default: 'should not be rendered in child'
-        }
+          default: 'should not be rendered in child',
+        },
       ],
       [
         {
           name: 'Child',
-          uri: 'file:///Child.vue'
-        }
+          uri: 'file:///Child.vue',
+        },
       ],
       components
     )
@@ -109,10 +109,10 @@ describe('VueComponent child components', () => {
         props: [
           {
             name: 'message',
-            type: 'String'
-          }
-        ]
-      }
+            type: 'String',
+          },
+        ],
+      },
     }
     const wrapper = render(
       template,
@@ -121,8 +121,8 @@ describe('VueComponent child components', () => {
       [
         {
           name: 'Foo',
-          uri: 'file:///Foo.vue'
-        }
+          uri: 'file:///Foo.vue',
+        },
       ],
       components
     )
@@ -146,10 +146,10 @@ describe('VueComponent child components', () => {
         props: [
           {
             name: 'enabled',
-            type: 'Boolean'
-          }
-        ]
-      }
+            type: 'Boolean',
+          },
+        ],
+      },
     }
     const wrapper = render(
       template,
@@ -158,8 +158,8 @@ describe('VueComponent child components', () => {
       [
         {
           name: 'Foo',
-          uri: 'file:///Foo.vue'
-        }
+          uri: 'file:///Foo.vue',
+        },
       ],
       components
     )
@@ -183,10 +183,10 @@ describe('VueComponent child components', () => {
         props: [
           {
             name: 'childMessage',
-            type: 'String'
-          }
-        ]
-      }
+            type: 'String',
+          },
+        ],
+      },
     }
     const wrapper = render(
       template,
@@ -194,14 +194,14 @@ describe('VueComponent child components', () => {
       [
         {
           name: 'message',
-          default: 'hello from parent v-bind'
-        }
+          default: 'hello from parent v-bind',
+        },
       ],
       [
         {
           name: 'Foo',
-          uri: 'file:///Foo.vue'
-        }
+          uri: 'file:///Foo.vue',
+        },
       ],
       components
     )
@@ -221,8 +221,8 @@ describe('VueComponent child components', () => {
         // prettier-ignore
         template: createTemplate([
           h('h1', [], [exp('message')])
-        ])
-      }
+        ]),
+      },
     }
     const wrapper = render(
       template,
@@ -231,8 +231,8 @@ describe('VueComponent child components', () => {
       [
         {
           name: 'Foo',
-          uri: 'file:///Foo.vue'
-        }
+          uri: 'file:///Foo.vue',
+        },
       ],
       components
     )

@@ -17,8 +17,8 @@ describe('VueComponent scoped slot', () => {
             h('p', [], ['foo content']),
             h('slot', [a('foo', 'test')], [])
           ])
-        ])
-      }
+        ]),
+      },
     }
 
     const wrapper = render(
@@ -28,8 +28,8 @@ describe('VueComponent scoped slot', () => {
       [
         {
           name: 'Foo',
-          uri: 'file://Foo.vue'
-        }
+          uri: 'file://Foo.vue',
+        },
       ],
       components
     )
@@ -55,8 +55,8 @@ describe('VueComponent scoped slot', () => {
             h('slot', [a('foo', 'test1')], []),
             h('slot', [a('name', 'test'), a('foo', 'test2')], [])
           ])
-        ])
-      }
+        ]),
+      },
     }
 
     const wrapper = render(
@@ -66,8 +66,8 @@ describe('VueComponent scoped slot', () => {
       [
         {
           name: 'Foo',
-          uri: 'file://Foo.vue'
-        }
+          uri: 'file://Foo.vue',
+        },
       ],
       components
     )
@@ -93,8 +93,8 @@ describe('VueComponent scoped slot', () => {
           h('div', [], [
             h('slot', [a('foo', 'test')], [])
           ])
-        ])
-      }
+        ]),
+      },
     }
 
     const wrapper = render(
@@ -104,8 +104,8 @@ describe('VueComponent scoped slot', () => {
       [
         {
           name: 'Foo',
-          uri: 'file://Foo.vue'
-        }
+          uri: 'file://Foo.vue',
+        },
       ],
       components
     )

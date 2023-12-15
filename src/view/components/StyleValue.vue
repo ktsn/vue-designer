@@ -23,7 +23,7 @@ import Vue from 'vue'
 import {
   selectNodeContents,
   updateStyleValue,
-  getTextOffset
+  getTextOffset,
 } from '@/view/ui-logic/editing'
 
 export default Vue.extend({
@@ -32,18 +32,18 @@ export default Vue.extend({
   props: {
     value: {
       type: String,
-      required: true
+      required: true,
     },
 
     autoFocus: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   data() {
     return {
-      editing: false
+      editing: false,
     }
   },
 
@@ -61,8 +61,8 @@ export default Vue.extend({
           this.startEdit()
         }
       },
-      immediate: true
-    }
+      immediate: true,
+    },
   },
 
   methods: {
@@ -87,7 +87,7 @@ export default Vue.extend({
 
         this.$emit('input-end', el.textContent, {
           reason,
-          shiftKey: !!anyEvent.shiftKey
+          shiftKey: !!anyEvent.shiftKey,
         })
       }
     },
@@ -176,8 +176,8 @@ export default Vue.extend({
         default:
         // Nothing
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

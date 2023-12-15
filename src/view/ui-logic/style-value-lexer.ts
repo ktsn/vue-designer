@@ -81,8 +81,8 @@ function success<T>(
     context: {
       ...ctx,
       buffer: ctx.buffer.slice(succ),
-      position: next
-    }
+      position: next,
+    },
   }
 }
 
@@ -90,7 +90,7 @@ function failure(ctx: LexerContext, message: string): LexerFailure {
   return {
     success: false,
     message,
-    context: ctx
+    context: ctx,
   }
 }
 
@@ -118,22 +118,22 @@ function seqResult<T>(result: LexerResult<T>[]): LexerResult<T[]> {
         ...acc,
         value: acc.value.concat(res.value),
         range: [acc.range[0], res.range[1]],
-        context: res.context
+        context: res.context,
       }
     },
     {
       ...head,
-      value: [head.value]
+      value: [head.value],
     }
   )
 }
 
 function empty<T>(x: T): Lexer<T> {
-  return ctx => success(ctx, x, 0)
+  return (ctx) => success(ctx, x, 0)
 }
 
 function string<T extends string>(s: T): Lexer<T> {
-  return ctx => {
+  return (ctx) => {
     if (s === ctx.buffer.slice(0, s.length)) {
       return success(ctx, s, s.length)
     } else {
@@ -143,7 +143,7 @@ function string<T extends string>(s: T): Lexer<T> {
 }
 
 function regexp(r: RegExp): Lexer<string> {
-  return ctx => {
+  return (ctx) => {
     const match = ctx.buffer.match(r)
     if (match) {
       return success(ctx, match[0], match[0].length)
@@ -168,16 +168,16 @@ function seq<T>(...xs: Lexer<T>[]): Lexer<T[]> {
     return process(acc.concat(result), result.context, tail)
   }
 
-  return ctx => seqResult(process([], ctx, xs))
+  return (ctx) => seqResult(process([], ctx, xs))
 }
 
 function joinSeq(...xs: Lexer<string>[]): Lexer<string> {
-  return ctx => {
+  return (ctx) => {
     const result = seq(...xs)(ctx)
     if (result.success) {
       return {
         ...result,
-        value: result.value.join('')
+        value: result.value.join(''),
       }
     } else {
       return result
@@ -198,7 +198,7 @@ function many<T>(lexer: Lexer<T>): Lexer<T[]> {
     }
   }
 
-  return ctx => seqResult(process([], ctx))
+  return (ctx) => seqResult(process([], ctx))
 }
 
 function or<T>(...xs: Lexer<T>[]): Lexer<T> {
@@ -211,7 +211,7 @@ function or<T>(...xs: Lexer<T>[]): Lexer<T> {
 
     if (!head) {
       const messages = errors
-        .map(e => e.message + ' at ' + e.context.position)
+        .map((e) => e.message + ' at ' + e.context.position)
         .join('\n')
       return failure(ctx, `All disjunct parse failed:\n` + messages)
     }
@@ -224,7 +224,7 @@ function or<T>(...xs: Lexer<T>[]): Lexer<T> {
     }
   }
 
-  return ctx => {
+  return (ctx) => {
     return process([], ctx, xs)
   }
 }
@@ -242,12 +242,12 @@ function map<T, R>(
   lexer: Lexer<T>,
   fn: (value: T, res: LexerSuccess<T>) => R
 ): Lexer<R> {
-  return ctx => {
+  return (ctx) => {
     const result = lexer(ctx)
     if (result.success) {
       return {
         ...result,
-        value: fn(result.value, result)
+        value: fn(result.value, result),
       }
     } else {
       return result
@@ -301,7 +301,7 @@ const textual: Lexer<Lex> = map(
       type: 'textual',
       quote,
       value: quote !== '' ? value.slice(1, value.length - 1) : value,
-      range: res.range
+      range: res.range,
     }
   }
 )
@@ -315,7 +315,7 @@ const numeric: Lexer<Lex> = map(
       type: 'numeric',
       value: parseFloat(num),
       unit,
-      range: res.range
+      range: res.range,
     }
   }
 )
@@ -326,28 +326,25 @@ const divider: Lexer<Lex> = map(
     return {
       type: 'divider',
       value,
-      range: res.range
+      range: res.range,
     }
   }
 )
 
-const whitespace: Lexer<Lex> = map(
-  regexp(/^\s+/),
-  (value, res): Whitespace => {
-    return {
-      type: 'whitespace',
-      value,
-      range: res.range
-    }
+const whitespace: Lexer<Lex> = map(regexp(/^\s+/), (value, res): Whitespace => {
+  return {
+    type: 'whitespace',
+    value,
+    range: res.range,
   }
-)
+})
 
 const lexer: Lexer<Lex[]> = many(or(numeric, whitespace, divider, textual))
 
 export function lexStyleValue(value: string): Lex[] {
   const ctx = {
     buffer: value,
-    position: 0
+    position: 0,
   }
 
   const result = lexer(ctx)

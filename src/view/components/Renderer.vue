@@ -43,41 +43,41 @@ export default Vue.extend({
   components: {
     Viewport,
     VueComponent,
-    RendererGuide
+    RendererGuide,
   },
 
   props: {
     document: {
       type: Object as () => ScopedDocument,
-      required: true
+      required: true,
     },
     scope: {
       type: Object as () => DocumentScope,
-      required: true
+      required: true,
     },
     width: {
       type: Number,
-      required: true
+      required: true,
     },
     height: {
       type: Number,
-      required: true
+      required: true,
     },
     scale: {
       type: Number,
-      required: true
+      required: true,
     },
     sharedStyle: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
     return {
       rendererSize: {
         width: 0,
-        height: 0
+        height: 0,
       },
 
       /**
@@ -87,7 +87,7 @@ export default Vue.extend({
        * and set the value to `deltaScrollOffset`. Then, it will be applied actual DOM element
        * after VNode is patched (in updated hook).
        */
-      deltaScrollOffset: null as { left: number; top: number } | null
+      deltaScrollOffset: null as { left: number; top: number } | null,
     }
   },
 
@@ -95,7 +95,7 @@ export default Vue.extend({
     scaledSize(): { width: number; height: number } {
       return {
         width: this.width * this.scale,
-        height: this.height * this.scale
+        height: this.height * this.scale,
       }
     },
 
@@ -119,7 +119,7 @@ export default Vue.extend({
         height:
           thresholdHeight > height
             ? renderer.height
-            : height + thresholdHeight * 2
+            : height + thresholdHeight * 2,
       }
     },
 
@@ -127,7 +127,7 @@ export default Vue.extend({
       const { scrollContentSize: size } = this
       return {
         width: size.width + 'px',
-        height: size.height + 'px'
+        height: size.height + 'px',
       }
     },
 
@@ -135,9 +135,9 @@ export default Vue.extend({
       const { scrollContentSize: size } = this
       return {
         x: size.width / 2,
-        y: size.height / 2
+        y: size.height / 2,
       }
-    }
+    },
   },
 
   watch: {
@@ -149,9 +149,9 @@ export default Vue.extend({
       // to avoid flickering viewport
       this.deltaScrollOffset = {
         left: x - prevX,
-        top: y - prevY
+        top: y - prevY,
       }
-    }
+    },
   },
 
   mounted() {
@@ -182,7 +182,7 @@ export default Vue.extend({
   methods: {
     onSelectNode({
       ast,
-      element
+      element,
     }: {
       ast: TEElement
       element: HTMLElement
@@ -191,10 +191,10 @@ export default Vue.extend({
       this.$emit('select', {
         ast,
         element,
-        viewport
+        viewport,
       })
-    }
-  }
+    },
+  },
 })
 </script>
 

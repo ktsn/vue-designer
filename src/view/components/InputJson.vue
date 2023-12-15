@@ -98,7 +98,7 @@ export default Vue.extend({
 
   components: {
     BaseIcon,
-    InputComposition
+    InputComposition,
   },
 
   props: {
@@ -107,20 +107,20 @@ export default Vue.extend({
       required: true,
       validator: (p: any) => {
         return typeof p.name === 'string' && 'value' in p
-      }
+      },
     },
 
     renamable: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   data() {
     return {
       editingName: '',
       editingValue: '',
-      editing: false
+      editing: false,
     }
   },
 
@@ -132,16 +132,16 @@ export default Vue.extend({
         return value.map((child: any, i: number) => {
           return {
             name: String(i),
-            value: child
+            value: child,
           }
         })
       }
 
       if (this.valueType === 'object') {
-        return Object.keys(value).map(key => {
+        return Object.keys(value).map((key) => {
           return {
             name: key,
-            value: value[key]
+            value: value[key],
           }
         })
       }
@@ -207,7 +207,7 @@ export default Vue.extend({
       } catch (e) {
         return 'undefined'
       }
-    }
+    },
   },
 
   methods: {
@@ -261,12 +261,12 @@ export default Vue.extend({
         const newValue = [
           ...value.slice(0, index),
           child.value,
-          ...value.slice(index + 1)
+          ...value.slice(index + 1),
         ]
 
         this.$emit('change', {
           name,
-          value: newValue
+          value: newValue,
         })
         return
       }
@@ -282,11 +282,11 @@ export default Vue.extend({
 
         this.$emit('change', {
           name,
-          value: newValue
+          value: newValue,
         })
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

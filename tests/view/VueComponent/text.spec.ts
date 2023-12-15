@@ -13,8 +13,8 @@ describe('VueComponent v-text', () => {
       [
         {
           name: 'message',
-          default: 'Hello text!'
-        }
+          default: 'Hello text!',
+        },
       ]
     )
     expect(wrapper.find('p').text()).toBe('Hello text!')
@@ -34,8 +34,8 @@ describe('VueComponent v-text', () => {
       [
         {
           name: 'message',
-          default: 'overwritten'
-        }
+          default: 'overwritten',
+        },
       ]
     )
     const p = wrapper.find('p')

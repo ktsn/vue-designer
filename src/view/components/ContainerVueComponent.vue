@@ -12,22 +12,22 @@ export default Vue.extend({
   props: {
     uri: {
       type: String,
-      required: true
+      required: true,
     },
 
     propsData: {
       type: Object as () => Record<string, any>,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
     ...projectMapper.mapState({
-      scopes: 'documentScopes'
+      scopes: 'documentScopes',
     }),
 
     ...projectMapper.mapGetters({
-      documents: 'scopedDocuments'
+      documents: 'scopedDocuments',
     }),
 
     document(): ScopedDocument | undefined {
@@ -36,17 +36,17 @@ export default Vue.extend({
 
     scope(): DocumentScope | undefined {
       return this.scopes[this.uri]
-    }
+    },
   },
 
   render(h): VNode {
     if (!this.document) return h()
 
-    const flattenSlots = Object.keys(this.$slots).map(name => {
+    const flattenSlots = Object.keys(this.$slots).map((name) => {
       return h(
         'template',
         {
-          slot: name
+          slot: name,
         },
         this.$slots[name]
       )
@@ -61,12 +61,12 @@ export default Vue.extend({
           scope: this.scope,
           childComponents: this.document.childComponents,
           styles: this.document.styleCode,
-          propsData: this.propsData
+          propsData: this.propsData,
         },
-        scopedSlots: this.$scopedSlots
+        scopedSlots: this.$scopedSlots,
       },
       flattenSlots
     )
-  }
+  },
 })
 </script>

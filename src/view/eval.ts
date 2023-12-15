@@ -15,12 +15,12 @@ export function evalWithScope(expression: string, scope: object): EvalResult {
     const proxy = createScopeProxy(scope)
     return {
       isSuccess: true,
-      value: new Function(`with (this) { return ${expression} }`).call(proxy)
+      value: new Function(`with (this) { return ${expression} }`).call(proxy),
     }
   } catch (error) {
     return {
       isSuccess: false,
-      error: error as Error
+      error: error as Error,
     }
   }
 }
@@ -42,6 +42,6 @@ function createScopeProxy(scope: Record<string, any>): Record<string, any> {
 
     set() {
       return true
-    }
+    },
   })
 }

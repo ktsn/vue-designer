@@ -2,7 +2,7 @@ import * as t from './types'
 
 export function genStyle(ast: t.STStyle): string {
   return ast.children
-    .map(node => {
+    .map((node) => {
       switch (node.type) {
         case 'AtRule':
           return genAtRule(node)
@@ -22,7 +22,7 @@ function genAtRule(atRule: t.STAtRule): string {
 
   if (atRule.children.length > 0) {
     const children = atRule.children
-      .map(child => {
+      .map((child) => {
         switch (child.type) {
           case 'AtRule':
             return genAtRule(child)
@@ -68,17 +68,15 @@ export function genSelector(s: t.STSelector): string {
   }
 
   if (s.class.length > 0) {
-    buf += s.class.map(c => '.' + c).join('')
+    buf += s.class.map((c) => '.' + c).join('')
   }
 
   if (s.attributes.length > 0) {
-    const attrsCodes = s.attributes.map(attr => {
+    const attrsCodes = s.attributes.map((attr) => {
       if (attr.operator != null && attr.value != null) {
         const suffix = attr.insensitive ? ' i' : ''
         const quote = attr.value.includes('"') ? "'" : '"'
-        return `[${attr.name}${attr.operator}${quote}${
-          attr.value
-        }${quote}${suffix}]`
+        return `[${attr.name}${attr.operator}${quote}${attr.value}${quote}${suffix}]`
       } else {
         return `[${attr.name}]`
       }

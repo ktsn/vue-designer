@@ -13,8 +13,8 @@ describe('VueComponent v-bind', () => {
       {
         name: 'foo',
         type: 'String',
-        default: 'default value'
-      }
+        default: 'default value',
+      },
     ])
     expect(wrapper.find('input').attributes()!.value).toBe('default value')
   })
@@ -45,8 +45,8 @@ describe('VueComponent v-bind', () => {
       {
         name: 'bar',
         type: 'String',
-        default: 'test-class'
-      }
+        default: 'test-class',
+      },
     ])
     const p = wrapper.find('p')
     expect(p.classes()).toEqual(['foo', 'test-class'])
@@ -65,8 +65,8 @@ describe('VueComponent v-bind', () => {
       {
         name: 'foo',
         type: 'String',
-        default: 'font-size: 20px;'
-      }
+        default: 'font-size: 20px;',
+      },
     ])
     const p = wrapper.find('p')
     expect(p.element.style.color).toBe('red')

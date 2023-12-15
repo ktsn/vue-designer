@@ -6,7 +6,7 @@ import { modify } from '@/parser/modifier'
 describe('Script modifier', () => {
   function parse(code: string) {
     return _parse(code, {
-      sourceType: 'module'
+      sourceType: 'module',
     }).program
   }
 
@@ -23,7 +23,7 @@ describe('Script modifier', () => {
 
     const program = parse(code)
     const actual = modify(code, [
-      insertComponentScript(program, code, 'Bar', './Bar.vue')
+      insertComponentScript(program, code, 'Bar', './Bar.vue'),
     ])
 
     const expected = `
@@ -53,7 +53,7 @@ describe('Script modifier', () => {
 
     const program = parse(code)
     const actual = modify(code, [
-      insertComponentScript(program, code, 'Bar', './Bar.vue')
+      insertComponentScript(program, code, 'Bar', './Bar.vue'),
     ])
 
     const expected = `
@@ -80,7 +80,7 @@ describe('Script modifier', () => {
 
     const program = parse(code)
     const actual = modify(code, [
-      insertComponentScript(program, code, 'Foo', './Foo.vue')
+      insertComponentScript(program, code, 'Foo', './Foo.vue'),
     ])
 
     const expected = `
@@ -102,7 +102,7 @@ describe('Script modifier', () => {
 
     const program = parse(code)
     const actual = modify(code, [
-      insertComponentScript(program, code, 'Foo', './Foo.vue')
+      insertComponentScript(program, code, 'Foo', './Foo.vue'),
     ])
 
     const expected = `
@@ -133,7 +133,7 @@ export default {
     const scriptCode = script!.content
     const program = parse(scriptCode)
     const actual = modify(scriptCode, [
-      insertComponentScript(program, scriptCode, 'Foo', './Foo.vue')
+      insertComponentScript(program, scriptCode, 'Foo', './Foo.vue'),
     ])
 
     const spacify = (matched: string) => matched.replace(/./g, ' ')

@@ -11,7 +11,7 @@ describe('VueComponent select event', () => {
       top: 0,
       bottom: 0,
       width: 0,
-      height: 0
+      height: 0,
     }))
   })
 
@@ -61,8 +61,8 @@ describe('VueComponent select event', () => {
           h('div', [], [
             h('button', [a('id', 'child-button')], [])
           ])
-        ])
-      }
+        ]),
+      },
     }
 
     const spy = td.function()
@@ -73,8 +73,8 @@ describe('VueComponent select event', () => {
       [
         {
           name: 'Foo',
-          uri: 'file:///Foo.vue'
-        }
+          uri: 'file:///Foo.vue',
+        },
       ],
       components
     )

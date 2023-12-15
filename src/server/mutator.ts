@@ -2,7 +2,7 @@ import { VueFileRepository } from '../repositories/vue-file-repository'
 import { EditorRepository } from '../repositories/editor-repository'
 import {
   STDeclarationForAdd,
-  STDeclarationForUpdate
+  STDeclarationForUpdate,
 } from '../parser/style/types'
 
 interface SelectNodePayload {
@@ -55,7 +55,7 @@ export const mutator = (
 
   updateDeclaration({ uri, declaration }: UpdateDeclarationPayload): void {
     vueFiles.updateStyleDeclaration(uri, declaration)
-  }
+  },
 })
 
 export type MutatorType = ReturnType<typeof mutator>

@@ -41,7 +41,7 @@ export class CommunicationClient<
       return
     }
 
-    this.observers.forEach(ob => {
+    this.observers.forEach((ob) => {
       const f = ob[method]
       if (f) {
         f(data.data)
@@ -94,7 +94,7 @@ export class CommunicationClient<
     args: Arguments<T[K]>,
     requestId: number
   ): Promise<Unwrap<ReturnType<T[K]>>> {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       const combinedType = type + ':' + key
 
       const receive = (event: MessageEvent): void => {
@@ -117,7 +117,7 @@ export class CommunicationClient<
         JSON.stringify({
           type: combinedType,
           args,
-          requestId
+          requestId,
         })
       )
 

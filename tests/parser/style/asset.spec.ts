@@ -12,7 +12,7 @@ describe('Style asset resolution', () => {
       rule(
         [selector({ tag: 'p' })],
         [declaration('background', 'url(../assets/bg.png)')]
-      )
+      ),
     ])
 
     const resolved = resolveAsset(style, basePath, asset)
@@ -32,9 +32,9 @@ describe('Style asset resolution', () => {
           declaration(
             'background',
             'cyan url("../assets/bg.png") repeat, url("test/icon.gif") no-repeat'
-          )
+          ),
         ]
-      )
+      ),
     ])
 
     const resolved = resolveAsset(style, basePath, asset)

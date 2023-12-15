@@ -8,7 +8,7 @@ import {
   convertToVNodeData,
   resolveControlDirectives,
   ResolvedChild,
-  resolveScopedSlots
+  resolveScopedSlots,
 } from '../ui-logic/rendering'
 import { DraggingPlace } from '../store/modules/project/types'
 import { mapValues } from '@/utils'
@@ -19,36 +19,36 @@ export default Vue.extend({
   props: {
     uri: {
       type: String,
-      required: true
+      required: true,
     },
     data: {
       type: Object as { (): TEElement },
-      required: true
+      required: true,
     },
     scope: {
       type: Object as { (): Record<string, DefaultValue> },
-      required: true
+      required: true,
     },
     childComponents: {
       type: Array as { (): ChildComponent[] },
-      required: true
+      required: true,
     },
     slots: {
       type: Object as { (): Record<string, VNode[]> },
-      required: true
+      required: true,
     },
     scopedSlots: {
       type: Object,
-      required: true
+      required: true,
     },
     selectable: {
       type: Boolean,
-      default: false
+      default: false,
     },
     selected: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
 
   computed: {
@@ -70,7 +70,7 @@ export default Vue.extend({
         const on = {
           click: this.onClick,
           dragover: this.onDragOver,
-          drop: this.onDrop
+          drop: this.onDrop,
         }
 
         if (tag === ContainerVueComponent) {
@@ -83,7 +83,7 @@ export default Vue.extend({
       if (tag === ContainerVueComponent) {
         data.props = {
           uri: this.nodeUri,
-          propsData: data.attrs
+          propsData: data.attrs,
         }
       }
 
@@ -94,16 +94,16 @@ export default Vue.extend({
           return (props: any) => {
             const newScope = {
               ...scope,
-              [scopeName]: props
+              [scopeName]: props,
             }
             const resolved = contents.reduce<ResolvedChild[]>((acc, child) => {
               return resolveControlDirectives(acc, {
                 el: child,
-                scope: newScope
+                scope: newScope,
               })
             }, [])
 
-            return resolved.map(c => {
+            return resolved.map((c) => {
               return h(VueChild, {
                 props: {
                   uri: this.uri,
@@ -111,9 +111,9 @@ export default Vue.extend({
                   scope: c.scope,
                   childComponents: this.childComponents,
                   slots: this.slots,
-                  scopedSlots: this.scopedSlots
+                  scopedSlots: this.scopedSlots,
                 },
-                on: this.$listeners
+                on: this.$listeners,
               })
             })
           }
@@ -128,7 +128,7 @@ export default Vue.extend({
      * If it has a URI, is treated as a component rather than native element.
      */
     nodeUri(): string | undefined {
-      const comp = this.childComponents.find(child => {
+      const comp = this.childComponents.find((child) => {
         // Convert to lower case since vue-eslint-parser ignores tag name case.
         return child.name.toLowerCase() === this.data.name.toLowerCase()
       })
@@ -140,16 +140,16 @@ export default Vue.extend({
      */
     resolvedChildren(): ResolvedChild[] {
       return this.data.children
-        .filter(child => {
+        .filter((child) => {
           return child.type !== 'Element' || !child.startTag.attrs['slot-scope']
         })
         .reduce<ResolvedChild[]>((acc, child) => {
           return resolveControlDirectives(acc, {
             el: child,
-            scope: this.scope
+            scope: this.scope,
           })
         }, [])
-    }
+    },
   },
 
   methods: {
@@ -158,7 +158,7 @@ export default Vue.extend({
 
       this.$emit('select', {
         ast: this.data,
-        element: event.currentTarget
+        element: event.currentTarget,
       })
     },
 
@@ -194,7 +194,7 @@ export default Vue.extend({
 
       this.$emit('dragover', {
         path: this.data.path,
-        place
+        place,
       })
     },
 
@@ -205,7 +205,7 @@ export default Vue.extend({
 
       event.stopPropagation()
       this.$emit('add')
-    }
+    },
   },
 
   render(h): VNode {
@@ -214,7 +214,7 @@ export default Vue.extend({
     return h(
       this.vnodeTag,
       this.vnodeData,
-      this.resolvedChildren.map(c => {
+      this.resolvedChildren.map((c) => {
         // Slot name will be resolved in <VueChild> component
         return h(VueChild, {
           props: {
@@ -223,12 +223,12 @@ export default Vue.extend({
             scope: c.scope,
             childComponents,
             slots,
-            scopedSlots
+            scopedSlots,
           },
-          on: this.$listeners
+          on: this.$listeners,
         })
       })
     )
-  }
+  },
 })
 </script>

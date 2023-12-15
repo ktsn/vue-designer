@@ -20,13 +20,13 @@ describe('Toolbar', () => {
     t.inputHeight(800)
     expect(t.wrapper.emitted('resize')).toBeFalsy()
     t.widthWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
     expect(t.wrapper.emitted('resize')[0]).toEqual([
       {
         width: 600,
-        height: 800
-      }
+        height: 800,
+      },
     ])
   })
 
@@ -35,7 +35,7 @@ describe('Toolbar', () => {
     t.inputScale(400)
     expect(t.wrapper.emitted('zoom')).toBeFalsy()
     t.scaleWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
     expect(t.wrapper.emitted('zoom')[0]).toEqual([4])
   })
@@ -46,7 +46,7 @@ describe('Toolbar', () => {
     t.inputHeight('800abc')
 
     t.widthWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
 
     expect(t.wrapper.emitted('resize')).toBeFalsy()
@@ -59,7 +59,7 @@ describe('Toolbar', () => {
     t.inputScale('30abc')
 
     t.scaleWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
 
     expect(t.wrapper.emitted('zoom')).toBeFalsy()
@@ -69,7 +69,7 @@ describe('Toolbar', () => {
   it('sync width and height field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400)
     t.wrapper.setProps({
-      height: 500
+      height: 500,
     })
 
     await nextTick()
@@ -80,7 +80,7 @@ describe('Toolbar', () => {
   it('sync scale field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400, 1)
     t.wrapper.setProps({
-      scale: 2
+      scale: 2,
     })
 
     await nextTick()
@@ -91,7 +91,7 @@ describe('Toolbar', () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(400)
     t.wrapper.setProps({
-      height: 500
+      height: 500,
     })
 
     await nextTick()
@@ -108,8 +108,8 @@ class ToolbarTest {
       propsData: {
         width,
         height,
-        scale
-      }
+        scale,
+      },
     })
   }
 

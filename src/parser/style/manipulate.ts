@@ -22,16 +22,16 @@ function visitStyle(style: t.STStyle, visitor: StyleVisitor): t.STStyle {
     switch (node.type) {
       case 'AtRule':
         return clone(apply(node, visitor.atRule), {
-          children: node.children.map(loop)
+          children: node.children.map(loop),
         })
       case 'Rule':
         return clone(apply(node, visitor.rule), {
-          selectors: node.selectors.map(selector => {
+          selectors: node.selectors.map((selector) => {
             return visitor.lastSelector && isInterestSelector(node, style)
               ? visitor.lastSelector(selector, node) || selector
               : selector
           }),
-          children: node.children.map(loop)
+          children: node.children.map(loop),
         })
       case 'Declaration':
         return apply(node, visitor.declaration)
@@ -41,7 +41,7 @@ function visitStyle(style: t.STStyle, visitor: StyleVisitor): t.STStyle {
   }
 
   return clone(style, {
-    children: style.children.map(loop)
+    children: style.children.map(loop),
   })
 }
 
@@ -69,7 +69,7 @@ function isInterestSelector(rule: t.STRule, root: t.STStyle): boolean {
     }, [])
     .filter((n): n is t.STAtRule => n.type === 'AtRule')
 
-  return atRules.every(r => !/-?keyframes$/.test(r.name))
+  return atRules.every((r) => !/-?keyframes$/.test(r.name))
 }
 
 export function resolveAsset(
@@ -78,7 +78,7 @@ export function resolveAsset(
   resolver: AssetResolver
 ): t.STStyle {
   return visitStyle(style, {
-    declaration: decl => {
+    declaration: (decl) => {
       const value = decl.value
       const replaced = value.replace(/url\(([^)]+)\)/g, (_, p) => {
         const unquoted = unquote(p)
@@ -87,10 +87,10 @@ export function resolveAsset(
       })
       return replaced !== value
         ? clone(decl, {
-            value: replaced
+            value: replaced,
           })
         : decl
-    }
+    },
   })
 }
 
@@ -104,21 +104,21 @@ export function addScope(node: t.STStyle, scope: string): t.STStyle {
         keyframes.set(atRule.params, replaced)
 
         return clone(atRule, {
-          params: replaced
+          params: replaced,
         })
       }
-    }
+    },
   })
 
   return visitStyle(keyframesReplaced, {
-    declaration: decl => {
+    declaration: (decl) => {
       // individual animation-name declaration
       if (/^(-\w+-)?animation-name$/.test(decl.prop)) {
         return clone(decl, {
           value: decl.value
             .split(',')
-            .map(v => keyframes.get(v.trim()) || v.trim())
-            .join(',')
+            .map((v) => keyframes.get(v.trim()) || v.trim())
+            .join(','),
         })
       }
 
@@ -127,9 +127,9 @@ export function addScope(node: t.STStyle, scope: string): t.STStyle {
         return clone(decl, {
           value: decl.value
             .split(',')
-            .map(v => {
+            .map((v) => {
               const vals = v.trim().split(/\s+/)
-              const i = vals.findIndex(val => keyframes.has(val))
+              const i = vals.findIndex((val) => keyframes.has(val))
               if (i !== -1) {
                 vals.splice(i, 1, keyframes.get(vals[i])!)
                 return vals.join(' ')
@@ -137,20 +137,20 @@ export function addScope(node: t.STStyle, scope: string): t.STStyle {
                 return v
               }
             })
-            .join(',')
+            .join(','),
         })
       }
     },
 
-    lastSelector: selector => {
+    lastSelector: (selector) => {
       return clone(selector, {
         attributes: selector.attributes.concat({
           type: 'Attribute',
           name: scopePrefix + scope,
-          insensitive: false
-        })
+          insensitive: false,
+        }),
       })
-    }
+    },
   })
 }
 

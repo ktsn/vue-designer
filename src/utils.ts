@@ -1,4 +1,7 @@
-export function assert(condition: unknown, message?: string): asserts condition {
+export function assert(
+  condition: unknown,
+  message?: string
+): asserts condition {
   if (!condition) {
     throw new Error(message)
   }
@@ -9,7 +12,7 @@ export function mapValues<T, R>(
   fn: (value: T, key: string) => R
 ): Record<string, R> {
   const res: Record<string, R> = {}
-  Object.keys(record).forEach(key => {
+  Object.keys(record).forEach((key) => {
     res[key] = fn(record[key], key)
   })
   return res
@@ -46,7 +49,7 @@ export function flatten<T>(list: (T | T[])[]): T[] {
 export function clone<T>(value: T, changes: any = {}): T {
   return {
     ...(value as any),
-    ...changes
+    ...changes,
   }
 }
 

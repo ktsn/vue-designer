@@ -5,13 +5,11 @@ module.exports = {
   filenameHashing: false,
   productionSourceMap: false,
 
-  lintOnSave: process.env.NODE_ENV !== 'production',
-
   css: {
-    extract: false
+    extract: false,
   },
 
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     // prettier-ignore
     config.module
       .rule('ts')
@@ -38,17 +36,17 @@ module.exports = {
 
   configureWebpack: {
     entry: {
-      app: './src/view/main.ts'
+      app: './src/view/main.ts',
     },
     output: {
-      filename: 'vue-designer-view.js'
+      filename: 'vue-designer-view.js',
     },
     optimization: {
-      splitChunks: false
+      splitChunks: false,
     },
     performance: {
-      hints: false
-    }
+      hints: false,
+    },
   },
 
   devServer: {
@@ -65,12 +63,12 @@ module.exports = {
     proxy: {
       '/': {
         target: 'http://localhost:50001',
-        ws: false
+        ws: false,
       },
       '/api': {
         target: 'http://localhost:50001',
-        ws: true
-      }
-    }
-  }
+        ws: true,
+      },
+    },
+  },
 }

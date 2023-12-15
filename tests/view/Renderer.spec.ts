@@ -7,7 +7,7 @@ describe('Renderer', () => {
 
   const emptyScope = {
     props: {},
-    data: {}
+    data: {},
   }
 
   function mockGetBoundingClientRect(): DOMRect {
@@ -20,7 +20,7 @@ describe('Renderer', () => {
       right: 0,
       width: mockWidth,
       height: mockHeight,
-      toJSON: () => {}
+      toJSON: () => {},
     }
   }
 
@@ -41,8 +41,8 @@ describe('Renderer', () => {
         width: 800,
         height: 600,
         scale: 1,
-        sharedStyle: ''
-      }
+        sharedStyle: '',
+      },
     })
 
     const size = wrapper.vm.scrollContentSize
@@ -58,8 +58,8 @@ describe('Renderer', () => {
         width: 800,
         height: 1200,
         scale: 1,
-        sharedStyle: ''
-      }
+        sharedStyle: '',
+      },
     })
 
     const size = wrapper.vm.scrollContentSize
@@ -75,8 +75,8 @@ describe('Renderer', () => {
         width: 500,
         height: 500,
         scale: 2,
-        sharedStyle: ''
-      }
+        sharedStyle: '',
+      },
     })
 
     const size = wrapper.vm.scrollContentSize

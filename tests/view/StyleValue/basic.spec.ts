@@ -5,8 +5,8 @@ describe('StyleValue basic', () => {
   it('should render', () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: '20px'
-      }
+        value: '20px',
+      },
     })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
     expect(wrapper.text()).toBe('20px')
@@ -15,8 +15,8 @@ describe('StyleValue basic', () => {
   it('should make editable when clicked', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: '20px'
-      }
+        value: '20px',
+      },
     })
     wrapper.trigger('click')
     await wrapper.vm.$nextTick()
@@ -33,8 +33,8 @@ describe('StyleValue basic', () => {
   it('should make editable when focused', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: '20px'
-      }
+        value: '20px',
+      },
     })
     wrapper.trigger('focus')
     await wrapper.vm.$nextTick()
@@ -51,8 +51,8 @@ describe('StyleValue basic', () => {
   it('should notify starting input', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: '20px'
-      }
+        value: '20px',
+      },
     })
     wrapper.trigger('click')
     await wrapper.vm.$nextTick()
@@ -62,8 +62,8 @@ describe('StyleValue basic', () => {
   it('should end editing when blured', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: '20px'
-      }
+        value: '20px',
+      },
     })
     wrapper.trigger('click')
     expect(wrapper.attributes()!.contenteditable).toBe('true')
@@ -74,15 +74,15 @@ describe('StyleValue basic', () => {
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
     expect(wrapper.emitted('input-end')[0]).toEqual([
       '20px',
-      { reason: 'blur', shiftKey: false }
+      { reason: 'blur', shiftKey: false },
     ])
   })
 
   it('should end editing when pressed enter key', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: '20px'
-      }
+        value: '20px',
+      },
     })
     wrapper.trigger('click')
     expect(wrapper.attributes()!.contenteditable).toBe('true')
@@ -90,41 +90,20 @@ describe('StyleValue basic', () => {
     await wrapper.vm.$nextTick()
 
     wrapper.trigger('keydown', {
-      key: 'Enter'
+      key: 'Enter',
     })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
     expect(wrapper.emitted('input-end')[0]).toEqual([
       '20px',
-      { reason: 'enter', shiftKey: false }
+      { reason: 'enter', shiftKey: false },
     ])
   })
 
   it('should end editing when pressed tab key', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: '20px'
-      }
-    })
-    wrapper.trigger('click')
-    expect(wrapper.attributes()!.contenteditable).toBe('true')
-
-    await wrapper.vm.$nextTick()
-
-    wrapper.trigger('keydown', {
-      key: 'Tab'
-    })
-    expect(wrapper.attributes()!.contenteditable).not.toBe('true')
-    expect(wrapper.emitted('input-end')[0]).toEqual([
-      '20px',
-      { reason: 'tab', shiftKey: false }
-    ])
-  })
-
-  it('should include shift key state when end editing', async () => {
-    const wrapper = mount(StyleValue, {
-      propsData: {
-        value: '20px'
-      }
+        value: '20px',
+      },
     })
     wrapper.trigger('click')
     expect(wrapper.attributes()!.contenteditable).toBe('true')
@@ -133,20 +112,41 @@ describe('StyleValue basic', () => {
 
     wrapper.trigger('keydown', {
       key: 'Tab',
-      shiftKey: true
     })
     expect(wrapper.attributes()!.contenteditable).not.toBe('true')
     expect(wrapper.emitted('input-end')[0]).toEqual([
       '20px',
-      { reason: 'tab', shiftKey: true }
+      { reason: 'tab', shiftKey: false },
+    ])
+  })
+
+  it('should include shift key state when end editing', async () => {
+    const wrapper = mount(StyleValue, {
+      propsData: {
+        value: '20px',
+      },
+    })
+    wrapper.trigger('click')
+    expect(wrapper.attributes()!.contenteditable).toBe('true')
+
+    await wrapper.vm.$nextTick()
+
+    wrapper.trigger('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+    })
+    expect(wrapper.attributes()!.contenteditable).not.toBe('true')
+    expect(wrapper.emitted('input-end')[0]).toEqual([
+      '20px',
+      { reason: 'tab', shiftKey: true },
     ])
   })
 
   it('should update editing content when prop is updated', async () => {
     const wrapper = mount(StyleValue, {
       propsData: {
-        value: 'red'
-      }
+        value: 'red',
+      },
     })
     wrapper.trigger('click')
     await wrapper.vm.$nextTick()
@@ -155,7 +155,7 @@ describe('StyleValue basic', () => {
     expect(wrapper.text()).toBe('red')
 
     wrapper.setProps({
-      value: 'blue'
+      value: 'blue',
     })
     expect(wrapper.attributes()!.contenteditable).toBe('true')
     expect(wrapper.text()).toBe('blue')
@@ -165,8 +165,8 @@ describe('StyleValue basic', () => {
     const wrapper = mount(StyleValue, {
       propsData: {
         value: 'red',
-        autoFocus: true
-      }
+        autoFocus: true,
+      },
     })
 
     await wrapper.vm.$nextTick()
@@ -178,12 +178,12 @@ describe('StyleValue basic', () => {
     const wrapper = mount(StyleValue, {
       propsData: {
         value: 'red',
-        autoFocus: true
-      }
+        autoFocus: true,
+      },
     })
 
     wrapper.setProps({
-      autoFocus: true
+      autoFocus: true,
     })
 
     await wrapper.vm.$nextTick()

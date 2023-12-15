@@ -15,8 +15,8 @@ describe('VueComponent v-for', () => {
       {
         name: 'list',
         type: 'Array',
-        default: ['first', 'second', 'third']
-      }
+        default: ['first', 'second', 'third'],
+      },
     ])
     const list = wrapper.findAll('li')
     expect(list.length).toBe(3)
@@ -42,9 +42,9 @@ describe('VueComponent v-for', () => {
         default: {
           foo: 'first',
           bar: 'second',
-          baz: 'third'
-        }
-      }
+          baz: 'third',
+        },
+      },
     ])
     const list = wrapper.findAll('li')
     expect(list.length).toBe(3)
@@ -55,7 +55,7 @@ describe('VueComponent v-for', () => {
 
   it('should iterate range', () => {
     const template = createTemplate([
-      h('ul', [], [h('li', [vFor(['i'], '3')], [exp('i')])])
+      h('ul', [], [h('li', [vFor(['i'], '3')], [exp('i')])]),
     ])
 
     const wrapper = render(template)

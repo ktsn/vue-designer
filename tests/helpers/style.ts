@@ -9,7 +9,7 @@ import {
   STPseudoClass,
   STPseudoElement,
   STAttribute,
-  STChild
+  STChild,
 } from '@/parser/style/types'
 
 export function createStyle(children: (STAtRule | STRule)[]): STStyle {
@@ -17,7 +17,7 @@ export function createStyle(children: (STAtRule | STRule)[]): STStyle {
   return {
     path: [0],
     children,
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -51,7 +51,7 @@ export function atRule(
     name,
     params,
     children,
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -66,7 +66,7 @@ export function rule(
     after: '',
     selectors,
     children,
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -79,7 +79,7 @@ export function selector(
     universal: options.universal || false,
     class: options.class || [],
     attributes: options.attributes || [],
-    pseudoClass: options.pseudoClass || []
+    pseudoClass: options.pseudoClass || [],
   }
 
   if (options.tag) {
@@ -112,7 +112,7 @@ export function attribute(
     name,
     operator,
     value,
-    insensitive
+    insensitive,
   }
 }
 
@@ -120,7 +120,7 @@ export function combinator(operator: string, next: STSelector): STCombinator {
   return {
     type: 'Combinator',
     operator,
-    left: next
+    left: next,
   }
 }
 
@@ -137,7 +137,7 @@ export function declaration(
     prop,
     value,
     important,
-    range: [-1, -1]
+    range: [-1, -1],
   }
 }
 
@@ -148,7 +148,7 @@ export function pClass(
   return {
     type: 'PseudoClass',
     value,
-    params
+    params,
   }
 }
 
@@ -159,7 +159,7 @@ export function pElement(
   return {
     type: 'PseudoElement',
     value,
-    pseudoClass
+    pseudoClass,
   }
 }
 
@@ -175,7 +175,7 @@ function exclude(obj: any): any {
   }
 
   const res: any = {}
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     if (key !== 'range' && key !== 'before' && key !== 'after') {
       const value = obj[key]
       res[key] = exclude(value)

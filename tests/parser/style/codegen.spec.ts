@@ -7,7 +7,7 @@ import {
   pElement,
   combinator,
   declaration,
-  atRule
+  atRule,
 } from '../../helpers/style'
 import { genStyle } from '@/parser/style/codegen'
 
@@ -28,9 +28,9 @@ describe('Style codegen', () => {
           id: 'baz',
           attributes: [attribute('value', '=', 'text')],
           pseudoClass: [pClass('hover')],
-          pseudoElement: pElement('before')
-        })
-      ])
+          pseudoElement: pElement('before'),
+        }),
+      ]),
     ])
     const expected = '*#baz.foo.bar[value="text"]:hover::before {}'
 
@@ -41,9 +41,9 @@ describe('Style codegen', () => {
     const ast = createStyle([
       rule([
         selector({
-          attributes: [attribute('v-cloak'), attribute('data-scope-123456')]
-        })
-      ])
+          attributes: [attribute('v-cloak'), attribute('data-scope-123456')],
+        }),
+      ]),
     ])
     const expected = '[v-cloak][data-scope-123456] {}'
 
@@ -53,8 +53,8 @@ describe('Style codegen', () => {
   it('should generate complex selector', () => {
     const ast = createStyle([
       rule([
-        selector({ tag: 'h1' }, combinator('>', selector({ class: ['test'] })))
-      ])
+        selector({ tag: 'h1' }, combinator('>', selector({ class: ['test'] }))),
+      ]),
     ])
     const expected = '.test > h1 {}'
 
@@ -63,7 +63,7 @@ describe('Style codegen', () => {
 
   it('should generate selector list', () => {
     const ast = createStyle([
-      rule([selector({ tag: 'p' }), selector({ tag: 'strong' })])
+      rule([selector({ tag: 'p' }), selector({ tag: 'strong' })]),
     ])
     const expected = 'p, strong {}'
 
@@ -77,11 +77,11 @@ describe('Style codegen', () => {
           pseudoClass: [
             pClass('not', [
               selector({ class: ['bar'] }),
-              selector({ tag: 'strong' })
-            ])
-          ]
-        })
-      ])
+              selector({ tag: 'strong' }),
+            ]),
+          ],
+        }),
+      ]),
     ])
     const expected = ':not(.bar, strong) {}'
 
@@ -92,9 +92,9 @@ describe('Style codegen', () => {
     const ast = createStyle([
       rule([
         selector({
-          pseudoClass: [pClass('nth-child', [selector({ tag: '2n' })])]
-        })
-      ])
+          pseudoClass: [pClass('nth-child', [selector({ tag: '2n' })])],
+        }),
+      ]),
     ])
     const expected = ':nth-child(2n) {}'
 
@@ -105,9 +105,9 @@ describe('Style codegen', () => {
     const ast = createStyle([
       rule([
         selector({
-          pseudoElement: pElement('after', [pClass('hover')])
-        })
-      ])
+          pseudoElement: pElement('after', [pClass('hover')]),
+        }),
+      ]),
     ])
     const expected = '::after:hover {}'
 
@@ -120,9 +120,9 @@ describe('Style codegen', () => {
         [selector({ tag: 'h1' })],
         [
           declaration('font-size', '22px'),
-          declaration('font-weight', 'bold', true)
+          declaration('font-weight', 'bold', true),
         ]
-      )
+      ),
     ])
     const expected = 'h1 {font-size: 22px; font-weight: bold !important;}'
 
@@ -139,8 +139,8 @@ describe('Style codegen', () => {
   it('should generate at-rule: with children', () => {
     const ast = createStyle([
       atRule('media', 'screen and (max-width: 767px)', [
-        rule([selector({ tag: 'p' })], [declaration('color', 'red')])
-      ])
+        rule([selector({ tag: 'p' })], [declaration('color', 'red')]),
+      ]),
     ])
     const expected = '@media screen and (max-width: 767px) {p {color: red;}}'
 
@@ -151,14 +151,14 @@ describe('Style codegen', () => {
     const ast = createStyle([
       rule([
         selector({
-          attributes: [attribute('value', '=', 'abc')]
-        })
+          attributes: [attribute('value', '=', 'abc')],
+        }),
       ]),
       rule([
         selector({
-          attributes: [attribute('value', '=', 'abc', true)]
-        })
-      ])
+          attributes: [attribute('value', '=', 'abc', true)],
+        }),
+      ]),
     ])
     const expected = '[value="abc"] {}\n[value="abc" i] {}'
 
@@ -169,9 +169,9 @@ describe('Style codegen', () => {
     const ast = createStyle([
       rule([
         selector({
-          attributes: [attribute('value', '=', '"quoted"')]
-        })
-      ])
+          attributes: [attribute('value', '=', '"quoted"')],
+        }),
+      ]),
     ])
     const expected = '[value=\'"quoted"\'] {}'
 

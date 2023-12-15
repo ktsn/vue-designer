@@ -36,7 +36,7 @@ import Vue from 'vue'
 
 const scaleFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 2,
-  useGrouping: false
+  useGrouping: false,
 })
 
 export default Vue.extend({
@@ -45,30 +45,30 @@ export default Vue.extend({
   props: {
     width: {
       type: Number,
-      required: true
+      required: true,
     },
     height: {
       type: Number,
-      required: true
+      required: true,
     },
     scale: {
       type: Number,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
     return {
       dirtyWidth: this.width,
       dirtyHeight: this.height,
-      dirtyScale: scaleFormatter.format(this.scale * 100)
+      dirtyScale: scaleFormatter.format(this.scale * 100),
     }
   },
 
   watch: {
     width: 'resetSize',
     height: 'resetSize',
-    scale: 'resetScale'
+    scale: 'resetScale',
   },
 
   methods: {
@@ -94,7 +94,7 @@ export default Vue.extend({
       } else {
         this.$emit('resize', {
           width,
-          height
+          height,
         })
       }
     },
@@ -107,8 +107,8 @@ export default Vue.extend({
       } else {
         this.$emit('zoom', scale / 100)
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

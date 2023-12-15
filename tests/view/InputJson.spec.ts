@@ -8,9 +8,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'stringName',
-            value: 'string value'
-          }
-        }
+            value: 'string value',
+          },
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -21,9 +21,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'numberName',
-            value: 123
-          }
-        }
+            value: 123,
+          },
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -34,9 +34,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'booleanName',
-            value: true
-          }
-        }
+            value: true,
+          },
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -47,9 +47,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'nullName',
-            value: null
-          }
-        }
+            value: null,
+          },
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -60,9 +60,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'numberName',
-            value: undefined
-          }
-        }
+            value: undefined,
+          },
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -75,10 +75,10 @@ describe('InputJson', () => {
             name: 'objectName',
             value: {
               foo: 'test',
-              bar: 123
-            }
-          }
-        }
+              bar: 123,
+            },
+          },
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -89,9 +89,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'arrayName',
-            value: ['test', 123, true]
-          }
-        }
+            value: ['test', 123, true],
+          },
+        },
       })
 
       expect(wrapper.html()).toMatchSnapshot()
@@ -104,9 +104,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'test',
-            value: 123
-          }
-        }
+            value: 123,
+          },
+        },
       })
       const ctrl = new InputJsonController(wrapper)
 
@@ -117,8 +117,8 @@ describe('InputJson', () => {
       expect(wrapper.emitted('change')[0]).toEqual([
         {
           name: 'test',
-          value: 456
-        }
+          value: 456,
+        },
       ])
     })
 
@@ -127,9 +127,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'test',
-            value: 123
-          }
-        }
+            value: 123,
+          },
+        },
       })
       const ctrl = new InputJsonController(wrapper)
 
@@ -143,9 +143,9 @@ describe('InputJson', () => {
           value: {
             foo: '123',
             bar: 123,
-            baz: null
-          }
-        }
+            baz: null,
+          },
+        },
       ])
     })
 
@@ -156,10 +156,10 @@ describe('InputJson', () => {
             name: 'test',
             value: {
               foo: 'abc',
-              bar: 123
-            }
-          }
-        }
+              bar: 123,
+            },
+          },
+        },
       })
       const bar = wrapper.findAll(InputJson).at(2)
       const ctrl = new InputJsonController(bar)
@@ -173,9 +173,9 @@ describe('InputJson', () => {
           name: 'test',
           value: {
             foo: 'abc',
-            bar: 456
-          }
-        }
+            bar: 456,
+          },
+        },
       ])
     })
 
@@ -184,9 +184,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'test',
-            value: ['foo', 123, true]
-          }
-        }
+            value: ['foo', 123, true],
+          },
+        },
       })
       const second = wrapper.findAll(InputJson).at(2)
       const ctrl = new InputJsonController(second)
@@ -198,8 +198,8 @@ describe('InputJson', () => {
       expect(wrapper.emitted('change')[0]).toEqual([
         {
           name: 'test',
-          value: ['foo', 456, true]
-        }
+          value: ['foo', 456, true],
+        },
       ])
     })
 
@@ -208,9 +208,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'test',
-            value: 123
-          }
-        }
+            value: 123,
+          },
+        },
       })
       const ctrl = new InputJsonController(wrapper)
 
@@ -228,10 +228,10 @@ describe('InputJson', () => {
             name: 'test',
             value: {
               foo: 'abc',
-              bar: 'def'
-            }
-          }
-        }
+              bar: 'def',
+            },
+          },
+        },
       })
       const child = wrapper.findAll(InputJson).at(1)
       const ctrl = new InputJsonController(child)
@@ -245,9 +245,9 @@ describe('InputJson', () => {
           name: 'test',
           value: {
             bar: 'def',
-            baz: 'abc'
-          }
-        }
+            baz: 'abc',
+          },
+        },
       ])
     })
 
@@ -256,9 +256,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'test',
-            value: 123
-          }
-        }
+            value: 123,
+          },
+        },
       })
       const ctrl = new InputJsonController(wrapper)
 
@@ -269,8 +269,8 @@ describe('InputJson', () => {
       expect(wrapper.emitted('change')[0]).toEqual([
         {
           name: 'test',
-          value: 123
-        }
+          value: 123,
+        },
       ])
     })
 
@@ -279,9 +279,9 @@ describe('InputJson', () => {
         propsData: {
           field: {
             name: 'test',
-            value: ['foo', 'bar', 'baz']
-          }
-        }
+            value: ['foo', 'bar', 'baz'],
+          },
+        },
       })
       const child = wrapper.find(InputJson)
       const ctrl = new InputJsonController(child)
@@ -293,8 +293,8 @@ describe('InputJson', () => {
       expect(wrapper.emitted('change')[0]).toEqual([
         {
           name: 'test',
-          value: ['foo', 'bar', 'baz']
-        }
+          value: ['foo', 'bar', 'baz'],
+        },
       ])
     })
   })

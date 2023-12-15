@@ -5,7 +5,7 @@ import {
   attribute,
   pClass,
   pElement,
-  combinator
+  combinator,
 } from '../../helpers/style'
 import { createTemplate, h, a } from '../../helpers/template'
 import { createStyleMatcher } from '@/parser/style/match'
@@ -15,13 +15,13 @@ describe('Style matcher', () => {
     const universal = rule([selector({ universal: true })])
     const pseudoClass = rule([
       selector({
-        pseudoClass: [pClass('hover')]
-      })
+        pseudoClass: [pClass('hover')],
+      }),
     ])
     const pseudoElement = rule([
       selector({
-        pseudoElement: pElement('before')
-      })
+        pseudoElement: pElement('before'),
+      }),
     ])
 
     const style = createStyle([universal, pseudoClass, pseudoElement])
@@ -47,8 +47,8 @@ describe('Style matcher', () => {
     const classes = rule([selector({ class: ['bar'] })])
     const attr = rule([
       selector({
-        attributes: [attribute('value')]
-      })
+        attributes: [attribute('value')],
+      }),
     ])
 
     const style = createStyle([tag, id, classes, attr])
@@ -93,34 +93,34 @@ describe('Style matcher', () => {
     const idWithTag = rule([
       selector({
         id: 'foo',
-        tag: 'a'
-      })
+        tag: 'a',
+      }),
     ])
 
     const idWithClass = rule([
       selector({
         id: 'foo',
-        class: ['bar']
-      })
+        class: ['bar'],
+      }),
     ])
 
     const idWithAttribute = rule([
       selector({
         id: 'foo',
-        attributes: [attribute('value')]
-      })
+        attributes: [attribute('value')],
+      }),
     ])
 
     const multiClass = rule([
       selector({
-        class: ['foo', 'bar']
-      })
+        class: ['foo', 'bar'],
+      }),
     ])
 
     const multiAttributes = rule([
       selector({
-        attributes: [attribute('title'), attribute('value')]
-      })
+        attributes: [attribute('title'), attribute('value')],
+      }),
     ])
 
     const style = createStyle([
@@ -128,7 +128,7 @@ describe('Style matcher', () => {
       idWithClass,
       idWithAttribute,
       multiClass,
-      multiAttributes
+      multiAttributes,
     ])
     const matcher = createStyleMatcher([style])
 
@@ -210,7 +210,7 @@ describe('Style matcher', () => {
         selector(
           { class: ['bar'] },
           combinator('>', selector({ class: ['foo'] }))
-        )
+        ),
       ])
 
       const matcher = createStyleMatcher([createStyle([child])])
@@ -238,7 +238,7 @@ describe('Style matcher', () => {
         selector(
           { class: ['bar'] },
           combinator('+', selector({ class: ['foo'] }))
-        )
+        ),
       ])
 
       const matcher = createStyleMatcher([createStyle([sibling])])
@@ -270,7 +270,7 @@ describe('Style matcher', () => {
         selector(
           { class: ['bar'] },
           combinator('+', selector({ class: ['foo'] }))
-        )
+        ),
       ])
 
       const matcher = createStyleMatcher([createStyle([sibling])])
@@ -294,7 +294,7 @@ describe('Style matcher', () => {
         selector(
           { class: ['bar'] },
           combinator(' ', selector({ class: ['foo'] }))
-        )
+        ),
       ])
 
       const matcher = createStyleMatcher([createStyle([descendant])])
@@ -322,7 +322,7 @@ describe('Style matcher', () => {
         selector(
           { class: ['bar'] },
           combinator('~', selector({ class: ['foo'] }))
-        )
+        ),
       ])
 
       const matcher = createStyleMatcher([createStyle([sibling])])
@@ -352,27 +352,27 @@ describe('Style matcher', () => {
       const rules = [
         rule([
           selector({
-            attributes: [attribute('value', '=', 'abcdef')]
-          })
+            attributes: [attribute('value', '=', 'abcdef')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '=', 'abc')]
-          })
+            attributes: [attribute('value', '=', 'abc')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '=', 'abcdefg')]
-          })
+            attributes: [attribute('value', '=', 'abcdefg')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '=', 'abcdef test')]
-          })
-        ])
+            attributes: [attribute('value', '=', 'abcdef test')],
+          }),
+        ]),
       ]
 
       const matcher = createStyleMatcher([createStyle(rules)])
@@ -391,21 +391,21 @@ describe('Style matcher', () => {
       const rules = [
         rule([
           selector({
-            attributes: [attribute('value', '~=', 'abc')]
-          })
+            attributes: [attribute('value', '~=', 'abc')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '~=', 'ab')]
-          })
+            attributes: [attribute('value', '~=', 'ab')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '~=', 'def')]
-          })
-        ])
+            attributes: [attribute('value', '~=', 'def')],
+          }),
+        ]),
       ]
 
       const matcher = createStyleMatcher([createStyle(rules)])
@@ -430,21 +430,21 @@ describe('Style matcher', () => {
       const rules = [
         rule([
           selector({
-            attributes: [attribute('value', '|=', 'abc')]
-          })
+            attributes: [attribute('value', '|=', 'abc')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '|=', 'ab')]
-          })
+            attributes: [attribute('value', '|=', 'ab')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '|=', 'def')]
-          })
-        ])
+            attributes: [attribute('value', '|=', 'def')],
+          }),
+        ]),
       ]
 
       const matcher = createStyleMatcher([createStyle(rules)])
@@ -468,21 +468,21 @@ describe('Style matcher', () => {
       const rules = [
         rule([
           selector({
-            attributes: [attribute('value', '^=', 'abc')]
-          })
+            attributes: [attribute('value', '^=', 'abc')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '^=', 'ab')]
-          })
+            attributes: [attribute('value', '^=', 'ab')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '^=', 'bc')]
-          })
-        ])
+            attributes: [attribute('value', '^=', 'bc')],
+          }),
+        ]),
       ]
 
       const matcher = createStyleMatcher([createStyle(rules)])
@@ -502,21 +502,21 @@ describe('Style matcher', () => {
       const rules = [
         rule([
           selector({
-            attributes: [attribute('value', '$=', 'abc')]
-          })
+            attributes: [attribute('value', '$=', 'abc')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '$=', 'ab')]
-          })
+            attributes: [attribute('value', '$=', 'ab')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '$=', 'bc')]
-          })
-        ])
+            attributes: [attribute('value', '$=', 'bc')],
+          }),
+        ]),
       ]
 
       const matcher = createStyleMatcher([createStyle(rules)])
@@ -536,27 +536,27 @@ describe('Style matcher', () => {
       const rules = [
         rule([
           selector({
-            attributes: [attribute('value', '*=', 'abc')]
-          })
+            attributes: [attribute('value', '*=', 'abc')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '*=', 'ab')]
-          })
+            attributes: [attribute('value', '*=', 'ab')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '*=', 'b')]
-          })
+            attributes: [attribute('value', '*=', 'b')],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '*=', 'abcd')]
-          })
-        ])
+            attributes: [attribute('value', '*=', 'abcd')],
+          }),
+        ]),
       ]
 
       const matcher = createStyleMatcher([createStyle(rules)])
@@ -577,15 +577,15 @@ describe('Style matcher', () => {
       const rules = [
         rule([
           selector({
-            attributes: [attribute('value', '=', 'abc', true)]
-          })
+            attributes: [attribute('value', '=', 'abc', true)],
+          }),
         ]),
 
         rule([
           selector({
-            attributes: [attribute('value', '=', 'abc')]
-          })
-        ])
+            attributes: [attribute('value', '=', 'abc')],
+          }),
+        ]),
       ]
 
       const matcher = createStyleMatcher([createStyle(rules)])

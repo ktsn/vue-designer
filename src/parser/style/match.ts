@@ -22,7 +22,7 @@ export function createStyleMatcher(styles: style.STStyle[]) {
       `[style matcher] Target node has unexpected type '${target.type}'`
     )
 
-    return map.getCandidateRules(target).filter(rule => {
+    return map.getCandidateRules(target).filter((rule) => {
       return rule.selectors.reduce((acc, s) => {
         return acc || matchSelector(target, s, template)
       }, false)
@@ -197,7 +197,7 @@ class StyleMap {
   private universals: style.STRule[] = []
 
   constructor(styles: style.STStyle[]) {
-    styles.forEach(style => {
+    styles.forEach((style) => {
       visitLastSelectors(style, (selector, rule) => {
         // Register each rule to map keyed by the most right selector string.
         // The priority is: id > class > attribute name > tag > universal

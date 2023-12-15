@@ -7,8 +7,8 @@ describe('StyleDeclaration', () => {
     const wrapper = mount(StyleDeclaration, {
       propsData: {
         prop: 'color',
-        value: 'red'
-      }
+        value: 'red',
+      },
     })
 
     const prop = wrapper.find(StyleValue)
@@ -23,8 +23,8 @@ describe('StyleDeclaration', () => {
     const wrapper = mount(StyleDeclaration, {
       propsData: {
         prop: 'color',
-        value: 'red'
-      }
+        value: 'red',
+      },
     })
 
     const value = wrapper.findAll(StyleValue).at(1)
@@ -39,8 +39,8 @@ describe('StyleDeclaration', () => {
     const wrapper = mount(StyleDeclaration, {
       propsData: {
         prop: 'color',
-        value: 'red'
-      }
+        value: 'red',
+      },
     })
 
     const prop = wrapper.find(StyleValue)
@@ -56,8 +56,8 @@ describe('StyleDeclaration', () => {
     const wrapper = mount(StyleDeclaration, {
       propsData: {
         prop: 'color',
-        value: 'red'
-      }
+        value: 'red',
+      },
     })
 
     const value = wrapper.findAll(StyleValue).at(1)

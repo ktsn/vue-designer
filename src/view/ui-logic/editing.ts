@@ -50,24 +50,24 @@ export function updateStyleValue(
         if (n.type === 'numeric') {
           const updated = {
             ...n,
-            value: n.value + offset
+            value: n.value + offset,
           }
 
           const str = lexToString(updated)
 
           return {
             value: acc.value + str,
-            range: [acc.value.length, acc.value.length + str.length]
+            range: [acc.value.length, acc.value.length + str.length],
           }
         }
       }
       return {
         ...acc,
-        value: acc.value + lexToString(n)
+        value: acc.value + lexToString(n),
       }
     },
     {
-      value: ''
+      value: '',
     }
   )
 }

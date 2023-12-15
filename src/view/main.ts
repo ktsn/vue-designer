@@ -9,5 +9,5 @@ import { store } from './store'
 new Vue({
   el: '#app',
   store,
-  render: h => h(App)
+  render: (h) => h(App),
 } as ComponentOptions<Vue>)

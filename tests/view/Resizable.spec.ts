@@ -20,7 +20,7 @@ describe('Resizable', () => {
   it('multiplies offset by offsetWeight prop', () => {
     const t = new ResizableTest(300, 300)
     t.wrapper.setProps({
-      offsetWeight: 2
+      offsetWeight: 2,
     })
     t.dragStart('se', 300, 300)
     t.dragTo(350, 370)
@@ -114,13 +114,13 @@ class ResizableTest {
     this.wrapper = mount(Resizable, {
       propsData: {
         width,
-        height
-      }
+        height,
+      },
     })
 
     this.size = {
       width,
-      height
+      height,
     }
 
     this.wrapper.vm.$on('resize', (value: any) => {
@@ -133,7 +133,7 @@ class ResizableTest {
     this.handler = this.wrapper.find('.resizable-handler-' + direction)
     this.handler.trigger('pointerdown', {
       clientX: x,
-      clientY: y
+      clientY: y,
     })
   }
 
@@ -141,7 +141,7 @@ class ResizableTest {
     assert(this.handler)
     this.handler.trigger('pointermove', {
       clientX: x,
-      clientY: y
+      clientY: y,
     })
     this.handler.trigger('pointerup')
   }

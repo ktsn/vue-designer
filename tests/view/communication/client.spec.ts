@@ -1,6 +1,6 @@
 import {
   CommunicationClient,
-  CommunicationClientObserver
+  CommunicationClientObserver,
 } from '@/view/communication/client'
 import { MockWebSocketClient } from '../../helpers/ws'
 
@@ -11,21 +11,21 @@ describe('CommunicationClient', () => {
 
   const resolver = {
     get(id: number): Foo | undefined {
-      return dummyData.find(d => d.id === id)
+      return dummyData.find((d) => d.id === id)
     },
 
     all(): Foo[] {
       return dummyData
-    }
+    },
   }
 
   const mutator = {
     update(id: number, value: string): Foo | undefined {
-      const f = dummyData.find(d => d.id === id)
+      const f = dummyData.find((d) => d.id === id)
       if (!f) return
       f.value = value
       return f
-    }
+    },
   }
 
   interface SubjectType {
@@ -42,13 +42,13 @@ describe('CommunicationClient', () => {
     dummyData = [new Foo(1, 'foo'), new Foo(2, 'bar'), new Foo(3, 'baz')]
     mockWs = new MockWebSocketClient()
     client = new CommunicationClient({
-      ws: mockWs
+      ws: mockWs,
     })
   })
 
   describe('resolver', () => {
-    it('fetches some data via resolve method', done => {
-      client.resolve('get', 2).then(res => {
+    it('fetches some data via resolve method', (done) => {
+      client.resolve('get', 2).then((res) => {
         expect(res).toEqual(dummyData[1])
         done()
       })
@@ -62,12 +62,12 @@ describe('CommunicationClient', () => {
       mockWs.receive({
         type: 'resolver:get',
         data: resolver.get(2),
-        requestId: p.requestId
+        requestId: p.requestId,
       })
     })
 
-    it('does not react different request id', done => {
-      client.resolve('get', 2).then(res => {
+    it('does not react different request id', (done) => {
+      client.resolve('get', 2).then((res) => {
         expect(res).toEqual(dummyData[1])
         done()
       })
@@ -77,23 +77,23 @@ describe('CommunicationClient', () => {
       mockWs.receive({
         type: 'resolver:get',
         data: resolver.get(1),
-        requestId: 'dummy id'
+        requestId: 'dummy id',
       })
 
       mockWs.receive({
         type: 'resolver:get',
         data: resolver.get(2),
-        requestId: p.requestId
+        requestId: p.requestId,
       })
     })
   })
 
   describe('mutator', () => {
-    it('updates remote data via mutate method', done => {
-      client.mutate('update', 2, 'updated').then(res => {
+    it('updates remote data via mutate method', (done) => {
+      client.mutate('update', 2, 'updated').then((res) => {
         expect(res).toEqual({
           id: 2,
-          value: 'updated'
+          value: 'updated',
         })
         done()
       })
@@ -107,15 +107,15 @@ describe('CommunicationClient', () => {
       mockWs.receive({
         type: 'mutator:update',
         data: mutator.update(2, 'updated'),
-        requestId: p.requestId
+        requestId: p.requestId,
       })
     })
 
-    it('does not react different request id', done => {
-      client.mutate('update', 2, 'updated').then(res => {
+    it('does not react different request id', (done) => {
+      client.mutate('update', 2, 'updated').then((res) => {
         expect(res).toEqual({
           id: 2,
-          value: 'updated'
+          value: 'updated',
         })
         done()
       })
@@ -125,13 +125,13 @@ describe('CommunicationClient', () => {
       mockWs.receive({
         type: 'mutator:update',
         data: mutator.update(1, 'test'),
-        requestId: 'dummy id'
+        requestId: 'dummy id',
       })
 
       mockWs.receive({
         type: 'mutator:update',
         data: mutator.update(2, 'updated'),
-        requestId: p.requestId
+        requestId: p.requestId,
       })
     })
   })
@@ -141,7 +141,7 @@ describe('CommunicationClient', () => {
     let unobserve: () => void
     beforeEach(() => {
       observer = {
-        foo: jest.fn()
+        foo: jest.fn(),
       }
       unobserve = client.observe(observer)
     })
@@ -155,7 +155,7 @@ describe('CommunicationClient', () => {
 
       mockWs.receive({
         type: 'subject:foo',
-        data: dummy
+        data: dummy,
       })
 
       expect(observer.foo).toHaveBeenCalledWith(dummy)
@@ -167,7 +167,7 @@ describe('CommunicationClient', () => {
 
       mockWs.receive({
         type: 'subject:foo',
-        data: dummy
+        data: dummy,
       })
 
       expect(observer.foo).not.toHaveBeenCalled()

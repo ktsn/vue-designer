@@ -10,7 +10,7 @@ describe('Renderer', () => {
     data: {}
   }
 
-  function mockGetBoundingClientRect() {
+  function mockGetBoundingClientRect(): DOMRect {
     return {
       x: 0,
       y: 0,
@@ -19,7 +19,8 @@ describe('Renderer', () => {
       top: 0,
       right: 0,
       width: mockWidth,
-      height: mockHeight
+      height: mockHeight,
+      toJSON: () => {}
     }
   }
 
@@ -30,10 +31,6 @@ describe('Renderer', () => {
   beforeEach(() => {
     mockWidth = 1000
     mockHeight = 1000
-  })
-
-  afterAll(() => {
-    delete Element.prototype.getBoundingClientRect
   })
 
   it('scroll content has the same size with renderer when the viewport is not over the renderer size', () => {

@@ -34,7 +34,7 @@
 <script lang="ts">
 import Vue from 'vue'
 
-const scaleFormatter = new Intl.NumberFormat('latn', {
+const scaleFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 2,
   useGrouping: false
 })

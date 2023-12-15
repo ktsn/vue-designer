@@ -8,11 +8,6 @@ describe('Resizable', () => {
     Element.prototype.releasePointerCapture = jest.fn()
   })
 
-  afterAll(() => {
-    delete Element.prototype.setPointerCapture
-    delete Element.prototype.releasePointerCapture
-  })
-
   it('tells resized size on dragging', () => {
     const t = new ResizableTest(300, 300)
     t.dragStart('se', 295, 305)
@@ -108,7 +103,7 @@ describe('Resizable', () => {
 })
 
 class ResizableTest {
-  wrapper: Wrapper<Resizable>
+  wrapper: Wrapper<InstanceType<typeof Resizable>>
   handler!: Wrapper<any>
   size: {
     width: number

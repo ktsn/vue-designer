@@ -15,10 +15,6 @@ describe('VueComponent select event', () => {
     }))
   })
 
-  afterAll(() => {
-    delete Element.prototype.getBoundingClientRect
-  })
-
   it('should catch select event from descendant nodes', () => {
     const third = h('button', [a('id', 'third')], [])
     // prettier-ignore

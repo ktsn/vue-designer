@@ -63,18 +63,23 @@ export default Vue.extend({
     vnodeData(): VNodeData {
       const { data: node, scope, selectable } = this
       const data = convertToVNodeData(node.name, node.startTag, scope)
+      const tag = this.vnodeTag
 
       if (selectable) {
-        // The vnode may be a native element or ContainerVueComponent,
-        // so we should set both `on` and `nativeOn` here.
-        data.on = data.nativeOn = {
+        // The vnode may be a native element or ContainerVueComponent
+        const on = {
           click: this.onClick,
           dragover: this.onDragOver,
           drop: this.onDrop
         }
+
+        if (tag === ContainerVueComponent) {
+          data.nativeOn = on
+        } else {
+          data.on = on
+        }
       }
 
-      const tag = this.vnodeTag
       if (tag === ContainerVueComponent) {
         data.props = {
           uri: this.nodeUri,

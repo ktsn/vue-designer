@@ -91,6 +91,7 @@
     "@vue/cli-plugin-unit-jest": "^5.0.8",
     "@vue/cli-service": "^5.0.8",
     "@vue/test-utils": "1.0.0-beta.20",
+    "@vue/vue2-jest": "^28.1.0",
     "babel-core": "^7.0.0-bridge.0",
     "babel-jest": "^29.7.0",
     "codecov": "^3.0.4",
@@ -112,7 +113,6 @@
     "vscode": "^1.1.37",
     "vue": "^2.5.17",
     "vue-global-events": "^1.0.3",
-    "vue-jest": "^4.0.0",
     "vue-server-renderer": "^2.5.17",
     "webpack": "^5.89.0"
   }

@@ -1,14 +1,18 @@
+/** @type {import('jest').Config} */
 module.exports = {
+  preset: 'ts-jest/presets/js-with-ts',
+
   transform: {
-    '^.+\\.[jt]sx?$': 'ts-jest',
-    '^.+\\.vue$': 'vue-jest',
+    '^.+\\.vue$': '@vue/vue2-jest',
     '.+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$':
       'jest-transform-stub'
   },
 
-  transformIgnorePatterns: ['node_modules/(?!(sinai/lib)/)'],
+  transformIgnorePatterns: ['node_modules/(?!(sinai/lib))'],
   setupFiles: ['<rootDir>/tests/setup.ts'],
   testRegex: '/tests/.+\\.spec\\.(js|ts)x?$',
+
+  testEnvironment: 'jsdom',
 
   moduleNameMapper: {
     '^@/(.+)$': '<rootDir>/src/$1',
@@ -19,13 +23,5 @@ module.exports = {
 
   collectCoverageFrom: ['src/**/*.{ts,tsx,vue}'],
 
-  globals: {
-    'ts-jest': {
-      tsConfigFile: 'tsconfig.test.json'
-    }
-  },
-
-  snapshotSerializers: ['jest-serializer-vue'],
-
-  testURL: 'http://localhost/'
+  snapshotSerializers: ['jest-serializer-vue']
 }

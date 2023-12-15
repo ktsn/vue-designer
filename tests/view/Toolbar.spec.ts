@@ -1,5 +1,6 @@
 import { mount, Wrapper } from '@vue/test-utils'
 import Toolbar from '@/view/components/Toolbar.vue'
+import { nextTick } from 'vue'
 
 describe('Toolbar', () => {
   it('has initial size based on props', () => {
@@ -65,39 +66,42 @@ describe('Toolbar', () => {
     expect(t.scaleField().value).toBe('100')
   })
 
-  it('sync width and height field when the props are updated', () => {
+  it('sync width and height field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400)
     t.wrapper.setProps({
       height: 500
     })
 
+    await nextTick()
     expect(t.widthField().value).toBe('300')
     expect(t.heightField().value).toBe('500')
   })
 
-  it('sync scale field when the props are updated', () => {
+  it('sync scale field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400, 1)
     t.wrapper.setProps({
       scale: 2
     })
 
+    await nextTick()
     expect(t.scaleField().value).toBe('200')
   })
 
-  it('reset dirty size value when props are updated', () => {
+  it('reset dirty size value when props are updated', async () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(400)
     t.wrapper.setProps({
       height: 500
     })
 
+    await nextTick()
     expect(t.widthField().value).toBe('300')
     expect(t.heightField().value).toBe('500')
   })
 })
 
 class ToolbarTest {
-  wrapper: Wrapper<Toolbar>
+  wrapper: Wrapper<InstanceType<typeof Toolbar>>
 
   constructor(width: number, height: number, scale: number = 1) {
     this.wrapper = mount(Toolbar, {

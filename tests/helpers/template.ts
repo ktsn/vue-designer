@@ -22,7 +22,7 @@ export function render(
   data: Data[] = [],
   childComponents: ChildComponent[] = [],
   storeDocuments: Record<string, Partial<VueFilePayload>> = {}
-): Wrapper<VueComponent> {
+): Wrapper<InstanceType<typeof VueComponent>> {
   const store = createStore(module().child('project', project))
 
   store.mutations.project.changeActiveDocument('file:///Test.vue')
@@ -64,7 +64,7 @@ export function render(
       styles: ''
     },
     store
-  })
+  } as any)
 }
 
 function processRootChildren(

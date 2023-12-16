@@ -85,7 +85,7 @@ $ yarn test
 $ yarn test:watch
 
 # format sources with prettier
-$ yarn lint:fix
+$ yarn format
 ```
 
 ### Release

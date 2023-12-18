@@ -60,14 +60,7 @@ To debug on VSCode, follow the below steps:
 3.  Run `Launch Extension` so that it opens a new window with enabling local Vue Designer.
 4.  Select `Open Vue Designer` on command pallete.
 
-If you want to use dev tools for client code, add the following configuration in your `keybindings.json`.
-
-```js
-{
-  "key": "shift+cmd+i",
-  "command": "workbench.action.webview.openDeveloperTools"
-}
-```
+If you want to use dev tools for client code, use **Developer: Toggle Developer Tools** command on the command pallete.
 
 ### Commands
 

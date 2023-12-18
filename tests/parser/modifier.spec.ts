@@ -6,7 +6,7 @@ import {
   remove,
   replace,
   insertAt,
-  reduce
+  reduce,
 } from '@/parser/modifier'
 import { transformTemplate } from '@/parser/template/transform'
 
@@ -14,7 +14,7 @@ describe('modify', () => {
   it('should insert string before specified range', () => {
     const code = 'const foo = "World";'
     const actual = modify(code, [
-      insertBefore({ range: [12, 19] }, '"Hello" + ')
+      insertBefore({ range: [12, 19] }, '"Hello" + '),
     ])
     const expected = 'const foo = "Hello" + "World";'
 
@@ -40,7 +40,7 @@ describe('modify', () => {
   it('should replace specified range with a string', () => {
     const code = 'let foo; let bar;'
     const actual = modify(code, [
-      replace({ range: [4, 7] }, 'message = "Hello"')
+      replace({ range: [4, 7] }, 'message = "Hello"'),
     ])
     const expected = 'let message = "Hello"; let bar;'
 
@@ -55,7 +55,7 @@ describe('modify', () => {
     const actual = modify(code, [
       remove(ast.children[0].startTag.attrs.id),
       replace(ast.children[0].children[0].children[0], 'Hi'),
-      insertBefore(ast.children[0].children[1], 'Test')
+      insertBefore(ast.children[0].children[1], 'Test'),
     ])
     const expected =
       '<template><div ><h1>Hi</h1>Test<p>World</p></div></template>'
@@ -67,7 +67,7 @@ describe('modify', () => {
     const code = 'let foo, bar;'
     const actual = modify(code, [
       remove({ range: [7, 12] }),
-      insertBefore({ range: [3, 7] }, ' baz,')
+      insertBefore({ range: [3, 7] }, ' baz,'),
     ])
     const expected = 'let baz, foo;'
     expect(actual).toBe(expected)
@@ -77,7 +77,7 @@ describe('modify', () => {
     const code = 'let foo, bar;'
     const actual = modify(code, [
       remove({ range: [4, 12] }),
-      insertAfter({ range: [4, 8] }, 'baz')
+      insertAfter({ range: [4, 8] }, 'baz'),
     ])
     const expected = 'let baz;'
     expect(actual).toBe(expected)
@@ -87,7 +87,7 @@ describe('modify', () => {
     const code = 'let foo, bar;'
     const actual = modify(code, [
       insertAfter({ range: [4, 8] }, 'baz'),
-      remove({ range: [4, 12] })
+      remove({ range: [4, 12] }),
     ])
     const expected = 'let baz;'
     expect(actual).toBe(expected)
@@ -97,7 +97,7 @@ describe('modify', () => {
     const code = 'let foo, bar, baz;'
     const actual = modify(code, [
       remove({ range: [4, 17] }),
-      remove({ range: [9, 12] })
+      remove({ range: [9, 12] }),
     ])
     const expected = 'let ;'
     expect(actual).toBe(expected)
@@ -109,7 +109,7 @@ describe('reduce', () => {
     const modifiers = [
       insertAt(9, 'test'),
       remove({ range: [0, 4] }),
-      replace({ range: [5, 10] }, 'foo')
+      replace({ range: [5, 10] }, 'foo'),
     ]
 
     const r = reduce(
@@ -117,12 +117,12 @@ describe('reduce', () => {
       (acc, m) => {
         return {
           pos: m.pos,
-          result: acc.result && acc.pos <= m.pos
+          result: acc.result && acc.pos <= m.pos,
         }
       },
       {
         pos: 0,
-        result: true
+        result: true,
       }
     )
 

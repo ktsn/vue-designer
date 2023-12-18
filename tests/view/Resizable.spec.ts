@@ -8,11 +8,6 @@ describe('Resizable', () => {
     Element.prototype.releasePointerCapture = jest.fn()
   })
 
-  afterAll(() => {
-    delete Element.prototype.setPointerCapture
-    delete Element.prototype.releasePointerCapture
-  })
-
   it('tells resized size on dragging', () => {
     const t = new ResizableTest(300, 300)
     t.dragStart('se', 295, 305)
@@ -25,7 +20,7 @@ describe('Resizable', () => {
   it('multiplies offset by offsetWeight prop', () => {
     const t = new ResizableTest(300, 300)
     t.wrapper.setProps({
-      offsetWeight: 2
+      offsetWeight: 2,
     })
     t.dragStart('se', 300, 300)
     t.dragTo(350, 370)
@@ -108,7 +103,7 @@ describe('Resizable', () => {
 })
 
 class ResizableTest {
-  wrapper: Wrapper<Resizable>
+  wrapper: Wrapper<InstanceType<typeof Resizable>>
   handler!: Wrapper<any>
   size: {
     width: number
@@ -119,13 +114,13 @@ class ResizableTest {
     this.wrapper = mount(Resizable, {
       propsData: {
         width,
-        height
-      }
+        height,
+      },
     })
 
     this.size = {
       width,
-      height
+      height,
     }
 
     this.wrapper.vm.$on('resize', (value: any) => {
@@ -138,7 +133,7 @@ class ResizableTest {
     this.handler = this.wrapper.find('.resizable-handler-' + direction)
     this.handler.trigger('pointerdown', {
       clientX: x,
-      clientY: y
+      clientY: y,
     })
   }
 
@@ -146,7 +141,7 @@ class ResizableTest {
     assert(this.handler)
     this.handler.trigger('pointermove', {
       clientX: x,
-      clientY: y
+      clientY: y,
     })
     this.handler.trigger('pointerup')
   }

@@ -9,7 +9,7 @@ describe('Template asset resolution', () => {
 
   it('resolves all src paths on img elements', () => {
     const template = createTemplate([
-      h('img', [a('src', '../assets/logo.png'), a('alt', 'test')], [])
+      h('img', [a('src', '../assets/logo.png'), a('alt', 'test')], []),
     ])
 
     const resolved = resolveAsset(template, basePath, asset)

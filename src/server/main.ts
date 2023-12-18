@@ -7,7 +7,7 @@ import { AssetResolver } from '../asset-resolver'
 
 function readContent(
   file: string,
-  cb: (err: Error, content: string) => void
+  cb: (err: Error | null, content: string) => void
 ): void {
   fs.readFile(path.join(__dirname, '..', file), 'utf8', cb)
 }
@@ -71,6 +71,6 @@ export function startWebSocketServer(http: http.Server): WebSocket.Server {
   return new WebSocket.Server({
     host: 'localhost',
     server: http,
-    path: '/api'
+    path: '/api',
   })
 }

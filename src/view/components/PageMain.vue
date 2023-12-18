@@ -108,12 +108,12 @@ export default Vue.extend({
     ScopeInformation,
     StyleInformation,
     ComponentCatalog,
-    Toolbar
+    Toolbar,
   },
 
   data() {
     return {
-      openPane: false
+      openPane: false,
     }
   },
 
@@ -122,7 +122,7 @@ export default Vue.extend({
       uri: 'currentUri',
       selectedPath: 'selectedPath',
       matchedRules: 'matchedRules',
-      sharedStyle: 'sharedStyle'
+      sharedStyle: 'sharedStyle',
     }),
 
     ...viewportMapper.mapState(['width', 'height', 'scale']),
@@ -132,14 +132,14 @@ export default Vue.extend({
       scope: 'currentScope',
       documentName: 'currentDocumentName',
       renderingDocument: 'currentRenderingDocument',
-      scopedDocuments: 'scopedDocuments'
+      scopedDocuments: 'scopedDocuments',
     }),
 
     catalog(): ScopedDocument[] {
       return Object.keys(this.scopedDocuments).map(
-        key => this.scopedDocuments[key]
+        (key) => this.scopedDocuments[key]
       )
-    }
+    },
   },
 
   methods: {
@@ -151,7 +151,7 @@ export default Vue.extend({
       'applyDraggingElement',
       'addDeclaration',
       'removeDeclaration',
-      'updateDeclaration'
+      'updateDeclaration',
     ]),
 
     ...projectMapper.mapMutations(['updatePropValue', 'updateDataValue']),
@@ -175,8 +175,8 @@ export default Vue.extend({
       } else {
         this.deselect()
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

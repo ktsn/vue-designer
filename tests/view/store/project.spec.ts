@@ -17,8 +17,8 @@ describe('Store project getters', () => {
       const docs = documents()
       const getters = stub(ProjectGetters, {
         state: {
-          documents: docs
-        }
+          documents: docs,
+        },
       })
 
       const actual = getters.scopedDocuments['file:///Foo.vue']
@@ -33,8 +33,8 @@ describe('Store project getters', () => {
     it('should add scope attribute to style selectors', () => {
       const getters = stub(ProjectGetters, {
         state: {
-          documents: documents()
-        }
+          documents: documents(),
+        },
       })
       const actual = getters.scopedDocuments['file:///Foo.vue']
       expect(actual.styleCode).toBe('div[data-scope-foo] {}')
@@ -47,8 +47,8 @@ describe('Store project getters', () => {
         state: {
           documents: documents(),
           currentUri: 'file:///HasLocalBar.vue',
-          draggingUri: 'file:///Bar.vue'
-        }
+          draggingUri: 'file:///Bar.vue',
+        },
       })
 
       const actual = getters.localNameOfDragging
@@ -60,8 +60,8 @@ describe('Store project getters', () => {
         state: {
           documents: documents(),
           currentUri: 'file:///Foo.vue',
-          draggingUri: 'file:///Bar.vue'
-        }
+          draggingUri: 'file:///Bar.vue',
+        },
       })
 
       const actual = getters.localNameOfDragging
@@ -72,8 +72,8 @@ describe('Store project getters', () => {
       const getters = stub(ProjectGetters, {
         state: {
           documents: documents(),
-          currentUri: 'file:///HasLocalBar.vue'
-        }
+          currentUri: 'file:///HasLocalBar.vue',
+        },
       })
 
       const actual = getters.localNameOfDragging
@@ -86,8 +86,8 @@ describe('Store project getters', () => {
       const getters = stub(ProjectGetters, {
         state: {
           documents: documents(),
-          draggingUri: 'file:///Foo.vue'
-        }
+          draggingUri: 'file:///Foo.vue',
+        },
       })
 
       const actual = getters.nodeOfDragging
@@ -99,8 +99,8 @@ describe('Store project getters', () => {
         state: {
           documents: documents(),
           currentUri: 'file:///HasLocalBar.vue',
-          draggingUri: 'file:///Bar.vue'
-        }
+          draggingUri: 'file:///Bar.vue',
+        },
       })
 
       const actual = getters.nodeOfDragging
@@ -110,8 +110,8 @@ describe('Store project getters', () => {
     it('should return undefined if there is no dragging', () => {
       const getters = stub(ProjectGetters, {
         state: {
-          documents: documents()
-        }
+          documents: documents(),
+        },
       })
 
       const actual = getters.nodeOfDragging
@@ -125,8 +125,8 @@ describe('Store project getters', () => {
       const getters = stub(ProjectGetters, {
         state: {
           documents: documents(),
-          currentUri
-        }
+          currentUri,
+        },
       })
 
       const actual = getters.currentRenderingDocument
@@ -141,8 +141,8 @@ describe('Store project getters', () => {
           documents: documents(),
           currentUri,
           draggingUri: 'file:///Bar.vue',
-          draggingPath: []
-        }
+          draggingPath: [],
+        },
       })
 
       const actual = getters.currentRenderingDocument!.template
@@ -158,8 +158,8 @@ describe('Store project getters', () => {
           documents: documents(),
           currentUri,
           draggingUri: 'file:///Bar.vue',
-          draggingPath: [0]
-        }
+          draggingPath: [0],
+        },
       })
 
       const actual = getters.currentRenderingDocument!.template
@@ -176,8 +176,8 @@ describe('Store project getters', () => {
           documents: documents(),
           currentUri,
           draggingUri: 'file:///Bar.vue',
-          draggingPath: [0]
-        }
+          draggingPath: [0],
+        },
       })
 
       const actual = getters.currentRenderingDocument!.template
@@ -195,8 +195,8 @@ describe('Store project getters', () => {
           documents: documents(),
           currentUri,
           draggingUri,
-          draggingPath: [0]
-        }
+          draggingPath: [0],
+        },
       })
 
       const actual = getters.currentRenderingDocument!.childComponents
@@ -214,8 +214,8 @@ describe('Store project getters', () => {
           documents: docs,
           currentUri: current,
           draggingUri: 'file:///Bar.vue',
-          draggingPath: [0]
-        }
+          draggingPath: [0],
+        },
       })
 
       const actual = getters.currentRenderingDocument!.childComponents
@@ -232,8 +232,8 @@ describe('Store project getters', () => {
           documents: docs,
           currentUri: current,
           draggingUri: 'file:///Bar.vue',
-          draggingPath: [0]
-        }
+          draggingPath: [0],
+        },
       })
 
       const actual = getters.currentRenderingDocument!.childComponents
@@ -255,14 +255,14 @@ describe('Store project actions', () => {
       client: {
         onReady: jest.fn(),
         mutate: jest.fn(),
-        observe: jest.fn()
+        observe: jest.fn(),
       } as any,
 
       styleMatcher: {
         match: jest.fn(),
         register: jest.fn(),
-        unregister: jest.fn()
-      } as any
+        unregister: jest.fn(),
+      } as any,
     }
   })
 
@@ -273,8 +273,8 @@ describe('Store project actions', () => {
       const actions = stub(ProjectActions, {
         mutations: {
           setDocument,
-          refreshScope
-        }
+          refreshScope,
+        },
       })
       actions.matchSelectedNodeWithStyles = jest.fn()
 
@@ -284,7 +284,7 @@ describe('Store project actions', () => {
         uri: 'test://test.vue',
         styles: { style: true },
         props: { props: true },
-        data: { data: true }
+        data: { data: true },
       }
       actions.setDocument(mockFile)
 
@@ -296,7 +296,7 @@ describe('Store project actions', () => {
       expect(refreshScope).toHaveBeenCalledWith({
         uri: mockFile.uri,
         props: mockFile.props,
-        data: mockFile.data
+        data: mockFile.data,
       })
       expect(actions.matchSelectedNodeWithStyles).toHaveBeenCalled()
     })
@@ -309,8 +309,8 @@ describe('Store project actions', () => {
       const actions = stub(ProjectActions, {
         mutations: {
           removeDocument,
-          cleanScope
-        }
+          cleanScope,
+        },
       })
       actions.matchSelectedNodeWithStyles = jest.fn()
 
@@ -330,15 +330,15 @@ describe('Store project actions', () => {
     it('should send to update declaration', () => {
       const actions = stub(ProjectActions, {
         state: {
-          currentUri: 'file:///Foo.vue'
-        }
+          currentUri: 'file:///Foo.vue',
+        },
       })
       actions.init(mock)
 
       actions.updateDeclaration({
         path: [0, 0, 0],
         prop: 'color',
-        value: 'red'
+        value: 'red',
       })
 
       expect(mock.client.mutate).toHaveBeenCalledWith('updateDeclaration', {
@@ -347,21 +347,21 @@ describe('Store project actions', () => {
           path: [0, 0, 0],
           prop: 'color',
           value: 'red',
-          important: false
-        }
+          important: false,
+        },
       })
     })
 
     it('should parse important annotation', () => {
       const actions = stub(ProjectActions, {
-        state: { currentUri: 'file:///Foo.vue' }
+        state: { currentUri: 'file:///Foo.vue' },
       })
       actions.init(mock)
 
       actions.updateDeclaration({
         path: [0, 0, 0],
         prop: 'color',
-        value: 'red !important'
+        value: 'red !important',
       })
 
       expect(mock.client.mutate).toHaveBeenCalledWith('updateDeclaration', {
@@ -370,21 +370,21 @@ describe('Store project actions', () => {
           path: [0, 0, 0],
           prop: 'color',
           value: 'red',
-          important: true
-        }
+          important: true,
+        },
       })
     })
 
     it('should not send if the uri is not specified', () => {
       const actions = stub(ProjectActions, {
-        state: { currentUri: undefined }
+        state: { currentUri: undefined },
       })
       actions.init(mock)
 
       actions.updateDeclaration({
         path: [0, 0, 0],
         prop: 'color',
-        value: 'red'
+        value: 'red',
       })
 
       expect(mock.client.mutate).not.toHaveBeenCalled()
@@ -395,7 +395,7 @@ describe('Store project actions', () => {
     const emptyRule: STRuleForPrint = {
       path: [0, 0],
       selectors: ['div'],
-      children: []
+      children: [],
     }
 
     it('extract rules of node', () => {
@@ -450,21 +450,21 @@ describe('Store project mutations', () => {
     it('adds missing scope', () => {
       const mutations = stub(ProjectMutations, {
         state: {
-          documentScopes: {}
-        }
+          documentScopes: {},
+        },
       })
 
       mutations.refreshScope({
         uri: 'file:///Foo.vue',
         props: [],
-        data: []
+        data: [],
       })
 
       expect(mutations.state.documentScopes).toEqual({
         'file:///Foo.vue': {
           props: {},
-          data: {}
-        }
+          data: {},
+        },
       })
     })
 
@@ -476,18 +476,18 @@ describe('Store project mutations', () => {
               props: {
                 test: {
                   type: 'String',
-                  value: 'test'
-                }
+                  value: 'test',
+                },
               },
               data: {
                 test2: {
                   type: null,
-                  value: 'test2'
-                }
-              }
-            }
-          }
-        }
+                  value: 'test2',
+                },
+              },
+            },
+          },
+        },
       })
 
       mutations.refreshScope({
@@ -496,24 +496,24 @@ describe('Store project mutations', () => {
           {
             name: 'test',
             type: 'String',
-            default: undefined
+            default: undefined,
           },
           {
             name: 'additionalProp',
             type: 'Number',
-            default: 10
-          }
+            default: 10,
+          },
         ],
         data: [
           {
             name: 'test2',
-            default: 'initial'
+            default: 'initial',
           },
           {
             name: 'additionalData',
-            default: true
-          }
-        ]
+            default: true,
+          },
+        ],
       })
 
       expect(mutations.state.documentScopes).toEqual({
@@ -521,24 +521,24 @@ describe('Store project mutations', () => {
           props: {
             test: {
               type: 'String',
-              value: 'test'
+              value: 'test',
             },
             additionalProp: {
               type: 'Number',
-              value: 10
-            }
+              value: 10,
+            },
           },
           data: {
             test2: {
               type: null,
-              value: 'test2'
+              value: 'test2',
             },
             additionalData: {
               type: null,
-              value: true
-            }
-          }
-        }
+              value: true,
+            },
+          },
+        },
       })
     })
 
@@ -550,26 +550,26 @@ describe('Store project mutations', () => {
               props: {
                 test: {
                   type: 'String',
-                  value: 'test'
+                  value: 'test',
                 },
                 additionalProp: {
                   type: 'Number',
-                  value: 10
-                }
+                  value: 10,
+                },
               },
               data: {
                 test2: {
                   type: null,
-                  value: 'test2'
+                  value: 'test2',
                 },
                 additionalData: {
                   type: null,
-                  value: true
-                }
-              }
-            }
-          }
-        }
+                  value: true,
+                },
+              },
+            },
+          },
+        },
       })
 
       mutations.refreshScope({
@@ -578,15 +578,15 @@ describe('Store project mutations', () => {
           {
             name: 'additionalProp',
             type: 'Number',
-            default: 10
-          }
+            default: 10,
+          },
         ],
         data: [
           {
             name: 'additionalData',
-            default: true
-          }
-        ]
+            default: true,
+          },
+        ],
       })
 
       expect(mutations.state.documentScopes).toEqual({
@@ -594,16 +594,16 @@ describe('Store project mutations', () => {
           props: {
             additionalProp: {
               type: 'Number',
-              value: 10
-            }
+              value: 10,
+            },
           },
           data: {
             additionalData: {
               type: null,
-              value: true
-            }
-          }
-        }
+              value: true,
+            },
+          },
+        },
       })
     })
 
@@ -615,18 +615,18 @@ describe('Store project mutations', () => {
               props: {
                 test: {
                   type: 'String',
-                  value: 'test'
-                }
+                  value: 'test',
+                },
               },
               data: {
                 test2: {
                   type: null,
-                  value: 'test2'
-                }
-              }
-            }
-          }
-        }
+                  value: 'test2',
+                },
+              },
+            },
+          },
+        },
       })
 
       mutations.refreshScope({
@@ -635,15 +635,15 @@ describe('Store project mutations', () => {
           {
             name: 'test',
             type: 'String',
-            default: undefined
-          }
+            default: undefined,
+          },
         ],
         data: [
           {
             name: 'test2',
-            default: 'initial'
-          }
-        ]
+            default: 'initial',
+          },
+        ],
       })
 
       expect(mutations.state.documentScopes).toEqual({
@@ -651,16 +651,16 @@ describe('Store project mutations', () => {
           props: {
             test: {
               type: 'String',
-              value: 'test'
-            }
+              value: 'test',
+            },
           },
           data: {
             test2: {
               type: null,
-              value: 'test2'
-            }
-          }
-        }
+              value: 'test2',
+            },
+          },
+        },
       })
     })
   })
@@ -675,7 +675,7 @@ function documents() {
       data: [],
       childComponents: [],
       styles: [createStyle([rule([selector({ tag: 'div' })])])],
-      scopeId: 'foo'
+      scopeId: 'foo',
     },
     'file:///HasBar.vue': {
       uri: 'file:///HasBar.vue',
@@ -684,7 +684,7 @@ function documents() {
       data: [],
       childComponents: [{ name: 'Bar', uri: 'file:///Bar.vue' }],
       styles: [createStyle([rule([selector({ tag: 'div' })])])],
-      scopeId: 'hasbar'
+      scopeId: 'hasbar',
     },
     'file:///HasLocalBar.vue': {
       uri: 'file:///HasLocalBar.vue',
@@ -693,7 +693,7 @@ function documents() {
       data: [],
       childComponents: [{ name: 'LocalBar', uri: 'file:///Bar.vue' }],
       styles: [createStyle([rule([selector({ tag: 'div' })])])],
-      scopeId: 'haslocalbar'
+      scopeId: 'haslocalbar',
     },
     'file:///Bar.vue': {
       uri: 'file:///Bar.vue',
@@ -702,7 +702,7 @@ function documents() {
       data: [],
       childComponents: [],
       styles: [createStyle([rule([selector({ tag: 'p' })])])],
-      scopeId: 'bar'
-    }
+      scopeId: 'bar',
+    },
   }
 }

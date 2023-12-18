@@ -53,14 +53,14 @@ export default Vue.extend({
   name: 'StyleInformation',
 
   components: {
-    StyleDeclaration
+    StyleDeclaration,
   },
 
   props: {
     rules: {
       type: Array as () => STRuleForPrint[],
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
@@ -68,7 +68,7 @@ export default Vue.extend({
       autoFocusTarget: undefined as
         | { rule: number; declaration: number; type: 'prop' | 'value' }
         | undefined,
-      endingInput: false
+      endingInput: false,
     }
   },
 
@@ -81,14 +81,14 @@ export default Vue.extend({
     updateDeclarationProp(path: number[], prop: string): void {
       this.$emit('update-declaration', {
         path,
-        prop
+        prop,
       })
     },
 
     updateDeclarationValue(path: number[], value: string): void {
       this.$emit('update-declaration', {
         path,
-        value
+        value,
       })
     },
 
@@ -98,7 +98,7 @@ export default Vue.extend({
       declIndex: number
     ): void {
       this.$emit('add-declaration', {
-        path: rulePath.concat(declIndex)
+        path: rulePath.concat(declIndex),
       })
 
       // Focus on the new declaration prop after it is added
@@ -106,7 +106,7 @@ export default Vue.extend({
         this.autoFocusTarget = {
           rule: ruleIndex,
           declaration: declIndex,
-          type: 'prop'
+          type: 'prop',
         }
         unwatch()
       })
@@ -183,7 +183,7 @@ export default Vue.extend({
         this.autoFocusTarget = {
           rule,
           declaration: decl,
-          type: 'value'
+          type: 'value',
         }
         return
       }
@@ -192,14 +192,14 @@ export default Vue.extend({
         this.autoFocusTarget = {
           rule,
           declaration: decl + 1,
-          type: 'prop'
+          type: 'prop',
         }
 
         // If it is the last item, add a new rule
         const targetRule = this.rules[rule]
         if (decl + 1 === targetRule.children.length) {
           this.$emit('add-declaration', {
-            path: targetRule.path.concat(targetRule.children.length)
+            path: targetRule.path.concat(targetRule.children.length),
           })
         }
       }
@@ -210,7 +210,7 @@ export default Vue.extend({
         this.autoFocusTarget = {
           rule,
           declaration: decl,
-          type: 'prop'
+          type: 'prop',
         }
         return
       }
@@ -221,7 +221,7 @@ export default Vue.extend({
           this.autoFocusTarget = {
             rule,
             declaration: nextDecl,
-            type: 'value'
+            type: 'value',
           }
           return
         }
@@ -234,8 +234,8 @@ export default Vue.extend({
     shouldFocusFor(rule: number, decl: number): 'prop' | 'value' | null {
       const f = this.autoFocusTarget
       return f && f.rule === rule && f.declaration === decl ? f.type : null
-    }
-  }
+    },
+  },
 })
 </script>
 

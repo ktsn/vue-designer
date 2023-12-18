@@ -36,5 +36,5 @@ class ViewportActions extends Actions<ViewportState, ViewportMutations>() {
 export const viewport = module({
   state: ViewportState,
   mutations: ViewportMutations,
-  actions: ViewportActions
+  actions: ViewportActions,
 })

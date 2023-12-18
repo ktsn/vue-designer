@@ -11,7 +11,7 @@ import { SettingRepository } from './repositories/setting-repository'
 import { EditorRepository } from './repositories/editor-repository'
 import {
   vueFileToPayload as _vueFileToPayload,
-  VueFile
+  VueFile,
 } from './parser/vue-file'
 import { Subject } from './infra/communication/subject'
 import { connectWsServer } from './infra/communication/connect'
@@ -35,17 +35,16 @@ function createSettingRepository(rootPath: string): SettingRepository {
       const uri = vscode.Uri.file(path.join(rootPath, filePath))
       const document = await vscode.workspace.openTextDocument(uri)
       return document.getText()
-    }
+    },
   })
 
   return repo
 }
 
 async function createVueFileRepository(): Promise<VueFileRepository> {
-  const uris = (await vscode.workspace.findFiles(
-    '**/*.vue',
-    '**/node_modules/**'
-  )).map(uri => uri.toString())
+  const uris = (
+    await vscode.workspace.findFiles('**/*.vue', '**/node_modules/**')
+  ).map((uri) => uri.toString())
 
   const repo = await VueFileRepository.create(uris, {
     async readFile(rawUri) {
@@ -56,7 +55,7 @@ async function createVueFileRepository(): Promise<VueFileRepository> {
 
     modifyFile(uri, modifiers) {
       return applyModifiers(uri, modifiers)
-    }
+    },
   })
 
   return repo
@@ -68,7 +67,7 @@ function createEditorRepository(vueFiles: VueFileRepository): EditorRepository {
 
   return new EditorRepository(activeDocumentUrl, vueFiles, {
     highlight(uri, ranges) {
-      const editor = vscode.window.visibleTextEditors.find(e => {
+      const editor = vscode.window.visibleTextEditors.find((e) => {
         return e.document.uri.toString() === uri
       })
 
@@ -76,7 +75,7 @@ function createEditorRepository(vueFiles: VueFileRepository): EditorRepository {
         return
       }
 
-      const highlightList = ranges.map(range => {
+      const highlightList = ranges.map((range) => {
         const start = editor.document.positionAt(range[0])
         const end = editor.document.positionAt(range[1])
         return new vscode.Range(start, end)
@@ -86,13 +85,13 @@ function createEditorRepository(vueFiles: VueFileRepository): EditorRepository {
       editor.setDecorations(currentHighlight, highlightList)
 
       return currentHighlight
-    }
+    },
   })
 }
 
 function createHighlight(): vscode.TextEditorDecorationType {
   return vscode.window.createTextEditorDecorationType({
-    backgroundColor: 'rgba(200, 200, 200, 0.2)'
+    backgroundColor: 'rgba(200, 200, 200, 0.2)',
   })
 }
 
@@ -111,13 +110,13 @@ function connectToSubject(
   const notifySaveVueFileByUri = async (uri: vscode.Uri) => {
     const vueFile = await vueFiles.read(uri.toString())
     subject.notify('saveDocument', {
-      vueFile: vueFileToPayload(vueFile)
+      vueFile: vueFileToPayload(vueFile),
     })
   }
 
-  vueFiles.on('update', vueFile => {
+  vueFiles.on('update', (vueFile) => {
     subject.notify('saveDocument', {
-      vueFile: vueFileToPayload(vueFile)
+      vueFile: vueFileToPayload(vueFile),
     })
   })
 
@@ -128,7 +127,7 @@ function connectToSubject(
   watcher.onDidCreateComponent(notifySaveVueFileByUri)
   watcher.onDidChangeComponent(notifySaveVueFileByUri)
 
-  watcher.onDidDeleteComponent(uri => {
+  watcher.onDidDeleteComponent((uri) => {
     const uriStr = uri.toString()
     vueFiles.delete(uriStr)
     subject.notify('removeDocument', { uri: uriStr })
@@ -136,11 +135,11 @@ function connectToSubject(
 
   watcher.onDidChangeSharedStyle(async () => {
     subject.notify('initSharedStyle', {
-      style: await setting.readSharedStyle()
+      style: await setting.readSharedStyle(),
     })
   })
 
-  watcher.onDidSwitchComponent(uri => {
+  watcher.onDidSwitchComponent((uri) => {
     editor.activeDocumentUrl = uri.toString()
     subject.notify('changeActiveDocument', { uri: editor.activeDocumentUrl })
   })
@@ -181,7 +180,7 @@ export async function activate(context: vscode.ExtensionContext) {
   connectWsServer({
     resolver: resolver(vueFiles, setting, editor, assetResolver),
     mutator: mutator(vueFiles, editor),
-    server: wsServer
+    server: wsServer,
   })
 
   connectToSubject(subject, watcher, assetResolver, vueFiles, setting, editor)
@@ -199,7 +198,7 @@ export async function activate(context: vscode.ExtensionContext) {
         'Vue Designer',
         vscode.ViewColumn.Two,
         {
-          enableScripts: true
+          enableScripts: true,
         }
       )
 
@@ -210,13 +209,13 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     disposable,
     {
-      dispose: () => server.close()
+      dispose: () => server.close(),
     },
     {
-      dispose: () => watcher.destroy()
+      dispose: () => watcher.destroy(),
     },
     {
-      dispose: () => vueFiles.destroy()
+      dispose: () => vueFiles.destroy(),
     }
   )
 }

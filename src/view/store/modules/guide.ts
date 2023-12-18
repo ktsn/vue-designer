@@ -23,7 +23,7 @@ class GuideGetters extends Getters<GuideState>() {
       left: target.left / scale,
       top: target.top / scale,
       width: target.width / scale,
-      height: target.height / scale
+      height: target.height / scale,
     }
   }
 }
@@ -62,5 +62,5 @@ export const guide = module({
   state: GuideState,
   getters: GuideGetters,
   mutations: GuideMutations,
-  actions: GuideActions
+  actions: GuideActions,
 })

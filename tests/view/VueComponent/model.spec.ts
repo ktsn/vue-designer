@@ -15,8 +15,8 @@ describe('VueComponent v-model', () => {
       [
         {
           name: 'test',
-          default: 'message'
-        }
+          default: 'message',
+        },
       ]
     )
     const input = wrapper.find('input').element as HTMLInputElement
@@ -35,8 +35,8 @@ describe('VueComponent v-model', () => {
       [
         {
           name: 'checked',
-          default: true
-        }
+          default: true,
+        },
       ]
     )
 
@@ -60,8 +60,8 @@ describe('VueComponent v-model', () => {
       [
         {
           name: 'list',
-          default: ['foo', 'baz']
-        }
+          default: ['foo', 'baz'],
+        },
       ]
     )
 
@@ -89,8 +89,8 @@ describe('VueComponent v-model', () => {
       [
         {
           name: 'radio',
-          default: 'bar'
-        }
+          default: 'bar',
+        },
       ]
     )
 
@@ -116,15 +116,15 @@ describe('VueComponent v-model', () => {
       [
         {
           name: 'selected',
-          default: 'bar'
-        }
+          default: 'bar',
+        },
       ]
     )
 
     const select = wrapper.find('select').element as HTMLSelectElement
     const selected = Array.from(select.options)
-      .filter(op => op.selected)
-      .map(op => op.value)
+      .filter((op) => op.selected)
+      .map((op) => op.value)
 
     expect(selected).toEqual(['bar'])
   })
@@ -145,15 +145,15 @@ describe('VueComponent v-model', () => {
       [
         {
           name: 'selected',
-          default: ['foo', 'baz']
-        }
+          default: ['foo', 'baz'],
+        },
       ]
     )
 
     const select = wrapper.find('select').element as HTMLSelectElement
     const selected = Array.from(select.options)
-      .filter(op => op.selected)
-      .map(op => op.value)
+      .filter((op) => op.selected)
+      .map((op) => op.value)
 
     expect(selected).toEqual(['foo', 'baz'])
   })

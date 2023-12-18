@@ -2,7 +2,7 @@ import _parse from 'postcss-safe-parser'
 import {
   updateDeclaration,
   removeDeclaration,
-  insertDeclaration
+  insertDeclaration,
 } from '@/parser/style/modify'
 import { STStyle } from '@/parser/style/types'
 import { transformStyle } from '@/parser/style/transform'
@@ -28,8 +28,8 @@ describe('Style modifier', () => {
         path: [0, 0, 1],
         prop: 'font-weight',
         value: 'bold',
-        important: true
-      })
+        important: true,
+      }),
     ])
     const expected = `
     p {
@@ -52,8 +52,8 @@ describe('Style modifier', () => {
     const res = modify(code, [
       updateDeclaration(styles, {
         path: [0, 0, 1],
-        value: '24px'
-      })
+        value: '24px',
+      }),
     ])
     const expected = `
     p {
@@ -76,8 +76,8 @@ describe('Style modifier', () => {
     const res = modify(code, [
       updateDeclaration(styles, {
         path: [0, 0, 2],
-        value: '24px'
-      })
+        value: '24px',
+      }),
     ])
     const expected = `
     p {
@@ -116,7 +116,7 @@ describe('Style modifier', () => {
 
     const styles = parse(code)
     const res = modify(code, [
-      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 1])
+      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 1]),
     ])
     const expected = `
     p {
@@ -138,7 +138,7 @@ describe('Style modifier', () => {
 
     const styles = parse(code)
     const res = modify(code, [
-      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 2])
+      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 2]),
     ])
     const expected = `
     p {
@@ -160,7 +160,7 @@ describe('Style modifier', () => {
 
     const styles = parse(code)
     const res = modify(code, [
-      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 0])
+      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 0]),
     ])
     const expected = `
     p {
@@ -179,7 +179,7 @@ describe('Style modifier', () => {
 
     const styles = parse(code)
     const res = modify(code, [
-      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 0])
+      insertDeclaration(styles, declaration('font-weight', 'bold'), [0, 0, 0]),
     ])
     const expected = `
     p {font-weight: bold;}

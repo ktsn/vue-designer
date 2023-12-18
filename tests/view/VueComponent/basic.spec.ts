@@ -3,7 +3,7 @@ import { createTemplate, render, h, a, exp } from '../../helpers/template'
 describe('VueComponent basic', () => {
   it('should render template', () => {
     const template = createTemplate([
-      h('p', [a('title', 'Hello')], ['Hello World!'])
+      h('p', [a('title', 'Hello')], ['Hello World!']),
     ])
 
     const wrapper = render(template)
@@ -45,8 +45,8 @@ describe('VueComponent basic', () => {
       {
         name: 'test',
         type: 'String',
-        default: 'replaced text'
-      }
+        default: 'replaced text',
+      },
     ])
     expect(wrapper.find('p').text()).toBe('This is replaced text')
   })
@@ -70,12 +70,12 @@ describe('VueComponent basic', () => {
       [
         {
           name: 'foo',
-          default: null
+          default: null,
         },
         {
           name: 'bar',
-          default: undefined
-        }
+          default: undefined,
+        },
       ]
     )
     expect(wrapper.find('#foo').text()).toBe('{{ foo }}')

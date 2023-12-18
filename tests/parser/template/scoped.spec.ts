@@ -22,7 +22,7 @@ describe('Scope attribute', () => {
       type: 'Attribute',
       attrIndex: -1,
       name: scopeName,
-      range: [-1, -1]
+      range: [-1, -1],
     }
 
     const result = addScope(ast, scope)

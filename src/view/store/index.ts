@@ -11,25 +11,25 @@ import { SubjectType } from '@/server/subject-type'
 Vue.use(install)
 
 export const store = createStore(rootModule, {
-  strict: process.env.NODE_ENV !== 'production'
+  strict: process.env.NODE_ENV !== 'production',
 })
 export const mapper = createMapper<typeof store>()
 
 const ws = new WebSocket(`ws://localhost:${location.port}/api`)
 const client = new CommunicationClient<ResolverType, MutatorType, SubjectType>({
-  ws
+  ws,
 })
 const styleMatcher = new StyleMatcher()
 const boundsCalculator = new BoundsCalculator()
 
 store.actions.project.init({
   client,
-  styleMatcher
+  styleMatcher,
 })
 
 store.actions.guide.init(boundsCalculator)
 
-store.subscribe(path => {
+store.subscribe((path: any) => {
   const mayRelayout = [
     'project.setDocument',
     'project.addElement',
@@ -40,13 +40,13 @@ store.subscribe(path => {
     'project.updatePropValue',
     'project.updateDataValue',
     'viewport.resize',
-    'viewport.zoom'
+    'viewport.zoom',
   ]
 
   const shouldReset = [
     'project.setDocuments',
     'project.removeDocument',
-    'project.changeActiveDocument'
+    'project.changeActiveDocument',
   ]
 
   const pathStr = path.join('.')

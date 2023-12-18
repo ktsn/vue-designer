@@ -5,10 +5,12 @@ export function selectNodeContents(el: Node): void {
   if (!('getSelection' in window)) return
 
   const selection = window.getSelection()
-  const range = new Range()
-  range.selectNodeContents(el)
-  selection.removeAllRanges()
-  selection.addRange(range)
+  if (selection) {
+    const range = new Range()
+    range.selectNodeContents(el)
+    selection.removeAllRanges()
+    selection.addRange(range)
+  }
 }
 
 export function getTextOffset(node: Node, offset?: number): number {
@@ -48,24 +50,24 @@ export function updateStyleValue(
         if (n.type === 'numeric') {
           const updated = {
             ...n,
-            value: n.value + offset
+            value: n.value + offset,
           }
 
           const str = lexToString(updated)
 
           return {
             value: acc.value + str,
-            range: [acc.value.length, acc.value.length + str.length]
+            range: [acc.value.length, acc.value.length + str.length],
           }
         }
       }
       return {
         ...acc,
-        value: acc.value + lexToString(n)
+        value: acc.value + lexToString(n),
       }
     },
     {
-      value: ''
+      value: '',
     }
   )
 }

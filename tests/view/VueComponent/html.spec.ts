@@ -13,8 +13,8 @@ describe('VueComponent v-html', () => {
       [
         {
           name: 'message',
-          default: '<strong>Hello text!</strong>'
-        }
+          default: '<strong>Hello text!</strong>',
+        },
       ]
     )
     expect(wrapper.find('p').element.innerHTML).toBe(
@@ -36,8 +36,8 @@ describe('VueComponent v-html', () => {
       [
         {
           name: 'message',
-          default: '<strong>overwritten</strong>'
-        }
+          default: '<strong>overwritten</strong>',
+        },
       ]
     )
     const p = wrapper.find('p')

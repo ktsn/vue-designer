@@ -17,7 +17,7 @@ describe('Template modifier', () => {
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
-      insertToTemplate(ast, [1, 1], '<h1>Hello!</h1>')
+      insertToTemplate(ast, [1, 1], '<h1>Hello!</h1>'),
     ])
     const expected = `
     <template>
@@ -43,7 +43,7 @@ describe('Template modifier', () => {
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
-      insertToTemplate(ast, [1, 3], '<p>Message</p>')
+      insertToTemplate(ast, [1, 3], '<p>Message</p>'),
     ])
     const expected = `
     <template>
@@ -67,7 +67,7 @@ describe('Template modifier', () => {
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
-      insertToTemplate(ast, [1, 0], '<p>Message</p>')
+      insertToTemplate(ast, [1, 0], '<p>Message</p>'),
     ])
     const expected = `
     <template>
@@ -92,7 +92,7 @@ describe('Template modifier', () => {
     const ast = transformTemplate(program.templateBody!, code)
 
     const actual = modify(code, [
-      insertToTemplate(ast, [1, 1, 1], '<span>Message</span>')
+      insertToTemplate(ast, [1, 1, 1], '<span>Message</span>'),
     ])
     const expected = `
     <template>

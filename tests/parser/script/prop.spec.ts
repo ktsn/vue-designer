@@ -21,13 +21,13 @@ describe('Script props parser', () => {
       {
         name: 'foo',
         type: 'String',
-        default: undefined
+        default: undefined,
       },
       {
         name: 'bar',
         type: 'Number',
-        default: 42
-      }
+        default: 42,
+      },
     ]
     expect(extracted).toEqual(expected)
   })
@@ -41,8 +41,8 @@ describe('Script props parser', () => {
       {
         name: 'test',
         type: 'any',
-        default: undefined
-      }
+        default: undefined,
+      },
     ]
     expect(extracted).toEqual(expected)
   })
@@ -56,8 +56,8 @@ describe('Script props parser', () => {
       {
         name: 'foo',
         type: 'any',
-        default: undefined
-      }
+        default: undefined,
+      },
     ]
     expect(extracted).toEqual(expected)
   })
@@ -79,8 +79,8 @@ describe('Script props parser', () => {
       {
         name: 'foo',
         type: 'String',
-        default: 'test'
-      }
+        default: 'test',
+      },
     ]
     expect(extracted).toEqual(expected)
   })

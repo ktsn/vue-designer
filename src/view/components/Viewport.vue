@@ -29,42 +29,42 @@ export default Vue.extend({
 
   components: {
     GlobalEvents,
-    Resizable
+    Resizable,
   },
 
   props: {
     width: {
       type: Number,
-      required: true
+      required: true,
     },
     height: {
       type: Number,
-      required: true
+      required: true,
     },
     scale: {
       type: Number,
-      required: true
+      required: true,
     },
     sharedStyle: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
     viewportStyle(): Record<string, string> {
       return {
-        transform: `scale(${this.scale})`
+        transform: `scale(${this.scale})`,
       }
-    }
+    },
   },
 
   methods: {
     onZoom(event: WheelEvent): void {
       const normalized = minmax(-0.1, event.deltaY * 0.01, 0.1)
       this.$emit('zoom', this.scale - normalized)
-    }
-  }
+    },
+  },
 })
 </script>
 

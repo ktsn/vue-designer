@@ -6,7 +6,7 @@ import {
   a,
   d,
   vFor,
-  assertWithoutRange
+  assertWithoutRange,
 } from '../../helpers/template'
 import { transformTemplate } from '@/parser/template/transform'
 

@@ -5,7 +5,7 @@ import {
   TEChild,
   TEForDirective,
   TEElement,
-  TEStartTag
+  TEStartTag,
 } from '@/parser/template/types'
 import { DefaultValue } from '@/parser/script/types'
 import { evalWithScope } from '../eval'
@@ -60,7 +60,7 @@ function shouldAppearVElse(
     }
 
     const lastVIf = last.startTag.directives.find(
-      dir => dir.name === 'if' || dir.name === 'else-if'
+      (dir) => dir.name === 'if' || dir.name === 'else-if'
     )
 
     if (!lastVIf) {
@@ -117,7 +117,7 @@ function resolveVFor(
           acc,
           {
             el: node,
-            scope: newScope
+            scope: newScope,
           },
           true
         )
@@ -167,7 +167,7 @@ export function resolveScopedSlots(
 ): Record<string, ResolvedScopedSlot> | undefined {
   let scopedSlots: Record<string, ResolvedScopedSlot> | undefined
 
-  el.children.forEach(child => {
+  el.children.forEach((child) => {
     if (child.type !== 'Element') return
 
     const attrs = child.startTag.attrs
@@ -187,7 +187,7 @@ export function resolveScopedSlots(
 
     scopedSlots[slotName] = {
       scopeName: slotScopeName,
-      contents
+      contents,
     }
   })
 
@@ -214,13 +214,13 @@ export function resolveControlDirectives(
     }
 
     // v-if
-    const vIf = dirs.find(d => d.name === 'if')
+    const vIf = dirs.find((d) => d.name === 'if')
     if (vIf) {
       return resolveVIf(acc, vIf, child, scope)
     }
 
     // v-else or v-else-if
-    const vElse = dirs.find(d => {
+    const vElse = dirs.find((d) => {
       return d.name === 'else' || d.name === 'else-if'
     })
     if (vElse) {
@@ -239,14 +239,14 @@ function unwrapTemplate(
     return [
       {
         el,
-        scope
-      }
+        scope,
+      },
     ]
   }
 
-  return el.children.map(child => ({
+  return el.children.map((child) => ({
     el: child,
-    scope
+    scope,
   }))
 }
 
@@ -282,7 +282,7 @@ function parseStyleText(cssText: string): Record<string, string> {
   const listDelimiter = /;(?![^(]*\))/g
   const propertyDelimiter = /:(.+)/
 
-  cssText.split(listDelimiter).forEach(function(item) {
+  cssText.split(listDelimiter).forEach(function (item) {
     if (item) {
       const tmp = item.split(propertyDelimiter)
       if (tmp.length > 1) {
@@ -299,8 +299,8 @@ export function convertToSlotScope(
   scope: Record<string, DefaultValue>
 ): Record<string, DefaultValue> {
   return {
-    ...mapValues(startTag.attrs, attr => attr.value),
-    ...mapValues(startTag.props, prop => directiveValue(prop, scope))
+    ...mapValues(startTag.attrs, (attr) => attr.value),
+    ...mapValues(startTag.props, (prop) => directiveValue(prop, scope)),
   }
 }
 
@@ -314,10 +314,10 @@ export function convertToVNodeData(
     attrs: {},
     domProps: {},
     class: [],
-    directives: []
+    directives: [],
   }
 
-  Object.keys(attrs).forEach(key => {
+  Object.keys(attrs).forEach((key) => {
     const attr = attrs[key]
     if (attr.name === 'class') {
       data.staticClass = attr.value || undefined
@@ -330,7 +330,7 @@ export function convertToVNodeData(
     }
   })
 
-  Object.keys(props).forEach(key => {
+  Object.keys(props).forEach((key) => {
     const prop = props[key]
     const value = directiveValue(prop, scope)
     if (prop.argument === 'class') {
@@ -344,12 +344,12 @@ export function convertToVNodeData(
     }
   })
 
-  Object.keys(domProps).forEach(key => {
+  Object.keys(domProps).forEach((key) => {
     const value = directiveValue(domProps[key], scope)
     data.domProps![key] = value
   })
 
-  directives.forEach(dir => {
+  directives.forEach((dir) => {
     const value = directiveValue(dir, scope)
     if (dir.name === 'model') {
       resolveVModel(data, tag, startTag, scope, value)
@@ -364,7 +364,7 @@ export function convertToVNodeData(
         oldValue: undefined,
         arg: dir.argument || '',
         modifiers: dir.modifiers,
-        value
+        value,
       })
     }
   })
@@ -400,7 +400,7 @@ function resolveVModel(
     // Utilize Vue's v-model directive to sync <select> value
     data.directives!.push({
       name: 'model',
-      value: modelValue
+      value: modelValue,
     } as any)
   }
   data.attrs!.value = modelValue

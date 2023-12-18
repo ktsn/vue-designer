@@ -22,33 +22,33 @@ export default Vue.extend({
   props: {
     uri: {
       type: String,
-      required: true
+      required: true,
     },
 
     data: {
       type: Object as { (): TEElement },
-      required: true
+      required: true,
     },
 
     scope: {
       type: Object as { (): Record<string, DefaultValue> },
-      required: true
+      required: true,
     },
 
     childComponents: {
       type: Array as { (): ChildComponent[] },
-      required: true
+      required: true,
     },
 
     slots: {
       type: Object as { (): Record<string, VNode[]> },
-      required: true
+      required: true,
     },
 
     scopedSlots: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
@@ -64,11 +64,11 @@ export default Vue.extend({
       return path.reduce((acc, p, i) => {
         return acc && p === this.selectedPath[i]
       }, true)
-    }
+    },
   },
 
   beforeCreate() {
     this.$options.components!.VueNode = VueNode
-  }
+  },
 })
 </script>

@@ -16,8 +16,8 @@ describe('Script data parser', () => {
     const expected: Data[] = [
       {
         name: 'foo',
-        default: 'test'
-      }
+        default: 'test',
+      },
     ]
     expect(extracted).toEqual(expected)
   })
@@ -36,12 +36,12 @@ describe('Script data parser', () => {
     const expected: Data[] = [
       {
         name: 'abc',
-        default: 123
+        default: 123,
       },
       {
         name: 'cde',
-        default: true
-      }
+        default: true,
+      },
     ]
     expect(extracted).toEqual(expected)
   })
@@ -59,8 +59,8 @@ describe('Script data parser', () => {
     const expected: Data[] = [
       {
         name: 'foo',
-        default: ['test', 123]
-      }
+        default: ['test', 123],
+      },
     ]
     expect(extracted).toEqual(expected)
   })
@@ -83,9 +83,9 @@ describe('Script data parser', () => {
         name: 'obj',
         default: {
           foo: 'test',
-          bar: 123
-        }
-      }
+          bar: 123,
+        },
+      },
     ]
     expect(extracted).toEqual(expected)
   })

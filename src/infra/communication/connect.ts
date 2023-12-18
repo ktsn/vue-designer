@@ -10,15 +10,15 @@ export interface ConnectConfig {
 export function connectWsServer({
   resolver,
   mutator,
-  server
+  server,
 }: ConnectConfig): void {
-  server.on('connection', ws => {
+  server.on('connection', (ws) => {
     listenMessage(ws, resolver, mutator)
   })
 }
 
 function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
-  ws.on('message', async message => {
+  ws.on('message', async (message) => {
     const data = JSON.parse(message.toString())
 
     assert(typeof data.type === 'string')
@@ -36,12 +36,12 @@ function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
       JSON.stringify({
         type: data.type,
         data: res,
-        requestId: data.requestId
+        requestId: data.requestId,
       })
     )
   })
 
-  ws.on('error', err => {
+  ws.on('error', (err) => {
     // To avoid clashing extension by ECONNRESET error...
     // https://github.com/websockets/ws/issues/1256
     if ((err as any).code === 'ECONNRESET') return

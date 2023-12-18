@@ -53,21 +53,21 @@ export class BoundsCalculator {
       top: f(s.marginTop),
       bottom: f(s.marginBottom),
       left: f(s.marginLeft),
-      right: f(s.marginRight)
+      right: f(s.marginRight),
     }
 
     const border = {
       top: f(s.borderTopWidth),
       bottom: f(s.borderBottomWidth),
       left: f(s.borderLeftWidth),
-      right: f(s.borderRightWidth)
+      right: f(s.borderRightWidth),
     }
 
     const padding = {
       top: f(s.paddingTop),
       bottom: f(s.paddingBottom),
       left: f(s.paddingLeft),
-      right: f(s.paddingRight)
+      right: f(s.paddingRight),
     }
 
     this.targetBounds = {
@@ -77,7 +77,7 @@ export class BoundsCalculator {
       height: bounds.height,
       margin,
       border,
-      padding
+      padding,
     }
   }
 }

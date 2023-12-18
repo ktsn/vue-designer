@@ -1,8 +1,7 @@
-import assert from 'assert'
 import * as t from './types'
 import { scopePrefix } from '../style/manipulate'
 import { AssetResolver } from '../../asset-resolver'
-import { clone } from '../../utils'
+import { assert, clone } from '../../utils'
 
 export function getNode(
   root: t.TETemplate,
@@ -58,7 +57,7 @@ export function insertNode(
       )
 
       return clone(parent, {
-        children: [...cs.slice(0, index), el, ...cs.slice(index)]
+        children: [...cs.slice(0, index), el, ...cs.slice(index)],
       })
     }
 
@@ -81,8 +80,8 @@ export function insertNode(
       children: [
         ...cs.slice(0, index),
         loop(child, head, tail),
-        ...cs.slice(index + 1)
-      ]
+        ...cs.slice(index + 1),
+      ],
     })
   }
   return loop(root, path[0], path.slice(1))
@@ -96,7 +95,7 @@ export function visitElements(
     switch (node.type) {
       case 'Element':
         const newNode = clone(node, {
-          children: node.children.map(loop)
+          children: node.children.map(loop),
         })
         return fn(newNode) || newNode
       default:
@@ -105,7 +104,7 @@ export function visitElements(
     }
   }
   return clone(node, {
-    children: node.children.map(loop)
+    children: node.children.map(loop),
   })
 }
 
@@ -114,19 +113,19 @@ export function resolveAsset(
   baseUrl: string,
   resolver: AssetResolver
 ): t.TETemplate {
-  return visitElements(template, el => {
+  return visitElements(template, (el) => {
     const src = el.startTag.attrs.src
     if (el.name === 'img' && src && src.value) {
       const resolvedSrc = clone(src, {
-        value: resolver.pathToUrl(src.value, baseUrl)
+        value: resolver.pathToUrl(src.value, baseUrl),
       })
 
       return clone(el, {
         startTag: clone(el.startTag, {
           attrs: clone(el.startTag.attrs, {
-            src: resolvedSrc
-          })
-        })
+            src: resolvedSrc,
+          }),
+        }),
       })
     }
   })
@@ -135,7 +134,7 @@ export function resolveAsset(
 export function addScope(node: t.TETemplate, scope: string): t.TETemplate {
   const scopeName = scopePrefix + scope
 
-  return visitElements(node, el => {
+  return visitElements(node, (el) => {
     return clone(el, {
       startTag: clone(el.startTag, {
         attrs: clone(el.startTag.attrs, {
@@ -143,10 +142,10 @@ export function addScope(node: t.TETemplate, scope: string): t.TETemplate {
             type: 'Attribute',
             attrIndex: -1,
             name: scopeName,
-            range: [-1, -1]
-          }
-        })
-      })
+            range: [-1, -1],
+          },
+        }),
+      }),
     })
   })
 }

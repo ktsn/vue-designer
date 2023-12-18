@@ -2,8 +2,10 @@ import { EventEmitter } from 'events'
 import { WebSocket, WebSocketServer } from '@/infra/communication/types'
 import { WebSocketClient } from '@/view/communication/client'
 
-export class MockWebSocketServer extends EventEmitter
-  implements WebSocketServer {
+export class MockWebSocketServer
+  extends EventEmitter
+  implements WebSocketServer
+{
   clients = new Set<WebSocket>()
 
   connectClient(): MockWebSocketClientForServer {
@@ -16,8 +18,10 @@ export class MockWebSocketServer extends EventEmitter
   }
 }
 
-export class MockWebSocketClient extends EventEmitter
-  implements WebSocketClient {
+export class MockWebSocketClient
+  extends EventEmitter
+  implements WebSocketClient
+{
   sent: any[] = []
 
   send(payload: string): void {

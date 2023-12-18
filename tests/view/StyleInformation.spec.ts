@@ -12,10 +12,10 @@ describe('StyleInformation', () => {
           styleDeclarationStub: true,
           prop: this.prop,
           value: this.value,
-          autoFocus: this.autoFocus
-        }
+          autoFocus: this.autoFocus,
+        },
       })
-    }
+    },
   }
 
   const rules: STRuleForPrint[] = [
@@ -26,32 +26,32 @@ describe('StyleInformation', () => {
         {
           path: [0, 0],
           prop: 'color',
-          value: 'red'
+          value: 'red',
         },
         {
           path: [0, 1],
           prop: 'font-size',
-          value: '22px'
-        }
-      ]
-    }
+          value: '22px',
+        },
+      ],
+    },
   ]
 
   const create = () => {
     return shallowMount(StyleInformation, {
       propsData: {
-        rules
+        rules,
       },
       stubs: {
-        StyleDeclaration
-      }
+        StyleDeclaration,
+      },
     })
   }
 
   const toDeclarationHtml = (wrapper: Wrapper<any>) => {
     return wrapper
       .findAll('[styledeclarationstub]')
-      .wrappers.map(w => w.html())
+      .wrappers.map((w) => w.html())
       .join('\n')
   }
 
@@ -124,7 +124,7 @@ describe('StyleInformation', () => {
         .vm.$emit('input-end:value', { reason: 'enter' })
 
       expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
-        path: [0, 2]
+        path: [0, 2],
       })
 
       wrapper.setProps({
@@ -136,11 +136,11 @@ describe('StyleInformation', () => {
               {
                 path: [0, 2],
                 prop: 'property',
-                value: 'value'
-              }
-            ]
-          }
-        ]
+                value: 'value',
+              },
+            ],
+          },
+        ],
       })
 
       expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
@@ -151,7 +151,7 @@ describe('StyleInformation', () => {
     const newDecl = {
       path: [0, 99],
       prop: 'font-weight',
-      value: 'bold'
+      value: 'bold',
     }
 
     const addTo = (decl: STDeclarationForPrint, index: number) => {
@@ -161,9 +161,9 @@ describe('StyleInformation', () => {
           children: [
             ...rules[0].children.slice(0, index),
             decl,
-            ...rules[0].children.slice(index)
-          ]
-        }
+            ...rules[0].children.slice(index),
+          ],
+        },
       ]
     }
 
@@ -172,11 +172,11 @@ describe('StyleInformation', () => {
       wrapper.find('.selector-list').trigger('click')
 
       expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
-        path: [0, 0]
+        path: [0, 0],
       })
 
       wrapper.setProps({
-        rules: addTo(newDecl, 0)
+        rules: addTo(newDecl, 0),
       })
 
       await wrapper.vm.$nextTick()
@@ -189,11 +189,11 @@ describe('StyleInformation', () => {
       wrapper.find('.rule').trigger('click')
 
       expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
-        path: [0, 2]
+        path: [0, 2],
       })
 
       wrapper.setProps({
-        rules: addTo(newDecl, 2)
+        rules: addTo(newDecl, 2),
       })
 
       await wrapper.vm.$nextTick()
@@ -206,11 +206,11 @@ describe('StyleInformation', () => {
       wrapper.find('.declaration').trigger('click')
 
       expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
-        path: [0, 1]
+        path: [0, 1],
       })
 
       wrapper.setProps({
-        rules: addTo(newDecl, 1)
+        rules: addTo(newDecl, 1),
       })
 
       await wrapper.vm.$nextTick()

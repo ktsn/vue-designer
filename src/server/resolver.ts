@@ -18,11 +18,11 @@ export const resolver = (
 ) => ({
   async init(): Promise<InitialData> {
     return {
-      vueFiles: vueFiles.map(file => vueFileToPayload(file, assetResolver)),
+      vueFiles: vueFiles.map((file) => vueFileToPayload(file, assetResolver)),
       sharedStyle: await setting.readSharedStyle(),
-      activeUri: editor.activeDocumentUrl
+      activeUri: editor.activeDocumentUrl,
     }
-  }
+  },
 })
 
 export type ResolverType = ReturnType<typeof resolver>

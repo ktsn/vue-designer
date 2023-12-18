@@ -16,19 +16,19 @@ describe('Communication infra', () => {
     dummyData = [
       {
         id: '1',
-        value: 'test'
+        value: 'test',
       },
       {
         id: '2',
-        value: 'test 2'
-      }
+        value: 'test 2',
+      },
     ]
   })
 
   describe('resolver', () => {
     const resolver = {
       get(id: string): Foo | undefined {
-        return dummyData.find(d => d.id === id)
+        return dummyData.find((d) => d.id === id)
       },
 
       all(): Foo[] {
@@ -36,15 +36,15 @@ describe('Communication infra', () => {
       },
 
       promise(id: string): Promise<Foo | undefined> {
-        return Promise.resolve(dummyData.find(d => d.id === id))
-      }
+        return Promise.resolve(dummyData.find((d) => d.id === id))
+      },
     }
 
     beforeEach(() => {
       connectWsServer({
         resolver,
         mutator: {},
-        server: mockServer
+        server: mockServer,
       })
     })
 
@@ -54,7 +54,7 @@ describe('Communication infra', () => {
       ws.send({
         type: 'resolver:get',
         args: ['2'],
-        requestId: '1'
+        requestId: '1',
       })
 
       await Promise.resolve()
@@ -73,7 +73,7 @@ describe('Communication infra', () => {
       ws.send({
         type: 'resolver:all',
         args: [],
-        requestId: '2'
+        requestId: '2',
       })
 
       await Promise.resolve()
@@ -92,7 +92,7 @@ describe('Communication infra', () => {
       ws.send({
         type: 'resolver:promise',
         args: ['2'],
-        requestId: '3'
+        requestId: '3',
       })
 
       await Promise.resolve()
@@ -109,18 +109,18 @@ describe('Communication infra', () => {
   describe('mutator', () => {
     const mutator = {
       update(id: string, value: string): void {
-        const data = dummyData.find(d => d.id === id)
+        const data = dummyData.find((d) => d.id === id)
         if (data) {
           data.value = value
         }
-      }
+      },
     }
 
     beforeEach(() => {
       connectWsServer({
         resolver: {},
         mutator,
-        server: mockServer
+        server: mockServer,
       })
     })
 
@@ -130,7 +130,7 @@ describe('Communication infra', () => {
       ws.send({
         type: 'mutator:update',
         args: ['2', 'updated'],
-        requestId: '1'
+        requestId: '1',
       })
 
       await Promise.resolve()
@@ -143,7 +143,7 @@ describe('Communication infra', () => {
 
       expect(dummyData[1]).toEqual({
         id: '2',
-        value: 'updated'
+        value: 'updated',
       })
     })
   })

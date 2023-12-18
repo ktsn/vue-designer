@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "es2015",
-    "moduleResolution": "node",
+    "target": "es2022",
+    "module": "node16",
+    "moduleResolution": "node16",
     "lib": [
-      "esnext",
+      "es2022",
       "dom"
     ],
     "strict": true,
@@ -13,13 +13,13 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "sourceMap": true,
-    "rootDir": "src",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "*": ["types/*"]
     },
-    "allowJs": true
+    "allowJs": true,
+    "noEmit": true,
   },
   "include": [
     "src/**/*.ts",

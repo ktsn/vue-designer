@@ -1,4 +1,3 @@
-import assert from 'assert'
 import { Actions } from 'sinai'
 import { TEElement } from '@/parser/template/types'
 import { getNode } from '@/parser/template/manipulate'
@@ -14,6 +13,7 @@ import { ResolverType } from '@/server/resolver'
 import { MutatorType } from '@/server/mutator'
 import { SubjectType } from '@/server/subject-type'
 import { VueFilePayload } from '@/parser/vue-file'
+import { assert } from '@/utils'
 
 let client: CommunicationClient<ResolverType, MutatorType, SubjectType>
 let styleMatcher: StyleMatcher
@@ -51,7 +51,7 @@ export class ProjectActions extends Actions<
 
       removeDocument: ({ uri }) => {
         this.removeDocument(uri)
-      }
+      },
     })
 
     client.onReady(() => {
@@ -69,14 +69,14 @@ export class ProjectActions extends Actions<
     styleMatcher.clear()
     this.mutations.setDocuments(files)
 
-    Object.keys(files).forEach(key => {
+    Object.keys(files).forEach((key) => {
       const file = files[key]
       styleMatcher.register(file.uri, file.styles)
 
       this.mutations.refreshScope({
         uri: key,
         props: file.props,
-        data: file.data
+        data: file.data,
       })
     })
 
@@ -90,7 +90,7 @@ export class ProjectActions extends Actions<
     this.mutations.refreshScope({
       uri: file.uri,
       props: file.props,
-      data: file.data
+      data: file.data,
     })
     this.matchSelectedNodeWithStyles()
   }
@@ -116,7 +116,7 @@ export class ProjectActions extends Actions<
     client.mutate('selectNode', {
       uri: current.uri,
       templatePath: path,
-      stylePaths: state.matchedRules.map(r => r.path)
+      stylePaths: state.matchedRules.map((r) => r.path),
     })
   }
 
@@ -134,19 +134,19 @@ export class ProjectActions extends Actions<
     client.mutate('addNode', {
       path,
       uri: currentUri,
-      insertNodeUri: nodeUri
+      insertNodeUri: nodeUri,
     })
 
     mutations.addElement({
       path,
-      node: newNode
+      node: newNode,
     })
 
     const localName = getters.localNameOfDragging
     if (!localName) {
       mutations.addChildComponent({
         name: newNode.name,
-        uri: state.draggingUri!
+        uri: state.draggingUri!,
       })
     }
   }
@@ -163,7 +163,7 @@ export class ProjectActions extends Actions<
 
   setDraggingPlace({
     path,
-    place
+    place,
   }: {
     path: number[]
     place: DraggingPlace
@@ -190,18 +190,14 @@ export class ProjectActions extends Actions<
         const el = node as TEElement
         assert(
           el.type === 'Element',
-          `[store/project] node type must be 'Element' when place is 'first' but received '${
-            node.type
-          }'`
+          `[store/project] node type must be 'Element' when place is 'first' but received '${node.type}'`
         )
         insertInto = el.path.concat(0)
       } else {
         const el = node as TEElement
         assert(
           el.type === 'Element',
-          `[store/project] node type must be 'Element' when place is 'last' but received '${
-            node.type
-          }'`
+          `[store/project] node type must be 'Element' when place is 'last' but received '${node.type}'`
         )
         const len = el.children.length
         insertInto = el.path.concat(len)
@@ -229,8 +225,8 @@ export class ProjectActions extends Actions<
         // Currently, write the placeholder value to simplify the implementation.
         prop: 'property',
         value: 'value',
-        important: false
-      }
+        important: false,
+      },
     })
   }
 
@@ -239,7 +235,7 @@ export class ProjectActions extends Actions<
 
     client.mutate('removeDeclaration', {
       uri: this.state.currentUri,
-      path
+      path,
     })
   }
 
@@ -251,7 +247,7 @@ export class ProjectActions extends Actions<
     if (!this.state.currentUri) return
 
     const updater: STDeclarationForUpdate = {
-      path: payload.path
+      path: payload.path,
     }
 
     // This check does not pass if prop (and value) is an empty string.
@@ -274,7 +270,7 @@ export class ProjectActions extends Actions<
 
     client.mutate('updateDeclaration', {
       uri: this.state.currentUri,
-      declaration: updater
+      declaration: updater,
     })
   }
 

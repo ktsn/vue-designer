@@ -7,16 +7,16 @@ export default Vue.extend({
   props: {
     width: {
       type: Number,
-      required: true
+      required: true,
     },
     height: {
       type: Number,
-      required: true
+      required: true,
     },
     offsetWeight: {
       type: Number,
-      default: 1
-    }
+      default: 1,
+    },
   },
 
   data() {
@@ -28,7 +28,7 @@ export default Vue.extend({
         width: 0,
         height: 0,
         x: 0,
-        y: 0
+        y: 0,
       },
 
       /**
@@ -45,10 +45,10 @@ export default Vue.extend({
        */
       direction: {
         x: 0,
-        y: 0
+        y: 0,
       },
 
-      dragging: false
+      dragging: false,
     }
   },
 
@@ -56,9 +56,9 @@ export default Vue.extend({
     style(): Record<string, string> {
       return {
         width: this.width + 'px',
-        height: this.height + 'px'
+        height: this.height + 'px',
       }
-    }
+    },
   },
 
   methods: {
@@ -72,7 +72,7 @@ export default Vue.extend({
         width: this.width,
         height: this.height,
         x: event.clientX,
-        y: event.clientY
+        y: event.clientY,
       }
     },
 
@@ -87,13 +87,13 @@ export default Vue.extend({
 
       this.$emit('resize', {
         width: width + offsetX,
-        height: height + offsetY
+        height: height + offsetY,
       })
     },
 
     onDragEnd(): void {
       this.dragging = false
-    }
+    },
   },
 
   render(h): VNode {
@@ -105,14 +105,14 @@ export default Vue.extend({
       { type: 'nw', x: -1, y: -1 },
       { type: 'ne', x: 1, y: -1 },
       { type: 'sw', x: -1, y: 1 },
-      { type: 'se', x: 1, y: 1 }
+      { type: 'se', x: 1, y: 1 },
     ]
 
     return h(
       'div',
       {
         class: 'resizable',
-        style: this.style
+        style: this.style,
       },
       [
         this.$slots.default,
@@ -130,13 +130,13 @@ export default Vue.extend({
               },
               pointermove: this.onDrag,
               pointerup: this.onDragEnd,
-              pointercancel: this.onDragEnd
-            }
+              pointercancel: this.onDragEnd,
+            },
           })
-        })
+        }),
       ]
     )
-  }
+  },
 })
 </script>
 

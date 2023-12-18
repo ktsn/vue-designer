@@ -1,1 +1,4 @@
-module.exports = require('prettier-config-ktsn')
+module.exports = {
+  semi: false,
+  singleQuote: true,
+}

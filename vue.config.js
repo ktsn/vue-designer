@@ -5,13 +5,11 @@ module.exports = {
   filenameHashing: false,
   productionSourceMap: false,
 
-  lintOnSave: process.env.NODE_ENV !== 'production',
-
   css: {
-    extract: false
+    extract: false,
   },
 
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     // prettier-ignore
     config.module
       .rule('ts')
@@ -26,7 +24,7 @@ module.exports = {
     config
       .plugin('fork-ts-checker')
       .tap(args => {
-        args[0].tsconfig = path.resolve(__dirname, 'tsconfig.view.json')
+        args[0].typescript.configFile = path.resolve(__dirname, 'tsconfig.view.json')
         return args
       })
 
@@ -38,38 +36,39 @@ module.exports = {
 
   configureWebpack: {
     entry: {
-      app: './src/view/main.ts'
+      app: './src/view/main.ts',
     },
     output: {
-      filename: 'vue-designer-view.js'
+      filename: 'vue-designer-view.js',
     },
     optimization: {
-      splitChunks: false
+      splitChunks: false,
     },
     performance: {
-      hints: false
-    }
+      hints: false,
+    },
   },
 
   devServer: {
     port: 50000,
 
-    before: app => {
-      app.use((req, res, next) => {
+    setupMiddlewares: (middlewares, devServer) => {
+      devServer.app.get((req, res, next) => {
         res.header('Access-Control-Allow-Origin', '*')
         next()
       })
+      return middlewares
     },
 
     proxy: {
       '/': {
         target: 'http://localhost:50001',
-        ws: false
+        ws: false,
       },
       '/api': {
         target: 'http://localhost:50001',
-        ws: true
-      }
-    }
-  }
+        ws: true,
+      },
+    },
+  },
 }

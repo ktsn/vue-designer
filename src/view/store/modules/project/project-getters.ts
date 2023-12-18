@@ -3,7 +3,7 @@ import { ProjectState } from './project-state'
 import { ScopedDocument, DocumentScope } from './types'
 import {
   addScope as addScopeToTemplate,
-  insertNode
+  insertNode,
 } from '@/parser/template/manipulate'
 import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
 import { genStyle } from '@/parser/style/codegen'
@@ -14,7 +14,7 @@ import { mapValues } from '@/utils'
 export class ProjectGetters extends Getters<ProjectState>() {
   get scopedDocuments(): Record<string, ScopedDocument> {
     const { state } = this
-    return mapValues(state.documents, doc => {
+    return mapValues(state.documents, (doc) => {
       const pathEls = doc.uri.split('/')
       const displayName = pathEls[pathEls.length - 1].replace(/\..*$/, '')
 
@@ -29,7 +29,7 @@ export class ProjectGetters extends Getters<ProjectState>() {
         props: doc.props,
         data: doc.data,
         childComponents: doc.childComponents,
-        styleCode: styleCodes.join('\n')
+        styleCode: styleCodes.join('\n'),
       }
     })
   }
@@ -78,13 +78,13 @@ export class ProjectGetters extends Getters<ProjectState>() {
       ? doc.childComponents
       : doc.childComponents.concat({
           name: dragging.displayName,
-          uri: dragging.uri
+          uri: dragging.uri,
         })
 
     return {
       ...doc,
       childComponents: newChildComponents,
-      template: insertNode(doc.template, insertInto, newNode)
+      template: insertNode(doc.template, insertInto, newNode),
     }
   }
 
@@ -132,14 +132,14 @@ export class ProjectGetters extends Getters<ProjectState>() {
         domProps: {},
         directives: [],
         selfClosing: false,
-        range: [-1, -1]
+        range: [-1, -1],
       },
       endTag: {
         type: 'EndTag',
-        range: [-1, -1]
+        range: [-1, -1],
       },
       children: [],
-      range: [-1, -1]
+      range: [-1, -1],
     }
   }
 }

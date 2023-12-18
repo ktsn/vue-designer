@@ -37,8 +37,8 @@ describe('VueComponent v-show', () => {
       {
         name: 'foo',
         type: 'String',
-        default: 'abc'
-      }
+        default: 'abc',
+      },
     ]).find('p')
     expect(p.element.style.display).not.toBe('none')
   })
@@ -55,8 +55,8 @@ describe('VueComponent v-show', () => {
       {
         name: 'bar',
         type: 'Number',
-        default: 0
-      }
+        default: 0,
+      },
     ]).find('p')
     expect(p.element.style.display).toBe('none')
   })

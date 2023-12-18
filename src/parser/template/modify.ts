@@ -5,7 +5,7 @@ import {
   singleIndentStr,
   insertAfter,
   Modifier,
-  empty
+  empty,
 } from '../modifier'
 
 export function insertToTemplate(

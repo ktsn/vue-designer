@@ -30,18 +30,18 @@ export default Vue.extend({
   name: 'StyleDeclaration',
 
   components: {
-    StyleValue
+    StyleValue,
   },
 
   props: {
     prop: {
       type: String,
-      required: true
+      required: true,
     },
 
     value: {
       type: String,
-      required: true
+      required: true,
     },
 
     autoFocus: {
@@ -49,8 +49,8 @@ export default Vue.extend({
       default: null,
       validator(value: string) {
         return value === 'prop' || value === 'value'
-      }
-    }
+      },
+    },
   },
 
   methods: {
@@ -88,8 +88,8 @@ export default Vue.extend({
       } else {
         this.inputValue(value)
       }
-    }
-  }
+    },
+  },
 })
 </script>
 

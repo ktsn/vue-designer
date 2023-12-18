@@ -13,7 +13,7 @@ import { Prop, Data, ChildComponent } from './script/types'
 import {
   extractChildComponents,
   extractProps,
-  extractData
+  extractData,
 } from './script/manipulate'
 import { STStyle } from './style/types'
 import { resolveAsset as resolveStyleAsset } from './style/manipulate'
@@ -50,18 +50,22 @@ export function parseVueFile(code: string, uri: string): VueFile {
 
   const { program: scriptBody } = parseScript(script ? script.content : '', {
     sourceType: 'module',
-    plugins: ['typescript', 'objectRestSpread']
+    plugins: ['typescript', 'objectRestSpread'],
   })
 
-  const childComponents = extractChildComponents(scriptBody, uri, childPath => {
-    const resolved = new URL(parsedUri.toString())
-    const dirPath = path.dirname(resolved.pathname)
-    resolved.pathname = path
-      .resolve(dirPath, childPath)
-      .split(path.sep)
-      .join('/')
-    return resolved.toString()
-  })
+  const childComponents = extractChildComponents(
+    scriptBody,
+    uri,
+    (childPath) => {
+      const resolved = new URL(parsedUri.toString())
+      const dirPath = path.dirname(resolved.pathname)
+      resolved.pathname = path
+        .resolve(dirPath, childPath)
+        .split(path.sep)
+        .join('/')
+      return resolved.toString()
+    }
+  )
 
   const styleAsts = styles.map((s, i) => {
     return transformStyle(postcssParse(s.content), s.content, i)
@@ -76,7 +80,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
     props: extractProps(scriptBody),
     data: extractData(scriptBody),
     childComponents,
-    styles: styleAsts
+    styles: styleAsts,
   }
 }
 
@@ -96,16 +100,16 @@ export function vueFileToPayload(
     props: vueFile.props,
     data: vueFile.data,
     childComponents: vueFile.childComponents,
-    styles: vueFile.styles.map(s =>
+    styles: vueFile.styles.map((s) =>
       resolveStyleAsset(s, basePath, assetResolver)
-    )
+    ),
   }
 }
 
 function parseTemplateBlock(template: string): TETemplate | undefined {
   // TODO: Use parsed SFCBlock after it is fixed that the issue vue-template-compiler
   // breaks original source position by deindent
-  const code = template.replace(/<script.*>[\s\S]*<\/script>/, matched => {
+  const code = template.replace(/<script.*>[\s\S]*<\/script>/, (matched) => {
     return matched.replace(/./g, ' ')
   })
 

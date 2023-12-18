@@ -7,10 +7,10 @@ describe('Renderer', () => {
 
   const emptyScope = {
     props: {},
-    data: {}
+    data: {},
   }
 
-  function mockGetBoundingClientRect() {
+  function mockGetBoundingClientRect(): DOMRect {
     return {
       x: 0,
       y: 0,
@@ -19,7 +19,8 @@ describe('Renderer', () => {
       top: 0,
       right: 0,
       width: mockWidth,
-      height: mockHeight
+      height: mockHeight,
+      toJSON: () => {},
     }
   }
 
@@ -32,10 +33,6 @@ describe('Renderer', () => {
     mockHeight = 1000
   })
 
-  afterAll(() => {
-    delete Element.prototype.getBoundingClientRect
-  })
-
   it('scroll content has the same size with renderer when the viewport is not over the renderer size', () => {
     const wrapper = shallowMount<any>(Renderer, {
       propsData: {
@@ -44,8 +41,8 @@ describe('Renderer', () => {
         width: 800,
         height: 600,
         scale: 1,
-        sharedStyle: ''
-      }
+        sharedStyle: '',
+      },
     })
 
     const size = wrapper.vm.scrollContentSize
@@ -61,8 +58,8 @@ describe('Renderer', () => {
         width: 800,
         height: 1200,
         scale: 1,
-        sharedStyle: ''
-      }
+        sharedStyle: '',
+      },
     })
 
     const size = wrapper.vm.scrollContentSize
@@ -78,8 +75,8 @@ describe('Renderer', () => {
         width: 500,
         height: 500,
         scale: 2,
-        sharedStyle: ''
-      }
+        sharedStyle: '',
+      },
     })
 
     const size = wrapper.vm.scrollContentSize

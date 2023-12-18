@@ -1,5 +1,6 @@
 import { mount, Wrapper } from '@vue/test-utils'
 import Toolbar from '@/view/components/Toolbar.vue'
+import { nextTick } from 'vue'
 
 describe('Toolbar', () => {
   it('has initial size based on props', () => {
@@ -19,13 +20,13 @@ describe('Toolbar', () => {
     t.inputHeight(800)
     expect(t.wrapper.emitted('resize')).toBeFalsy()
     t.widthWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
     expect(t.wrapper.emitted('resize')[0]).toEqual([
       {
         width: 600,
-        height: 800
-      }
+        height: 800,
+      },
     ])
   })
 
@@ -34,7 +35,7 @@ describe('Toolbar', () => {
     t.inputScale(400)
     expect(t.wrapper.emitted('zoom')).toBeFalsy()
     t.scaleWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
     expect(t.wrapper.emitted('zoom')[0]).toEqual([4])
   })
@@ -45,7 +46,7 @@ describe('Toolbar', () => {
     t.inputHeight('800abc')
 
     t.widthWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
 
     expect(t.wrapper.emitted('resize')).toBeFalsy()
@@ -58,54 +59,57 @@ describe('Toolbar', () => {
     t.inputScale('30abc')
 
     t.scaleWrapper().trigger('keydown', {
-      keyCode: 13
+      keyCode: 13,
     })
 
     expect(t.wrapper.emitted('zoom')).toBeFalsy()
     expect(t.scaleField().value).toBe('100')
   })
 
-  it('sync width and height field when the props are updated', () => {
+  it('sync width and height field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400)
     t.wrapper.setProps({
-      height: 500
+      height: 500,
     })
 
+    await nextTick()
     expect(t.widthField().value).toBe('300')
     expect(t.heightField().value).toBe('500')
   })
 
-  it('sync scale field when the props are updated', () => {
+  it('sync scale field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400, 1)
     t.wrapper.setProps({
-      scale: 2
+      scale: 2,
     })
 
+    await nextTick()
     expect(t.scaleField().value).toBe('200')
   })
 
-  it('reset dirty size value when props are updated', () => {
+  it('reset dirty size value when props are updated', async () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(400)
     t.wrapper.setProps({
-      height: 500
+      height: 500,
     })
 
+    await nextTick()
     expect(t.widthField().value).toBe('300')
     expect(t.heightField().value).toBe('500')
   })
 })
 
 class ToolbarTest {
-  wrapper: Wrapper<Toolbar>
+  wrapper: Wrapper<InstanceType<typeof Toolbar>>
 
   constructor(width: number, height: number, scale: number = 1) {
     this.wrapper = mount(Toolbar, {
       propsData: {
         width,
         height,
-        scale
-      }
+        scale,
+      },
     })
   }
 

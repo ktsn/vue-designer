@@ -10,13 +10,13 @@ export default Vue.extend({
   props: {
     expression: {
       type: String,
-      required: true
+      required: true,
     },
 
     scope: {
       type: Object as { (): Record<string, DefaultValue> },
-      required: true
-    }
+      required: true,
+    },
   },
 
   render(h, { props }): VNode {
@@ -31,12 +31,12 @@ export default Vue.extend({
       'span',
       {
         class: {
-          unresolved: !resolved
-        }
+          unresolved: !resolved,
+        },
       },
       [str]
     )
-  }
+  },
 })
 </script>
 

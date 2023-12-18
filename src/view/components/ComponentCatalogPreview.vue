@@ -21,37 +21,37 @@ export default Vue.extend({
   name: 'ComponentCatalogPreview',
 
   components: {
-    VueComponent
+    VueComponent,
   },
 
   props: {
     component: {
       type: Object as () => ScopedDocument,
-      required: true
-    }
+      required: true,
+    },
   },
 
   computed: {
     scope(): DocumentScope {
       const scope: DocumentScope = { props: {}, data: {} }
 
-      this.component.props.forEach(prop => {
+      this.component.props.forEach((prop) => {
         scope.props[prop.name] = {
           type: prop.type,
-          value: prop.default
+          value: prop.default,
         }
       })
 
-      this.component.data.forEach(d => {
+      this.component.data.forEach((d) => {
         scope.data[d.name] = {
           type: null,
-          value: d.default
+          value: d.default,
         }
       })
 
       return scope
-    }
-  }
+    },
+  },
 })
 </script>
 

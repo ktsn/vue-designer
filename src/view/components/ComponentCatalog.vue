@@ -25,27 +25,29 @@ export default Vue.extend({
   name: 'ComponentCatalog',
 
   components: {
-    ComponentCatalogPreview
+    ComponentCatalogPreview,
   },
 
   props: {
     components: {
       type: Array as () => ScopedDocument[],
-      required: true
-    }
+      required: true,
+    },
   },
 
   methods: {
     onDragStart(event: DragEvent, component: ScopedDocument): void {
       const dt = event.dataTransfer
-      dt.effectAllowed = 'copy'
-      this.$emit('dragstart', component.uri)
+      if (dt) {
+        dt.effectAllowed = 'copy'
+        this.$emit('dragstart', component.uri)
+      }
     },
 
     onDragEnd(): void {
       this.$emit('dragend')
-    }
-  }
+    },
+  },
 })
 </script>
 

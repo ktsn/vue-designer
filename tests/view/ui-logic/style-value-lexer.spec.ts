@@ -8,8 +8,8 @@ describe('textual', () => {
         type: 'textual',
         value: 'inherit',
         quote: '',
-        range: [0, 7]
-      }
+        range: [0, 7],
+      },
     ])
   })
 
@@ -20,8 +20,8 @@ describe('textual', () => {
         type: 'textual',
         value: 'test value',
         quote: "'",
-        range: [0, 12]
-      }
+        range: [0, 12],
+      },
     ])
   })
 
@@ -32,8 +32,8 @@ describe('textual', () => {
         type: 'textual',
         value: 'test',
         quote: '"',
-        range: [0, 6]
-      }
+        range: [0, 6],
+      },
     ])
   })
 })
@@ -46,8 +46,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 123,
         unit: '',
-        range: [0, 3]
-      }
+        range: [0, 3],
+      },
     ])
   })
 
@@ -58,8 +58,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: -123,
         unit: '',
-        range: [0, 4]
-      }
+        range: [0, 4],
+      },
     ])
   })
 
@@ -70,8 +70,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 123,
         unit: '',
-        range: [0, 4]
-      }
+        range: [0, 4],
+      },
     ])
   })
 
@@ -82,8 +82,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 1.234,
         unit: '',
-        range: [0, 5]
-      }
+        range: [0, 5],
+      },
     ])
   })
 
@@ -94,8 +94,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 0.5,
         unit: '',
-        range: [0, 2]
-      }
+        range: [0, 2],
+      },
     ])
   })
 
@@ -106,8 +106,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 12e5,
         unit: '',
-        range: [0, 4]
-      }
+        range: [0, 4],
+      },
     ])
   })
 
@@ -118,8 +118,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 123e-10,
         unit: '',
-        range: [0, 7]
-      }
+        range: [0, 7],
+      },
     ])
   })
 
@@ -130,8 +130,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 100,
         unit: '%',
-        range: [0, 4]
-      }
+        range: [0, 4],
+      },
     ])
   })
 
@@ -142,8 +142,8 @@ describe('numeric', () => {
         type: 'numeric',
         value: 1.5,
         unit: 'rem',
-        range: [0, 6]
-      }
+        range: [0, 6],
+      },
     ])
   })
 })
@@ -156,30 +156,30 @@ describe('complex', () => {
         type: 'numeric',
         value: 1,
         unit: 'px',
-        range: [0, 3]
+        range: [0, 3],
       },
       {
         type: 'whitespace',
         value: ' ',
-        range: [3, 4]
+        range: [3, 4],
       },
       {
         type: 'textual',
         value: 'solid',
         quote: '',
-        range: [4, 9]
+        range: [4, 9],
       },
       {
         type: 'whitespace',
         value: ' ',
-        range: [9, 10]
+        range: [9, 10],
       },
       {
         type: 'textual',
         value: '#ccc',
         quote: '',
-        range: [10, 14]
-      }
+        range: [10, 14],
+      },
     ])
   })
 
@@ -190,45 +190,45 @@ describe('complex', () => {
         type: 'textual',
         value: 'calc',
         quote: '',
-        range: [0, 4]
+        range: [0, 4],
       },
       {
         type: 'divider',
         value: '(',
-        range: [4, 5]
+        range: [4, 5],
       },
       {
         type: 'numeric',
         value: 10,
         unit: 'px',
-        range: [5, 9]
+        range: [5, 9],
       },
       {
         type: 'whitespace',
         value: ' ',
-        range: [9, 10]
+        range: [9, 10],
       },
       {
         type: 'divider',
         value: '+',
-        range: [10, 11]
+        range: [10, 11],
       },
       {
         type: 'whitespace',
         value: ' ',
-        range: [11, 12]
+        range: [11, 12],
       },
       {
         type: 'numeric',
         value: 100,
         unit: '%',
-        range: [12, 16]
+        range: [12, 16],
       },
       {
         type: 'divider',
         value: ')',
-        range: [16, 17]
-      }
+        range: [16, 17],
+      },
     ])
   })
 
@@ -239,24 +239,24 @@ describe('complex', () => {
         type: 'textual',
         value: 'color',
         quote: '',
-        range: [0, 5]
+        range: [0, 5],
       },
       {
         type: 'divider',
         value: ',',
-        range: [5, 6]
+        range: [5, 6],
       },
       {
         type: 'whitespace',
         value: ' ',
-        range: [6, 7]
+        range: [6, 7],
       },
       {
         type: 'textual',
         value: 'background-color',
         quote: '',
-        range: [7, 23]
-      }
+        range: [7, 23],
+      },
     ])
   })
 })

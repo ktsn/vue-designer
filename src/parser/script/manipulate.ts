@@ -12,22 +12,22 @@ export function extractProps(program: t.Program): Prop[] {
   if (!props) return []
 
   if (t.isObjectExpression(props.value)) {
-    return props.value.properties.filter(isStaticProperty).map(p => {
+    return props.value.properties.filter(isStaticProperty).map((p) => {
       const key = p.key as StaticKey
       return {
         name: getStaticKeyName(key),
         type: getPropType(p.value),
-        default: getPropDefault(p.value)
+        default: getPropDefault(p.value),
       }
     })
   } else if (t.isArrayExpression(props.value)) {
     return props.value.elements
       .filter((el): el is t.StringLiteral => !!el && isStringLiteral(el))
-      .map(el => {
+      .map((el) => {
         return {
           name: el.value,
           type: 'any',
-          default: undefined
+          default: undefined,
         }
       })
   } else {
@@ -45,11 +45,11 @@ export function extractData(program: t.Program): Data[] {
   const obj = getDataObject(data)
   if (!obj) return []
 
-  return obj.properties.filter(isStaticProperty).map(p => {
+  return obj.properties.filter(isStaticProperty).map((p) => {
     const key = p.key as StaticKey
     return {
       name: getStaticKeyName(key),
-      default: getLiteralValue(p.value)
+      default: getLiteralValue(p.value),
     }
   })
 }
@@ -69,7 +69,7 @@ export function extractChildComponents(
   if (selfName && isStringLiteral(selfName.value)) {
     childComponents.push({
       name: selfName.value.value,
-      uri
+      uri,
     })
   }
 
@@ -104,20 +104,18 @@ function extractComponents(
   }
 
   return prop.value.properties
-    .map(
-      (p): ChildComponent | undefined => {
-        if (!isStaticProperty(p) || !t.isIdentifier(p.value)) {
-          return undefined
-        }
-
-        return findMatchingComponent(
-          getStaticKeyName(p.key as StaticKey),
-          p.value.name,
-          imports,
-          localPathToUri
-        )
+    .map((p): ChildComponent | undefined => {
+      if (!isStaticProperty(p) || !t.isIdentifier(p.value)) {
+        return undefined
       }
-    )
+
+      return findMatchingComponent(
+        getStaticKeyName(p.key as StaticKey),
+        p.value.name,
+        imports,
+        localPathToUri
+      )
+    })
     .filter(notUndef)
 }
 
@@ -137,31 +135,29 @@ function extractLazyAddComponents(
 
   // Extract all `this.$options.components.LocalComponentName = ComponentName`
   return func.body.body
-    .map(
-      (st): ChildComponent | undefined => {
-        // We leave this chack as loosely since the user may not write
-        // `this.$options.components.LocalComponentName = ComponentName`
-        // but assign `components` to another variable to save key types.
-        // If there are false positive in this check, they probably be
-        // proned by maching with imported components in later.
-        if (
-          !t.isExpressionStatement(st) ||
-          !t.isAssignmentExpression(st.expression) ||
-          !t.isIdentifier(st.expression.right) || // = ComponentName
-          !t.isMemberExpression(st.expression.left) ||
-          !t.isIdentifier(st.expression.left.property) // .LocalComponentName
-        ) {
-          return undefined
-        }
-
-        return findMatchingComponent(
-          st.expression.right.name,
-          st.expression.left.property.name,
-          imports,
-          localPathToUri
-        )
+    .map((st): ChildComponent | undefined => {
+      // We leave this chack as loosely since the user may not write
+      // `this.$options.components.LocalComponentName = ComponentName`
+      // but assign `components` to another variable to save key types.
+      // If there are false positive in this check, they probably be
+      // proned by maching with imported components in later.
+      if (
+        !t.isExpressionStatement(st) ||
+        !t.isAssignmentExpression(st.expression) ||
+        !t.isIdentifier(st.expression.right) || // = ComponentName
+        !t.isMemberExpression(st.expression.left) ||
+        !t.isIdentifier(st.expression.left.property) // .LocalComponentName
+      ) {
+        return undefined
       }
-    )
+
+      return findMatchingComponent(
+        st.expression.right.name,
+        st.expression.left.property.name,
+        imports,
+        localPathToUri
+      )
+    })
     .filter(notUndef)
 }
 
@@ -169,12 +165,12 @@ function getImportDeclarations(
   body: t.Statement[]
 ): Record<string, t.ImportDeclaration> {
   const res: Record<string, t.ImportDeclaration> = {}
-  body.forEach(node => {
+  body.forEach((node) => {
     if (!t.isImportDeclaration(node)) return
 
     // Collect all declared local variables in import declaration into record
     // to store all possible components.
-    node.specifiers.forEach(s => {
+    node.specifiers.forEach((s) => {
       res[s.local.name] = node
     })
   })
@@ -199,7 +195,7 @@ function findMatchingComponent(
 
   return {
     name: localName,
-    uri: localPathToUri(sourcePath)
+    uri: localPathToUri(sourcePath),
   }
 }
 
@@ -234,7 +230,7 @@ export function findProperty(
   props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
   name: string
 ): t.ObjectProperty | undefined {
-  return props.filter(isStaticProperty).find(p => {
+  return props.filter(isStaticProperty).find((p) => {
     const key = p.key as StaticKey
     return getStaticKeyName(key) === name
   })
@@ -244,7 +240,7 @@ function findPropertyOrMethod(
   props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
   name: string
 ): t.ObjectProperty | t.ObjectMethod | undefined {
-  return props.filter(isStaticPropertyOrMethod).find(p => {
+  return props.filter(isStaticPropertyOrMethod).find((p) => {
     const key = p.key as StaticKey
     return getStaticKeyName(key) === name
   })
@@ -387,7 +383,7 @@ function getLiteralValue(node: t.Node): DefaultValue {
   // Object literal
   if (t.isObjectExpression(node)) {
     const obj: Record<string, DefaultValue> = {}
-    node.properties.forEach(p => {
+    node.properties.forEach((p) => {
       if (!t.isObjectProperty(p)) {
         return
       }
@@ -416,8 +412,8 @@ function getLiteralValue(node: t.Node): DefaultValue {
 export function findComponentOptions(
   body: t.Statement[]
 ): t.ObjectExpression | undefined {
-  const exported = body.find(
-    (n): n is t.ExportDefaultDeclaration => t.isExportDefaultDeclaration(n)
+  const exported = body.find((n): n is t.ExportDefaultDeclaration =>
+    t.isExportDefaultDeclaration(n)
   )
   if (!exported) return undefined
 

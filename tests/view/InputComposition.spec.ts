@@ -7,11 +7,11 @@ describe('InputComposition', () => {
 
     const wrapper = shallowMount(InputComposition, {
       propsData: {
-        value: 'test'
+        value: 'test',
       },
       listeners: {
-        input: spy
-      }
+        input: spy,
+      },
     })
 
     const input = wrapper.find('input').element as HTMLInputElement
@@ -28,14 +28,14 @@ describe('InputComposition', () => {
   it('does not emit key events during composition', () => {
     const listeners = {
       input: jest.fn(),
-      keydown: jest.fn()
+      keydown: jest.fn(),
     }
 
     const wrapper = shallowMount(InputComposition, {
       propsData: {
-        value: 'test'
+        value: 'test',
       },
-      listeners: { ...listeners }
+      listeners: { ...listeners },
     })
 
     const input = wrapper.find('input')

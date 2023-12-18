@@ -19,13 +19,13 @@ export default Vue.extend({
   props: {
     value: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
 
   data() {
     return {
-      compositing: false
+      compositing: false,
     }
   },
 
@@ -38,7 +38,7 @@ export default Vue.extend({
           return convert([fn])
         }
 
-        return fn.map(f => {
+        return fn.map((f) => {
           return (event: Event) => {
             const isKeyEvent = /^key/.test(event.type)
             if (isKeyEvent && this.compositing) {
@@ -52,7 +52,7 @@ export default Vue.extend({
       }
 
       return mapValues(this.$listeners, convert)
-    }
-  }
+    },
+  },
 })
 </script>

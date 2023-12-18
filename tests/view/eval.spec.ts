@@ -8,7 +8,7 @@ describe('Expression evaluation', () => {
 
   it('should able to use a variable in scope', () => {
     const res = evalWithScope('"Hello, " + person', {
-      person: 'John'
+      person: 'John',
     }) as EvalSuccess
     expect(res.value).toBe('Hello, John')
   })

@@ -1,5 +1,6 @@
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
 import { shallowMount } from '@vue/test-utils'
-import Renderer from '@/view/components/Renderer.vue'
+import Renderer from '../../src/view/components/Renderer.vue'
 
 describe('Renderer', () => {
   let mockWidth = 1000

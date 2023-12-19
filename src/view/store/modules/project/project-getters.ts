@@ -4,12 +4,12 @@ import { ScopedDocument, DocumentScope } from './types'
 import {
   addScope as addScopeToTemplate,
   insertNode,
-} from '@/parser/template/manipulate'
-import { addScope as addScopeToStyle } from '@/parser/style/manipulate'
-import { genStyle } from '@/parser/style/codegen'
-import { VueFilePayload } from '@/parser/vue-file'
-import { TEElement } from '@/parser/template/types'
-import { mapValues } from '@/utils'
+} from '../../../../parser/template/manipulate'
+import { addScope as addScopeToStyle } from '../../../../parser/style/manipulate'
+import { genStyle } from '../../../../parser/style/codegen'
+import { VueFilePayload } from '../../../../parser/vue-file'
+import { TEElement } from '../../../../parser/template/types'
+import { mapValues } from '../../../../utils'
 
 export class ProjectGetters extends Getters<ProjectState>() {
   get scopedDocuments(): Record<string, ScopedDocument> {

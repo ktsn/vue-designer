@@ -1,5 +1,6 @@
+import { describe, expect, it } from 'vitest'
 import { mount, Wrapper } from '@vue/test-utils'
-import InputJson from '@/view/components/InputJson.vue'
+import InputJson from '../../src/view/components/InputJson.vue'
 
 describe('InputJson', () => {
   describe('Check render', () => {

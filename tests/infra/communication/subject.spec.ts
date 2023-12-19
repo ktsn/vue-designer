@@ -1,4 +1,5 @@
-import { Subject } from '@/infra/communication/subject'
+import { describe, beforeEach, it, expect } from 'vitest'
+import { Subject } from '../../../src/infra/communication/subject'
 import { MockWebSocketServer } from '../../helpers/ws'
 
 interface SubjectTypes {

@@ -1,4 +1,8 @@
-import { updateStyleValue, getTextOffset } from '@/view/ui-logic/editing'
+import { describe, expect, it } from 'vitest'
+import {
+  updateStyleValue,
+  getTextOffset,
+} from '../../../src/view/ui-logic/editing'
 
 describe('getTextOffset', () => {
   it('just uses given offset if the node is text node', () => {

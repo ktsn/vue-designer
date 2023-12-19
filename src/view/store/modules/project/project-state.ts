@@ -1,5 +1,5 @@
-import { VueFilePayload } from '@/parser/vue-file'
-import { STRuleForPrint } from '@/parser/style/types'
+import { VueFilePayload } from '../../../../parser/vue-file'
+import { STRuleForPrint } from '../../../../parser/style/types'
 import { DocumentScope } from './types'
 
 export class ProjectState {

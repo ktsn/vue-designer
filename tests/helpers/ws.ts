@@ -1,6 +1,6 @@
 import { EventEmitter } from 'events'
-import { WebSocket, WebSocketServer } from '@/infra/communication/types'
-import { WebSocketClient } from '@/view/communication/client'
+import { WebSocket, WebSocketServer } from '../../src/infra/communication/types'
+import { WebSocketClient } from '../../src/view/communication/client'
 
 export class MockWebSocketServer
   extends EventEmitter

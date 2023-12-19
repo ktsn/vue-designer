@@ -1,7 +1,8 @@
+import { describe, it, expect } from 'vitest'
 import * as path from 'path'
 import { parse } from '@babel/parser'
-import { ChildComponent } from '@/parser/script/types'
-import { extractChildComponents } from '@/parser/script/manipulate'
+import { ChildComponent } from '../../../src/parser/script/types'
+import { extractChildComponents } from '../../../src/parser/script/manipulate'
 
 describe('Script components parser', () => {
   const hostPath = '/path/to/Component.vue'

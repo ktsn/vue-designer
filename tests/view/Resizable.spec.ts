@@ -1,11 +1,12 @@
+import { beforeAll, describe, expect, it, vitest } from 'vitest'
 import assert from 'assert'
 import { mount, Wrapper } from '@vue/test-utils'
-import Resizable from '@/view/components/Resizable.vue'
+import Resizable from '../../src/view/components/Resizable.vue'
 
 describe('Resizable', () => {
   beforeAll(() => {
-    Element.prototype.setPointerCapture = jest.fn()
-    Element.prototype.releasePointerCapture = jest.fn()
+    Element.prototype.setPointerCapture = vitest.fn()
+    Element.prototype.releasePointerCapture = vitest.fn()
   })
 
   it('tells resized size on dragging', () => {

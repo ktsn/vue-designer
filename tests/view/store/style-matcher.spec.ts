@@ -1,5 +1,6 @@
+import { describe, expect, it } from 'vitest'
 import { createStyle, rule, selector } from '../../helpers/style'
-import { StyleMatcher } from '@/view/store/style-matcher'
+import { StyleMatcher } from '../../../src/view/store/style-matcher'
 import { createTemplate, h, a } from '../../helpers/template'
 
 describe('StyleMatcher', () => {

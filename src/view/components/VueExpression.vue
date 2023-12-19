@@ -1,6 +1,6 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
-import { DefaultValue } from '@/parser/script/types'
+import { DefaultValue } from '../../parser/script/types'
 import { evalWithScope, EvalSuccess } from '../eval'
 
 export default Vue.extend({

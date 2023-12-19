@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import {
   createStyle,
   selector,
@@ -8,7 +9,7 @@ import {
   combinator,
 } from '../../helpers/style'
 import { createTemplate, h, a } from '../../helpers/template'
-import { createStyleMatcher } from '@/parser/style/match'
+import { createStyleMatcher } from '../../../src/parser/style/match'
 
 describe('Style matcher', () => {
   describe('for universal selector', () => {

@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { createTemplate, render, h, d } from '../../helpers/template'
 
 describe('VueComponent v-show', () => {

@@ -1,6 +1,7 @@
+import { describe, it, expect } from 'vitest'
 import { parse } from '@babel/parser'
-import { extractProps } from '@/parser/script/manipulate'
-import { Prop } from '@/parser/script/types'
+import { extractProps } from '../../../src/parser/script/manipulate'
+import { Prop } from '../../../src/parser/script/types'
 
 describe('Script props parser', () => {
   it('should extract props', () => {

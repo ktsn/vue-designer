@@ -1,7 +1,8 @@
+import { describe, it, expect } from 'vitest'
 import { parse } from 'vue-eslint-parser'
-import { transformTemplate } from '@/parser/template/transform'
-import { modify } from '@/parser/modifier'
-import { insertToTemplate } from '@/parser/template/modify'
+import { transformTemplate } from '../../../src/parser/template/transform'
+import { modify } from '../../../src/parser/modifier'
+import { insertToTemplate } from '../../../src/parser/template/modify'
 
 describe('Template modifier', () => {
   it('should insert a node code', () => {

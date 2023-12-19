@@ -22,7 +22,7 @@
 import Vue from 'vue'
 import GlobalEvents from 'vue-global-events'
 import Resizable from './Resizable.vue'
-import { minmax } from '@/utils'
+import { minmax } from '../../utils'
 
 export default Vue.extend({
   name: 'Viewport',

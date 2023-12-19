@@ -24,7 +24,7 @@ import {
   selectNodeContents,
   updateStyleValue,
   getTextOffset,
-} from '@/view/ui-logic/editing'
+} from '../ui-logic/editing'
 
 export default Vue.extend({
   name: 'StyleValue',

@@ -76,7 +76,7 @@
 import Vue from 'vue'
 import BaseIcon from './BaseIcon.vue'
 import InputComposition from './InputComposition.vue'
-import { clone } from '@/utils'
+import { clone } from '../../utils'
 
 type ValueType =
   | 'undefined'

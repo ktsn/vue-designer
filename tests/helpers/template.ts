@@ -1,3 +1,4 @@
+import { expect } from 'vitest'
 import { store as createStore, module } from 'sinai'
 import { mount, Wrapper } from '@vue/test-utils'
 import {
@@ -9,12 +10,12 @@ import {
   TEForDirective,
   TEChild,
   TETextNode,
-} from '@/parser/template/types'
-import { Prop, Data, ChildComponent } from '@/parser/script/types'
-import { VueFilePayload } from '@/parser/vue-file'
-import VueComponent from '@/view/components/VueComponent.vue'
-import { project } from '@/view/store/modules/project'
-import { mapValues } from '@/utils'
+} from '../../src/parser/template/types'
+import { Prop, Data, ChildComponent } from '../../src/parser/script/types'
+import { VueFilePayload } from '../../src/parser/vue-file'
+import VueComponent from '../../src/view/components/VueComponent.vue'
+import { project } from '../../src/view/store/modules/project'
+import { mapValues } from '../../src/utils'
 
 export function render(
   template: TETemplate,

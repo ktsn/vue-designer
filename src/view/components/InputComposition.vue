@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapValues } from '@/utils'
+import { mapValues } from '../../utils'
 
 export default Vue.extend({
   name: 'InputComposition',

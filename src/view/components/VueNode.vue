@@ -2,8 +2,8 @@
 import Vue, { VNode, VNodeData } from 'vue'
 import ContainerVueComponent from './ContainerVueComponent.vue'
 import VueChild from './VueChild.vue'
-import { TEElement } from '@/parser/template/types'
-import { DefaultValue, ChildComponent } from '@/parser/script/types'
+import { TEElement } from '../../parser/template/types'
+import { DefaultValue, ChildComponent } from '../../parser/script/types'
 import {
   convertToVNodeData,
   resolveControlDirectives,
@@ -11,7 +11,7 @@ import {
   resolveScopedSlots,
 } from '../ui-logic/rendering'
 import { DraggingPlace } from '../store/modules/project/types'
-import { mapValues } from '@/utils'
+import { mapValues } from '../../utils'
 
 export default Vue.extend({
   name: 'VueNode',

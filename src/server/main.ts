@@ -1,25 +1,12 @@
-import assert from 'assert'
 import * as path from 'path'
-import * as fs from 'fs'
+import { promises as fs } from 'fs'
 import * as http from 'http'
 import WebSocket from 'ws'
 import { AssetResolver } from '../asset-resolver'
 
-function readContent(
-  file: string,
-  cb: (err: Error | null, content: string) => void
-): void {
-  fs.readFile(path.join(__dirname, '..', file), 'utf8', cb)
+function readContent(file: string): Promise<string> {
+  return fs.readFile(path.join(__dirname, '..', file), 'utf8')
 }
-
-const html = `<html>
-<body>
-  <div id="app"></div>
-  <script src="/vue-designer-view.js"></script>
-</body>
-</html>`
-
-const allowedUrls = ['/vue-designer-view.js']
 
 export function startStaticServer(assetResolver: AssetResolver): http.Server {
   const server = http.createServer((req, res) => {
@@ -30,30 +17,41 @@ export function startStaticServer(assetResolver: AssetResolver): http.Server {
     }
 
     if (req.url) {
-      if (req.url === '/' || req.url === '/index.html') {
-        res.end(html)
-        return
-      }
-
       const assetPath = assetResolver.urlToPath(req.url)
       if (assetPath) {
-        fs.readFile(assetPath, (err, data) => {
-          if (err) {
-            res.statusCode = 500
-            res.end(err.message)
-            return
-          }
-          res.end(data)
-        })
-        return
+        return fs
+          .readFile(assetPath)
+          .then((data) => {
+            res.setHeader('Content-Type', inferMimeType(assetPath))
+            res.end(data)
+          })
+          .catch((err) => {
+            if (!err) {
+              res.statusCode = 404
+              res.end()
+            } else {
+              res.statusCode = 500
+              res.end(err.message)
+            }
+          })
       }
 
-      if (allowedUrls.indexOf(req.url) >= 0) {
-        readContent(req.url, (err, content) => {
-          assert(!err, 'Unexpectedly file not found')
-          res.end(content)
-        })
-        return
+      const filePath = req.url === '/' ? '/index.html' : req.url
+      if (allowedPath(filePath)) {
+        return readContent(filePath)
+          .then((content) => {
+            res.setHeader('Content-Type', inferMimeType(filePath))
+            res.end(content)
+          })
+          .catch((err) => {
+            if (!err) {
+              res.statusCode = 404
+              res.end()
+            } else {
+              res.statusCode = 500
+              res.end(err.message)
+            }
+          })
       }
     }
 
@@ -65,6 +63,36 @@ export function startStaticServer(assetResolver: AssetResolver): http.Server {
   server.listen(port)
 
   return server
+}
+
+function allowedPath(path: string): boolean {
+  return path === '/index.html' || path.startsWith('/app/')
+}
+
+function inferMimeType(filePath: string): string {
+  const ext = path.extname(filePath)
+  switch (ext) {
+    case '.html':
+      return 'text/html'
+    case '.css':
+      return 'text/css'
+    case '.js':
+      return 'application/javascript'
+    case '.png':
+      return 'image/png'
+    case '.jpg':
+      return 'image/jpeg'
+    case '.gif':
+      return 'image/gif'
+    case '.svg':
+      return 'image/svg+xml'
+    case '.woff':
+      return 'font/woff'
+    case '.woff2':
+      return 'font/woff2'
+    default:
+      return 'application/octet-stream'
+  }
 }
 
 export function startWebSocketServer(http: http.Server): WebSocket.Server {

@@ -1,7 +1,8 @@
+import { describe, beforeEach, it, expect, vitest, afterEach } from 'vitest'
 import {
   CommunicationClient,
   CommunicationClientObserver,
-} from '@/view/communication/client'
+} from '../../../src/view/communication/client'
 import { MockWebSocketClient } from '../../helpers/ws'
 
 describe('CommunicationClient', () => {
@@ -47,91 +48,99 @@ describe('CommunicationClient', () => {
   })
 
   describe('resolver', () => {
-    it('fetches some data via resolve method', (done) => {
-      client.resolve('get', 2).then((res) => {
-        expect(res).toEqual(dummyData[1])
-        done()
-      })
+    it('fetches some data via resolve method', () => {
+      return new Promise<void>((done) => {
+        client.resolve('get', 2).then((res) => {
+          expect(res).toEqual(dummyData[1])
+          done()
+        })
 
-      // Test request payload
-      expect(mockWs.sent.length).toBe(1)
-      const p = mockWs.sent[0]
-      expect(p.type).toBe('resolver:get')
-      expect(p.args).toEqual([2])
+        // Test request payload
+        expect(mockWs.sent.length).toBe(1)
+        const p = mockWs.sent[0]
+        expect(p.type).toBe('resolver:get')
+        expect(p.args).toEqual([2])
 
-      mockWs.receive({
-        type: 'resolver:get',
-        data: resolver.get(2),
-        requestId: p.requestId,
+        mockWs.receive({
+          type: 'resolver:get',
+          data: resolver.get(2),
+          requestId: p.requestId,
+        })
       })
     })
 
-    it('does not react different request id', (done) => {
-      client.resolve('get', 2).then((res) => {
-        expect(res).toEqual(dummyData[1])
-        done()
-      })
+    it('does not react different request id', () => {
+      return new Promise<void>((done) => {
+        client.resolve('get', 2).then((res) => {
+          expect(res).toEqual(dummyData[1])
+          done()
+        })
 
-      const p = mockWs.sent[0]
+        const p = mockWs.sent[0]
 
-      mockWs.receive({
-        type: 'resolver:get',
-        data: resolver.get(1),
-        requestId: 'dummy id',
-      })
+        mockWs.receive({
+          type: 'resolver:get',
+          data: resolver.get(1),
+          requestId: 'dummy id',
+        })
 
-      mockWs.receive({
-        type: 'resolver:get',
-        data: resolver.get(2),
-        requestId: p.requestId,
+        mockWs.receive({
+          type: 'resolver:get',
+          data: resolver.get(2),
+          requestId: p.requestId,
+        })
       })
     })
   })
 
   describe('mutator', () => {
-    it('updates remote data via mutate method', (done) => {
-      client.mutate('update', 2, 'updated').then((res) => {
-        expect(res).toEqual({
-          id: 2,
-          value: 'updated',
+    it('updates remote data via mutate method', () => {
+      return new Promise<void>((done) => {
+        client.mutate('update', 2, 'updated').then((res) => {
+          expect(res).toEqual({
+            id: 2,
+            value: 'updated',
+          })
+          done()
         })
-        done()
-      })
 
-      // Test request payload
-      expect(mockWs.sent.length).toBe(1)
-      const p = mockWs.sent[0]
-      expect(p.type).toBe('mutator:update')
-      expect(p.args).toEqual([2, 'updated'])
+        // Test request payload
+        expect(mockWs.sent.length).toBe(1)
+        const p = mockWs.sent[0]
+        expect(p.type).toBe('mutator:update')
+        expect(p.args).toEqual([2, 'updated'])
 
-      mockWs.receive({
-        type: 'mutator:update',
-        data: mutator.update(2, 'updated'),
-        requestId: p.requestId,
+        mockWs.receive({
+          type: 'mutator:update',
+          data: mutator.update(2, 'updated'),
+          requestId: p.requestId,
+        })
       })
     })
 
-    it('does not react different request id', (done) => {
-      client.mutate('update', 2, 'updated').then((res) => {
-        expect(res).toEqual({
-          id: 2,
-          value: 'updated',
+    it('does not react different request id', () => {
+      return new Promise<void>((done) => {
+        client.mutate('update', 2, 'updated').then((res) => {
+          expect(res).toEqual({
+            id: 2,
+            value: 'updated',
+          })
+          done()
         })
-        done()
-      })
 
-      const p = mockWs.sent[0]
+        const p = mockWs.sent[0]
 
-      mockWs.receive({
-        type: 'mutator:update',
-        data: mutator.update(1, 'test'),
-        requestId: 'dummy id',
-      })
+        mockWs.receive({
+          type: 'mutator:update',
+          data: mutator.update(1, 'test'),
+          requestId: 'dummy id',
+        })
 
-      mockWs.receive({
-        type: 'mutator:update',
-        data: mutator.update(2, 'updated'),
-        requestId: p.requestId,
+        mockWs.receive({
+          type: 'mutator:update',
+          data: mutator.update(2, 'updated'),
+          requestId: p.requestId,
+        })
       })
     })
   })
@@ -141,7 +150,7 @@ describe('CommunicationClient', () => {
     let unobserve: () => void
     beforeEach(() => {
       observer = {
-        foo: jest.fn(),
+        foo: vitest.fn(),
       }
       unobserve = client.observe(observer)
     })

@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import parse from 'postcss-safe-parser'
 import {
   createStyle,
@@ -11,8 +12,8 @@ import {
   pElement,
   assertStyleNode,
 } from '../../helpers/style'
-import { transformStyle } from '@/parser/style/transform'
-import { STStyle, STRule } from '@/parser/style/types'
+import { transformStyle } from '../../../src/parser/style/transform'
+import { STStyle, STRule } from '../../../src/parser/style/types'
 
 function getAst(code: string): STStyle {
   const root = parse(code)

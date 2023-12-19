@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import {
   createStyle,
   rule,
@@ -9,7 +10,7 @@ import {
   declaration,
   atRule,
 } from '../../helpers/style'
-import { genStyle } from '@/parser/style/codegen'
+import { genStyle } from '../../../src/parser/style/codegen'
 
 describe('Style codegen', () => {
   it('should generate simple selector', () => {

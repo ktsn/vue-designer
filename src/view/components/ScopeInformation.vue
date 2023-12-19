@@ -36,7 +36,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import InputJson from './InputJson.vue'
-import { DocumentScope } from '@/view/store/modules/project/types'
+import { DocumentScope } from '../store/modules/project/types'
 
 export default Vue.extend({
   name: 'ScopeInformation',

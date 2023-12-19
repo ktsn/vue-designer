@@ -1,9 +1,9 @@
 <script lang="ts">
 import Vue, { VNode, VNodeChildrenArrayContents } from 'vue'
 import VueChild from './VueChild.vue'
-import { TEElement } from '@/parser/template/types'
-import { DefaultValue, ChildComponent } from '@/parser/script/types'
-import { convertToSlotScope } from '@/view/ui-logic/rendering'
+import { TEElement } from '../../parser/template/types'
+import { DefaultValue, ChildComponent } from '../../parser/script/types'
+import { convertToSlotScope } from '../ui-logic/rendering'
 
 export default Vue.extend({
   name: 'VueSlot',

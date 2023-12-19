@@ -1,4 +1,5 @@
-import StyleValue from '@/view/components/StyleValue.vue'
+import { describe, expect, it, vitest } from 'vitest'
+import StyleValue from '../../../src/view/components/StyleValue.vue'
 import Vue, { nextTick } from 'vue'
 
 function mount(Component: typeof Vue, propsData?: Record<string, any>) {
@@ -28,7 +29,7 @@ describe('StyleValue basic', () => {
     expect(el.getAttribute('contenteditable')).toBe('true')
     expect(el.textContent).toBe('20px')
 
-    const inputListener = jest.fn()
+    const inputListener = vitest.fn()
     vm.$once('input', inputListener)
 
     el.textContent = '22px'
@@ -46,7 +47,7 @@ describe('StyleValue basic', () => {
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
     expect(vm.$el.textContent).toBe('20px')
 
-    const inputListener = jest.fn()
+    const inputListener = vitest.fn()
     vm.$once('input', inputListener)
 
     vm.$el.textContent = '22px'
@@ -59,7 +60,7 @@ describe('StyleValue basic', () => {
       value: '20px',
     })
 
-    const listener = jest.fn()
+    const listener = vitest.fn()
     vm.$on('input-start', listener)
 
     vm.$el.dispatchEvent(new MouseEvent('click'))
@@ -76,7 +77,7 @@ describe('StyleValue basic', () => {
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
 
-    const listener = jest.fn()
+    const listener = vitest.fn()
     vm.$on('input-end', listener)
 
     vm.$el.dispatchEvent(new Event('blur'))
@@ -98,7 +99,7 @@ describe('StyleValue basic', () => {
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
 
-    const listener = jest.fn()
+    const listener = vitest.fn()
     vm.$once('input-end', listener)
 
     vm.$el.dispatchEvent(
@@ -125,7 +126,7 @@ describe('StyleValue basic', () => {
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
 
-    const listener = jest.fn()
+    const listener = vitest.fn()
     vm.$once('input-end', listener)
 
     vm.$el.dispatchEvent(
@@ -152,7 +153,7 @@ describe('StyleValue basic', () => {
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
 
-    const listener = jest.fn()
+    const listener = vitest.fn()
     vm.$once('input-end', listener)
 
     vm.$el.dispatchEvent(

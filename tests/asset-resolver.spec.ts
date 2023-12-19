@@ -1,4 +1,5 @@
-import { AssetResolver } from '@/asset-resolver'
+import { describe, expect, it } from 'vitest'
+import { AssetResolver } from '../src/asset-resolver'
 
 describe('AssetResolver', () => {
   const asset = new AssetResolver()

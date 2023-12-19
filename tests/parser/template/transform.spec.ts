@@ -1,3 +1,4 @@
+import { describe, it } from 'vitest'
 import { parse } from 'vue-eslint-parser'
 import {
   createTemplate,
@@ -8,7 +9,7 @@ import {
   vFor,
   assertWithoutRange,
 } from '../../helpers/template'
-import { transformTemplate } from '@/parser/template/transform'
+import { transformTemplate } from '../../../src/parser/template/transform'
 
 describe('Template AST transformer', () => {
   it('should transform element', () => {

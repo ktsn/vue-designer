@@ -4,14 +4,14 @@ import rootModule from './modules'
 import { CommunicationClient } from '../communication/client'
 import { StyleMatcher } from './style-matcher'
 import { BoundsCalculator } from './bounds-calculator'
-import { ResolverType } from '@/server/resolver'
-import { MutatorType } from '@/server/mutator'
-import { SubjectType } from '@/server/subject-type'
+import { ResolverType } from '../../server/resolver'
+import { MutatorType } from '../../server/mutator'
+import { SubjectType } from '../../server/subject-type'
 
 Vue.use(install)
 
 export const store = createStore(rootModule, {
-  strict: process.env.NODE_ENV !== 'production',
+  strict: import.meta.env.MODE !== 'production',
 })
 export const mapper = createMapper<typeof store>()
 
@@ -58,11 +58,3 @@ store.subscribe((path: any) => {
     Vue.nextTick(guideActions.deselect)
   }
 })
-
-declare const module: any
-if (module.hot) {
-  module.hot.accept(['./modules'], () => {
-    const newRootModule = require('./modules').default
-    store.hotUpdate(newRootModule)
-  })
-}

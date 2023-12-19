@@ -11,7 +11,7 @@ import { SubjectType } from '../../server/subject-type'
 Vue.use(install)
 
 export const store = createStore(rootModule, {
-  strict: process.env.NODE_ENV !== 'production',
+  strict: import.meta.env.MODE !== 'production',
 })
 export const mapper = createMapper<typeof store>()
 

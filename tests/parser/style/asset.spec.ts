@@ -1,7 +1,8 @@
-import { AssetResolver } from '@/asset-resolver'
+import { describe, it, expect } from 'vitest'
+import { AssetResolver } from '../../../src/asset-resolver'
 import { createStyle, rule, selector, declaration } from '../../helpers/style'
-import { resolveAsset } from '@/parser/style/manipulate'
-import { STRule } from '@/parser/style/types'
+import { resolveAsset } from '../../../src/parser/style/manipulate'
+import { STRule } from '../../../src/parser/style/types'
 
 describe('Style asset resolution', () => {
   const basePath = '/path/to/components'

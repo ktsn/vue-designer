@@ -1,4 +1,5 @@
-import { evalWithScope, EvalSuccess, EvalError } from '@/view/eval'
+import { describe, expect, it } from 'vitest'
+import { evalWithScope, EvalSuccess, EvalError } from '../../src/view/eval'
 
 describe('Expression evaluation', () => {
   it('should evaluate JS expression', () => {

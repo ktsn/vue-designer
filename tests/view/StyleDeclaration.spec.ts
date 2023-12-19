@@ -1,6 +1,7 @@
+import { describe, expect, it } from 'vitest'
 import { mount } from '@vue/test-utils'
-import StyleDeclaration from '@/view/components/StyleDeclaration.vue'
-import StyleValue from '@/view/components/StyleValue.vue'
+import StyleDeclaration from '../../src/view/components/StyleDeclaration.vue'
+import StyleValue from '../../src/view/components/StyleValue.vue'
 
 describe('StyleDeclaration', () => {
   it('should notify prop update', () => {

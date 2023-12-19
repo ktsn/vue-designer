@@ -1,3 +1,4 @@
+import { describe, expect, it } from 'vitest'
 import { createTemplate, h, a, render } from '../../helpers/template'
 
 describe('VueComponent error handling', () => {

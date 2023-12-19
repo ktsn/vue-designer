@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`VueComponent scoped slot renders named scoped slot content 1`] = `
+exports[`VueComponent scoped slot > renders named scoped slot content 1`] = `
 <div>
   <style></style>
   <div class="">
@@ -14,7 +14,7 @@ exports[`VueComponent scoped slot renders named scoped slot content 1`] = `
 </div>
 `;
 
-exports[`VueComponent scoped slot renders scoped slot content 1`] = `
+exports[`VueComponent scoped slot > renders scoped slot content 1`] = `
 <div>
   <style></style>
   <div class="">
@@ -27,7 +27,7 @@ exports[`VueComponent scoped slot renders scoped slot content 1`] = `
 </div>
 `;
 
-exports[`VueComponent scoped slot resolves template element children as a slot 1`] = `
+exports[`VueComponent scoped slot > resolves template element children as a slot 1`] = `
 <div>
   <style></style>
   <div class="">

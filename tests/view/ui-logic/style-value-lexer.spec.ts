@@ -1,4 +1,5 @@
-import { lexStyleValue } from '@/view/ui-logic/style-value-lexer'
+import { describe, expect, it } from 'vitest'
+import { lexStyleValue } from '../../../src/view/ui-logic/style-value-lexer'
 
 describe('textual', () => {
   it('ident', () => {

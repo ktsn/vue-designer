@@ -1,12 +1,13 @@
+import { describe, it, expect } from 'vitest'
 import _parse from 'postcss-safe-parser'
 import {
   updateDeclaration,
   removeDeclaration,
   insertDeclaration,
-} from '@/parser/style/modify'
-import { STStyle } from '@/parser/style/types'
-import { transformStyle } from '@/parser/style/transform'
-import { modify } from '@/parser/modifier'
+} from '../../../src/parser/style/modify'
+import { STStyle } from '../../../src/parser/style/types'
+import { transformStyle } from '../../../src/parser/style/transform'
+import { modify } from '../../../src/parser/modifier'
 import { declaration } from '../../helpers/style'
 
 describe('Style modifier', () => {

@@ -1,13 +1,13 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`VueComponent v-if gathers the contents in the template element 1`] = `
+exports[`VueComponent v-if > gathers the contents in the template element 1`] = `
 <div>
   <style></style>
   <p class="">foo</p>barbaz
 </div>
 `;
 
-exports[`VueComponent v-if gathers the contents in the template element 2`] = `
+exports[`VueComponent v-if > gathers the contents in the template element 2`] = `
 <div>
   <style></style>baz
 </div>

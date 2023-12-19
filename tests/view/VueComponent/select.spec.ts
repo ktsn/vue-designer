@@ -1,9 +1,10 @@
+import { beforeAll, describe, it, vitest } from 'vitest'
 import * as td from 'testdouble'
 import { createTemplate, h, a, render } from '../../helpers/template'
 
 describe('VueComponent select event', () => {
   beforeAll(() => {
-    Element.prototype.getBoundingClientRect = jest.fn(() => ({
+    Element.prototype.getBoundingClientRect = vitest.fn(() => ({
       x: 0,
       y: 0,
       left: 0,
@@ -12,6 +13,7 @@ describe('VueComponent select event', () => {
       bottom: 0,
       width: 0,
       height: 0,
+      toJSON: () => {}
     }))
   })
 

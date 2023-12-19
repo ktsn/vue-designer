@@ -1,7 +1,8 @@
+import { describe, it, expect } from 'vitest'
 import { parse } from 'vue-eslint-parser'
-import { transformTemplate } from '@/parser/template/transform'
-import { getNode } from '@/parser/template/manipulate'
-import { TEElement } from '@/parser/template/types'
+import { transformTemplate } from '../../../src/parser/template/transform'
+import { getNode } from '../../../src/parser/template/manipulate'
+import { TEElement } from '../../../src/parser/template/types'
 
 describe('AST traversal', () => {
   it('should return a node by path', () => {

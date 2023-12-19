@@ -1,5 +1,6 @@
+import { describe, expect, it } from 'vitest'
 import { mount, Wrapper } from '@vue/test-utils'
-import Toolbar from '@/view/components/Toolbar.vue'
+import Toolbar from '../../src/view/components/Toolbar.vue'
 import { nextTick } from 'vue'
 
 describe('Toolbar', () => {

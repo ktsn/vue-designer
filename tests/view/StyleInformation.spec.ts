@@ -1,6 +1,10 @@
+import { describe, expect, it } from 'vitest'
 import { shallowMount, Wrapper } from '@vue/test-utils'
-import StyleInformation from '@/view/components/StyleInformation.vue'
-import { STRuleForPrint, STDeclarationForPrint } from '@/parser/style/types'
+import StyleInformation from '../../src/view/components/StyleInformation.vue'
+import {
+  STRuleForPrint,
+  STDeclarationForPrint,
+} from '../../src/parser/style/types'
 
 describe('StyleInformation', () => {
   const StyleDeclaration = {

@@ -1,7 +1,8 @@
-import { AssetResolver } from '@/asset-resolver'
+import { describe, it, expect } from 'vitest'
+import { AssetResolver } from '../../../src/asset-resolver'
 import { createTemplate, h, a } from '../../helpers/template'
-import { resolveAsset } from '@/parser/template/manipulate'
-import { TEElement } from '@/parser/template/types'
+import { resolveAsset } from '../../../src/parser/template/manipulate'
+import { TEElement } from '../../../src/parser/template/types'
 
 describe('Template asset resolution', () => {
   const basePath = '/path/to/component'

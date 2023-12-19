@@ -1,15 +1,16 @@
+import { beforeEach, describe, expect, it, vitest } from 'vitest'
 import { store as createStore } from 'sinai'
 import { stub } from 'sinai/lib/test'
-import { project } from '@/view/store/modules/project'
-import { ProjectGetters } from '@/view/store/modules/project/project-getters'
-import { ProjectActions } from '@/view/store/modules/project/project-actions'
-import { ProjectMutations } from '@/view/store/modules/project/project-mutations'
+import { project } from '../../../src/view/store/modules/project'
+import { ProjectGetters } from '../../../src/view/store/modules/project/project-getters'
+import { ProjectActions } from '../../../src/view/store/modules/project/project-actions'
+import { ProjectMutations } from '../../../src/view/store/modules/project/project-mutations'
 import { createTemplate, h } from '../../helpers/template'
 import { createStyle, rule, selector } from '../../helpers/style'
-import { addScope as addScopeToTemplate } from '@/parser/template/manipulate'
-import { CommunicationClient } from '@/view/communication/client'
-import { StyleMatcher } from '@/view/store/style-matcher'
-import { STRuleForPrint } from '@/parser/style/types'
+import { addScope as addScopeToTemplate } from '../../../src/parser/template/manipulate'
+import { CommunicationClient } from '../../../src/view/communication/client'
+import { StyleMatcher } from '../../../src/view/store/style-matcher'
+import { STRuleForPrint } from '../../../src/parser/style/types'
 
 describe('Store project getters', () => {
   describe('scopedDocuments', () => {
@@ -253,30 +254,30 @@ describe('Store project actions', () => {
   beforeEach(() => {
     mock = {
       client: {
-        onReady: jest.fn(),
-        mutate: jest.fn(),
-        observe: jest.fn(),
+        onReady: vitest.fn(),
+        mutate: vitest.fn(),
+        observe: vitest.fn(),
       } as any,
 
       styleMatcher: {
-        match: jest.fn(),
-        register: jest.fn(),
-        unregister: jest.fn(),
+        match: vitest.fn(),
+        register: vitest.fn(),
+        unregister: vitest.fn(),
       } as any,
     }
   })
 
   describe('setDocument', () => {
     it('sets the document and setup scope and matched styles', () => {
-      const setDocument = jest.fn()
-      const refreshScope = jest.fn()
+      const setDocument = vitest.fn()
+      const refreshScope = vitest.fn()
       const actions = stub(ProjectActions, {
         mutations: {
           setDocument,
           refreshScope,
         },
       })
-      actions.matchSelectedNodeWithStyles = jest.fn()
+      actions.matchSelectedNodeWithStyles = vitest.fn()
 
       actions.init(mock)
 
@@ -304,15 +305,15 @@ describe('Store project actions', () => {
 
   describe('removeDocument', () => {
     it('removes the document and cleanup scope and matched styles', () => {
-      const removeDocument = jest.fn()
-      const cleanScope = jest.fn()
+      const removeDocument = vitest.fn()
+      const cleanScope = vitest.fn()
       const actions = stub(ProjectActions, {
         mutations: {
           removeDocument,
           cleanScope,
         },
       })
-      actions.matchSelectedNodeWithStyles = jest.fn()
+      actions.matchSelectedNodeWithStyles = vitest.fn()
 
       actions.init(mock)
 

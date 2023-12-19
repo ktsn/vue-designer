@@ -1,7 +1,8 @@
+import { describe, it, expect } from 'vitest'
 import { parseComponent } from 'vue-template-compiler'
 import { parse as _parse } from '@babel/parser'
-import { insertComponentScript } from '@/parser/script/modify'
-import { modify } from '@/parser/modifier'
+import { insertComponentScript } from '../../../src/parser/script/modify'
+import { modify } from '../../../src/parser/modifier'
 
 describe('Script modifier', () => {
   function parse(code: string) {

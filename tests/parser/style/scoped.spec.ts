@@ -1,6 +1,7 @@
+import { describe, it } from 'vitest'
 import parse from 'postcss-safe-parser'
-import { transformStyle } from '@/parser/style/transform'
-import { addScope } from '@/parser/style/manipulate'
+import { transformStyle } from '../../../src/parser/style/transform'
+import { addScope } from '../../../src/parser/style/manipulate'
 import { attribute, assertStyleNode } from '../../helpers/style'
 
 function getAst(code: string) {

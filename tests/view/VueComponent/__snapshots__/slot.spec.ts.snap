@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`VueComponent slot renders named slot content 1`] = `
+exports[`VueComponent slot > renders named slot content 1`] = `
 <div>
   <style></style>
   <div class="">
@@ -13,7 +13,7 @@ exports[`VueComponent slot renders named slot content 1`] = `
 </div>
 `;
 
-exports[`VueComponent slot renders placeholder slot content 1`] = `
+exports[`VueComponent slot > renders placeholder slot content 1`] = `
 <div>
   <style></style>
   <div class="">
@@ -22,7 +22,7 @@ exports[`VueComponent slot renders placeholder slot content 1`] = `
 </div>
 `;
 
-exports[`VueComponent slot renders slot content 1`] = `
+exports[`VueComponent slot > renders slot content 1`] = `
 <div>
   <style></style>
   <div class="">
@@ -35,7 +35,7 @@ exports[`VueComponent slot renders slot content 1`] = `
 </div>
 `;
 
-exports[`VueComponent slot resolves template element children as the named slot 1`] = `
+exports[`VueComponent slot > resolves template element children as the named slot 1`] = `
 <div>
   <style></style>
   <div class="">

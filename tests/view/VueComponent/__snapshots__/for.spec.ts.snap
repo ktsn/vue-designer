@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`VueComponent v-for repeats template element children 1`] = `
+exports[`VueComponent v-for > repeats template element children 1`] = `
 <div>
   <style></style>
   <div class="">

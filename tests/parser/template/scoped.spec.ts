@@ -1,7 +1,8 @@
+import { describe, it, expect } from 'vitest'
 import { parse } from 'vue-eslint-parser'
-import { TEAttribute } from '@/parser/template/types'
-import { transformTemplate } from '@/parser/template/transform'
-import { addScope } from '@/parser/template/manipulate'
+import { TEAttribute } from '../../../src/parser/template/types'
+import { transformTemplate } from '../../../src/parser/template/transform'
+import { addScope } from '../../../src/parser/template/manipulate'
 
 describe('Scope attribute', () => {
   it('should add scope attribute for all elements', () => {

@@ -1,9 +1,10 @@
+import { describe, expect, it, vitest } from 'vitest'
 import { shallowMount } from '@vue/test-utils'
-import InputComposition from '@/view/components/InputComposition.vue'
+import InputComposition from '../../src/view/components/InputComposition.vue'
 
 describe('InputComposition', () => {
   it('ports value to real input element', () => {
-    const spy = jest.fn()
+    const spy = vitest.fn()
 
     const wrapper = shallowMount(InputComposition, {
       propsData: {
@@ -27,8 +28,8 @@ describe('InputComposition', () => {
 
   it('does not emit key events during composition', () => {
     const listeners = {
-      input: jest.fn(),
-      keydown: jest.fn(),
+      input: vitest.fn(),
+      keydown: vitest.fn(),
     }
 
     const wrapper = shallowMount(InputComposition, {

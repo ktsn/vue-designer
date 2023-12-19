@@ -1,4 +1,5 @@
-import { connectWsServer } from '@/infra/communication/connect'
+import { connectWsServer } from '../../../src/infra/communication/connect'
+import { describe, beforeEach, it, expect } from 'vitest'
 import { MockWebSocketServer } from '../../helpers/ws'
 
 describe('Communication infra', () => {

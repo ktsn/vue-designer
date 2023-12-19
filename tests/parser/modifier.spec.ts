@@ -1,3 +1,4 @@
+import { describe, it, expect } from 'vitest'
 import { parse as parseTemplate } from 'vue-eslint-parser'
 import {
   modify,
@@ -7,8 +8,8 @@ import {
   replace,
   insertAt,
   reduce,
-} from '@/parser/modifier'
-import { transformTemplate } from '@/parser/template/transform'
+} from '../../src/parser/modifier'
+import { transformTemplate } from '../../src/parser/template/transform'
 
 describe('modify', () => {
   it('should insert string before specified range', () => {

@@ -1,3 +1,4 @@
+import { expect } from 'vitest'
 import { AttributeOperator } from 'postcss-selector-parser'
 import {
   STStyle,
@@ -10,7 +11,7 @@ import {
   STPseudoElement,
   STAttribute,
   STChild,
-} from '@/parser/style/types'
+} from '../../src/parser/style/types'
 
 export function createStyle(children: (STAtRule | STRule)[]): STStyle {
   modifyPath(children)

@@ -1,5 +1,6 @@
+import { describe, it, expect } from 'vitest'
 import { createTemplate, h, exp, a } from '../../helpers/template'
-import { insertNode } from '@/parser/template/manipulate'
+import { insertNode } from '../../../src/parser/template/manipulate'
 
 describe('AST manipulation', () => {
   it('should insert a node', () => {

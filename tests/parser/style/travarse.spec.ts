@@ -1,4 +1,5 @@
-import { getDeclaration } from '@/parser/style/manipulate'
+import { describe, it, expect } from 'vitest'
+import { getDeclaration } from '../../../src/parser/style/manipulate'
 import { createStyle, rule, selector, declaration } from '../../helpers/style'
 
 describe('Get style node', () => {

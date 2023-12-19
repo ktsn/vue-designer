@@ -13,7 +13,7 @@ describe('VueComponent select event', () => {
       bottom: 0,
       width: 0,
       height: 0,
-      toJSON: () => {}
+      toJSON: () => {},
     }))
   })
 

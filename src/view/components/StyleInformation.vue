@@ -47,7 +47,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import StyleDeclaration from './StyleDeclaration.vue'
-import { STRuleForPrint, STDeclarationForPrint } from '@/parser/style/types'
+import { STRuleForPrint, STDeclarationForPrint } from '../../parser/style/types'
 
 export default Vue.extend({
   name: 'StyleInformation',

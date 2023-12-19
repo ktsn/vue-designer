@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { mapper } from '@/view/store'
+import { mapper } from '../store'
 
 const guideMapper = mapper.module('guide')
 

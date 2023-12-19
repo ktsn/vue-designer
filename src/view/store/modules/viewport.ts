@@ -1,5 +1,5 @@
 import { Mutations, Actions, module } from 'sinai'
-import { minmax } from '@/utils'
+import { minmax } from '../../../utils'
 
 class ViewportState {
   width = 600

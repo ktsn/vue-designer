@@ -1,5 +1,5 @@
-import { TETemplate } from '@/parser/template/types'
-import { Prop, Data, ChildComponent } from '@/parser/script/types'
+import { TETemplate } from '../../../../parser/template/types'
+import { Prop, Data, ChildComponent } from '../../../../parser/script/types'
 
 export interface ScopedDocument {
   uri: string

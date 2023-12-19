@@ -6,10 +6,10 @@ import {
   TEForDirective,
   TEElement,
   TEStartTag,
-} from '@/parser/template/types'
-import { DefaultValue } from '@/parser/script/types'
+} from '../../parser/template/types'
+import { DefaultValue } from '../../parser/script/types'
 import { evalWithScope } from '../eval'
-import { isObject, range, mapValues } from '@/utils'
+import { isObject, range, mapValues } from '../../utils'
 
 function attributeValue(
   startTag: TEStartTag,

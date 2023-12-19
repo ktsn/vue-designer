@@ -1,9 +1,9 @@
 <script lang="ts">
 import Vue, { VNode, PropType } from 'vue'
 import VueChild from './VueChild.vue'
-import { TETemplate } from '@/parser/template/types'
-import { ChildComponent } from '@/parser/script/types'
-import { DocumentScope } from '@/view/store/modules/project/types'
+import { TETemplate } from '../../parser/template/types'
+import { ChildComponent } from '../../parser/script/types'
+import { DocumentScope } from '../store/modules/project/types'
 import { resolveControlDirectives, ResolvedChild } from '../ui-logic/rendering'
 
 export default Vue.extend({

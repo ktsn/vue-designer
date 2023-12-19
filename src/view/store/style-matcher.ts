@@ -1,6 +1,6 @@
-import { STStyle, STRule } from '@/parser/style/types'
-import { TETemplate } from '@/parser/template/types'
-import { createStyleMatcher } from '@/parser/style/match'
+import { STStyle, STRule } from '../../parser/style/types'
+import { TETemplate } from '../../parser/template/types'
+import { createStyleMatcher } from '../../parser/style/match'
 
 type Matcher = (template: TETemplate, path: number[]) => STRule[]
 

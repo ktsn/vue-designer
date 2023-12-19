@@ -33,7 +33,7 @@ import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
 import RendererGuide from './RendererGuide.vue'
 import { ScopedDocument, DocumentScope } from '../store/modules/project/types'
-import { TEElement } from '@/parser/template/types'
+import { TEElement } from '../../parser/template/types'
 
 const scrollContentPadding = 100
 

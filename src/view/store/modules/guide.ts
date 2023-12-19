@@ -1,6 +1,6 @@
 import { module, inject } from 'sinai'
-import { GuideBounds, BoundsCalculator } from '@/view/store/bounds-calculator'
-import { viewport } from '@/view/store/modules/viewport'
+import { GuideBounds, BoundsCalculator } from '../bounds-calculator'
+import { viewport } from '../modules/viewport'
 
 const { Getters, Mutations, Actions } = inject('viewport', viewport)
 

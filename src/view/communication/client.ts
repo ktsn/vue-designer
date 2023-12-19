@@ -1,5 +1,5 @@
-import { Resolver, Mutator } from '@/infra/communication/types'
-import { assert } from '@/utils'
+import { Resolver, Mutator } from '../../infra/communication/types'
+import { assert } from '../../utils'
 
 type Arguments<F extends Function> = F extends (...args: infer T) => any
   ? T

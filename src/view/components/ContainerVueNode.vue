@@ -10,8 +10,8 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue'
 import VueNode from './VueNode.vue'
-import { TEElement } from '@/parser/template/types'
-import { DefaultValue, ChildComponent } from '@/parser/script/types'
+import { TEElement } from '../../parser/template/types'
+import { DefaultValue, ChildComponent } from '../../parser/script/types'
 import { mapper } from '../store'
 
 const projectMapper = mapper.module('project')

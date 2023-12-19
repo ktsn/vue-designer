@@ -1,25 +1,30 @@
 {
   "compilerOptions": {
-    "target": "es2022",
-    "module": "node16",
-    "moduleResolution": "node16",
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "lib": [
-      "es2022",
-      "dom"
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
     ],
+    "useDefineForClassFields": true,
+    "esModuleInterop": true,
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
     "sourceMap": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
       "*": ["types/*"]
     },
     "allowJs": true,
-    "noEmit": true,
+    "noEmit": true
   },
   "include": [
     "src/**/*.ts",

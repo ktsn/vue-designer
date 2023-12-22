@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { createTemplate, render, h, a, d } from '../../helpers/template'
 
 describe('VueComponent v-else', () => {
-  it('should be removeod if corresponding v-if appears', () => {
+  it('should be removed if corresponding v-if appears', () => {
     // prettier-ignore
     const template = createTemplate([
       h('p', [a('id', 'foo'), d('if', 'true')], [
@@ -13,14 +13,14 @@ describe('VueComponent v-else', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    const foo = wrapper.find('#foo')
-    const bar = wrapper.find('#bar')
-    expect(foo.exists()).toBe(true)
-    expect(bar.exists()).toBe(false)
+    const vm = render(template)
+    const foo = vm.$el.querySelector('#foo')
+    const bar = vm.$el.querySelector('#bar')
+    expect(foo).not.toBe(null)
+    expect(bar).toBe(null)
   })
 
-  it('should appear if corrsponding v-if is removed', () => {
+  it('should appear if corresponding v-if is removed', () => {
     // prettier-ignore
     const template = createTemplate([
       h('p', [a('id', 'foo'), d('if', 'false')], [
@@ -31,11 +31,11 @@ describe('VueComponent v-else', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    const foo = wrapper.find('#foo')
-    const bar = wrapper.find('#bar')
-    expect(foo.exists()).toBe(false)
-    expect(bar.exists()).toBe(true)
+    const vm = render(template)
+    const foo = vm.$el.querySelector('#foo')
+    const bar = vm.$el.querySelector('#bar')
+    expect(foo).toBe(null)
+    expect(bar).not.toBe(null)
   })
 
   it('should ignore empty text between v-if and v-else', () => {
@@ -50,11 +50,11 @@ describe('VueComponent v-else', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    const foo = wrapper.find('#foo')
-    const bar = wrapper.find('#bar')
-    expect(foo.exists()).toBe(true)
-    expect(bar.exists()).toBe(false)
+    const vm = render(template)
+    const foo = vm.$el.querySelector('#foo')
+    const bar = vm.$el.querySelector('#bar')
+    expect(foo).not.toBe(null)
+    expect(bar).toBe(null)
   })
 
   it('should be ignored if there is no v-if before it', () => {
@@ -71,11 +71,11 @@ describe('VueComponent v-else', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    const foo = wrapper.find('#foo')
-    const bar = wrapper.find('#bar')
-    expect(foo.exists()).toBe(true)
-    expect(bar.exists()).toBe(true)
+    const vm = render(template)
+    const foo = vm.$el.querySelector('#foo')
+    const bar = vm.$el.querySelector('#bar')
+    expect(foo).not.toBe(null)
+    expect(bar).not.toBe(null)
   })
 
   it('should be ignored if there is another element between if and else', () => {
@@ -92,11 +92,11 @@ describe('VueComponent v-else', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    const foo = wrapper.find('#foo')
-    const bar = wrapper.find('#bar')
-    expect(foo.exists()).toBe(true)
-    expect(bar.exists()).toBe(true)
+    const vm = render(template)
+    const foo = vm.$el.querySelector('#foo')
+    const bar = vm.$el.querySelector('#bar')
+    expect(foo).not.toBe(null)
+    expect(bar).not.toBe(null)
   })
 
   it('should be removed if at least one of v-else-if is true', () => {
@@ -116,15 +116,15 @@ describe('VueComponent v-else', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    const foo = wrapper.find('#foo')
-    const bar = wrapper.find('#bar')
-    const baz = wrapper.find('#baz')
-    const qux = wrapper.find('#qux')
-    expect(foo.exists()).toBe(false)
-    expect(bar.exists()).toBe(true)
-    expect(baz.exists()).toBe(false)
-    expect(qux.exists()).toBe(false)
+    const vm = render(template)
+    const foo = vm.$el.querySelector('#foo')
+    const bar = vm.$el.querySelector('#bar')
+    const baz = vm.$el.querySelector('#baz')
+    const qux = vm.$el.querySelector('#qux')
+    expect(foo).toBe(null)
+    expect(bar).not.toBe(null)
+    expect(baz).toBe(null)
+    expect(qux).toBe(null)
   })
 
   it('resolves template children as the else block', () => {
@@ -139,7 +139,7 @@ describe('VueComponent v-else', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    expect(wrapper.html()).toMatchSnapshot()
+    const vm = render(template)
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 })

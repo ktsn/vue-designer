@@ -12,8 +12,8 @@ describe('VueComponent slot', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    expect(wrapper.html()).toMatchSnapshot()
+    const vm = render(template)
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 
   it('renders slot content', () => {
@@ -25,7 +25,7 @@ describe('VueComponent slot', () => {
     ])
 
     const components = {
-      'file://Foo.vue': {
+      'file:///Foo.vue': {
         // prettier-ignore
         template: createTemplate([
           h('div', [], [
@@ -36,20 +36,20 @@ describe('VueComponent slot', () => {
       },
     }
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
       [
         {
           name: 'Foo',
-          uri: 'file://Foo.vue',
+          uri: 'file:///Foo.vue',
         },
       ],
       components
     )
 
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 
   it('renders named slot content', () => {
@@ -62,7 +62,7 @@ describe('VueComponent slot', () => {
     ])
 
     const components = {
-      'file://Foo.vue': {
+      'file:///Foo.vue': {
         // prettier-ignore
         template: createTemplate([
           h('div', [], [
@@ -73,20 +73,20 @@ describe('VueComponent slot', () => {
       },
     }
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
       [
         {
           name: 'Foo',
-          uri: 'file://Foo.vue',
+          uri: 'file:///Foo.vue',
         },
       ],
       components
     )
 
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 
   it('resolves template element children as the named slot', () => {
@@ -101,7 +101,7 @@ describe('VueComponent slot', () => {
     ])
 
     const components = {
-      'file://Foo.vue': {
+      'file:///Foo.vue': {
         // prettier-ignore
         template: createTemplate([
           h('div', [], [
@@ -111,19 +111,19 @@ describe('VueComponent slot', () => {
       },
     }
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
       [
         {
           name: 'Foo',
-          uri: 'file://Foo.vue',
+          uri: 'file:///Foo.vue',
         },
       ],
       components
     )
 
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 })

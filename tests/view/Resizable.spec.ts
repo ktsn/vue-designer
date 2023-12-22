@@ -1,7 +1,8 @@
 import { beforeAll, describe, expect, it, vitest } from 'vitest'
 import assert from 'assert'
-import { mount, Wrapper } from '@vue/test-utils'
+import { mount } from '../helpers/vue'
 import Resizable from '../../src/view/components/Resizable.vue'
+import Vue, { nextTick } from 'vue'
 
 describe('Resizable', () => {
   beforeAll(() => {
@@ -18,11 +19,12 @@ describe('Resizable', () => {
     expect(t.size.height).toBe(350)
   })
 
-  it('multiplies offset by offsetWeight prop', () => {
+  it('multiplies offset by offsetWeight prop', async () => {
     const t = new ResizableTest(300, 300)
-    t.wrapper.setProps({
+    t.updateProps({
       offsetWeight: 2,
     })
+    await nextTick()
     t.dragStart('se', 300, 300)
     t.dragTo(350, 370)
 
@@ -104,46 +106,57 @@ describe('Resizable', () => {
 })
 
 class ResizableTest {
-  wrapper: Wrapper<InstanceType<typeof Resizable>>
-  handler!: Wrapper<any>
+  vm: Vue
+  handler!: HTMLElement
   size: {
     width: number
     height: number
   }
 
+  updateProps: (props: Record<string, any>) => void
+
   constructor(width: number, height: number) {
-    this.wrapper = mount(Resizable, {
-      propsData: {
+    const { vm, updateProps } = mount(
+      Resizable,
+      {
         width,
         height,
       },
-    })
+      {
+        resize: (value: any) => {
+          this.size.width = value.width
+          this.size.height = value.height
+        },
+      }
+    )
+
+    this.vm = vm
+    this.updateProps = updateProps
 
     this.size = {
       width,
       height,
     }
-
-    this.wrapper.vm.$on('resize', (value: any) => {
-      this.size.width = value.width
-      this.size.height = value.height
-    })
   }
 
   dragStart(direction: string, x: number, y: number): void {
-    this.handler = this.wrapper.find('.resizable-handler-' + direction)
-    this.handler.trigger('pointerdown', {
-      clientX: x,
-      clientY: y,
-    })
+    this.handler = this.vm.$el.querySelector('.resizable-handler-' + direction)!
+    this.handler.dispatchEvent(
+      new MouseEvent('pointerdown', {
+        clientX: x,
+        clientY: y,
+      })
+    )
   }
 
   dragTo(x: number, y: number): void {
     assert(this.handler)
-    this.handler.trigger('pointermove', {
-      clientX: x,
-      clientY: y,
-    })
-    this.handler.trigger('pointerup')
+    this.handler.dispatchEvent(
+      new MouseEvent('pointermove', {
+        clientX: x,
+        clientY: y,
+      })
+    )
+    this.handler.dispatchEvent(new MouseEvent('pointerup'))
   }
 }

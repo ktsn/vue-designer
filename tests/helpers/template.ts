@@ -1,6 +1,6 @@
 import { expect } from 'vitest'
 import { store as createStore, module } from 'sinai'
-import { mount, Wrapper } from '@vue/test-utils'
+import { mount } from '../helpers/vue'
 import {
   TETemplate,
   TEElement,
@@ -23,7 +23,7 @@ export function render(
   data: Data[] = [],
   childComponents: ChildComponent[] = [],
   storeDocuments: Record<string, Partial<VueFilePayload>> = {}
-): Wrapper<InstanceType<typeof VueComponent>> {
+): InstanceType<typeof VueComponent> {
   const store = createStore(module().child('project', project))
 
   store.mutations.project.changeActiveDocument('file:///Test.vue')
@@ -56,16 +56,20 @@ export function render(
     })
   })
 
-  return mount(VueComponent, {
-    propsData: {
+  return mount(
+    VueComponent,
+    {
       uri: 'file:///Test.vue',
       template,
       scope: store.getters.project.currentScope,
       childComponents,
       styles: '',
     },
-    store,
-  } as any)
+    {},
+    {
+      store,
+    }
+  ).vm
 }
 
 function processRootChildren(

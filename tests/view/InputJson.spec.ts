@@ -1,158 +1,156 @@
-import { describe, expect, it } from 'vitest'
-import { mount, Wrapper } from '@vue/test-utils'
+import { describe, expect, it, vitest } from 'vitest'
+import { mount } from '../helpers/vue'
 import InputJson from '../../src/view/components/InputJson.vue'
+import { nextTick } from 'vue'
 
 describe('InputJson', () => {
   describe('Check render', () => {
     it('renders string value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
-          field: {
-            name: 'stringName',
-            value: 'string value',
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'stringName',
+          value: 'string value',
         },
       })
 
-      expect(wrapper.html()).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('renders number value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
-          field: {
-            name: 'numberName',
-            value: 123,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'numberName',
+          value: 123,
         },
       })
 
-      expect(wrapper.html()).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('renders boolean value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
-          field: {
-            name: 'booleanName',
-            value: true,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'booleanName',
+          value: true,
         },
       })
 
-      expect(wrapper.html()).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('renders null value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
-          field: {
-            name: 'nullName',
-            value: null,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'nullName',
+          value: null,
         },
       })
 
-      expect(wrapper.html()).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('renders undefined value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
-          field: {
-            name: 'numberName',
-            value: undefined,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'numberName',
+          value: undefined,
         },
       })
 
-      expect(wrapper.html()).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('renders object value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
-          field: {
-            name: 'objectName',
-            value: {
-              foo: 'test',
-              bar: 123,
-            },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'objectName',
+          value: {
+            foo: 'test',
+            bar: 123,
           },
         },
       })
 
-      expect(wrapper.html()).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('renders array value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
-          field: {
-            name: 'arrayName',
-            value: ['test', 123, true],
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'arrayName',
+          value: ['test', 123, true],
         },
       })
 
-      expect(wrapper.html()).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
   })
 
   describe('Behavior', () => {
-    it('notifies updated value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
+    it('notifies updated value', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: 123,
           },
         },
-      })
-      const ctrl = new InputJsonController(wrapper)
+        { change }
+      )
+      const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editValue('456')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')[0]).toEqual([
-        {
-          name: 'test',
-          value: 456,
-        },
-      ])
+      expect(change).toHaveBeenCalledWith({
+        name: 'test',
+        value: 456,
+      })
     })
 
-    it('converts json value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
+    it('converts json value', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: 123,
           },
         },
-      })
-      const ctrl = new InputJsonController(wrapper)
+        { change }
+      )
+      const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editValue('{"foo": "123", "bar": 123, "baz": null}')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')[0]).toEqual([
-        {
-          name: 'test',
-          value: {
-            foo: '123',
-            bar: 123,
-            baz: null,
-          },
+      expect(change).toHaveBeenCalledWith({
+        name: 'test',
+        value: {
+          foo: '123',
+          bar: 123,
+          baz: null,
         },
-      ])
+      })
     })
 
-    it('edits child property value', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
+    it('edits child property value', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: {
@@ -161,70 +159,84 @@ describe('InputJson', () => {
             },
           },
         },
-      })
-      const bar = wrapper.findAll(InputJson).at(2)
+        { change }
+      )
+      const bar = vm.$el.querySelectorAll('[data-test-id=input-json]')[1]!
       const ctrl = new InputJsonController(bar)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editValue('456')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')[0]).toEqual([
-        {
-          name: 'test',
-          value: {
-            foo: 'abc',
-            bar: 456,
-          },
+      expect(change).toHaveBeenCalledWith({
+        name: 'test',
+        value: {
+          foo: 'abc',
+          bar: 456,
         },
-      ])
+      })
     })
 
-    it('edits array item', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
+    it('edits array item', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: ['foo', 123, true],
           },
         },
-      })
-      const second = wrapper.findAll(InputJson).at(2)
+        { change }
+      )
+      const second = vm.$el.querySelectorAll('[data-test-id=input-json]')[1]!
       const ctrl = new InputJsonController(second)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editValue('456')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')[0]).toEqual([
-        {
-          name: 'test',
-          value: ['foo', 456, true],
-        },
-      ])
+      expect(change).toHaveBeenCalledWith({
+        name: 'test',
+        value: ['foo', 456, true],
+      })
     })
 
-    it('rejects invalid json string', () => {
-      const wrapper = mount<any>(InputJson, {
-        propsData: {
+    it('rejects invalid json string', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: 123,
           },
         },
-      })
-      const ctrl = new InputJsonController(wrapper)
+        { change }
+      )
+      const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editValue('abc')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')).toBe(undefined)
+      expect(change).not.toHaveBeenCalled()
     })
 
-    it('is editable child property name', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
+    it('is editable child property name', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: {
@@ -233,92 +245,102 @@ describe('InputJson', () => {
             },
           },
         },
-      })
-      const child = wrapper.findAll(InputJson).at(1)
+        { change }
+      )
+      const child = vm.$el.querySelector('[data-test-id=input-json]')!
       const ctrl = new InputJsonController(child)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editName('baz')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')[0]).toEqual([
-        {
-          name: 'test',
-          value: {
-            bar: 'def',
-            baz: 'abc',
-          },
+      expect(change).toHaveBeenCalledWith({
+        name: 'test',
+        value: {
+          baz: 'abc',
+          bar: 'def',
         },
-      ])
+      })
     })
 
-    it('is not editable root property name', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
+    it('is not editable root property name', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: 123,
           },
         },
-      })
-      const ctrl = new InputJsonController(wrapper)
+        { change }
+      )
+      const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editName('test2')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')[0]).toEqual([
-        {
-          name: 'test',
-          value: 123,
-        },
-      ])
+      expect(change).toHaveBeenCalledWith({
+        name: 'test',
+        value: 123,
+      })
     })
 
-    it('is not editable array property name', () => {
-      const wrapper = mount(InputJson, {
-        propsData: {
+    it('is not editable array property name', async () => {
+      const change = vitest.fn()
+
+      const { vm } = mount(
+        InputJson,
+        {
           field: {
             name: 'test',
             value: ['foo', 'bar', 'baz'],
           },
         },
-      })
-      const child = wrapper.find(InputJson)
+        { change }
+      )
+      const child = vm.$el.querySelector('[data-test-id=input-json]')!
       const ctrl = new InputJsonController(child)
 
       ctrl.clickEdit()
+      await nextTick()
       ctrl.editName('3')
+      await nextTick()
       ctrl.clickApply()
 
-      expect(wrapper.emitted('change')[0]).toEqual([
-        {
-          name: 'test',
-          value: ['foo', 'bar', 'baz'],
-        },
-      ])
+      expect(change).toHaveBeenCalledWith({
+        name: 'test',
+        value: ['foo', 'bar', 'baz'],
+      })
     })
   })
 })
 
 class InputJsonController {
-  constructor(private wrapper: Wrapper<any>) {}
+  constructor(private el: Element) {}
 
   clickEdit(): void {
-    if (!this.wrapper.vm.editing) {
-      this.wrapper.find('.input-json-button').element.click()
-    }
+    this.el
+      .querySelector('.input-json-button')!
+      .dispatchEvent(new MouseEvent('click'))
   }
 
   clickApply(): void {
-    if (this.wrapper.vm.editing) {
-      this.wrapper.find('.input-json-button:nth-child(2)').element.click()
-    }
+    this.el
+      .querySelector('.input-json-button:nth-child(2)')!
+      .dispatchEvent(new MouseEvent('click'))
   }
 
   editName(str: string): void {
-    const input = this.wrapper.find('.input-json-label.editing')
-      .element as HTMLInputElement
+    const input = this.el.querySelector<HTMLInputElement>(
+      '.input-json-label.editing'
+    )
     if (input) {
       input.value = str
       input.dispatchEvent(new Event('input'))
@@ -326,8 +348,9 @@ class InputJsonController {
   }
 
   editValue(str: string): void {
-    const input = this.wrapper.find('.input-json-value.editing')
-      .element as HTMLInputElement
+    const input = this.el.querySelector<HTMLInputElement>(
+      '.input-json-value.editing'
+    )
     if (input) {
       input.value = str
       input.dispatchEvent(new Event('input'))

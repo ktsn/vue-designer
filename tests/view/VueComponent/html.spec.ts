@@ -18,9 +18,8 @@ describe('VueComponent v-html', () => {
         },
       ]
     )
-    expect(wrapper.find('p').element.innerHTML).toBe(
-      '<strong>Hello text!</strong>'
-    )
+    const p = wrapper.$el.querySelector('p')!
+    expect(p.innerHTML).toBe('<strong>Hello text!</strong>')
   })
 
   it('should overwrite default content', () => {
@@ -41,8 +40,8 @@ describe('VueComponent v-html', () => {
         },
       ]
     )
-    const p = wrapper.find('p')
-    expect(p.element.innerHTML).toBe('<strong>overwritten</strong>')
+    const p = wrapper.$el.querySelector('p')!
+    expect(p.innerHTML).toBe('<strong>overwritten</strong>')
   })
 
   it('should not render if the value is not resolved', () => {
@@ -52,6 +51,7 @@ describe('VueComponent v-html', () => {
     ])
 
     const wrapper = render(template)
-    expect(wrapper.find('p').element.innerHTML).toBe('')
+    const p = wrapper.$el.querySelector('p')!
+    expect(p.innerHTML).toBe('')
   })
 })

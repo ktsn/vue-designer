@@ -1,5 +1,4 @@
-import { beforeAll, describe, it, vitest } from 'vitest'
-import * as td from 'testdouble'
+import { beforeAll, describe, expect, it, vitest } from 'vitest'
 import { createTemplate, h, a, render } from '../../helpers/template'
 
 describe('VueComponent select event', () => {
@@ -32,19 +31,20 @@ describe('VueComponent select event', () => {
 
     const template = createTemplate([root])
 
-    const spy = td.function()
-    const wrapper = render(template)
-    wrapper.vm.$on('select', spy)
+    const spy = vitest.fn()
+    const vm = render(template)
+    vm.$on('select', spy)
 
-    wrapper.find('#root').trigger('click')
-    wrapper.find('#first').trigger('click')
-    wrapper.find('#second').trigger('click')
-    wrapper.find('#third').trigger('click')
+    vm.$el.querySelector<HTMLElement>('#root')!.click()
+    vm.$el.querySelector<HTMLElement>('#first')!.click()
+    vm.$el.querySelector<HTMLElement>('#second')!.click()
+    vm.$el.querySelector<HTMLElement>('#third')!.click()
 
-    td.verify(spy(td.matchers.contains({ ast: root })), { times: 1 })
-    td.verify(spy(td.matchers.contains({ ast: first })), { times: 1 })
-    td.verify(spy(td.matchers.contains({ ast: second })), { times: 1 })
-    td.verify(spy(td.matchers.contains({ ast: third })), { times: 1 })
+    expect(spy).toHaveBeenCalledTimes(4)
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ ast: root }))
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ ast: first }))
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ ast: second }))
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ ast: third }))
   })
 
   it('should catch select event of child component', () => {
@@ -67,8 +67,8 @@ describe('VueComponent select event', () => {
       },
     }
 
-    const spy = td.function()
-    const wrapper = render(
+    const spy = vitest.fn()
+    const vm = render(
       template,
       [],
       [],
@@ -81,8 +81,9 @@ describe('VueComponent select event', () => {
       components
     )
 
-    wrapper.vm.$on('select', spy)
-    wrapper.find('#child-button').trigger('click')
-    td.verify(spy(td.matchers.contains({ ast: comp })), { times: 1 })
+    vm.$on('select', spy)
+    vm.$el.querySelector<HTMLElement>('#child-button')!.click()
+    expect(spy).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledWith(expect.objectContaining({ ast: comp }))
   })
 })

@@ -1,15 +1,24 @@
 import { beforeAll, beforeEach, describe, expect, it } from 'vitest'
-import { shallowMount } from '@vue/test-utils'
+import { mount } from '../helpers/vue'
 import Renderer from '../../src/view/components/Renderer.vue'
+import { store, module } from 'sinai'
 
 describe('Renderer', () => {
   let mockWidth = 1000
   let mockHeight = 1000
 
+  const dummyDocument = {
+    uri: 'file:///test.html',
+    styleCode: '',
+    childComponents: [],
+  }
+
   const emptyScope = {
     props: {},
     data: {},
   }
+
+  const dummyStore = store(module().child('guide', module()))
 
   function mockGetBoundingClientRect(): DOMRect {
     return {
@@ -35,52 +44,67 @@ describe('Renderer', () => {
   })
 
   it('scroll content has the same size with renderer when the viewport is not over the renderer size', () => {
-    const wrapper = shallowMount<any>(Renderer, {
-      propsData: {
-        document: {},
+    const { vm } = mount(
+      Renderer,
+      {
+        document: dummyDocument,
         scope: emptyScope,
         width: 800,
         height: 600,
         scale: 1,
         sharedStyle: '',
       },
-    })
+      {},
+      {
+        store: dummyStore,
+      }
+    )
 
-    const size = wrapper.vm.scrollContentSize
+    const size = vm.scrollContentSize
     expect(size.width).toBe(1000)
     expect(size.height).toBe(1000)
   })
 
   it('scroll content has the much larger size than renderer when the viewport is over the renderer size', () => {
-    const wrapper = shallowMount<any>(Renderer, {
-      propsData: {
-        document: {},
+    const { vm } = mount(
+      Renderer,
+      {
+        document: dummyDocument,
         scope: emptyScope,
         width: 800,
         height: 1200,
         scale: 1,
         sharedStyle: '',
       },
-    })
+      {},
+      {
+        store: dummyStore,
+      }
+    )
 
-    const size = wrapper.vm.scrollContentSize
+    const size = vm.scrollContentSize
     expect(size.width).toBe(1000) // width is not changed since is smaller than renderer width
     expect(size.height).toBe(3000)
   })
 
   it('considers scale value for scroll content size', () => {
-    const wrapper = shallowMount<any>(Renderer, {
-      propsData: {
-        document: {},
+    const { vm } = mount(
+      Renderer,
+      {
+        document: dummyDocument,
         scope: emptyScope,
         width: 500,
         height: 500,
         scale: 2,
         sharedStyle: '',
       },
-    })
+      {},
+      {
+        store: dummyStore,
+      }
+    )
 
-    const size = wrapper.vm.scrollContentSize
+    const size = vm.scrollContentSize
     expect(size.width).toBe(2800)
     expect(size.height).toBe(2800)
   })

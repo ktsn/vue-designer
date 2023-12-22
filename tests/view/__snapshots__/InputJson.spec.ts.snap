@@ -1,7 +1,7 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`InputJson > Check render > renders array value 1`] = `
-<div class="input-json">
+<div data-test-id="input-json" class="input-json">
   <div class="input-json-line"><span class="input-json-label"> arrayName </span><span class="input-json-value array"> Array[3] </span>
     <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
           <use href="#ic_create_24px"></use>
@@ -9,7 +9,7 @@ exports[`InputJson > Check render > renders array value 1`] = `
   </div>
   <ul class="input-json-children">
     <li>
-      <div class="input-json">
+      <div data-test-id="input-json" class="input-json">
         <div class="input-json-line"><span class="input-json-label"> 0 </span><span class="input-json-value string"> "test" </span>
           <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
                 <use href="#ic_create_24px"></use>
@@ -18,7 +18,7 @@ exports[`InputJson > Check render > renders array value 1`] = `
       </div>
     </li>
     <li>
-      <div class="input-json">
+      <div data-test-id="input-json" class="input-json">
         <div class="input-json-line"><span class="input-json-label"> 1 </span><span class="input-json-value number"> 123 </span>
           <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
                 <use href="#ic_create_24px"></use>
@@ -27,7 +27,7 @@ exports[`InputJson > Check render > renders array value 1`] = `
       </div>
     </li>
     <li>
-      <div class="input-json">
+      <div data-test-id="input-json" class="input-json">
         <div class="input-json-line"><span class="input-json-label"> 2 </span><span class="input-json-value boolean"> true </span>
           <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
                 <use href="#ic_create_24px"></use>
@@ -40,7 +40,7 @@ exports[`InputJson > Check render > renders array value 1`] = `
 `;
 
 exports[`InputJson > Check render > renders boolean value 1`] = `
-<div class="input-json">
+<div data-test-id="input-json" class="input-json">
   <div class="input-json-line"><span class="input-json-label"> booleanName </span><span class="input-json-value boolean"> true </span>
     <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
           <use href="#ic_create_24px"></use>
@@ -50,7 +50,7 @@ exports[`InputJson > Check render > renders boolean value 1`] = `
 `;
 
 exports[`InputJson > Check render > renders null value 1`] = `
-<div class="input-json">
+<div data-test-id="input-json" class="input-json">
   <div class="input-json-line"><span class="input-json-label"> nullName </span><span class="input-json-value null"> null </span>
     <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
           <use href="#ic_create_24px"></use>
@@ -60,7 +60,7 @@ exports[`InputJson > Check render > renders null value 1`] = `
 `;
 
 exports[`InputJson > Check render > renders number value 1`] = `
-<div class="input-json">
+<div data-test-id="input-json" class="input-json">
   <div class="input-json-line"><span class="input-json-label"> numberName </span><span class="input-json-value number"> 123 </span>
     <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
           <use href="#ic_create_24px"></use>
@@ -70,7 +70,7 @@ exports[`InputJson > Check render > renders number value 1`] = `
 `;
 
 exports[`InputJson > Check render > renders object value 1`] = `
-<div class="input-json">
+<div data-test-id="input-json" class="input-json">
   <div class="input-json-line"><span class="input-json-label"> objectName </span><span class="input-json-value object"> Object </span>
     <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
           <use href="#ic_create_24px"></use>
@@ -78,7 +78,7 @@ exports[`InputJson > Check render > renders object value 1`] = `
   </div>
   <ul class="input-json-children">
     <li>
-      <div class="input-json">
+      <div data-test-id="input-json" class="input-json">
         <div class="input-json-line"><span class="input-json-label"> foo </span><span class="input-json-value string"> "test" </span>
           <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
                 <use href="#ic_create_24px"></use>
@@ -87,7 +87,7 @@ exports[`InputJson > Check render > renders object value 1`] = `
       </div>
     </li>
     <li>
-      <div class="input-json">
+      <div data-test-id="input-json" class="input-json">
         <div class="input-json-line"><span class="input-json-label"> bar </span><span class="input-json-value number"> 123 </span>
           <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
                 <use href="#ic_create_24px"></use>
@@ -100,7 +100,7 @@ exports[`InputJson > Check render > renders object value 1`] = `
 `;
 
 exports[`InputJson > Check render > renders string value 1`] = `
-<div class="input-json">
+<div data-test-id="input-json" class="input-json">
   <div class="input-json-line"><span class="input-json-label"> stringName </span><span class="input-json-value string"> "string value" </span>
     <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
           <use href="#ic_create_24px"></use>
@@ -110,7 +110,7 @@ exports[`InputJson > Check render > renders string value 1`] = `
 `;
 
 exports[`InputJson > Check render > renders undefined value 1`] = `
-<div class="input-json">
+<div data-test-id="input-json" class="input-json">
   <div class="input-json-line"><span class="input-json-label"> numberName </span><span class="input-json-value undefined"> undefined </span>
     <div class="input-json-actions"><button type="button" aria-label="Edit" class="input-json-button edit"><svg class="base-icon input-json-icon">
           <use href="#ic_create_24px"></use>

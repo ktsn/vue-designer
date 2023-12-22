@@ -19,7 +19,7 @@ describe('VueComponent child components', () => {
         ]),
       },
     }
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
@@ -32,8 +32,8 @@ describe('VueComponent child components', () => {
       components
     )
 
-    expect(wrapper.find('p').text()).toBe('Normal element')
-    expect(wrapper.find('button').text()).toBe('Component button')
+    expect(vm.$el.querySelector('p')!.textContent).toBe('Normal element')
+    expect(vm.$el.querySelector('button')!.textContent).toBe('Component button')
   })
 
   it("should use child component's scope", () => {
@@ -64,7 +64,7 @@ describe('VueComponent child components', () => {
       },
     }
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [
@@ -87,10 +87,14 @@ describe('VueComponent child components', () => {
     )
 
     // should not resolved since child component does not have the value
-    expect(wrapper.find('#first').text()).toBe('{{ parentValue }}')
+    expect(vm.$el.querySelector('#first')!.textContent).toBe(
+      '{{ parentValue }}'
+    )
 
     // should resolved as child component value
-    expect(wrapper.find('#second').text()).toBe('should render child value')
+    expect(vm.$el.querySelector('#second')!.textContent).toBe(
+      'should render child value'
+    )
   })
 
   it('passes attribute values as props to a child component', () => {
@@ -115,7 +119,7 @@ describe('VueComponent child components', () => {
         ],
       },
     }
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
@@ -127,7 +131,7 @@ describe('VueComponent child components', () => {
       ],
       components
     )
-    expect(wrapper.find('h1').text()).toBe('hello from parent')
+    expect(vm.$el.querySelector('h1')!.textContent).toBe('hello from parent')
   })
 
   it('passes empty valued attribute as `true` value', () => {
@@ -152,7 +156,7 @@ describe('VueComponent child components', () => {
         ],
       },
     }
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
@@ -164,7 +168,7 @@ describe('VueComponent child components', () => {
       ],
       components
     )
-    expect(wrapper.find('h1').text()).toBe('Success')
+    expect(vm.$el.querySelector('h1')!.textContent).toBe('Success')
   })
 
   it('passes v-bind values as props to a child component', () => {
@@ -189,7 +193,7 @@ describe('VueComponent child components', () => {
         ],
       },
     }
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [
@@ -206,7 +210,9 @@ describe('VueComponent child components', () => {
       ],
       components
     )
-    expect(wrapper.find('h1').text()).toBe('hello from parent v-bind')
+    expect(vm.$el.querySelector('h1')!.textContent).toBe(
+      'hello from parent v-bind'
+    )
   })
 
   it('does not pass props if child component does not declare it', () => {
@@ -225,7 +231,7 @@ describe('VueComponent child components', () => {
         ]),
       },
     }
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
@@ -237,6 +243,6 @@ describe('VueComponent child components', () => {
       ],
       components
     )
-    expect(wrapper.find('h1').text()).toBe('{{ message }}') // not resolved
+    expect(vm.$el.querySelector('h1')!.textContent).toBe('{{ message }}') // not resolved
   })
 })

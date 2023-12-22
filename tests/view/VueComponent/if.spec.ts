@@ -10,8 +10,9 @@ describe('VueComponent v-if', () => {
       ])
     ])
 
-    const p = render(template).find('p')
-    expect(p.exists()).toBe(true)
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')
+    expect(p).not.toBeNull()
   })
 
   it('should be removed if v-if="false"', () => {
@@ -22,8 +23,9 @@ describe('VueComponent v-if', () => {
       ])
     ])
 
-    const p = render(template).find('p')
-    expect(p.exists()).toBe(false)
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')
+    expect(p).toBeNull()
   })
 
   it('should appear if the expression is resolved to truthy', () => {
@@ -34,15 +36,15 @@ describe('VueComponent v-if', () => {
       ])
     ])
 
-    const p = render(template, [
+    const vm = render(template, [
       {
         name: 'foo',
         type: 'Number',
         default: 123,
       },
-    ]).find('p')
-
-    expect(p.exists()).toBe(true)
+    ])
+    const p = vm.$el.querySelector('p')
+    expect(p).not.toBeNull()
   })
 
   it('should be removed if the expression is resolved to falthy', () => {
@@ -53,7 +55,7 @@ describe('VueComponent v-if', () => {
       ])
     ])
 
-    const p = render(
+    const vm = render(
       template,
       [],
       [
@@ -62,9 +64,9 @@ describe('VueComponent v-if', () => {
           default: null,
         },
       ]
-    ).find('p')
-
-    expect(p.exists()).toBe(false)
+    )
+    const p = vm.$el.querySelector('p')
+    expect(p).toBeNull()
   })
 
   it('should be removed if the expression cannot be resolved', () => {
@@ -75,8 +77,9 @@ describe('VueComponent v-if', () => {
       ])
     ])
 
-    const p = render(template).find('p')
-    expect(p.exists()).toBe(false)
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')
+    expect(p).toBeNull()
   })
 
   it('gathers the contents in the template element', () => {
@@ -89,7 +92,8 @@ describe('VueComponent v-if', () => {
       'baz'
     ])
 
-    expect(render(shown).html()).toMatchSnapshot()
+    const vmShown = render(shown)
+    expect(vmShown.$el.outerHTML).toMatchSnapshot()
 
     // prettier-ignore
     const hidden = createTemplate([
@@ -100,6 +104,7 @@ describe('VueComponent v-if', () => {
       'baz'
     ])
 
-    expect(render(hidden).html()).toMatchSnapshot()
+    const vmHidden = render(hidden)
+    expect(vmHidden.$el.outerHTML).toMatchSnapshot()
   })
 })

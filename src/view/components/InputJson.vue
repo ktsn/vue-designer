@@ -1,5 +1,5 @@
 <template>
-  <div class="input-json">
+  <div class="input-json" data-test-id="input-json">
     <div class="input-json-line">
       <!-- Object property key -->
       <span v-if="!renamable || !editing" class="input-json-label">

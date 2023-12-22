@@ -1,55 +1,173 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
 exports[`StyleInformation > add a new declaration > adds to the first position 1`] = `
-<div styledeclarationstub="true" prop="font-weight" value="bold" autofocus="prop"></div>
-<div styledeclarationstub="true" prop="color" value="red"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><div contenteditable="true" class="style-value editing style-declaration-prop-text">font-weight</div></span><span class="style-declaration-value"><button class="style-value"> bold </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > add a new declaration > adds to the last position 1`] = `
-<div styledeclarationstub="true" prop="color" value="red"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
-<div styledeclarationstub="true" prop="font-weight" value="bold" autofocus="prop"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><div contenteditable="true" class="style-value editing style-declaration-prop-text">font-weight</div></span><span class="style-declaration-value"><button class="style-value"> bold </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > add a new declaration > inserts to the clicked position 1`] = `
-<div styledeclarationstub="true" prop="color" value="red"></div>
-<div styledeclarationstub="true" prop="font-weight" value="bold" autofocus="prop"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><div contenteditable="true" class="style-value editing style-declaration-prop-text">font-weight</div></span><span class="style-declaration-value"><button class="style-value"> bold </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > moving focus > adds a new declaration and moves focus to it 1`] = `
-<div styledeclarationstub="true" prop="color" value="red"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
-<div styledeclarationstub="true" prop="property" value="value" autofocus="prop"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><div contenteditable="true" class="style-value editing style-declaration-prop-text">property</div></span><span class="style-declaration-value"><button class="style-value"> value </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > moving focus > does not move focus if editing is ended by blur 1`] = `
-<div styledeclarationstub="true" prop="color" value="red"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > moving focus > moves from prop to prev declaration value 1`] = `
-<div styledeclarationstub="true" prop="color" value="red" autofocus="value"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><div contenteditable="true" class="style-value editing">red</div></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > moving focus > moves from prop to value 1`] = `
-<div styledeclarationstub="true" prop="color" value="red" autofocus="value"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><div contenteditable="true" class="style-value editing">red</div></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > moving focus > moves from value to next prop value 1`] = `
-<div styledeclarationstub="true" prop="color" value="red"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px" autofocus="prop"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><div contenteditable="true" class="style-value editing style-declaration-prop-text">font-size</div></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > moving focus > moves from value to prop 1`] = `
-<div styledeclarationstub="true" prop="color" value="red" autofocus="prop"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><div contenteditable="true" class="style-value editing style-declaration-prop-text">color</div></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;
 
 exports[`StyleInformation > moving focus > removes focus if it cannot go back 1`] = `
-<div styledeclarationstub="true" prop="color" value="red"></div>
-<div styledeclarationstub="true" prop="font-size" value="22px"></div>
+<ul class="style-information">
+  <li class="rule">
+    <p class="selector-list"><span class="selector"> a </span></p>
+    <ul class="declaration-list">
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> color </button></span><span class="style-declaration-value"><button class="style-value"> red </button></span></div>
+      </li>
+      <li class="declaration">
+        <div class="style-declaration"><span class="style-declaration-prop"><button class="style-value style-declaration-prop-text"> font-size </button></span><span class="style-declaration-value"><button class="style-value"> 22px </button></span></div>
+      </li>
+    </ul>
+  </li>
+</ul>
 `;

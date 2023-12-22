@@ -20,7 +20,7 @@ describe('VueComponent v-model', () => {
         },
       ]
     )
-    const input = wrapper.find('input').element as HTMLInputElement
+    const input = wrapper.$el.querySelector('input') as HTMLInputElement
     expect(input.value).toBe('message')
   })
 
@@ -41,7 +41,7 @@ describe('VueComponent v-model', () => {
       ]
     )
 
-    const checkbox = wrapper.find('input').element as HTMLInputElement
+    const checkbox = wrapper.$el.querySelector('input') as HTMLInputElement
     expect(checkbox.checked).toBe(true)
   })
 
@@ -66,9 +66,15 @@ describe('VueComponent v-model', () => {
       ]
     )
 
-    const foo = wrapper.find('input[value=foo]').element as HTMLInputElement
-    const bar = wrapper.find('input[value=bar]').element as HTMLInputElement
-    const baz = wrapper.find('input[value=baz]').element as HTMLInputElement
+    const foo = wrapper.$el.querySelector(
+      'input[value=foo]'
+    ) as HTMLInputElement
+    const bar = wrapper.$el.querySelector(
+      'input[value=bar]'
+    ) as HTMLInputElement
+    const baz = wrapper.$el.querySelector(
+      'input[value=baz]'
+    ) as HTMLInputElement
 
     expect(foo.checked).toBe(true)
     expect(bar.checked).toBe(false)
@@ -95,8 +101,12 @@ describe('VueComponent v-model', () => {
       ]
     )
 
-    const foo = wrapper.find('input[value=foo]').element as HTMLInputElement
-    const bar = wrapper.find('input[value=bar]').element as HTMLInputElement
+    const foo = wrapper.$el.querySelector(
+      'input[value=foo]'
+    ) as HTMLInputElement
+    const bar = wrapper.$el.querySelector(
+      'input[value=bar]'
+    ) as HTMLInputElement
 
     expect(foo.checked).toBe(false)
     expect(bar.checked).toBe(true)
@@ -122,7 +132,7 @@ describe('VueComponent v-model', () => {
       ]
     )
 
-    const select = wrapper.find('select').element as HTMLSelectElement
+    const select = wrapper.$el.querySelector('select') as HTMLSelectElement
     const selected = Array.from(select.options)
       .filter((op) => op.selected)
       .map((op) => op.value)
@@ -151,7 +161,7 @@ describe('VueComponent v-model', () => {
       ]
     )
 
-    const select = wrapper.find('select').element as HTMLSelectElement
+    const select = wrapper.$el.querySelector('select') as HTMLSelectElement
     const selected = Array.from(select.options)
       .filter((op) => op.selected)
       .map((op) => op.value)

@@ -22,7 +22,7 @@ describe('VueComponent scoped slot', () => {
       },
     }
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
@@ -35,7 +35,7 @@ describe('VueComponent scoped slot', () => {
       components
     )
 
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 
   it('renders named scoped slot content', () => {
@@ -60,7 +60,7 @@ describe('VueComponent scoped slot', () => {
       },
     }
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
@@ -73,7 +73,7 @@ describe('VueComponent scoped slot', () => {
       components
     )
 
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 
   it('resolves template element children as a slot', () => {
@@ -98,7 +98,7 @@ describe('VueComponent scoped slot', () => {
       },
     }
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [],
@@ -111,6 +111,6 @@ describe('VueComponent scoped slot', () => {
       components
     )
 
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(vm.$el.outerHTML).toMatchSnapshot()
   })
 })

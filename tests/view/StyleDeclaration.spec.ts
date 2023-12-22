@@ -1,72 +1,116 @@
-import { describe, expect, it } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { describe, expect, it, vitest } from 'vitest'
+import { mount } from '../helpers/vue'
 import StyleDeclaration from '../../src/view/components/StyleDeclaration.vue'
-import StyleValue from '../../src/view/components/StyleValue.vue'
+import { nextTick } from 'vue'
 
 describe('StyleDeclaration', () => {
-  it('should notify prop update', () => {
-    const wrapper = mount(StyleDeclaration, {
-      propsData: {
+  it('should notify prop update', async () => {
+    const listeners = {
+      'update:prop': vitest.fn(),
+      remove: vitest.fn(),
+    }
+
+    const { vm } = mount(
+      StyleDeclaration,
+      {
         prop: 'color',
         value: 'red',
       },
-    })
+      { ...listeners }
+    )
 
-    const prop = wrapper.find(StyleValue)
-    prop.vm.$emit('input', 'background-color')
-    prop.vm.$emit('input-end', 'background-color')
+    vm.$el.querySelector('button')!.dispatchEvent(new MouseEvent('click'))
+    await nextTick()
 
-    expect(wrapper.emitted('update:prop')[0]).toEqual(['background-color'])
-    expect(wrapper.emitted('remove')).toBe(undefined)
+    const prop = vm.$el.querySelector('[contenteditable=true]')!
+    prop.textContent = 'background-color'
+    prop.dispatchEvent(new InputEvent('input'))
+    prop.dispatchEvent(new Event('blur'))
+
+    expect(listeners['update:prop']).toHaveBeenCalledWith('background-color')
+    expect(listeners.remove).not.toHaveBeenCalled()
   })
 
-  it('should notify value update', () => {
-    const wrapper = mount(StyleDeclaration, {
-      propsData: {
+  it('should notify value update', async () => {
+    const listeners = {
+      'update:value': vitest.fn(),
+      remove: vitest.fn(),
+    }
+
+    const { vm } = mount(
+      StyleDeclaration,
+      {
         prop: 'color',
         value: 'red',
       },
-    })
+      { ...listeners }
+    )
 
-    const value = wrapper.findAll(StyleValue).at(1)
-    value.vm.$emit('input', 'blue')
-    value.vm.$emit('input-end', 'background-color')
+    vm.$el.querySelectorAll('button')[1]!.dispatchEvent(new MouseEvent('click'))
+    await nextTick()
 
-    expect(wrapper.emitted('update:value')[0]).toEqual(['blue'])
-    expect(wrapper.emitted('remove')).toBe(undefined)
+    const value = vm.$el.querySelector('[contenteditable=true]')!
+    value.textContent = 'blue'
+    value.dispatchEvent(new InputEvent('input'))
+    value.dispatchEvent(new Event('blur'))
+
+    expect(listeners['update:value']).toHaveBeenCalledWith('blue')
+    expect(listeners.remove).not.toHaveBeenCalled()
   })
 
-  it('should request removing when prop is empty', () => {
-    const wrapper = mount(StyleDeclaration, {
-      propsData: {
+  it('should request removing when prop is empty', async () => {
+    const listeners = {
+      'update:prop': vitest.fn(),
+      remove: vitest.fn(),
+    }
+
+    const { vm } = mount(
+      StyleDeclaration,
+      {
         prop: 'color',
         value: 'red',
       },
-    })
+      { ...listeners }
+    )
 
-    const prop = wrapper.find(StyleValue)
-    prop.vm.$emit('input', '')
-    prop.vm.$emit('input-end', '')
+    vm.$el.querySelector('button')!.dispatchEvent(new MouseEvent('click'))
+    await nextTick()
 
-    expect(wrapper.emitted('update:prop').length).toBe(1)
-    expect(wrapper.emitted('update:prop')[0]).toEqual([''])
-    expect(wrapper.emitted('remove')).not.toBe(undefined)
+    const prop = vm.$el.querySelector('[contenteditable=true]')!
+    prop.textContent = ''
+    prop.dispatchEvent(new InputEvent('input'))
+    prop.dispatchEvent(new Event('blur'))
+
+    expect(listeners['update:prop']).toHaveBeenCalledTimes(1)
+    expect(listeners['update:prop']).toHaveBeenCalledWith('')
+    expect(listeners.remove).toHaveBeenCalled()
   })
 
-  it('should request removing when value is empty', () => {
-    const wrapper = mount(StyleDeclaration, {
-      propsData: {
+  it('should request removing when value is empty', async () => {
+    const listeners = {
+      'update:value': vitest.fn(),
+      remove: vitest.fn(),
+    }
+
+    const { vm } = mount(
+      StyleDeclaration,
+      {
         prop: 'color',
         value: 'red',
       },
-    })
+      { ...listeners }
+    )
 
-    const value = wrapper.findAll(StyleValue).at(1)
-    value.vm.$emit('input', '')
-    value.vm.$emit('input-end', '')
+    vm.$el.querySelectorAll('button')[1]!.dispatchEvent(new MouseEvent('click'))
+    await nextTick()
 
-    expect(wrapper.emitted('update:value').length).toBe(1)
-    expect(wrapper.emitted('update:value')[0]).toEqual([''])
-    expect(wrapper.emitted('remove')).not.toBe(undefined)
+    const value = vm.$el.querySelector('[contenteditable=true]')!
+    value.textContent = ''
+    value.dispatchEvent(new InputEvent('input'))
+    value.dispatchEvent(new Event('blur'))
+
+    expect(listeners['update:value']).toHaveBeenCalledTimes(1)
+    expect(listeners['update:value']).toHaveBeenCalledWith('')
+    expect(listeners.remove).toHaveBeenCalled()
   })
 })

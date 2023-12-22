@@ -10,8 +10,9 @@ describe('VueComponent v-show', () => {
       ])
     ])
 
-    const p = render(template).find('p')
-    expect(p.element.style.display).not.toBe('none')
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')!
+    expect(p.style.display).not.toBe('none')
   })
 
   it('should hide if v-show="false"', () => {
@@ -22,8 +23,9 @@ describe('VueComponent v-show', () => {
       ])
     ])
 
-    const p = render(template).find('p')
-    expect(p.element.style.display).toBe('none')
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')!
+    expect(p.style.display).toBe('none')
   })
 
   it('should show if expression is resolved to truthy', () => {
@@ -34,14 +36,15 @@ describe('VueComponent v-show', () => {
       ])
     ])
 
-    const p = render(template, [
+    const vm = render(template, [
       {
         name: 'foo',
         type: 'String',
         default: 'abc',
       },
-    ]).find('p')
-    expect(p.element.style.display).not.toBe('none')
+    ])
+    const p = vm.$el.querySelector('p')!
+    expect(p.style.display).not.toBe('none')
   })
 
   it('should hide if expression is resolved to falsy', () => {
@@ -52,14 +55,15 @@ describe('VueComponent v-show', () => {
       ])
     ])
 
-    const p = render(template, [
+    const vm = render(template, [
       {
         name: 'bar',
         type: 'Number',
         default: 0,
       },
-    ]).find('p')
-    expect(p.element.style.display).toBe('none')
+    ])
+    const p = vm.$el.querySelector('p')!
+    expect(p.style.display).toBe('none')
   })
 
   it('should hide if cannot be resolved', () => {
@@ -70,7 +74,8 @@ describe('VueComponent v-show', () => {
       ])
     ])
 
-    const p = render(template).find('p')
-    expect(p.element.style.display).toBe('none')
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')!
+    expect(p.style.display).toBe('none')
   })
 })

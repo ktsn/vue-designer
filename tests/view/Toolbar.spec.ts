@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'vitest'
-import { mount, Wrapper } from '@vue/test-utils'
+import { describe, expect, it, vitest } from 'vitest'
 import Toolbar from '../../src/view/components/Toolbar.vue'
-import { nextTick } from 'vue'
+import Vue, { nextTick } from 'vue'
+import { mount } from '../helpers/vue'
 
 describe('Toolbar', () => {
   it('has initial size based on props', () => {
@@ -19,57 +19,49 @@ describe('Toolbar', () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(600)
     t.inputHeight(800)
-    expect(t.wrapper.emitted('resize')).toBeFalsy()
-    t.widthWrapper().trigger('keydown', {
-      keyCode: 13,
+    expect(t.resizeListener).not.toHaveBeenCalled()
+    t.pressEnter(t.widthField())
+    expect(t.resizeListener).toHaveBeenCalledWith({
+      width: 600,
+      height: 800,
     })
-    expect(t.wrapper.emitted('resize')[0]).toEqual([
-      {
-        width: 600,
-        height: 800,
-      },
-    ])
   })
 
   it('submit changed scale when pressed enter key', () => {
     const t = new ToolbarTest(300, 400, 2)
     t.inputScale(400)
-    expect(t.wrapper.emitted('zoom')).toBeFalsy()
-    t.scaleWrapper().trigger('keydown', {
-      keyCode: 13,
-    })
-    expect(t.wrapper.emitted('zoom')[0]).toEqual([4])
+    expect(t.zoomListener).not.toHaveBeenCalled()
+    t.pressEnter(t.scaleField())
+    expect(t.zoomListener).toHaveBeenCalledWith(4)
   })
 
-  it('reset if invalid size is applied', () => {
+  it('reset if invalid size is applied', async () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(600)
     t.inputHeight('800abc')
 
-    t.widthWrapper().trigger('keydown', {
-      keyCode: 13,
-    })
+    t.pressEnter(t.widthField())
+    await nextTick()
 
-    expect(t.wrapper.emitted('resize')).toBeFalsy()
+    expect(t.resizeListener).not.toHaveBeenCalled()
     expect(t.widthField().value).toBe('300')
     expect(t.heightField().value).toBe('400')
   })
 
-  it('reset if invalid scale is applied', () => {
+  it('reset if invalid scale is applied', async () => {
     const t = new ToolbarTest(300, 400, 1)
     t.inputScale('30abc')
 
-    t.scaleWrapper().trigger('keydown', {
-      keyCode: 13,
-    })
+    t.pressEnter(t.scaleField())
+    await nextTick()
 
-    expect(t.wrapper.emitted('zoom')).toBeFalsy()
+    expect(t.zoomListener).not.toHaveBeenCalled()
     expect(t.scaleField().value).toBe('100')
   })
 
   it('sync width and height field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400)
-    t.wrapper.setProps({
+    t.updateProps({
       height: 500,
     })
 
@@ -80,7 +72,7 @@ describe('Toolbar', () => {
 
   it('sync scale field when the props are updated', async () => {
     const t = new ToolbarTest(300, 400, 1)
-    t.wrapper.setProps({
+    t.updateProps({
       scale: 2,
     })
 
@@ -91,7 +83,7 @@ describe('Toolbar', () => {
   it('reset dirty size value when props are updated', async () => {
     const t = new ToolbarTest(300, 400)
     t.inputWidth(400)
-    t.wrapper.setProps({
+    t.updateProps({
       height: 500,
     })
 
@@ -102,57 +94,64 @@ describe('Toolbar', () => {
 })
 
 class ToolbarTest {
-  wrapper: Wrapper<InstanceType<typeof Toolbar>>
+  vm: Vue
+  updateProps: (props: Record<string, any>) => void
+
+  resizeListener = vitest.fn()
+  zoomListener = vitest.fn()
 
   constructor(width: number, height: number, scale: number = 1) {
-    this.wrapper = mount(Toolbar, {
-      propsData: {
+    const { vm, updateProps } = mount(
+      Toolbar,
+      {
         width,
         height,
         scale,
       },
-    })
+      {
+        resize: this.resizeListener,
+        zoom: this.zoomListener,
+      }
+    )
+    this.vm = vm
+    this.updateProps = updateProps
   }
 
-  widthWrapper(): Wrapper<any> {
-    return this.wrapper.find('.viewport-size-input:first-of-type')
-  }
-
-  heightWrapper(): Wrapper<any> {
-    return this.wrapper.find('.viewport-size-input:nth-of-type(2)')
-  }
-
-  scaleWrapper(): Wrapper<any> {
-    return this.wrapper.find('.viewport-scale-input')
+  pressEnter(el: HTMLElement): void {
+    el.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        keyCode: 13,
+      })
+    )
   }
 
   widthField(): HTMLInputElement {
-    return this.widthWrapper().element as HTMLInputElement
+    return this.vm.$el.querySelector('.viewport-size-input:first-of-type')!
   }
 
   heightField(): HTMLInputElement {
-    return this.heightWrapper().element as HTMLInputElement
+    return this.vm.$el.querySelector('.viewport-size-input:nth-of-type(2)')!
   }
 
   scaleField(): HTMLInputElement {
-    return this.scaleWrapper().element as HTMLInputElement
+    return this.vm.$el.querySelector('.viewport-scale-input')!
   }
 
   inputWidth(width: number | string): void {
     const el = this.widthField()
     el.value = String(width)
-    this.widthWrapper().trigger('input')
+    this.widthField().dispatchEvent(new InputEvent('input'))
   }
 
   inputHeight(height: number | string): void {
     const el = this.heightField()
     el.value = String(height)
-    this.heightWrapper().trigger('input')
+    this.heightField().dispatchEvent(new InputEvent('input'))
   }
 
   inputScale(scale: number | string): void {
     const el = this.scaleField()
     el.value = String(scale)
-    this.scaleWrapper().trigger('input')
+    this.scaleField().dispatchEvent(new InputEvent('input'))
   }
 }

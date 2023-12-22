@@ -1,11 +1,8 @@
-import { config } from '@vue/test-utils'
 import { install } from 'sinai'
 import { expect, vitest } from 'vitest'
 
 // @ts-expect-error
 import beautify from 'pretty'
-
-config.logModifiedComponents = false
 
 // https://github.com/vitest-dev/vitest/issues/1700#issuecomment-1222959153
 vitest.mock('vue', async () => {

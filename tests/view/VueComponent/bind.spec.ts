@@ -10,14 +10,16 @@ describe('VueComponent v-bind', () => {
       ], [])
     ])
 
-    const wrapper = render(template, [
+    const vm = render(template, [
       {
         name: 'foo',
         type: 'String',
         default: 'default value',
       },
     ])
-    expect(wrapper.find('input').attributes()!.value).toBe('default value')
+    expect(vm.$el.querySelector('input')?.getAttribute('value')).toBe(
+      'default value'
+    )
   })
 
   it('should bind properties with v-bind', () => {
@@ -29,8 +31,8 @@ describe('VueComponent v-bind', () => {
       ], [])
     ])
 
-    const wrapper = render(template)
-    expect(wrapper.find('.foo').html()).toBe('<div class="foo"><p>Hi</p></div>')
+    const vm = render(template)
+    expect(vm.$el.querySelector('.foo')?.innerHTML).toBe('<p>Hi</p>')
   })
 
   it('should merge a bound class with a static class', () => {
@@ -42,15 +44,15 @@ describe('VueComponent v-bind', () => {
       ], [])
     ])
 
-    const wrapper = render(template, [
+    const vm = render(template, [
       {
         name: 'bar',
         type: 'String',
         default: 'test-class',
       },
     ])
-    const p = wrapper.find('p')
-    expect(p.classes()).toEqual(['foo', 'test-class'])
+    const p = vm.$el.querySelector('p')!
+    expect(Array.from(p.classList)).toEqual(['foo', 'test-class'])
   })
 
   it('should merge a bound style with a static style', () => {
@@ -62,15 +64,15 @@ describe('VueComponent v-bind', () => {
       ], [])
     ])
 
-    const wrapper = render(template, [
+    const vm = render(template, [
       {
         name: 'foo',
         type: 'String',
         default: 'font-size: 20px;',
       },
     ])
-    const p = wrapper.find('p')
-    expect(p.element.style.color).toBe('red')
-    expect(p.element.style.fontSize).toBe('20px')
+    const p = vm.$el.querySelector('p')!
+    expect(p.style.color).toBe('red')
+    expect(p.style.fontSize).toBe('20px')
   })
 })

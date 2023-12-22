@@ -1,16 +1,11 @@
 import { describe, expect, it, vitest } from 'vitest'
 import StyleValue from '../../../src/view/components/StyleValue.vue'
-import Vue, { nextTick } from 'vue'
-
-function mount(Component: typeof Vue, propsData?: Record<string, any>) {
-  return new Component({
-    propsData,
-  }).$mount()
-}
+import { nextTick } from 'vue'
+import { mount } from '../../helpers/vue'
 
 describe('StyleValue basic', () => {
   it('should render', () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
     const el = vm.$el as HTMLElement
@@ -19,7 +14,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should make editable when clicked', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
@@ -38,7 +33,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should make editable when focused', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
     vm.$el.dispatchEvent(new Event('focus'))
@@ -56,7 +51,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should notify starting input', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
 
@@ -69,7 +64,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should end editing when blured', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
@@ -91,7 +86,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should end editing when pressed enter key', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
@@ -118,7 +113,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should end editing when pressed tab key', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
@@ -145,7 +140,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should include shift key state when end editing', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: '20px',
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
@@ -173,7 +168,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should update editing content when prop is updated', async () => {
-    const vm = mount(StyleValue, {
+    const { vm, updateProps } = mount(StyleValue, {
       value: 'red',
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
@@ -182,7 +177,7 @@ describe('StyleValue basic', () => {
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
     expect(vm.$el.textContent?.trim()).toBe('red')
 
-    vm.$props.value = 'blue'
+    updateProps({ value: 'blue' })
     await nextTick()
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
@@ -190,7 +185,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should be editable when autoFocus is specified', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: 'red',
       autoFocus: true,
     })
@@ -201,7 +196,7 @@ describe('StyleValue basic', () => {
   })
 
   it('should focus on input field by changing autoFocus prop', async () => {
-    const vm = mount(StyleValue, {
+    const { vm } = mount(StyleValue, {
       value: 'red',
       autoFocus: true,
     })

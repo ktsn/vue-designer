@@ -8,7 +8,7 @@ describe('VueComponent v-text', () => {
       h('p', [d('text', 'message')], [])
     ])
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [
@@ -18,7 +18,8 @@ describe('VueComponent v-text', () => {
         },
       ]
     )
-    expect(wrapper.find('p').text()).toBe('Hello text!')
+    const p = vm.$el.querySelector('p')!
+    expect(p.textContent).toBe('Hello text!')
   })
 
   it('should overwrite default content', () => {
@@ -29,7 +30,7 @@ describe('VueComponent v-text', () => {
       ])
     ])
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [
@@ -39,9 +40,9 @@ describe('VueComponent v-text', () => {
         },
       ]
     )
-    const p = wrapper.find('p')
-    expect(p.text()).toBe('overwritten')
-    expect(p.contains('span')).toBe(false)
+    const p = vm.$el.querySelector('p')!
+    expect(p.textContent).toBe('overwritten')
+    expect(p.querySelector('span')).toBe(null)
   })
 
   it('should not render if the value is not resolved', () => {
@@ -50,7 +51,8 @@ describe('VueComponent v-text', () => {
       h('p', [d('text', 'message')], [])
     ])
 
-    const wrapper = render(template)
-    expect(wrapper.find('p').text()).toBe('')
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')!
+    expect(p.textContent).toBe('')
   })
 })

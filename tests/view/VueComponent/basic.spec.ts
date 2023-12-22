@@ -7,17 +7,17 @@ describe('VueComponent basic', () => {
       h('p', [a('title', 'Hello')], ['Hello World!']),
     ])
 
-    const wrapper = render(template)
-    const p = wrapper.find('p')
-    expect(p.text()).toBe('Hello World!')
-    expect(p.attributes()!.title).toBe('Hello')
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')!
+    expect(p.textContent).toBe('Hello World!')
+    expect(p.getAttribute('title')).toBe('Hello')
   })
 
   it('should render empty value attribute', () => {
     const template = createTemplate([h('p', [a('data-scope-123456')], [])])
 
-    const p = render(template).find('p')
-    expect(p.attributes()!['data-scope-123456']).toBe('')
+    const p = render(template).$el.querySelector('p')!
+    expect(p.getAttribute('data-scope-123456')).toBe('')
   })
 
   it('should render expression', () => {
@@ -29,8 +29,10 @@ describe('VueComponent basic', () => {
       ])
     ])
 
-    const wrapper = render(template)
-    expect(wrapper.find('p').text()).toBe('This is {{ foo + bar }}')
+    const vm = render(template)
+    expect(vm.$el.querySelector('p')?.textContent).toBe(
+      'This is {{ foo + bar }}'
+    )
   })
 
   it('should replace resolved expression', () => {
@@ -42,16 +44,15 @@ describe('VueComponent basic', () => {
       ])
     ])
 
-    const wrapper = render(template, [
+    const vm = render(template, [
       {
         name: 'test',
         type: 'String',
         default: 'replaced text',
       },
     ])
-    expect(wrapper.find('p').text()).toBe('This is replaced text')
+    expect(vm.$el.querySelector('p')?.textContent).toBe('This is replaced text')
   })
-
   it('should print an expression if it is resolved as null or undefined', () => {
     // prettier-ignore
     const template = createTemplate([
@@ -65,7 +66,7 @@ describe('VueComponent basic', () => {
       ])
     ])
 
-    const wrapper = render(
+    const vm = render(
       template,
       [],
       [
@@ -79,8 +80,8 @@ describe('VueComponent basic', () => {
         },
       ]
     )
-    expect(wrapper.find('#foo').text()).toBe('{{ foo }}')
-    expect(wrapper.find('#bar').text()).toBe('{{ bar }}')
+    expect(vm.$el.querySelector('#foo')?.textContent).toBe('{{ foo }}')
+    expect(vm.$el.querySelector('#bar')?.textContent).toBe('{{ bar }}')
   })
 
   it('should add class', () => {
@@ -89,8 +90,11 @@ describe('VueComponent basic', () => {
       h('p', [a('class', 'foo bar')], [])
     ])
 
-    const wrapper = render(template)
-    expect(wrapper.find('p').classes()).toEqual(['foo', 'bar'])
+    const vm = render(template)
+    expect(Array.from(vm.$el.querySelector('p')?.classList ?? [])).toEqual([
+      'foo',
+      'bar',
+    ])
   })
 
   it('should add style', () => {
@@ -99,10 +103,10 @@ describe('VueComponent basic', () => {
       h('p', [a('style', 'color: red; background: url(img;test.png);')], [])
     ])
 
-    const wrapper = render(template)
-    const p = wrapper.find('p')
-    expect(p.element.style.color).toBe('red')
-    expect(p.element.style.background).toBe('url(img;test.png)')
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')
+    expect(p?.style.color).toBe('red')
+    expect(p?.style.background).toBe('url(img;test.png)')
   })
 
   it('should not generate html node for text', () => {
@@ -113,7 +117,8 @@ describe('VueComponent basic', () => {
       ])
     ])
 
-    const p = render(template).find('p')
-    expect(p.element.innerHTML).toBe('test')
+    const vm = render(template)
+    const p = vm.$el.querySelector('p')
+    expect(p?.innerHTML).toBe('test')
   })
 })

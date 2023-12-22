@@ -1,27 +1,13 @@
-import { describe, expect, it } from 'vitest'
-import { shallowMount, Wrapper } from '@vue/test-utils'
+import { describe, expect, it, vitest } from 'vitest'
 import StyleInformation from '../../src/view/components/StyleInformation.vue'
 import {
   STRuleForPrint,
   STDeclarationForPrint,
 } from '../../src/parser/style/types'
+import { mount } from '../helpers/vue'
+import { nextTick } from 'vue'
 
 describe('StyleInformation', () => {
-  const StyleDeclaration = {
-    name: 'StyleDeclaration',
-    props: ['prop', 'value', 'autoFocus'],
-    render(this: any, h: Function) {
-      return h('div', {
-        attrs: {
-          styleDeclarationStub: true,
-          prop: this.prop,
-          value: this.value,
-          autoFocus: this.autoFocus,
-        },
-      })
-    },
-  }
-
   const rules: STRuleForPrint[] = [
     {
       path: [0],
@@ -41,97 +27,122 @@ describe('StyleInformation', () => {
     },
   ]
 
-  const create = () => {
-    return shallowMount(StyleInformation, {
-      propsData: {
+  const create = (listeners: Record<string, any> = {}) => {
+    return mount(
+      StyleInformation,
+      {
         rules,
       },
-      stubs: {
-        StyleDeclaration,
-      },
-    })
-  }
-
-  const toDeclarationHtml = (wrapper: Wrapper<any>) => {
-    return wrapper
-      .findAll('[styledeclarationstub]')
-      .wrappers.map((w) => w.html())
-      .join('\n')
+      {
+        ...listeners,
+      }
+    )
   }
 
   describe('moving focus', () => {
-    it('does not move focus if editing is ended by blur', () => {
-      const wrapper = create()
-      wrapper
-        .findAll(StyleDeclaration)
-        .at(0)
-        .vm.$emit('input-end:prop', { reason: 'blur' })
+    it('does not move focus if editing is ended by blur', async () => {
+      const { vm } = create()
+      const firstButton = vm.$el.querySelector('button')
+      firstButton!.dispatchEvent(new MouseEvent('click'))
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      const input = vm.$el.querySelector('[contenteditable=true]')
+      input!.dispatchEvent(new Event('blur'))
+      await nextTick()
+
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
-    it('moves from prop to value', () => {
-      const wrapper = create()
-      wrapper
-        .findAll(StyleDeclaration)
-        .at(0)
-        .vm.$emit('input-end:prop', { reason: 'enter' })
+    it('moves from prop to value', async () => {
+      const { vm } = create()
+      const firstButton = vm.$el.querySelector('button')
+      firstButton!.dispatchEvent(new MouseEvent('click'))
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      const input = vm.$el.querySelector('[contenteditable=true]')
+      input!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+      await nextTick()
+
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
-    it('moves from value to prop', () => {
-      const wrapper = create()
-      wrapper
-        .findAll(StyleDeclaration)
-        .at(0)
-        .vm.$emit('input-end:value', { reason: 'tab', shiftKey: true })
+    it('moves from value to prop', async () => {
+      const { vm } = create()
+      const secondButton = vm.$el.querySelectorAll('button')[1]!
+      secondButton!.dispatchEvent(new MouseEvent('click'))
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      const input = vm.$el.querySelector('[contenteditable=true]')
+      input!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true })
+      )
+      await nextTick()
+
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
-    it('moves from value to next prop value', () => {
-      const wrapper = create()
-      wrapper
-        .findAll(StyleDeclaration)
-        .at(0)
-        .vm.$emit('input-end:value', { reason: 'enter' })
+    it('moves from value to next prop value', async () => {
+      const { vm } = create()
+      const secondButton = vm.$el.querySelectorAll('button')[1]!
+      secondButton!.dispatchEvent(new MouseEvent('click'))
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      const input = vm.$el.querySelector('[contenteditable=true]')
+      input!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+      await nextTick()
+
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
-    it('moves from prop to prev declaration value', () => {
-      const wrapper = create()
-      wrapper
-        .findAll(StyleDeclaration)
-        .at(1)
-        .vm.$emit('input-end:prop', { reason: 'tab', shiftKey: true })
+    it('moves from prop to prev declaration value', async () => {
+      const { vm } = create()
+      const thirdButton = vm.$el.querySelectorAll('button')[2]!
+      thirdButton!.dispatchEvent(new MouseEvent('click'))
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      const input = vm.$el.querySelector('[contenteditable=true]')
+      input!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true })
+      )
+      await nextTick()
+
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
-    it('removes focus if it cannot go back', () => {
-      const wrapper = create()
-      wrapper
-        .findAll(StyleDeclaration)
-        .at(0)
-        .vm.$emit('input-end:prop', { reason: 'tab', shiftKey: true })
+    it('removes focus if it cannot go back', async () => {
+      const { vm } = create()
+      const firstButton = vm.$el.querySelector('button')
+      firstButton!.dispatchEvent(new MouseEvent('click'))
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      const input = vm.$el.querySelector('[contenteditable=true]')
+      input!.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true })
+      )
+      await nextTick()
+
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
-    it('adds a new declaration and moves focus to it', () => {
-      const wrapper = create()
-      wrapper
-        .findAll(StyleDeclaration)
-        .at(1)
-        .vm.$emit('input-end:value', { reason: 'enter' })
+    it('adds a new declaration and moves focus to it', async () => {
+      const addDeclaration = vitest.fn()
 
-      expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
+      const { vm, updateProps } = create({
+        'add-declaration': addDeclaration,
+      })
+
+      const fourthButton = vm.$el.querySelectorAll('button')[3]!
+      fourthButton!.dispatchEvent(new MouseEvent('click'))
+      await nextTick()
+
+      const input = vm.$el.querySelector('[contenteditable=true]')
+      input!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
+
+      expect(addDeclaration).toHaveBeenCalledWith({
         path: [0, 2],
       })
 
-      wrapper.setProps({
+      updateProps({
         rules: [
           {
             ...rules[0],
@@ -147,7 +158,9 @@ describe('StyleInformation', () => {
         ],
       })
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      await nextTick()
+
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
   })
 
@@ -172,54 +185,70 @@ describe('StyleInformation', () => {
     }
 
     it('adds to the first position', async () => {
-      const wrapper = create()
-      wrapper.find('.selector-list').trigger('click')
+      const addDeclaration = vitest.fn()
 
-      expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
+      const { vm, updateProps } = create({
+        'add-declaration': addDeclaration,
+      })
+      vm.$el
+        .querySelector('.selector-list')!
+        .dispatchEvent(new MouseEvent('click'))
+
+      expect(addDeclaration).toHaveBeenCalledWith({
         path: [0, 0],
       })
 
-      wrapper.setProps({
+      updateProps({
         rules: addTo(newDecl, 0),
       })
 
-      await wrapper.vm.$nextTick()
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('adds to the last position', async () => {
-      const wrapper = create()
-      wrapper.find('.rule').trigger('click')
+      const addDeclaration = vitest.fn()
 
-      expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
+      const { vm, updateProps } = create({
+        'add-declaration': addDeclaration,
+      })
+      vm.$el.querySelector('.rule')!.dispatchEvent(new MouseEvent('click'))
+
+      expect(addDeclaration).toHaveBeenCalledWith({
         path: [0, 2],
       })
 
-      wrapper.setProps({
+      updateProps({
         rules: addTo(newDecl, 2),
       })
 
-      await wrapper.vm.$nextTick()
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
 
     it('inserts to the clicked position', async () => {
-      const wrapper = create()
-      wrapper.find('.declaration').trigger('click')
+      const addDeclaration = vitest.fn()
 
-      expect(wrapper.emitted('add-declaration')[0][0]).toEqual({
+      const { vm, updateProps } = create({
+        'add-declaration': addDeclaration,
+      })
+      vm.$el
+        .querySelector('.declaration')!
+        .dispatchEvent(new MouseEvent('click'))
+
+      expect(addDeclaration).toHaveBeenCalledWith({
         path: [0, 1],
       })
 
-      wrapper.setProps({
+      updateProps({
         rules: addTo(newDecl, 1),
       })
 
-      await wrapper.vm.$nextTick()
+      await nextTick()
 
-      expect(toDeclarationHtml(wrapper)).toMatchSnapshot()
+      expect(vm.$el.outerHTML).toMatchSnapshot()
     })
   })
 })

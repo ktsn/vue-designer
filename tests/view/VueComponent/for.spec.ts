@@ -19,11 +19,11 @@ describe('VueComponent v-for', () => {
         default: ['first', 'second', 'third'],
       },
     ])
-    const list = wrapper.findAll('li')
+    const list = wrapper.$el.querySelectorAll('li')
     expect(list.length).toBe(3)
-    expect(list.at(0).text()).toBe('first - 0')
-    expect(list.at(1).text()).toBe('second - 1')
-    expect(list.at(2).text()).toBe('third - 2')
+    expect(list[0].textContent).toBe('first - 0')
+    expect(list[1].textContent).toBe('second - 1')
+    expect(list[2].textContent).toBe('third - 2')
   })
 
   it('should iterate object value', () => {
@@ -47,11 +47,11 @@ describe('VueComponent v-for', () => {
         },
       },
     ])
-    const list = wrapper.findAll('li')
+    const list = wrapper.$el.querySelectorAll('li')
     expect(list.length).toBe(3)
-    expect(list.at(0).text()).toBe('first - foo - 0')
-    expect(list.at(1).text()).toBe('second - bar - 1')
-    expect(list.at(2).text()).toBe('third - baz - 2')
+    expect(list[0].textContent).toBe('first - foo - 0')
+    expect(list[1].textContent).toBe('second - bar - 1')
+    expect(list[2].textContent).toBe('third - baz - 2')
   })
 
   it('should iterate range', () => {
@@ -60,11 +60,11 @@ describe('VueComponent v-for', () => {
     ])
 
     const wrapper = render(template)
-    const list = wrapper.findAll('li')
+    const list = wrapper.$el.querySelectorAll('li')
     expect(list.length).toBe(3)
-    expect(list.at(0).text()).toBe('1')
-    expect(list.at(1).text()).toBe('2')
-    expect(list.at(2).text()).toBe('3')
+    expect(list[0].textContent).toBe('1')
+    expect(list[1].textContent).toBe('2')
+    expect(list[2].textContent).toBe('3')
   })
 
   it('should be removed if v-for is invalid', () => {
@@ -76,7 +76,7 @@ describe('VueComponent v-for', () => {
     ])
 
     const wrapper = render(template)
-    const list = wrapper.findAll('li')
+    const list = wrapper.$el.querySelectorAll('li')
     expect(list.length).toBe(0)
   })
 
@@ -89,7 +89,7 @@ describe('VueComponent v-for', () => {
     ])
 
     const wrapper = render(template)
-    const list = wrapper.findAll('li')
+    const list = wrapper.$el.querySelectorAll('li')
     expect(list.length).toBe(0)
   })
 
@@ -102,7 +102,7 @@ describe('VueComponent v-for', () => {
     ])
 
     const wrapper = render(template)
-    const list = wrapper.findAll('li')
+    const list = wrapper.$el.querySelectorAll('li')
     expect(list.length).toBe(0)
   })
 
@@ -118,6 +118,6 @@ describe('VueComponent v-for', () => {
     ])
 
     const wrapper = render(template)
-    expect(wrapper.html()).toMatchSnapshot()
+    expect(wrapper.$el.outerHTML).toMatchSnapshot()
   })
 })

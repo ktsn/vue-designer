@@ -32,7 +32,7 @@ describe('VueComponent scoped slot', () => {
           uri: 'file://Foo.vue',
         },
       ],
-      components
+      components,
     )
 
     expect(vm.$el.outerHTML).toMatchSnapshot()
@@ -70,7 +70,7 @@ describe('VueComponent scoped slot', () => {
           uri: 'file://Foo.vue',
         },
       ],
-      components
+      components,
     )
 
     expect(vm.$el.outerHTML).toMatchSnapshot()
@@ -108,7 +108,7 @@ describe('VueComponent scoped slot', () => {
           uri: 'file://Foo.vue',
         },
       ],
-      components
+      components,
     )
 
     expect(vm.$el.outerHTML).toMatchSnapshot()

@@ -66,7 +66,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
         .split(path.sep)
         .join('/')
       return resolved.toString()
-    }
+    },
   )
 
   const styleAsts = styles.map((s, i) => {
@@ -88,7 +88,7 @@ export function parseVueFile(code: string, uri: string): VueFile {
 
 export function vueFileToPayload(
   vueFile: VueFile,
-  assetResolver: AssetResolver
+  assetResolver: AssetResolver,
 ): VueFilePayload {
   const scopeId = hashsum(vueFile.uri.toString())
   const basePath = path.dirname(vueFile.uri.pathname)
@@ -103,7 +103,7 @@ export function vueFileToPayload(
     data: vueFile.data,
     childComponents: vueFile.childComponents,
     styles: vueFile.styles.map((s) =>
-      resolveStyleAsset(s, basePath, assetResolver)
+      resolveStyleAsset(s, basePath, assetResolver),
     ),
   }
 }

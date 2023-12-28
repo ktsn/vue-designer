@@ -40,7 +40,7 @@ export class MockWebSocketClient
 
   removeEventListener(
     event: 'message',
-    cb: (event: MessageEvent) => void
+    cb: (event: MessageEvent) => void,
   ): void {
     this.removeListener(event, cb)
   }

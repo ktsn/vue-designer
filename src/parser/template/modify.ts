@@ -11,7 +11,7 @@ import {
 export function insertToTemplate(
   template: TETemplate,
   path: number[],
-  value: string
+  value: string,
 ): Modifier {
   const parentPath = path.slice(0, -1)
   const indent = inferTemplateIndentAt(template, parentPath)

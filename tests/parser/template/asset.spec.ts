@@ -22,7 +22,7 @@ describe('Template asset resolution', () => {
 
     // should convert src value
     expect(attrs.src.value).toBe(
-      '/assets?path=' + encodeURIComponent('/path/to/assets/logo.png')
+      '/assets?path=' + encodeURIComponent('/path/to/assets/logo.png'),
     )
 
     // should not touch other attribute

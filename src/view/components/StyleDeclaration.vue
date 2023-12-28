@@ -64,7 +64,7 @@ export default defineComponent({
 
     finishInputProp(
       rawProp: string,
-      meta: { reason: string; shiftKey: boolean }
+      meta: { reason: string; shiftKey: boolean },
     ): void {
       this.$emit('input-end:prop', meta)
 
@@ -78,7 +78,7 @@ export default defineComponent({
 
     finishInputValue(
       rawValue: string,
-      meta: { reason: string; shiftKey: boolean }
+      meta: { reason: string; shiftKey: boolean },
     ): void {
       this.$emit('input-end:value', meta)
 

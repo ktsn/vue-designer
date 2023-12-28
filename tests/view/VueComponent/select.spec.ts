@@ -40,7 +40,7 @@ describe('VueComponent select event', () => {
       {},
       {
         onSelect: spy,
-      }
+      },
     )
 
     vm.$el.querySelector('#root')!.click()
@@ -89,7 +89,7 @@ describe('VueComponent select event', () => {
       components,
       {
         onSelect: spy,
-      }
+      },
     )
 
     vm.$el.querySelector('#child-button')!.click()

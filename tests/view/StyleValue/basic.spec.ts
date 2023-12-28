@@ -95,7 +95,7 @@ describe('StyleValue basic', () => {
     vm.$el.dispatchEvent(
       new KeyboardEvent('keydown', {
         key: 'Enter',
-      })
+      }),
     )
 
     await nextTick()
@@ -121,7 +121,7 @@ describe('StyleValue basic', () => {
     vm.$el.dispatchEvent(
       new KeyboardEvent('keydown', {
         key: 'Tab',
-      })
+      }),
     )
 
     await nextTick()
@@ -148,7 +148,7 @@ describe('StyleValue basic', () => {
       new KeyboardEvent('keydown', {
         key: 'Tab',
         shiftKey: true,
-      })
+      }),
     )
 
     await nextTick()

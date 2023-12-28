@@ -9,7 +9,7 @@ export class Subject<T extends Record<string, any>> {
         JSON.stringify({
           type: 'subject:' + key,
           data,
-        })
+        }),
       )
     })
   }

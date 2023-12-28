@@ -29,7 +29,7 @@ describe('VueComponent child components', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
 
     expect(vm.$el.querySelector('p')!.textContent).toBe('Normal element')
@@ -83,17 +83,17 @@ describe('VueComponent child components', () => {
           uri: 'file:///Child.vue',
         },
       ],
-      components
+      components,
     )
 
     // should not resolved since child component does not have the value
     expect(vm.$el.querySelector('#first')!.textContent).toBe(
-      '{{ parentValue }}'
+      '{{ parentValue }}',
     )
 
     // should resolved as child component value
     expect(vm.$el.querySelector('#second')!.textContent).toBe(
-      'should render child value'
+      'should render child value',
     )
   })
 
@@ -129,7 +129,7 @@ describe('VueComponent child components', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
     expect(vm.$el.querySelector('h1')!.textContent).toBe('hello from parent')
   })
@@ -166,7 +166,7 @@ describe('VueComponent child components', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
     expect(vm.$el.querySelector('h1')!.textContent).toBe('Success')
   })
@@ -208,10 +208,10 @@ describe('VueComponent child components', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
     expect(vm.$el.querySelector('h1')!.textContent).toBe(
-      'hello from parent v-bind'
+      'hello from parent v-bind',
     )
   })
 
@@ -241,7 +241,7 @@ describe('VueComponent child components', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
     expect(vm.$el.querySelector('h1')!.textContent).toBe('{{ message }}') // not resolved
   })

@@ -25,7 +25,7 @@ export function createStyle(children: (STAtRule | STRule)[]): STStyle {
 function modifyPath(nodes: (STAtRule | STRule | STDeclaration)[]): void {
   function loop(
     nodes: (STAtRule | STRule | STDeclaration)[],
-    path: number[]
+    path: number[],
   ): void {
     nodes.forEach((node, i) => {
       const nextPath = path.concat(i)
@@ -42,7 +42,7 @@ function modifyPath(nodes: (STAtRule | STRule | STDeclaration)[]): void {
 export function atRule(
   name: string,
   params: string,
-  children: STChild[] = []
+  children: STChild[] = [],
 ): STAtRule {
   return {
     type: 'AtRule',
@@ -58,7 +58,7 @@ export function atRule(
 
 export function rule(
   selectors: STSelector[],
-  children: STDeclaration[] = []
+  children: STDeclaration[] = [],
 ): STRule {
   return {
     type: 'Rule',
@@ -73,7 +73,7 @@ export function rule(
 
 export function selector(
   options: Partial<STSelector>,
-  next?: STCombinator
+  next?: STCombinator,
 ): STSelector {
   const s: STSelector = {
     type: 'Selector',
@@ -106,7 +106,7 @@ export function attribute(
   name: string,
   operator?: AttributeOperator,
   value?: string,
-  insensitive: boolean = false
+  insensitive: boolean = false,
 ): STAttribute {
   return {
     type: 'Attribute',
@@ -128,7 +128,7 @@ export function combinator(operator: string, next: STSelector): STCombinator {
 export function declaration(
   prop: string,
   value: string,
-  important: boolean = false
+  important: boolean = false,
 ): STDeclaration {
   return {
     type: 'Declaration',
@@ -144,7 +144,7 @@ export function declaration(
 
 export function pClass(
   value: string,
-  params: STSelector[] = []
+  params: STSelector[] = [],
 ): STPseudoClass {
   return {
     type: 'PseudoClass',
@@ -155,7 +155,7 @@ export function pClass(
 
 export function pElement(
   value: string,
-  pseudoClass: STPseudoClass[] = []
+  pseudoClass: STPseudoClass[] = [],
 ): STPseudoElement {
   return {
     type: 'PseudoElement',

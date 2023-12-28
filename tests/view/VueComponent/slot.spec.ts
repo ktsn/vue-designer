@@ -46,7 +46,7 @@ describe('VueComponent slot', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
 
     expect(vm.$el.outerHTML).toMatchSnapshot()
@@ -83,7 +83,7 @@ describe('VueComponent slot', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
 
     expect(vm.$el.outerHTML).toMatchSnapshot()
@@ -121,7 +121,7 @@ describe('VueComponent slot', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
     )
 
     expect(vm.$el.outerHTML).toMatchSnapshot()

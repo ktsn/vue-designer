@@ -17,7 +17,7 @@ function visitStyle(style: t.STStyle, visitor: StyleVisitor): t.STStyle {
   }
 
   function loop(
-    node: t.STAtRule | t.STRule | t.STDeclaration
+    node: t.STAtRule | t.STRule | t.STDeclaration,
   ): t.STAtRule | t.STRule | t.STDeclaration {
     switch (node.type) {
       case 'AtRule':
@@ -47,7 +47,7 @@ function visitStyle(style: t.STStyle, visitor: StyleVisitor): t.STStyle {
 
 export function visitLastSelectors(
   root: t.STStyle,
-  fn: (selector: t.STSelector, rule: t.STRule) => t.STSelector | void
+  fn: (selector: t.STSelector, rule: t.STRule) => t.STSelector | void,
 ): t.STStyle {
   return visitStyle(root, { lastSelector: fn })
 }
@@ -62,7 +62,7 @@ function isInterestSelector(rule: t.STRule, root: t.STStyle): boolean {
       const prev = (nodes[nodes.length - 1] || root) as t.HasChildren<t.STChild>
       assert(
         'children' in prev,
-        '[style manipulate] the rule probably has an invalid path.'
+        '[style manipulate] the rule probably has an invalid path.',
       )
 
       return nodes.concat(prev.children[index])
@@ -75,7 +75,7 @@ function isInterestSelector(rule: t.STRule, root: t.STStyle): boolean {
 export function resolveAsset(
   style: t.STStyle,
   basePath: string,
-  resolver: AssetResolver
+  resolver: AssetResolver,
 ): t.STStyle {
   return visitStyle(style, {
     declaration: (decl) => {
@@ -156,7 +156,7 @@ export function addScope(node: t.STStyle, scope: string): t.STStyle {
 
 export function getNode(
   styles: t.STStyle[],
-  path: number[]
+  path: number[],
 ): t.STChild | undefined {
   return path.reduce<any>(
     (acc, i) => {
@@ -165,13 +165,13 @@ export function getNode(
       }
       return undefined
     },
-    { children: styles }
+    { children: styles },
   )
 }
 
 export function getDeclaration(
   styles: t.STStyle[],
-  path: number[]
+  path: number[],
 ): t.STDeclaration | undefined {
   const res = getNode(styles, path)
   return res && res.type === 'Declaration' ? res : undefined

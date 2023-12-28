@@ -19,7 +19,7 @@ describe('Scoped style', () => {
 
     const expected: any = ast
     expected.children[0].selectors[0].attributes.push(
-      attribute('data-scope-' + scope)
+      attribute('data-scope-' + scope),
     )
 
     assertStyleNode(result, expected)
@@ -34,7 +34,7 @@ describe('Scoped style', () => {
 
     const expected: any = ast
     expected.children[0].children[0].selectors[0].attributes.push(
-      attribute('data-scope-' + scope)
+      attribute('data-scope-' + scope),
     )
 
     assertStyleNode(result, expected)
@@ -63,7 +63,7 @@ describe('Scoped style', () => {
 
     const expected: any = ast
     expected.children[0].selectors[0].attributes.push(
-      attribute('data-scope-' + scope)
+      attribute('data-scope-' + scope),
     )
     expected.children[0].children[0].value = 'test-' + scope + ' 2s'
     expected.children[1].params = 'test-' + scope
@@ -84,7 +84,7 @@ describe('Scoped style', () => {
 
     const expected: any = ast
     expected.children[0].selectors[0].attributes.push(
-      attribute('data-scope-' + scope)
+      attribute('data-scope-' + scope),
     )
 
     assertStyleNode(result, expected)

@@ -31,7 +31,7 @@ export default defineComponent({
     },
     propsData: {
       type: Object as PropType<Record<string, any>>,
-      default: () => ({} as Record<string, any>),
+      default: () => ({}) as Record<string, any>,
     },
   },
 
@@ -97,7 +97,7 @@ export default defineComponent({
               onAdd: (...args: any[]) => {
                 this.$emit('add', ...args)
               },
-            })
+            }),
           )
         })
     }
@@ -109,7 +109,7 @@ export default defineComponent({
           this.$emit('click', ...args)
         },
       },
-      children
+      children,
     )
   },
 })

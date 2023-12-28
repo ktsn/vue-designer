@@ -137,7 +137,7 @@ export default defineComponent({
 
     catalog(): ScopedDocument[] {
       return Object.keys(this.scopedDocuments).map(
-        (key) => this.scopedDocuments[key]
+        (key) => this.scopedDocuments[key],
       )
     },
   },
@@ -167,7 +167,7 @@ export default defineComponent({
             element: HTMLElement
             viewport: HTMLElement
           }
-        | undefined
+        | undefined,
     ): void {
       this.select(data ? data.ast : undefined)
       if (data) {

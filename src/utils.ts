@@ -1,6 +1,6 @@
 export function assert(
   condition: unknown,
-  message?: string
+  message?: string,
 ): asserts condition {
   if (!condition) {
     throw new Error(message)
@@ -9,7 +9,7 @@ export function assert(
 
 export function mapValues<T, R>(
   record: Record<string, T>,
-  fn: (value: T, key: string) => R
+  fn: (value: T, key: string) => R,
 ): Record<string, R> {
   const res: Record<string, R> = {}
   Object.keys(record).forEach((key) => {
@@ -20,7 +20,7 @@ export function mapValues<T, R>(
 
 export function takeWhile<T, R extends T>(
   list: T[],
-  fn: (value: T) => value is R
+  fn: (value: T) => value is R,
 ): R[]
 export function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[]
 export function takeWhile<T>(list: T[], fn: (value: T) => boolean): T[] {
@@ -55,7 +55,7 @@ export function clone<T>(value: T, changes: any = {}): T {
 
 export function range(min: number, max: number): number[] {
   return Array.apply(null, Array(max - min + 1)).map(
-    (_: any, i: number) => min + i
+    (_: any, i: number) => min + i,
   )
 }
 

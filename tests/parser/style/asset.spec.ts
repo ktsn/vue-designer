@@ -12,7 +12,7 @@ describe('Style asset resolution', () => {
     const style = createStyle([
       rule(
         [selector({ tag: 'p' })],
-        [declaration('background', 'url(../assets/bg.png)')]
+        [declaration('background', 'url(../assets/bg.png)')],
       ),
     ])
 
@@ -20,7 +20,9 @@ describe('Style asset resolution', () => {
     const decl = (resolved.children[0] as STRule).children[0]
     expect(decl.prop).toBe('background')
     expect(decl.value).toBe(
-      'url("/assets?path=' + encodeURIComponent('/path/to/assets/bg.png') + '")'
+      'url("/assets?path=' +
+        encodeURIComponent('/path/to/assets/bg.png') +
+        '")',
     )
   })
 
@@ -32,9 +34,9 @@ describe('Style asset resolution', () => {
           declaration('font-size', '18px'),
           declaration(
             'background',
-            'cyan url("../assets/bg.png") repeat, url("test/icon.gif") no-repeat'
+            'cyan url("../assets/bg.png") repeat, url("test/icon.gif") no-repeat',
           ),
-        ]
+        ],
       ),
     ])
 
@@ -50,7 +52,7 @@ describe('Style asset resolution', () => {
         '") repeat, ' +
         'url("/assets?path=' +
         encodeURIComponent('/path/to/components/test/icon.gif') +
-        '") no-repeat'
+        '") no-repeat',
     )
   })
 })

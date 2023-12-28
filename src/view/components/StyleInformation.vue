@@ -95,7 +95,7 @@ export default defineComponent({
     addDeclaration(
       rulePath: number[],
       ruleIndex: number,
-      declIndex: number
+      declIndex: number,
     ): void {
       this.$emit('add-declaration', {
         path: rulePath.concat(declIndex),
@@ -131,7 +131,7 @@ export default defineComponent({
     onClickDeclaration(
       decl: STDeclarationForPrint,
       ruleIndex: number,
-      declIndex: number
+      declIndex: number,
     ): void {
       if (this.endingInput) return
 
@@ -158,7 +158,7 @@ export default defineComponent({
       rule: number,
       decl: number,
       type: string,
-      meta: { reason: string; shiftKey: boolean }
+      meta: { reason: string; shiftKey: boolean },
     ): void {
       // If the user end the input by pressing enter or tab key,
       // focus on the next form.

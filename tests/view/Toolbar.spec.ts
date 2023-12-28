@@ -116,7 +116,7 @@ class ToolbarTest {
     el.dispatchEvent(
       new KeyboardEvent('keydown', {
         key: 'Enter',
-      })
+      }),
     )
   }
 

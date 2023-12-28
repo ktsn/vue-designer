@@ -23,7 +23,7 @@ export function render(
   data: Data[] = [],
   childComponents: ChildComponent[] = [],
   storeDocuments: Record<string, Partial<VueFilePayload>> = {},
-  listeners: Record<string, Function> = {}
+  listeners: Record<string, Function> = {},
 ): InstanceType<typeof VueComponent> {
   const store = createStore(module().child('project', project))
 
@@ -45,7 +45,7 @@ export function render(
         styles: doc.styles || [],
         scopeId: doc.scopeId || 'scope-id',
       }
-    })
+    }),
   )
 
   Object.keys(storeDocuments).forEach((uri) => {
@@ -67,12 +67,12 @@ export function render(
       styles: '',
       ...listeners,
     },
-    [store]
+    [store],
   ).vm
 }
 
 function processRootChildren(
-  children: (TEElement | TEExpressionNode | string)[]
+  children: (TEElement | TEExpressionNode | string)[],
 ): TEChild[] {
   return children.map((c, i) => {
     const node = strToTextNode(c)
@@ -92,7 +92,7 @@ function modifyChildPath(child: TEChild, path: number[]): TEChild {
 }
 
 export function createTemplate(
-  children: (TEElement | TEExpressionNode | string)[]
+  children: (TEElement | TEExpressionNode | string)[],
 ): TETemplate {
   return {
     type: 'Template',
@@ -106,7 +106,7 @@ export function h(
   tag: string,
   attributes: (TEAttribute | TEDirective)[],
   children: (TEElement | TEExpressionNode | string)[],
-  options: { selfClosing?: boolean; hasEndTag?: boolean } = {}
+  options: { selfClosing?: boolean; hasEndTag?: boolean } = {},
 ): TEElement {
   const attrs: Record<string, TEAttribute> = {}
   const props: Record<string, TEDirective> = {}
@@ -169,12 +169,12 @@ export function d(name: string, expression: string): TEDirective
 export function d(
   name: string,
   options?: { argument?: string; modifiers?: string[] },
-  expression?: string
+  expression?: string,
 ): TEDirective
 export function d(
   name: string,
   options: { argument?: string; modifiers?: string[] } | string = {},
-  expression?: any
+  expression?: any,
 ): TEDirective {
   if (typeof options === 'string') {
     expression = options
@@ -228,7 +228,7 @@ function strToTextNode<T>(str: T | string): T | TETextNode {
 
 export function assertWithoutRange(
   result: TETemplate,
-  expected: TETemplate
+  expected: TETemplate,
 ): void {
   expect(excludeRange(result)).toEqual(excludeRange(expected))
 }

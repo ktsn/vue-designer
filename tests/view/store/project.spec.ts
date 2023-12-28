@@ -25,7 +25,7 @@ describe('Store project getters', () => {
       const actual = getters.scopedDocuments['file:///Foo.vue']
       const expected = addScopeToTemplate(
         docs['file:///Foo.vue'].template,
-        'foo'
+        'foo',
       )
 
       expect(actual.template).toEqual(expected)
@@ -291,7 +291,7 @@ describe('Store project actions', () => {
 
       expect(mock.styleMatcher.register).toHaveBeenCalledWith(
         mockFile.uri,
-        mockFile.styles
+        mockFile.styles,
       )
       expect(setDocument).toHaveBeenCalledWith(mockFile)
       expect(refreshScope).toHaveBeenCalledWith({

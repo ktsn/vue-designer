@@ -3,7 +3,7 @@ import { createApp, h, ref, Plugin } from 'vue'
 export function mount<V extends new () => any>(
   Component: V,
   propsData?: Record<string, any>,
-  plugins: Plugin[] = []
+  plugins: Plugin[] = [],
 ) {
   const props = ref(propsData ?? {})
 

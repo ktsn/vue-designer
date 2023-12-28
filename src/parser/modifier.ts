@@ -30,7 +30,7 @@ export function modify(code: string, modfiers: Modifiers): string {
     acc: string,
     pos: number,
     cur: Modifier | undefined,
-    rest: Modifier[]
+    rest: Modifier[],
   ): string {
     if (!cur) {
       return acc + code.slice(pos)
@@ -51,7 +51,7 @@ export function modify(code: string, modfiers: Modifiers): string {
         return loop(acc + pre, fixedEnd, rest[0], rest.slice(1))
       default:
         throw new Error(
-          '[modifier] Unexpected modifier type: ' + (cur as any).type
+          '[modifier] Unexpected modifier type: ' + (cur as any).type,
         )
     }
   }
@@ -61,7 +61,7 @@ export function modify(code: string, modfiers: Modifiers): string {
 export function reduce<T>(
   modifiers: Modifiers,
   fn: (acc: T, modifier: Modifier) => T,
-  initial: T
+  initial: T,
 ): T {
   const ms = flatten(modifiers).sort(modifierComperator)
   return ms.reduce(fn, initial)

@@ -3,7 +3,7 @@ import { Modifiers, reduce } from '../parser/modifier'
 
 export async function applyModifiers(
   uri: string,
-  modifiers: Modifiers
+  modifiers: Modifiers,
 ): Promise<void> {
   const parsedUri = vscode.Uri.parse(uri)
   const doc = await vscode.workspace.openTextDocument(parsedUri)
@@ -20,15 +20,15 @@ export async function applyModifiers(
             parsedUri,
             new vscode.Range(
               doc.positionAt(m.pos),
-              doc.positionAt(m.pos + m.length)
-            )
+              doc.positionAt(m.pos + m.length),
+            ),
           )
           break
         default:
       }
       return edit
     },
-    new vscode.WorkspaceEdit()
+    new vscode.WorkspaceEdit(),
   )
 
   await vscode.workspace.applyEdit(wsEdit)

@@ -140,7 +140,7 @@ class ResizableTest {
       new MouseEvent('pointerdown', {
         clientX: x,
         clientY: y,
-      })
+      }),
     )
   }
 
@@ -150,7 +150,7 @@ class ResizableTest {
       new MouseEvent('pointermove', {
         clientX: x,
         clientY: y,
-      })
+      }),
     )
     this.handler.dispatchEvent(new MouseEvent('pointerup'))
   }

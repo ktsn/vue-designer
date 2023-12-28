@@ -190,14 +190,14 @@ export class ProjectActions extends Actions<
         const el = node as TEElement
         assert(
           el.type === 'Element',
-          `[store/project] node type must be 'Element' when place is 'first' but received '${node.type}'`
+          `[store/project] node type must be 'Element' when place is 'first' but received '${node.type}'`,
         )
         insertInto = el.path.concat(0)
       } else {
         const el = node as TEElement
         assert(
           el.type === 'Element',
-          `[store/project] node type must be 'Element' when place is 'last' but received '${node.type}'`
+          `[store/project] node type must be 'Element' when place is 'last' but received '${node.type}'`,
         )
         const len = el.children.length
         insertInto = el.path.concat(len)

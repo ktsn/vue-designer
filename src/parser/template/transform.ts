@@ -7,10 +7,10 @@ type ChildNode = AST.VElement | AST.VText | AST.VExpressionContainer
 
 export function transformTemplate(
   body: RootElement,
-  code: string
+  code: string,
 ): t.TETemplate {
   const transformed = body.startTag.attributes.map((attr, index) =>
-    transformAttribute(attr, index, code)
+    transformAttribute(attr, index, code),
   )
   const attrs = extractAttrs(transformed)
   return {
@@ -24,10 +24,10 @@ export function transformTemplate(
 function transformElement(
   el: AST.VElement,
   code: string,
-  path: number[]
+  path: number[],
 ): t.TEElement {
   const attrs = el.startTag.attributes.map((attr, index) =>
-    transformAttribute(attr, index, code)
+    transformAttribute(attr, index, code),
   )
 
   const start = startTag(
@@ -36,7 +36,7 @@ function transformElement(
     extractDomProps(attrs),
     extractDirectives(attrs),
     el.startTag.selfClosing,
-    el.startTag.range
+    el.startTag.range,
   )
 
   const end = el.endTag && endtag(el.endTag.range)
@@ -47,12 +47,12 @@ function transformElement(
     start,
     end || undefined,
     el.children.map((child, i) => transformChild(child, code, path.concat(i))),
-    el.range
+    el.range,
   )
 }
 
 function extractAttrs(
-  attrs: (t.TEAttribute | t.TEDirective)[]
+  attrs: (t.TEAttribute | t.TEDirective)[],
 ): Record<string, t.TEAttribute> {
   const res: Record<string, t.TEAttribute> = {}
 
@@ -66,7 +66,7 @@ function extractAttrs(
 }
 
 function extractProps(
-  attrs: (t.TEAttribute | t.TEDirective)[]
+  attrs: (t.TEAttribute | t.TEDirective)[],
 ): Record<string, t.TEDirective> {
   const res: Record<string, t.TEDirective> = {}
 
@@ -80,7 +80,7 @@ function extractProps(
 }
 
 function extractDomProps(
-  attrs: (t.TEAttribute | t.TEDirective)[]
+  attrs: (t.TEAttribute | t.TEDirective)[],
 ): Record<string, t.TEDirective> {
   const res: Record<string, t.TEDirective> = {}
 
@@ -94,7 +94,7 @@ function extractDomProps(
 }
 
 function extractDirectives(
-  attrs: (t.TEAttribute | t.TEDirective)[]
+  attrs: (t.TEAttribute | t.TEDirective)[],
 ): t.TEDirective[] {
   return attrs.filter((attr): attr is t.TEDirective => {
     return attr.type === 'Directive' && !isProp(attr) && !isDomProp(attr)
@@ -104,7 +104,7 @@ function extractDirectives(
 function transformAttribute(
   attr: AST.VAttribute | AST.VDirective,
   index: number,
-  code: string
+  code: string,
 ): t.TEAttribute | t.TEDirective {
   if (attr.directive) {
     if (attr.key.name === 'for') {
@@ -119,7 +119,7 @@ function transformAttribute(
         index,
         exp ? exp.left.map((l) => extractExpression(l, code)) : [],
         exp ? extractExpression(exp.right, code) : undefined,
-        attr.range
+        attr.range,
       )
     } else {
       const exp = attr.value && attr.value.expression
@@ -130,7 +130,7 @@ function transformAttribute(
         attr.key.argument || undefined,
         attr.key.modifiers,
         expStr,
-        attr.range
+        attr.range,
       )
     }
   } else {
@@ -138,7 +138,7 @@ function transformAttribute(
       index,
       attr.key.name,
       attr.value ? attr.value.value : undefined,
-      attr.range
+      attr.range,
     )
   }
 }
@@ -146,7 +146,7 @@ function transformAttribute(
 function transformChild(
   child: ChildNode,
   code: string,
-  path: number[]
+  path: number[],
 ): t.TEChild {
   switch (child.type) {
     case 'VElement':
@@ -158,7 +158,7 @@ function transformChild(
       return expressionNode(
         path,
         exp ? extractExpression(exp, code) : '',
-        child.range
+        child.range,
       )
     default:
       return assert.fail('Unexpected node type: ' + (child as any).type)
@@ -193,7 +193,7 @@ function element(
   startTag: t.TEStartTag,
   endTag: t.TEEndTag | undefined,
   children: t.TEChild[],
-  range: [number, number]
+  range: [number, number],
 ): t.TEElement {
   return {
     type: 'Element',
@@ -212,7 +212,7 @@ function startTag(
   domProps: Record<string, t.TEDirective>,
   directives: t.TEDirective[],
   selfClosing: boolean,
-  range: [number, number]
+  range: [number, number],
 ): t.TEStartTag {
   return {
     type: 'StartTag',
@@ -235,7 +235,7 @@ function endtag(range: [number, number]): t.TEEndTag {
 function textNode(
   path: number[],
   text: string,
-  range: [number, number]
+  range: [number, number],
 ): t.TETextNode {
   return {
     type: 'TextNode',
@@ -248,7 +248,7 @@ function textNode(
 function expressionNode(
   path: number[],
   expression: string,
-  range: [number, number]
+  range: [number, number],
 ): t.TEExpressionNode {
   return {
     type: 'ExpressionNode',
@@ -262,7 +262,7 @@ function attribute(
   attrIndex: number,
   name: string,
   value: string | undefined,
-  range: [number, number]
+  range: [number, number],
 ): t.TEAttribute {
   return {
     type: 'Attribute',
@@ -279,7 +279,7 @@ function directive(
   argument: string | undefined,
   modifiers: string[],
   expression: string | undefined,
-  range: [number, number]
+  range: [number, number],
 ): t.TEDirective {
   const mod: Record<string, boolean> = {}
   modifiers.forEach((m) => {
@@ -300,7 +300,7 @@ function vForDirective(
   attrIndex: number,
   left: string[],
   right: string | undefined,
-  range: [number, number]
+  range: [number, number],
 ): t.TEForDirective {
   return {
     type: 'Directive',

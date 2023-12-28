@@ -18,7 +18,7 @@ describe('VueComponent v-model', () => {
           name: 'test',
           default: 'message',
         },
-      ]
+      ],
     )
     const input = wrapper.$el.querySelector('input') as HTMLInputElement
     expect(input.value).toBe('message')
@@ -38,7 +38,7 @@ describe('VueComponent v-model', () => {
           name: 'checked',
           default: true,
         },
-      ]
+      ],
     )
 
     const checkbox = wrapper.$el.querySelector('input') as HTMLInputElement
@@ -63,17 +63,17 @@ describe('VueComponent v-model', () => {
           name: 'list',
           default: ['foo', 'baz'],
         },
-      ]
+      ],
     )
 
     const foo = wrapper.$el.querySelector(
-      'input[value=foo]'
+      'input[value=foo]',
     ) as HTMLInputElement
     const bar = wrapper.$el.querySelector(
-      'input[value=bar]'
+      'input[value=bar]',
     ) as HTMLInputElement
     const baz = wrapper.$el.querySelector(
-      'input[value=baz]'
+      'input[value=baz]',
     ) as HTMLInputElement
 
     expect(foo.checked).toBe(true)
@@ -98,14 +98,14 @@ describe('VueComponent v-model', () => {
           name: 'radio',
           default: 'bar',
         },
-      ]
+      ],
     )
 
     const foo = wrapper.$el.querySelector(
-      'input[value=foo]'
+      'input[value=foo]',
     ) as HTMLInputElement
     const bar = wrapper.$el.querySelector(
-      'input[value=bar]'
+      'input[value=bar]',
     ) as HTMLInputElement
 
     expect(foo.checked).toBe(false)
@@ -129,7 +129,7 @@ describe('VueComponent v-model', () => {
           name: 'selected',
           default: 'bar',
         },
-      ]
+      ],
     )
 
     const select = wrapper.$el.querySelector('select') as HTMLSelectElement
@@ -159,7 +159,7 @@ describe('VueComponent v-model', () => {
           name: 'selected',
           default: ['foo', 'baz'],
         },
-      ]
+      ],
     )
 
     const select = wrapper.$el.querySelector('select') as HTMLSelectElement

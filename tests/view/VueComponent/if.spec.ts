@@ -63,7 +63,7 @@ describe('VueComponent v-if', () => {
           name: 'bar',
           default: null,
         },
-      ]
+      ],
     )
     const p = vm.$el.querySelector('p')
     expect(p).toBeNull()

@@ -71,7 +71,7 @@ interface LexerFailure {
 function success<T>(
   ctx: LexerContext,
   value: T,
-  succ: number
+  succ: number,
 ): LexerSuccess<T> {
   const next = ctx.position + succ
   return {
@@ -124,7 +124,7 @@ function seqResult<T>(result: LexerResult<T>[]): LexerResult<T[]> {
     {
       ...head,
       value: [head.value],
-    }
+    },
   )
 }
 
@@ -157,7 +157,7 @@ function seq<T>(...xs: Lexer<T>[]): Lexer<T[]> {
   const process = (
     acc: LexerResult<T>[],
     ctx: LexerContext,
-    xs: Lexer<T>[]
+    xs: Lexer<T>[],
   ): LexerResult<T>[] => {
     const [head, ...tail] = xs
     if (!head) {
@@ -188,7 +188,7 @@ function joinSeq(...xs: Lexer<string>[]): Lexer<string> {
 function many<T>(lexer: Lexer<T>): Lexer<T[]> {
   const process = (
     acc: LexerResult<T>[],
-    ctx: LexerContext
+    ctx: LexerContext,
   ): LexerResult<T>[] => {
     const result = lexer(ctx)
     if (result.success) {
@@ -205,7 +205,7 @@ function or<T>(...xs: Lexer<T>[]): Lexer<T> {
   const process = (
     errors: LexerFailure[],
     ctx: LexerContext,
-    xs: Lexer<T>[]
+    xs: Lexer<T>[],
   ): LexerResult<T> => {
     const [head, ...tail] = xs
 
@@ -233,14 +233,14 @@ function option<T>(lexer: Lexer<T>): Lexer<T | null>
 function option<T>(lexer: Lexer<T>, defaultValue: T): Lexer<T>
 function option<T>(
   lexer: Lexer<T>,
-  defaultValue: T | null = null
+  defaultValue: T | null = null,
 ): Lexer<T | null> {
   return or(lexer, empty(defaultValue))
 }
 
 function map<T, R>(
   lexer: Lexer<T>,
-  fn: (value: T, res: LexerSuccess<T>) => R
+  fn: (value: T, res: LexerSuccess<T>) => R,
 ): Lexer<R> {
   return (ctx) => {
     const result = lexer(ctx)
@@ -268,7 +268,7 @@ const identTokenLike: Lexer<string> = regexp(/^-?[a-zA-Z_#][\w-]*/)
  */
 const stringToken: Lexer<string> = or(
   joinSeq(string("'"), regexp(/^[^'\\]*/), string("'")),
-  joinSeq(string('"'), regexp(/^[^"\\]*/), string('"'))
+  joinSeq(string('"'), regexp(/^[^"\\]*/), string('"')),
 )
 
 /**
@@ -279,16 +279,16 @@ const numberToken: Lexer<string> = joinSeq(
   or(
     joinSeq(digits, string('.'), digits),
     joinSeq(digits),
-    joinSeq(string('.'), digits)
+    joinSeq(string('.'), digits),
   ),
   option(
     joinSeq(
       or(string('e'), string('E')),
       or(string('+'), string('-'), empty('')),
-      digits
+      digits,
     ),
-    ''
-  )
+    '',
+  ),
 )
 
 const unit: Lexer<string> = regexp(/^(%|[a-zA-Z]+)/)
@@ -303,7 +303,7 @@ const textual: Lexer<Lex> = map(
       value: quote !== '' ? value.slice(1, value.length - 1) : value,
       range: res.range,
     }
-  }
+  },
 )
 
 const numeric: Lexer<Lex> = map(
@@ -317,7 +317,7 @@ const numeric: Lexer<Lex> = map(
       unit,
       range: res.range,
     }
-  }
+  },
 )
 
 const divider: Lexer<Lex> = map(
@@ -328,7 +328,7 @@ const divider: Lexer<Lex> = map(
       value,
       range: res.range,
     }
-  }
+  },
 )
 
 const whitespace: Lexer<Lex> = map(regexp(/^\s+/), (value, res): Whitespace => {
@@ -351,7 +351,7 @@ export function lexStyleValue(value: string): Lex[] {
 
   if (!result.success) {
     throw new Error(
-      `Parse Error found at ${result.context.position}\n` + result.message
+      `Parse Error found at ${result.context.position}\n` + result.message,
     )
   }
 

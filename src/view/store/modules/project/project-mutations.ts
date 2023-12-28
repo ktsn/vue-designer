@@ -85,7 +85,7 @@ export class ProjectMutations extends Mutations<ProjectState>() {
   }) {
     function update(
       scope: Record<string, DocumentScopeItem>,
-      next: (Prop | Data)[]
+      next: (Prop | Data)[],
     ): void {
       const willRemove = Object.keys(scope)
 

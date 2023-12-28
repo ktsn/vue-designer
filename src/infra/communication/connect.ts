@@ -37,7 +37,7 @@ function listenMessage(ws: WebSocket, resolver: Resolver, mutator: Mutator) {
         type: data.type,
         data: res,
         requestId: data.requestId,
-      })
+      }),
     )
   })
 

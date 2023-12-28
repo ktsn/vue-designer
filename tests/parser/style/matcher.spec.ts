@@ -210,7 +210,7 @@ describe('Style matcher', () => {
       const child = rule([
         selector(
           { class: ['bar'] },
-          combinator('>', selector({ class: ['foo'] }))
+          combinator('>', selector({ class: ['foo'] })),
         ),
       ])
 
@@ -238,7 +238,7 @@ describe('Style matcher', () => {
       const sibling = rule([
         selector(
           { class: ['bar'] },
-          combinator('+', selector({ class: ['foo'] }))
+          combinator('+', selector({ class: ['foo'] })),
         ),
       ])
 
@@ -270,7 +270,7 @@ describe('Style matcher', () => {
       const sibling = rule([
         selector(
           { class: ['bar'] },
-          combinator('+', selector({ class: ['foo'] }))
+          combinator('+', selector({ class: ['foo'] })),
         ),
       ])
 
@@ -294,7 +294,7 @@ describe('Style matcher', () => {
       const descendant = rule([
         selector(
           { class: ['bar'] },
-          combinator(' ', selector({ class: ['foo'] }))
+          combinator(' ', selector({ class: ['foo'] })),
         ),
       ])
 
@@ -322,7 +322,7 @@ describe('Style matcher', () => {
       const sibling = rule([
         selector(
           { class: ['bar'] },
-          combinator('~', selector({ class: ['foo'] }))
+          combinator('~', selector({ class: ['foo'] })),
         ),
       ])
 

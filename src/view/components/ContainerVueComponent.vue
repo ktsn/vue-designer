@@ -52,7 +52,7 @@ export default defineComponent({
         styles: this.document.styleCode,
         propsData: this.propsData,
       },
-      this.$slots
+      this.$slots,
     )
   },
 })

@@ -7,7 +7,7 @@ export function insertComponentScript(
   ast: t.Program,
   code: string,
   componentName: string,
-  componentPath: string
+  componentPath: string,
 ): Modifier[] {
   const options = findComponentOptions(ast.body)
   if (!options) return []
@@ -33,11 +33,11 @@ function insertComponentImport(
   ast: t.Program,
   code: string,
   componentName: string,
-  componentPath: string
+  componentPath: string,
 ): Modifier {
   assert(
     ast.body[0],
-    '[modifier] script block should have at least one statement.'
+    '[modifier] script block should have at least one statement.',
   )
 
   const imports = ast.body.filter((el) => t.isImportDeclaration(el))
@@ -56,7 +56,7 @@ function insertComponentImport(
 function insertComponentOptions(
   options: t.ObjectExpression,
   code: string,
-  componentName: string
+  componentName: string,
 ): Modifier {
   const indent = inferScriptIndent(code, options) + singleIndentStr
   const comma = options.properties.length > 0 ? ',' : ''
@@ -76,7 +76,7 @@ function insertComponentOptions(
 function insertComponentOptionItem(
   componentOptions: t.ObjectExpression,
   code: string,
-  componentName: string
+  componentName: string,
 ): Modifier {
   const indent = inferScriptIndent(code, componentOptions) + singleIndentStr
   const { start, end } = componentOptions

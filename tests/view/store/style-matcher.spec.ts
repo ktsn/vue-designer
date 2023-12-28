@@ -15,7 +15,7 @@ describe('StyleMatcher', () => {
     const actual = matcher.match(
       'file:///test1.vue',
       createTemplate([h('p', [a('class', 'foo')], [])]),
-      [0]
+      [0],
     )
     expect(actual.length).toBe(1)
     expect(actual[0].selectors[0].tag).toBe('p')
@@ -26,7 +26,7 @@ describe('StyleMatcher', () => {
     const actual = matcher.match(
       'file:///test1.vue',
       createTemplate([h('p', [a('class', 'foo')], [])]),
-      [0]
+      [0],
     )
     expect(actual.length).toBe(0)
   })
@@ -40,7 +40,7 @@ describe('StyleMatcher', () => {
     let actual = matcher.match(
       'file:///test1.vue',
       createTemplate([h('p', [a('class', 'foo')], [])]),
-      [0]
+      [0],
     )
     expect(actual.length).toBe(1)
     expect(actual[0].selectors[0].tag).toBe('p')
@@ -50,7 +50,7 @@ describe('StyleMatcher', () => {
     actual = matcher.match(
       'file:///test1.vue',
       createTemplate([h('p', [a('class', 'foo')], [])]),
-      [0]
+      [0],
     )
     expect(actual.length).toBe(0)
   })
@@ -68,12 +68,12 @@ describe('StyleMatcher', () => {
     const actual1 = matcher.match(
       'file:///test1.vue',
       createTemplate([h('p', [a('class', 'foo')], [])]),
-      [0]
+      [0],
     )
     const actual2 = matcher.match(
       'file:///test2.vue',
       createTemplate([h('p', [a('class', 'foo')], [])]),
-      [0]
+      [0],
     )
 
     expect(actual1.length).toBe(0)

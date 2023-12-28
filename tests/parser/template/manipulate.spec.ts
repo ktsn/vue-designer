@@ -71,7 +71,7 @@ describe('AST manipulation', () => {
     const el = h('div', [], [])
 
     expect(() => insertNode(template, [], el)).toThrow(
-      '[template] index should not be null or undefined'
+      '[template] index should not be null or undefined',
     )
   })
 
@@ -89,7 +89,7 @@ describe('AST manipulation', () => {
     const el = h('h1', [], [])
 
     expect(() => insertNode(template, [0, 2, 0], el)).toThrow(
-      "[template] cannot reach to the path '0->2->0' as there is no node on the way"
+      "[template] cannot reach to the path '0->2->0' as there is no node on the way",
     )
   })
 
@@ -107,7 +107,7 @@ describe('AST manipulation', () => {
     const el = h('h1', [], [])
 
     expect(() => insertNode(template, [0, 1, 0], el)).toThrow(
-      "[template] cannot reach to the path '0->1->0' as there is text or expression node on the way"
+      "[template] cannot reach to the path '0->1->0' as there is text or expression node on the way",
     )
   })
 })

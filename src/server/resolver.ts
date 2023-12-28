@@ -14,7 +14,7 @@ export const resolver = (
   vueFiles: VueFileRepository,
   setting: SettingRepository,
   editor: EditorRepository,
-  assetResolver: AssetResolver
+  assetResolver: AssetResolver,
 ) => ({
   async init(): Promise<InitialData> {
     return {

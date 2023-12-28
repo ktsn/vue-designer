@@ -5,7 +5,7 @@ import { assert, clone } from '../../utils'
 
 export function getNode(
   root: t.TETemplate,
-  path: number[]
+  path: number[],
 ): t.TEChild | undefined {
   function loop(current: t.TEChild, rest: number[]): t.TEChild | undefined {
     // If `rest` does not have any items,
@@ -35,12 +35,12 @@ export function getNode(
 export function insertNode(
   root: t.TETemplate,
   path: number[],
-  el: t.TEChild
+  el: t.TEChild,
 ): t.TETemplate {
   function loop<T extends t.TEElement | t.TETemplate>(
     parent: T,
     index: number,
-    rest: number[]
+    rest: number[],
   ): T {
     assert(index != null, '[template] index should not be null or undefined')
 
@@ -53,7 +53,7 @@ export function insertNode(
         "[template] cannot insert the node to '" +
           path.join('->') +
           "' as the last index is out of possible range: " +
-          `0 <= ${index} <= ${cs.length}`
+          `0 <= ${index} <= ${cs.length}`,
       )
 
       return clone(parent, {
@@ -66,13 +66,13 @@ export function insertNode(
       child,
       "[template] cannot reach to the path '" +
         path.join('->') +
-        "' as there is no node on the way"
+        "' as there is no node on the way",
     )
     assert(
       child.type === 'Element',
       "[template] cannot reach to the path '" +
         path.join('->') +
-        "' as there is text or expression node on the way"
+        "' as there is text or expression node on the way",
     )
 
     const [head, ...tail] = rest
@@ -89,7 +89,7 @@ export function insertNode(
 
 export function visitElements(
   node: t.TETemplate,
-  fn: (el: t.TEElement) => t.TEElement | void
+  fn: (el: t.TEElement) => t.TEElement | void,
 ): t.TETemplate {
   function loop(node: t.TEChild): t.TEChild {
     switch (node.type) {
@@ -111,7 +111,7 @@ export function visitElements(
 export function resolveAsset(
   template: t.TETemplate,
   baseUrl: string,
-  resolver: AssetResolver
+  resolver: AssetResolver,
 ): t.TETemplate {
   return visitElements(template, (el) => {
     const src = el.startTag.attrs.src

@@ -33,7 +33,7 @@ export default defineComponent({
           unresolved: !resolved,
         },
       },
-      [str]
+      [str],
     )
   },
 })

@@ -22,7 +22,7 @@ import { SubjectType } from './server/subject-type'
 
 function createVSCodeWatcher(
   rootPath: string,
-  setting: SettingRepository
+  setting: SettingRepository,
 ): Watcher {
   return new Watcher(rootPath, setting.sharedStylePaths)
 }
@@ -101,7 +101,7 @@ function connectToSubject(
   assetResolver: AssetResolver,
   vueFiles: VueFileRepository,
   setting: SettingRepository,
-  editor: EditorRepository
+  editor: EditorRepository,
 ): void {
   const vueFileToPayload = (vueFile: VueFile) => {
     return _vueFileToPayload(vueFile, assetResolver)
@@ -199,11 +199,11 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.ViewColumn.Two,
         {
           enableScripts: true,
-        }
+        },
       )
 
       panel.webview.html = getWebViewContent(serverPort)
-    }
+    },
   )
 
   context.subscriptions.push(
@@ -216,6 +216,6 @@ export async function activate(context: vscode.ExtensionContext) {
     },
     {
       dispose: () => vueFiles.destroy(),
-    }
+    },
   )
 }

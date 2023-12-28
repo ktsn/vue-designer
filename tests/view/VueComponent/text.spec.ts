@@ -16,7 +16,7 @@ describe('VueComponent v-text', () => {
           name: 'message',
           default: 'Hello text!',
         },
-      ]
+      ],
     )
     const p = vm.$el.querySelector('p')!
     expect(p.textContent).toBe('Hello text!')
@@ -38,7 +38,7 @@ describe('VueComponent v-text', () => {
           name: 'message',
           default: 'overwritten',
         },
-      ]
+      ],
     )
     const p = vm.$el.querySelector('p')!
     expect(p.textContent).toBe('overwritten')

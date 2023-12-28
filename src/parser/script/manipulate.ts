@@ -57,7 +57,7 @@ export function extractData(program: t.Program): Data[] {
 export function extractChildComponents(
   program: t.Program,
   uri: string,
-  localPathToUri: (localPath: string) => string
+  localPathToUri: (localPath: string) => string,
 ): ChildComponent[] {
   const imports = getImportDeclarations(program.body)
   const options = findComponentOptions(program.body)
@@ -76,14 +76,14 @@ export function extractChildComponents(
   const components = findProperty(options.properties, 'components')
   if (components) {
     childComponents.push(
-      ...extractComponents(components, imports, localPathToUri)
+      ...extractComponents(components, imports, localPathToUri),
     )
   }
 
   const lifecycle = findPropertyOrMethod(options.properties, 'beforeCreate')
   if (lifecycle) {
     childComponents.push(
-      ...extractLazyAddComponents(lifecycle, imports, localPathToUri)
+      ...extractLazyAddComponents(lifecycle, imports, localPathToUri),
     )
   }
 
@@ -93,7 +93,7 @@ export function extractChildComponents(
 function extractComponents(
   prop: t.ObjectProperty,
   imports: Record<string, t.ImportDeclaration>,
-  localPathToUri: (localPath: string) => string
+  localPathToUri: (localPath: string) => string,
 ): ChildComponent[] {
   if (!t.isObjectExpression(prop.value)) {
     return []
@@ -113,7 +113,7 @@ function extractComponents(
         getStaticKeyName(p.key as StaticKey),
         p.value.name,
         imports,
-        localPathToUri
+        localPathToUri,
       )
     })
     .filter(notUndef)
@@ -122,7 +122,7 @@ function extractComponents(
 function extractLazyAddComponents(
   prop: t.ObjectProperty | t.ObjectMethod,
   imports: Record<string, t.ImportDeclaration>,
-  localPathToUri: (localPath: string) => string
+  localPathToUri: (localPath: string) => string,
 ): ChildComponent[] {
   const func = normalizeMethod(prop)
   if (!func || !t.isBlockStatement(func.body)) {
@@ -155,14 +155,14 @@ function extractLazyAddComponents(
         st.expression.right.name,
         st.expression.left.property.name,
         imports,
-        localPathToUri
+        localPathToUri,
       )
     })
     .filter(notUndef)
 }
 
 function getImportDeclarations(
-  body: t.Statement[]
+  body: t.Statement[],
 ): Record<string, t.ImportDeclaration> {
   const res: Record<string, t.ImportDeclaration> = {}
   body.forEach((node) => {
@@ -181,7 +181,7 @@ function findMatchingComponent(
   localName: string,
   importedName: string,
   imports: Record<string, t.ImportDeclaration>,
-  localPathToUri: (localPath: string) => string
+  localPathToUri: (localPath: string) => string,
 ): ChildComponent | undefined {
   const componentImport = imports[importedName]
   if (!componentImport) return undefined
@@ -190,7 +190,7 @@ function findMatchingComponent(
   assert(
     typeof sourcePath === 'string',
     '[script] Import declaration unexpectedly has non-string literal: ' +
-      sourcePath
+      sourcePath,
   )
 
   return {
@@ -208,13 +208,13 @@ function isStringLiteral(node: t.Node): node is t.StringLiteral {
  * If it returns `true`, `node.key` should be `StaticKey`.
  */
 function isStaticProperty(
-  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty
+  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty,
 ): node is t.ObjectProperty {
   return t.isObjectProperty(node) && !node.computed
 }
 
 function isStaticPropertyOrMethod(
-  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty
+  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty,
 ): node is t.ObjectProperty | t.ObjectMethod {
   return isStaticProperty(node) || (t.isObjectMethod(node) && !node.computed)
 }
@@ -228,7 +228,7 @@ function getStaticKeyName(key: StaticKey): string {
  */
 export function findProperty(
   props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
-  name: string
+  name: string,
 ): t.ObjectProperty | undefined {
   return props.filter(isStaticProperty).find((p) => {
     const key = p.key as StaticKey
@@ -238,7 +238,7 @@ export function findProperty(
 
 function findPropertyOrMethod(
   props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
-  name: string
+  name: string,
 ): t.ObjectProperty | t.ObjectMethod | undefined {
   return props.filter(isStaticPropertyOrMethod).find((p) => {
     const key = p.key as StaticKey
@@ -252,7 +252,7 @@ function findPropertyOrMethod(
  * Return undefined if it does not have a function value.
  */
 function normalizeMethod(
-  prop: t.ObjectProperty | t.ObjectMethod
+  prop: t.ObjectProperty | t.ObjectMethod,
 ): t.Function | undefined {
   if (t.isObjectMethod(prop)) {
     return prop
@@ -267,7 +267,7 @@ function normalizeMethod(
  * Detect `Vue.extend(...)`
  */
 function isVueExtend(
-  node: t.Declaration | t.Expression
+  node: t.Declaration | t.Expression,
 ): node is t.CallExpression {
   if (!t.isCallExpression(node) || !t.isMemberExpression(node.callee)) {
     return false
@@ -324,7 +324,7 @@ function getPropDefault(value: t.Expression | t.PatternLike): DefaultValue {
 }
 
 function getDataObject(
-  prop: t.ObjectProperty | t.ObjectMethod
+  prop: t.ObjectProperty | t.ObjectMethod,
 ): t.ObjectExpression | undefined {
   // If the value is an object expression, just return it.
   if (t.isObjectProperty(prop)) {
@@ -352,7 +352,7 @@ function getDataObject(
  * but it can be other expressions if it forms like `() => ({ foo: 'bar' })`
  */
 function getReturnedExpression(
-  block: t.BlockStatement | t.Expression
+  block: t.BlockStatement | t.Expression,
 ): t.Expression | undefined {
   if (t.isBlockStatement(block)) {
     const statements = block.body.slice().reverse()
@@ -410,10 +410,10 @@ function getLiteralValue(node: t.Node): DefaultValue {
 }
 
 export function findComponentOptions(
-  body: t.Statement[]
+  body: t.Statement[],
 ): t.ObjectExpression | undefined {
   const exported = body.find((n): n is t.ExportDefaultDeclaration =>
-    t.isExportDefaultDeclaration(n)
+    t.isExportDefaultDeclaration(n),
   )
   if (!exported) return undefined
 

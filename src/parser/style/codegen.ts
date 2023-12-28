@@ -10,7 +10,9 @@ export function genStyle(ast: t.STStyle): string {
           return genRule(node)
         default:
           throw new Error(
-            `[style codegen] Unexpected node type ${(node as any).type} on root`
+            `[style codegen] Unexpected node type ${
+              (node as any).type
+            } on root`,
           )
       }
     })
@@ -34,7 +36,7 @@ function genAtRule(atRule: t.STAtRule): string {
             throw new Error(
               `[style codegen] Unexpected node type ${
                 (child as any).type
-              } as child of AtRule`
+              } as child of AtRule`,
             )
         }
       })

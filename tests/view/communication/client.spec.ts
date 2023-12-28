@@ -7,7 +7,10 @@ import { MockWebSocketClient } from '../../helpers/ws'
 
 describe('CommunicationClient', () => {
   class Foo {
-    constructor(public id: number, public value: string) {}
+    constructor(
+      public id: number,
+      public value: string,
+    ) {}
   }
 
   const resolver = {

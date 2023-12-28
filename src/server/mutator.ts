@@ -35,7 +35,7 @@ interface UpdateDeclarationPayload {
 
 export const mutator = (
   vueFiles: VueFileRepository,
-  editor: EditorRepository
+  editor: EditorRepository,
 ) => ({
   selectNode({ uri, templatePath, stylePaths }: SelectNodePayload): void {
     editor.selectNode(uri, templatePath, stylePaths)

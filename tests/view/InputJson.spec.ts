@@ -315,7 +315,7 @@ class InputJsonController {
 
   editName(str: string): void {
     const input = this.el.querySelector<HTMLInputElement>(
-      '.input-json-label.editing'
+      '.input-json-label.editing',
     )
     if (input) {
       input.value = str
@@ -325,7 +325,7 @@ class InputJsonController {
 
   editValue(str: string): void {
     const input = this.el.querySelector<HTMLInputElement>(
-      '.input-json-value.editing'
+      '.input-json-value.editing',
     )
     if (input) {
       input.value = str

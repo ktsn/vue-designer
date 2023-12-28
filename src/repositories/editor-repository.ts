@@ -20,13 +20,13 @@ export class EditorRepository {
   constructor(
     public activeDocumentUrl: string | undefined,
     private vueFiles: VueFileRepository,
-    private operations: EditorRepositoryOperations
+    private operations: EditorRepositoryOperations,
   ) {}
 
   selectNode(
     uri: string,
     templatePath: number[],
-    stylePaths: number[][]
+    stylePaths: number[][],
   ): void {
     if (this.currentHighlight) {
       this.currentHighlight.dispose()

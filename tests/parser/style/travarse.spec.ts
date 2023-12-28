@@ -10,7 +10,7 @@ describe('Get style node', () => {
         rule([selector({ tag: 'a' })], [declaration('color', 'red')]),
         rule(
           [selector({ class: ['foo'] })],
-          [declaration('color', 'blue'), declaration('font-size', '22px')]
+          [declaration('color', 'blue'), declaration('font-size', '22px')],
         ),
       ]),
     ]
@@ -28,7 +28,7 @@ describe('Get style node', () => {
         rule([selector({ tag: 'a' })], [declaration('color', 'red')]),
         rule(
           [selector({ class: ['foo'] })],
-          [declaration('color', 'blue'), declaration('font-size', '22px')]
+          [declaration('color', 'blue'), declaration('font-size', '22px')],
         ),
       ]),
     ]
@@ -44,7 +44,7 @@ describe('Get style node', () => {
         rule([selector({ tag: 'a' })], [declaration('color', 'red')]),
         rule(
           [selector({ class: ['foo'] })],
-          [declaration('color', 'blue'), declaration('font-size', '22px')]
+          [declaration('color', 'blue'), declaration('font-size', '22px')],
         ),
       ]),
     ]

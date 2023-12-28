@@ -9,7 +9,10 @@ export interface SettingRepositoryFs {
 export class SettingRepository {
   sharedStylePaths!: string[]
 
-  constructor(rawSetting: RawSetting, private fs: SettingRepositoryFs) {
+  constructor(
+    rawSetting: RawSetting,
+    private fs: SettingRepositoryFs,
+  ) {
     this.updateSetting(rawSetting)
   }
 
@@ -19,7 +22,7 @@ export class SettingRepository {
 
   async readSharedStyle(): Promise<string> {
     const styles = await Promise.all(
-      this.sharedStylePaths.map((path) => this.fs.readFile(path))
+      this.sharedStylePaths.map((path) => this.fs.readFile(path)),
     )
     return styles.join('\n')
   }

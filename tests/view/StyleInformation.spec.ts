@@ -69,7 +69,7 @@ describe('StyleInformation', () => {
 
       const input = vm.$el.querySelector('[contenteditable=true]')
       input!.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true })
+        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true }),
       )
       await nextTick()
 
@@ -97,7 +97,7 @@ describe('StyleInformation', () => {
 
       const input = vm.$el.querySelector('[contenteditable=true]')
       input!.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true })
+        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true }),
       )
       await nextTick()
 
@@ -112,7 +112,7 @@ describe('StyleInformation', () => {
 
       const input = vm.$el.querySelector('[contenteditable=true]')
       input!.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true })
+        new KeyboardEvent('keydown', { key: 'Tab', shiftKey: true }),
       )
       await nextTick()
 

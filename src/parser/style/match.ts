@@ -9,17 +9,17 @@ export function createStyleMatcher(styles: style.STStyle[]) {
 
   return function matchStyle(
     template: template.TETemplate,
-    targetPath: number[]
+    targetPath: number[],
   ): style.STRule[] {
     const target = getNode(template, targetPath) as template.TEElement
     assert(
       target,
       '[style matcher] Target node is not found. path: ' +
-        JSON.stringify(targetPath)
+        JSON.stringify(targetPath),
     )
     assert(
       target.type === 'Element',
-      `[style matcher] Target node has unexpected type '${target.type}'`
+      `[style matcher] Target node has unexpected type '${target.type}'`,
     )
 
     return map.getCandidateRules(target).filter((rule) => {
@@ -33,10 +33,10 @@ export function createStyleMatcher(styles: style.STStyle[]) {
 function matchSelector(
   target: template.TEElement,
   selector: style.STSelector,
-  template: template.TETemplate
+  template: template.TETemplate,
 ): boolean {
   const entries = Object.keys(target.startTag.attrs).map(
-    (key): [string, template.TEAttribute] => [key, target.startTag.attrs[key]]
+    (key): [string, template.TEAttribute] => [key, target.startTag.attrs[key]],
   )
   const attrMap = new Map(entries)
 
@@ -56,7 +56,7 @@ function matchSelectorByTag(tag: string, selector: style.STSelector): boolean {
 
 function matchSelectorById(
   attrs: Map<string, template.TEAttribute>,
-  selector: style.STSelector
+  selector: style.STSelector,
 ): boolean {
   if (!selector.id) {
     return true
@@ -68,7 +68,7 @@ function matchSelectorById(
 
 function matchSelectorByClass(
   attrs: Map<string, template.TEAttribute>,
-  selector: style.STSelector
+  selector: style.STSelector,
 ): boolean {
   if (selector.class.length === 0) {
     return true
@@ -85,7 +85,7 @@ function matchSelectorByClass(
 
 function matchSelectorByAttribute(
   attrs: Map<string, template.TEAttribute>,
-  selector: style.STSelector
+  selector: style.STSelector,
 ): boolean {
   if (selector.attributes.length === 0) {
     return true
@@ -133,7 +133,7 @@ function matchSelectorByAttribute(
 function matchCombinator(
   origin: template.TEElement,
   selector: style.STSelector,
-  template: template.TETemplate
+  template: template.TETemplate,
 ): boolean {
   const comb = selector.leftCombinator
   if (!comb) {
@@ -159,7 +159,7 @@ function matchCombinator(
           const node = getNode(template, parentPath.concat(last - offset))
           return isElement(node) ? node : undefined
         },
-        undefined
+        undefined,
       )
       return next ? matchSelector(next, comb.left, template) : false
     }
@@ -255,7 +255,7 @@ class StyleMap {
   private registerRule(
     map: Map<string, style.STRule[]>,
     key: string,
-    rule: style.STRule
+    rule: style.STRule,
   ): void {
     const list = map.get(key) || []
     map.set(key, list.concat(rule))

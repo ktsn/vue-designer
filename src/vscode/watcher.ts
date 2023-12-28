@@ -27,7 +27,7 @@ export class Watcher extends vscode.Disposable {
   }
 
   onDidEditComponent(
-    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void
+    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void,
   ): void {
     vscode.workspace.onDidChangeTextDocument((event) => {
       if (event.document !== vscode.window.activeTextEditor!.document) {
@@ -39,13 +39,13 @@ export class Watcher extends vscode.Disposable {
   }
 
   onDidCreateComponent(
-    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void
+    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void,
   ): void {
     this.innerWatcher.onDidCreate(this.createVueListener(fn))
   }
 
   onDidChangeComponent(
-    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void
+    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void,
   ): void {
     this.innerWatcher.onDidChange(this.createVueListener(fn))
   }
@@ -74,7 +74,7 @@ export class Watcher extends vscode.Disposable {
   }
 
   private createVueListener(
-    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void
+    fn: (uri: vscode.Uri, doc: vscode.TextDocument) => void,
   ): (uri: vscode.Uri) => void {
     return (uri) => {
       if (path.extname(uri.fsPath) !== '.vue') {

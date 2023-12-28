@@ -16,7 +16,7 @@ describe('VueComponent v-html', () => {
           name: 'message',
           default: '<strong>Hello text!</strong>',
         },
-      ]
+      ],
     )
     const p = wrapper.$el.querySelector('p')!
     expect(p.innerHTML).toBe('<strong>Hello text!</strong>')
@@ -38,7 +38,7 @@ describe('VueComponent v-html', () => {
           name: 'message',
           default: '<strong>overwritten</strong>',
         },
-      ]
+      ],
     )
     const p = wrapper.$el.querySelector('p')!
     expect(p.innerHTML).toBe('<strong>overwritten</strong>')

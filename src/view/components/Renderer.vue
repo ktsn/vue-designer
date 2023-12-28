@@ -105,7 +105,7 @@ export default defineComponent({
       const thresholdWidth = Math.max(0, renderer.width - scrollContentPadding)
       const thresholdHeight = Math.max(
         0,
-        renderer.height - scrollContentPadding
+        renderer.height - scrollContentPadding,
       )
 
       const { width, height } = this.scaledSize
@@ -144,7 +144,7 @@ export default defineComponent({
   watch: {
     scrollContentCenter(
       { x, y }: { x: number; y: number },
-      { x: prevX, y: prevY }: { x: number; y: number }
+      { x: prevX, y: prevY }: { x: number; y: number },
     ): void {
       // Adjust scroll offset after DOM is rerendered
       // to avoid flickering viewport

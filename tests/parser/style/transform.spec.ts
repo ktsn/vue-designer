@@ -46,11 +46,11 @@ describe('Style AST transformer', () => {
                 ' ',
                 selector(
                   { tag: 'a' },
-                  combinator('>', selector({ tag: 'div' }))
-                )
-              )
-            )
-          )
+                  combinator('>', selector({ tag: 'div' })),
+                ),
+              ),
+            ),
+          ),
         ),
       ]),
     ])
@@ -72,7 +72,7 @@ describe('Style AST transformer', () => {
             pseudoClass: [pClass('hover')],
             pseudoElement: pElement('before'),
           },
-          combinator('>', selector({ tag: 'a', class: ['foo'] }))
+          combinator('>', selector({ tag: 'a', class: ['foo'] })),
         ),
       ]),
     ])
@@ -139,7 +139,7 @@ describe('Style AST transformer', () => {
         [
           declaration('color', 'cyan'),
           declaration('text-decoration', 'underline', true),
-        ]
+        ],
       ),
     ])
 

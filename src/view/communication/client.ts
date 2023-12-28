@@ -25,7 +25,7 @@ export interface WebSocketClient {
 export class CommunicationClient<
   R extends Resolver,
   M extends Mutator,
-  S extends Record<string, any>
+  S extends Record<string, any>,
 > {
   private ws: WebSocketClient
   private nextRequestId = 1
@@ -87,12 +87,12 @@ export class CommunicationClient<
 
   private genericRequest<
     T extends Record<string, (...args: any[]) => any>,
-    K extends keyof T & string
+    K extends keyof T & string,
   >(
     type: string,
     key: K,
     args: Arguments<T[K]>,
-    requestId: number
+    requestId: number,
   ): Promise<Unwrap<ReturnType<T[K]>>> {
     return new Promise((resolve) => {
       const combinedType = type + ':' + key
@@ -118,7 +118,7 @@ export class CommunicationClient<
           type: combinedType,
           args,
           requestId,
-        })
+        }),
       )
 
       this.ws.addEventListener('message', receive)

@@ -132,7 +132,7 @@ export default defineComponent({
             onPointercancel: this.onDragEnd,
           })
         }),
-      ]
+      ],
     )
   },
 })

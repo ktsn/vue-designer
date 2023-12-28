@@ -122,7 +122,7 @@ describe('Style codegen', () => {
         [
           declaration('font-size', '22px'),
           declaration('font-weight', 'bold', true),
-        ]
+        ],
       ),
     ])
     const expected = 'h1 {font-size: 22px; font-weight: bold !important;}'

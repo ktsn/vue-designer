@@ -19,13 +19,13 @@ import { clone } from '../../utils'
 export function insertDeclaration(
   styles: STStyle[],
   decl: STDeclarationForAdd,
-  to: number[]
+  to: number[],
 ): Modifier | Modifier[] {
   const target = getDeclaration(styles, to)
   if (target) {
     return insertBefore(
       target,
-      genDeclaration(clone(target, decl)) + target.before
+      genDeclaration(clone(target, decl)) + target.before,
     )
   }
 
@@ -35,7 +35,7 @@ export function insertDeclaration(
   if (before) {
     return insertAfter(
       before,
-      before.before + genDeclaration(clone(before, decl))
+      before.before + genDeclaration(clone(before, decl)),
     )
   }
 
@@ -73,7 +73,7 @@ export function removeDeclaration(styles: STStyle[], path: number[]): Modifier {
 
 export function updateDeclaration(
   styles: STStyle[],
-  decl: STDeclarationForUpdate
+  decl: STDeclarationForUpdate,
 ): Modifier[] {
   const target = getDeclaration(styles, decl.path)
   return target ? replace(target, genDeclaration(clone(target, decl))) : [empty]

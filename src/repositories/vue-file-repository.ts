@@ -37,7 +37,7 @@ export class VueFileRepository extends EventEmitter {
 
   static async create(
     initialFiles: string[],
-    fs: VueFileRepositoryFs
+    fs: VueFileRepositoryFs,
   ): Promise<VueFileRepository> {
     const repo = new VueFileRepository(fs)
     initialFiles.forEach((uri) => repo.read(uri))
@@ -85,7 +85,7 @@ export class VueFileRepository extends EventEmitter {
       insertToTemplate(
         target.template,
         path,
-        `<${componentName}></${componentName}>`
+        `<${componentName}></${componentName}>`,
       ),
     ]
 
@@ -95,8 +95,8 @@ export class VueFileRepository extends EventEmitter {
           target.script,
           target.code,
           componentName,
-          resolveImportPath(target, component)
-        )
+          resolveImportPath(target, component),
+        ),
       )
     }
 
@@ -106,7 +106,7 @@ export class VueFileRepository extends EventEmitter {
   addStyleDeclaration(
     uri: string,
     declaration: STDeclarationForAdd,
-    path: number[]
+    path: number[],
   ): void {
     const file = this.get(uri)
     if (!file) {
@@ -129,7 +129,7 @@ export class VueFileRepository extends EventEmitter {
 
   updateStyleDeclaration(
     uri: string,
-    declaration: STDeclarationForUpdate
+    declaration: STDeclarationForUpdate,
   ): void {
     const file = this.get(uri)
     if (!file) {

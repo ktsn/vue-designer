@@ -124,7 +124,7 @@ describe('reduce', () => {
       {
         pos: 0,
         result: true,
-      }
+      },
     )
 
     expect(r.result).toBe(true)

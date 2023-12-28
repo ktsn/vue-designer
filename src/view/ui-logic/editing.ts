@@ -39,7 +39,7 @@ export function getTextOffset(node: Node, offset?: number): number {
 export function updateStyleValue(
   value: string,
   position: number,
-  offset: number
+  offset: number,
 ): {
   value: string
   range?: [number, number]
@@ -68,6 +68,6 @@ export function updateStyleValue(
     },
     {
       value: '',
-    }
+    },
   )
 }

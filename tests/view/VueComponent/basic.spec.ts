@@ -31,7 +31,7 @@ describe('VueComponent basic', () => {
 
     const vm = render(template)
     expect(vm.$el.querySelector('p')?.textContent).toBe(
-      'This is {{ foo + bar }}'
+      'This is {{ foo + bar }}',
     )
   })
 
@@ -78,7 +78,7 @@ describe('VueComponent basic', () => {
           name: 'bar',
           default: undefined,
         },
-      ]
+      ],
     )
     expect(vm.$el.querySelector('#foo')?.textContent).toBe('{{ foo }}')
     expect(vm.$el.querySelector('#bar')?.textContent).toBe('{{ bar }}')

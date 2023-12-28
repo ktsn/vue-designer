@@ -7,7 +7,7 @@ import { takeWhile, dropWhile } from '../../utils'
 export function transformStyle(
   root: postcss.Root,
   code: string,
-  index: number
+  index: number,
 ): t.STStyle {
   if (!root.nodes) {
     return {
@@ -41,10 +41,10 @@ export function transformStyle(
 function transformAtRule(
   atRule: postcss.AtRule,
   path: number[],
-  code: string
+  code: string,
 ): t.STAtRule {
   const isNotComment = <T extends postcss.Node>(
-    node: T | postcss.Comment
+    node: T | postcss.Comment,
   ): node is T => {
     return node.type !== 'comment'
   }
@@ -68,7 +68,7 @@ function transformAtRule(
 function transformRule(
   rule: postcss.Rule,
   path: number[],
-  code: string
+  code: string,
 ): t.STRule {
   const decls = rule.nodes ? rule.nodes.filter(isDeclaration) : []
   const root = selectorParser().astSync(rule.selector)
@@ -98,7 +98,7 @@ function transformSelector(nodes: selectorParser.Node[]): t.STSelector {
 function transformSelectorElement(
   current: t.STSelector,
   el: selectorParser.Node | undefined,
-  rest: selectorParser.Node[]
+  rest: selectorParser.Node[],
 ): t.STSelector {
   if (!el) {
     return current
@@ -119,7 +119,7 @@ function transformSelectorElement(
         current.pseudoClass.push(transformPseudoClass(el))
       } else {
         throw new Error(
-          "[style] Unexpected selector node: it has type 'pseudo' but neither pseudo element nor pseudo class."
+          "[style] Unexpected selector node: it has type 'pseudo' but neither pseudo element nor pseudo class.",
         )
       }
       break
@@ -156,7 +156,7 @@ function transformPseudoClass(node: selectorParser.Pseudo): t.STPseudoClass {
 function transformPseudoElement(
   parent: t.STSelector,
   el: selectorParser.Pseudo,
-  rest: selectorParser.Node[]
+  rest: selectorParser.Node[],
 ): t.STSelector {
   const rawPseudoClass = takeWhile(rest, isPseudoClass)
 
@@ -169,7 +169,7 @@ function transformPseudoElement(
   // No simple selector can follows after a paseudo element
   const [first, ...tail] = dropWhile(
     rest.slice(rawPseudoClass.length),
-    (el) => !isCombinator(el)
+    (el) => !isCombinator(el),
   )
 
   return transformSelectorElement(parent, first, tail)
@@ -187,7 +187,7 @@ function transformAttribute(attr: selectorParser.Attribute): t.STAttribute {
 
 function transformCombinator(
   comb: selectorParser.Combinator,
-  left: t.STSelector
+  left: t.STSelector,
 ): t.STCombinator {
   return {
     type: 'Combinator',
@@ -199,7 +199,7 @@ function transformCombinator(
 function transformDeclaration(
   decl: postcss.Declaration,
   path: number[],
-  code: string
+  code: string,
 ): t.STDeclaration {
   return {
     type: 'Declaration',
@@ -216,7 +216,7 @@ function transformDeclaration(
 function transformChild(
   child: postcss.AtRule | postcss.Rule | postcss.Declaration,
   path: number[],
-  code: string
+  code: string,
 ): t.STChild {
   switch (child.type) {
     case 'atrule':
@@ -227,7 +227,7 @@ function transformChild(
       return transformDeclaration(child, path, code)
     default:
       throw new Error(
-        '[style] Unexpected child node type: ' + (child as any).type
+        '[style] Unexpected child node type: ' + (child as any).type,
       )
   }
 }
@@ -284,7 +284,7 @@ function isDeclaration(node: postcss.Node): node is postcss.Declaration {
 }
 
 function isCombinator(
-  node: selectorParser.Node
+  node: selectorParser.Node,
 ): node is selectorParser.Combinator {
   return node.type === 'combinator'
 }
@@ -294,7 +294,7 @@ function isPseudo(node: selectorParser.Node): node is selectorParser.Pseudo {
 }
 
 function isPseudoElement(
-  node: selectorParser.Node
+  node: selectorParser.Node,
 ): node is selectorParser.Pseudo {
   return (
     isPseudo(node) &&
@@ -310,7 +310,7 @@ function isPseudoElement(
 }
 
 function isPseudoClass(
-  node: selectorParser.Node
+  node: selectorParser.Node,
 ): node is selectorParser.Pseudo {
   return isPseudo(node) && !isPseudoElement(node)
 }

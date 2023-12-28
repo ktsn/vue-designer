@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it, vitest } from 'vitest'
 import assert from 'assert'
 import { mount } from '../helpers/vue'
 import Resizable from '../../src/view/components/Resizable.vue'
-import Vue, { nextTick } from 'vue'
+import { ComponentPublicInstance, nextTick } from 'vue'
 
 describe('Resizable', () => {
   beforeAll(() => {
@@ -106,7 +106,7 @@ describe('Resizable', () => {
 })
 
 class ResizableTest {
-  vm: Vue
+  vm: ComponentPublicInstance
   handler!: HTMLElement
   size: {
     width: number
@@ -116,19 +116,14 @@ class ResizableTest {
   updateProps: (props: Record<string, any>) => void
 
   constructor(width: number, height: number) {
-    const { vm, updateProps } = mount(
-      Resizable,
-      {
-        width,
-        height,
+    const { vm, updateProps } = mount(Resizable, {
+      width,
+      height,
+      onResize: (value: any) => {
+        this.size.width = value.width
+        this.size.height = value.height
       },
-      {
-        resize: (value: any) => {
-          this.size.width = value.width
-          this.size.height = value.height
-        },
-      }
-    )
+    })
 
     this.vm = vm
     this.updateProps = updateProps

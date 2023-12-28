@@ -1,10 +1,9 @@
-import Vue, { VueConstructor, h, ref } from 'vue'
+import { createApp, h, ref, Plugin } from 'vue'
 
-export function mount<V extends VueConstructor>(
+export function mount<V extends new () => any>(
   Component: V,
   propsData?: Record<string, any>,
-  listeners?: Record<string, any>,
-  options?: Record<string, any>
+  plugins: Plugin[] = []
 ) {
   const props = ref(propsData ?? {})
 
@@ -15,16 +14,21 @@ export function mount<V extends VueConstructor>(
     }
   }
 
-  const root = new Vue({
-    ...options,
+  const app = createApp({
     render() {
       return h(Component, {
         ref: 'comp',
-        props: props.value,
-        on: listeners,
+        ...props.value,
       })
     },
-  }).$mount()
+  })
+
+  for (const plugin of plugins) {
+    app.use(plugin)
+  }
+
+  const el = document.createElement('div')
+  const root = app.mount(el)
 
   return {
     vm: root.$refs.comp as InstanceType<V>,

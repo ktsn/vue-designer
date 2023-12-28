@@ -1,15 +1,13 @@
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import { Comment, defineComponent, h } from 'vue'
 import VueSlot from './VueSlot.vue'
 import ContainerVueNode from './ContainerVueNode.vue'
 import VueExpression from './VueExpression.vue'
 import { TEChild } from '../../parser/template/types'
 import { DefaultValue, ChildComponent } from '../../parser/script/types'
 
-// Assign to a constant to recursively use this component
-const VueChild = Vue.extend({
+export default defineComponent({
   name: 'VueChild',
-  functional: true,
 
   props: {
     uri: {
@@ -33,59 +31,40 @@ const VueChild = Vue.extend({
     },
 
     slots: {
-      type: Object as { (): Record<string, VNode[]> },
-      required: true,
-    },
-
-    scopedSlots: {
-      type: Object,
+      type: Object as { (): Record<string, any> },
       required: true,
     },
   },
 
-  render(h, { props, listeners }): any /* VNode | VNode[] */ {
-    const { data, scope } = props
-    switch (data.type) {
-      case 'Element':
-        const slot = data.startTag.attrs.slot
-        const slotName = slot && slot.value
+  emits: ['select', 'dragover', 'add'],
 
-        // Replace AST <template> with actual <template> element
-        // to handle named slot in Vue.js correctly.
-        if (slotName && data.name === 'template') {
-          return h(
-            'template',
-            { slot: slotName },
-            data.children.map((child) => {
-              return h(VueChild, {
-                props: {
-                  ...props,
-                  data: child,
-                },
-                on: listeners,
-              })
-            })
-          )
+  render() {
+    const { data, scope } = this
+    switch (data.type) {
+      case 'Element': {
+        const props: any = {
+          ...this.$props,
+          onSelect: (...args: any[]) => this.$emit('select', ...args),
+          onDragover: (...args: any[]) => this.$emit('dragover', ...args),
+          onAdd: (...args: any[]) => this.$emit('add', ...args),
         }
 
-        return h(data.name === 'slot' ? VueSlot : ContainerVueNode, {
-          props,
-          on: listeners,
-          slot: slotName || 'default',
-        })
+        if (data.name === 'slot') {
+          return h(VueSlot, props)
+        } else {
+          return h(ContainerVueNode, props)
+        }
+      }
       case 'TextNode':
         return [data.text]
       case 'ExpressionNode':
         return h(VueExpression, {
-          props: {
-            expression: data.expression,
-            scope,
-          },
+          expression: data.expression,
+          scope,
         })
       default:
-        return h()
+        return h(Comment)
     }
   },
 })
-export default VueChild
 </script>

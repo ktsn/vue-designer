@@ -14,8 +14,10 @@ describe('StyleValue basic', () => {
   })
 
   it('should make editable when clicked', async () => {
+    const inputListener = vitest.fn()
     const { vm } = mount(StyleValue, {
       value: '20px',
+      onInput: inputListener,
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
     await nextTick()
@@ -24,17 +26,16 @@ describe('StyleValue basic', () => {
     expect(el.getAttribute('contenteditable')).toBe('true')
     expect(el.textContent).toBe('20px')
 
-    const inputListener = vitest.fn()
-    vm.$once('input', inputListener)
-
     el.textContent = '22px'
     el.dispatchEvent(new KeyboardEvent('input'))
     expect(inputListener).toHaveBeenCalledWith('22px')
   })
 
   it('should make editable when focused', async () => {
+    const inputListener = vitest.fn()
     const { vm } = mount(StyleValue, {
       value: '20px',
+      onInput: inputListener,
     })
     vm.$el.dispatchEvent(new Event('focus'))
     await nextTick()
@@ -42,21 +43,17 @@ describe('StyleValue basic', () => {
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
     expect(vm.$el.textContent).toBe('20px')
 
-    const inputListener = vitest.fn()
-    vm.$once('input', inputListener)
-
     vm.$el.textContent = '22px'
     vm.$el.dispatchEvent(new KeyboardEvent('input'))
     expect(inputListener).toHaveBeenCalledWith('22px')
   })
 
   it('should notify starting input', async () => {
+    const listener = vitest.fn()
     const { vm } = mount(StyleValue, {
       value: '20px',
+      onInputStart: listener,
     })
-
-    const listener = vitest.fn()
-    vm.$on('input-start', listener)
 
     vm.$el.dispatchEvent(new MouseEvent('click'))
     await nextTick()
@@ -64,16 +61,15 @@ describe('StyleValue basic', () => {
   })
 
   it('should end editing when blured', async () => {
+    const listener = vitest.fn()
     const { vm } = mount(StyleValue, {
       value: '20px',
+      onInputEnd: listener,
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
     await nextTick()
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
-
-    const listener = vitest.fn()
-    vm.$on('input-end', listener)
 
     vm.$el.dispatchEvent(new Event('blur'))
     await nextTick()
@@ -86,16 +82,15 @@ describe('StyleValue basic', () => {
   })
 
   it('should end editing when pressed enter key', async () => {
+    const listener = vitest.fn()
     const { vm } = mount(StyleValue, {
       value: '20px',
+      onInputEnd: listener,
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
     await nextTick()
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
-
-    const listener = vitest.fn()
-    vm.$once('input-end', listener)
 
     vm.$el.dispatchEvent(
       new KeyboardEvent('keydown', {
@@ -113,16 +108,15 @@ describe('StyleValue basic', () => {
   })
 
   it('should end editing when pressed tab key', async () => {
+    const listener = vitest.fn()
     const { vm } = mount(StyleValue, {
       value: '20px',
+      onInputEnd: listener,
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
     await nextTick()
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
-
-    const listener = vitest.fn()
-    vm.$once('input-end', listener)
 
     vm.$el.dispatchEvent(
       new KeyboardEvent('keydown', {
@@ -140,16 +134,15 @@ describe('StyleValue basic', () => {
   })
 
   it('should include shift key state when end editing', async () => {
+    const listener = vitest.fn()
     const { vm } = mount(StyleValue, {
       value: '20px',
+      onInputEnd: listener,
     })
     vm.$el.dispatchEvent(new MouseEvent('click'))
     await nextTick()
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')
-
-    const listener = vitest.fn()
-    vm.$once('input-end', listener)
 
     vm.$el.dispatchEvent(
       new KeyboardEvent('keydown', {
@@ -196,12 +189,14 @@ describe('StyleValue basic', () => {
   })
 
   it('should focus on input field by changing autoFocus prop', async () => {
-    const { vm } = mount(StyleValue, {
+    const { vm, updateProps } = mount(StyleValue, {
       value: 'red',
       autoFocus: true,
     })
 
-    vm.$props.autoFocus = true
+    updateProps({
+      autoFocus: true,
+    })
     await nextTick()
 
     expect(vm.$el.getAttribute('contenteditable')).toBe('true')

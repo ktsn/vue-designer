@@ -17,9 +17,7 @@ describe('VueComponent v-bind', () => {
         default: 'default value',
       },
     ])
-    expect(vm.$el.querySelector('input')?.getAttribute('value')).toBe(
-      'default value'
-    )
+    expect(vm.$el.querySelector('input')?.value).toBe('default value')
   })
 
   it('should bind properties with v-bind', () => {

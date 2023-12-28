@@ -1,6 +1,6 @@
 import { URL } from 'url'
 import * as path from 'path'
-import { parseComponent } from 'vue-template-compiler'
+import { parse } from '@vue/compiler-sfc'
 import { parse as parseTemplate } from 'vue-eslint-parser'
 import { parse as parseScript } from '@babel/parser'
 import * as Babel from '@babel/types'
@@ -46,7 +46,9 @@ export function parseVueFile(code: string, uri: string): VueFile {
   const parsedUri = new URL(uri)
   const name = path.basename(parsedUri.pathname).replace(/\..+$/, '')
 
-  const { script, styles } = parseComponent(code, { pad: 'space' })
+  const {
+    descriptor: { script, styles },
+  } = parse(code, { pad: 'space' })
 
   const { program: scriptBody } = parseScript(script ? script.content : '', {
     sourceType: 'module',

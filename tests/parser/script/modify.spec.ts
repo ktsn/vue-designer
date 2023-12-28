@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseComponent } from 'vue-template-compiler'
+import { parse as parseSFC } from '@vue/compiler-sfc'
 import { parse as _parse } from '@babel/parser'
 import { insertComponentScript } from '../../../src/parser/script/modify'
 import { modify } from '../../../src/parser/modifier'
@@ -130,7 +130,9 @@ export default {
 </script>
 `
 
-    const { script } = parseComponent(code, { pad: 'space' })
+    const {
+      descriptor: { script },
+    } = parseSFC(code, { pad: 'space' })
     const scriptCode = script!.content
     const program = parse(scriptCode)
     const actual = modify(scriptCode, [

@@ -1,7 +1,7 @@
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import { defineComponent, h, VNode } from 'vue'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'Resizable',
 
   props: {
@@ -96,7 +96,7 @@ export default Vue.extend({
     },
   },
 
-  render(h): VNode {
+  render(): VNode {
     const handlers = [
       { type: 'n', x: 0, y: -1 },
       { type: 's', x: 0, y: 1 },
@@ -115,23 +115,21 @@ export default Vue.extend({
         style: this.style,
       },
       [
-        this.$slots.default,
+        this.$slots.default?.(),
 
         // Resize handlers which are listening user's drag event
         handlers.map(({ type, x, y }) => {
           return h('div', {
             class: `resizable-handler resizable-handler-${type}`,
-            attrs: { draggable: 'true' },
-            on: {
-              pointerdown: (event: PointerEvent) => {
-                this.direction.x = x
-                this.direction.y = y
-                this.onDragStart(event)
-              },
-              pointermove: this.onDrag,
-              pointerup: this.onDragEnd,
-              pointercancel: this.onDragEnd,
+            draggable: 'true',
+            onPointerdown: (event: PointerEvent) => {
+              this.direction.x = x
+              this.direction.y = y
+              this.onDragStart(event)
             },
+            onPointermove: this.onDrag,
+            onPointerup: this.onDragEnd,
+            onPointercancel: this.onDragEnd,
           })
         }),
       ]

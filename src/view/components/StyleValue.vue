@@ -15,18 +15,18 @@
     @input="input"
     @keydown="onKeyDown"
     @blur="endEdit($event, 'blur')"
-  />
+  ></div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import {
   selectNodeContents,
   updateStyleValue,
   getTextOffset,
 } from '../ui-logic/editing'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'StyleValue',
 
   props: {
@@ -40,6 +40,8 @@ export default Vue.extend({
       default: false,
     },
   },
+
+  emits: ['input', 'input-start', 'input-end'],
 
   data() {
     return {

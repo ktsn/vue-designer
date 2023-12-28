@@ -22,7 +22,8 @@ export function render(
   props: Prop[] = [],
   data: Data[] = [],
   childComponents: ChildComponent[] = [],
-  storeDocuments: Record<string, Partial<VueFilePayload>> = {}
+  storeDocuments: Record<string, Partial<VueFilePayload>> = {},
+  listeners: Record<string, Function> = {}
 ): InstanceType<typeof VueComponent> {
   const store = createStore(module().child('project', project))
 
@@ -64,11 +65,9 @@ export function render(
       scope: store.getters.project.currentScope,
       childComponents,
       styles: '',
+      ...listeners,
     },
-    {},
-    {
-      store,
-    }
+    [store]
   ).vm
 }
 

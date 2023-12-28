@@ -88,18 +88,15 @@ describe('InputJson', () => {
 
   describe('Behavior', () => {
     it('notifies updated value', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: 123,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: 123,
         },
-        { change }
-      )
+        onChange,
+      })
       const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
@@ -108,25 +105,22 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).toHaveBeenCalledWith({
+      expect(onChange).toHaveBeenCalledWith({
         name: 'test',
         value: 456,
       })
     })
 
     it('converts json value', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: 123,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: 123,
         },
-        { change }
-      )
+        onChange,
+      })
       const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
@@ -135,7 +129,7 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).toHaveBeenCalledWith({
+      expect(onChange).toHaveBeenCalledWith({
         name: 'test',
         value: {
           foo: '123',
@@ -146,21 +140,18 @@ describe('InputJson', () => {
     })
 
     it('edits child property value', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: {
-              foo: 'abc',
-              bar: 123,
-            },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: {
+            foo: 'abc',
+            bar: 123,
           },
         },
-        { change }
-      )
+        onChange,
+      })
       const bar = vm.$el.querySelectorAll('[data-test-id=input-json]')[1]!
       const ctrl = new InputJsonController(bar)
 
@@ -170,7 +161,7 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).toHaveBeenCalledWith({
+      expect(onChange).toHaveBeenCalledWith({
         name: 'test',
         value: {
           foo: 'abc',
@@ -180,18 +171,15 @@ describe('InputJson', () => {
     })
 
     it('edits array item', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: ['foo', 123, true],
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: ['foo', 123, true],
         },
-        { change }
-      )
+        onChange,
+      })
       const second = vm.$el.querySelectorAll('[data-test-id=input-json]')[1]!
       const ctrl = new InputJsonController(second)
 
@@ -201,25 +189,22 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).toHaveBeenCalledWith({
+      expect(onChange).toHaveBeenCalledWith({
         name: 'test',
         value: ['foo', 456, true],
       })
     })
 
     it('rejects invalid json string', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: 123,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: 123,
         },
-        { change }
-      )
+        onChange,
+      })
       const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
@@ -228,25 +213,22 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).not.toHaveBeenCalled()
+      expect(onChange).not.toHaveBeenCalled()
     })
 
     it('is editable child property name', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: {
-              foo: 'abc',
-              bar: 'def',
-            },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: {
+            foo: 'abc',
+            bar: 'def',
           },
         },
-        { change }
-      )
+        onChange,
+      })
       const child = vm.$el.querySelector('[data-test-id=input-json]')!
       const ctrl = new InputJsonController(child)
 
@@ -256,7 +238,7 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).toHaveBeenCalledWith({
+      expect(onChange).toHaveBeenCalledWith({
         name: 'test',
         value: {
           baz: 'abc',
@@ -266,18 +248,15 @@ describe('InputJson', () => {
     })
 
     it('is not editable root property name', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: 123,
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: 123,
         },
-        { change }
-      )
+        onChange,
+      })
       const ctrl = new InputJsonController(vm.$el)
 
       ctrl.clickEdit()
@@ -286,25 +265,22 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).toHaveBeenCalledWith({
+      expect(onChange).toHaveBeenCalledWith({
         name: 'test',
         value: 123,
       })
     })
 
     it('is not editable array property name', async () => {
-      const change = vitest.fn()
+      const onChange = vitest.fn()
 
-      const { vm } = mount(
-        InputJson,
-        {
-          field: {
-            name: 'test',
-            value: ['foo', 'bar', 'baz'],
-          },
+      const { vm } = mount(InputJson, {
+        field: {
+          name: 'test',
+          value: ['foo', 'bar', 'baz'],
         },
-        { change }
-      )
+        onChange,
+      })
       const child = vm.$el.querySelector('[data-test-id=input-json]')!
       const ctrl = new InputJsonController(child)
 
@@ -314,7 +290,7 @@ describe('InputJson', () => {
       await nextTick()
       ctrl.clickApply()
 
-      expect(change).toHaveBeenCalledWith({
+      expect(onChange).toHaveBeenCalledWith({
         name: 'test',
         value: ['foo', 'bar', 'baz'],
       })

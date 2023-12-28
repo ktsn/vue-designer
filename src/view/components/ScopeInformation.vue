@@ -4,7 +4,7 @@
       <h2 class="information-title">Props</h2>
       <ul v-if="hasProps" class="information-list">
         <li
-          v-for="(prop, name) in scope.props"
+          v-for="(prop, name) in scope?.props"
           :key="name"
           class="information-list-item"
         >
@@ -21,7 +21,7 @@
       <h2 class="information-title">Data</h2>
       <ul v-if="hasData" class="information-list">
         <li
-          v-for="(d, name) in scope.data"
+          v-for="(d, name) in scope?.data"
           :key="name"
           class="information-list-item"
         >
@@ -34,11 +34,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import InputJson from './InputJson.vue'
 import { DocumentScope } from '../store/modules/project/types'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ScopeInformation',
 
   components: {
@@ -48,16 +48,21 @@ export default Vue.extend({
   props: {
     scope: {
       type: Object as () => DocumentScope,
-      required: true,
     },
   },
 
   computed: {
     hasProps(): boolean {
+      if (!this.scope) {
+        return false
+      }
       return Object.keys(this.scope.props).length > 0
     },
 
     hasData(): boolean {
+      if (!this.scope) {
+        return false
+      }
       return Object.keys(this.scope.data).length > 0
     },
   },

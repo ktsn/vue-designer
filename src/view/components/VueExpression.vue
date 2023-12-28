@@ -1,11 +1,10 @@
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import { defineComponent, h, VNode } from 'vue'
 import { DefaultValue } from '../../parser/script/types'
 import { evalWithScope, EvalSuccess } from '../eval'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'VueExpression',
-  functional: true,
 
   props: {
     expression: {
@@ -19,8 +18,8 @@ export default Vue.extend({
     },
   },
 
-  render(h, { props }): VNode {
-    const { expression: exp, scope } = props
+  render(): VNode {
+    const { expression: exp, scope } = this
     const result = evalWithScope(exp, scope)
     const resolved = result.isSuccess && result.value != null
     const str = resolved

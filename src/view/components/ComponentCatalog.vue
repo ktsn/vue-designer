@@ -17,11 +17,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import ComponentCatalogPreview from './ComponentCatalogPreview.vue'
 import { ScopedDocument } from '../store/modules/project/types'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ComponentCatalog',
 
   components: {
@@ -34,6 +34,8 @@ export default Vue.extend({
       required: true,
     },
   },
+
+  emits: ['dragstart', 'dragend'],
 
   methods: {
     onDragStart(event: DragEvent, component: ScopedDocument): void {

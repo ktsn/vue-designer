@@ -28,15 +28,10 @@ describe('StyleInformation', () => {
   ]
 
   const create = (listeners: Record<string, any> = {}) => {
-    return mount(
-      StyleInformation,
-      {
-        rules,
-      },
-      {
-        ...listeners,
-      }
-    )
+    return mount(StyleInformation, {
+      rules,
+      ...listeners,
+    })
   }
 
   describe('moving focus', () => {
@@ -125,10 +120,10 @@ describe('StyleInformation', () => {
     })
 
     it('adds a new declaration and moves focus to it', async () => {
-      const addDeclaration = vitest.fn()
+      const onAddDeclaration = vitest.fn()
 
       const { vm, updateProps } = create({
-        'add-declaration': addDeclaration,
+        onAddDeclaration,
       })
 
       const fourthButton = vm.$el.querySelectorAll('button')[3]!
@@ -138,7 +133,7 @@ describe('StyleInformation', () => {
       const input = vm.$el.querySelector('[contenteditable=true]')
       input!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }))
 
-      expect(addDeclaration).toHaveBeenCalledWith({
+      expect(onAddDeclaration).toHaveBeenCalledWith({
         path: [0, 2],
       })
 
@@ -185,16 +180,16 @@ describe('StyleInformation', () => {
     }
 
     it('adds to the first position', async () => {
-      const addDeclaration = vitest.fn()
+      const onAddDeclaration = vitest.fn()
 
       const { vm, updateProps } = create({
-        'add-declaration': addDeclaration,
+        onAddDeclaration,
       })
       vm.$el
         .querySelector('.selector-list')!
         .dispatchEvent(new MouseEvent('click'))
 
-      expect(addDeclaration).toHaveBeenCalledWith({
+      expect(onAddDeclaration).toHaveBeenCalledWith({
         path: [0, 0],
       })
 
@@ -208,14 +203,14 @@ describe('StyleInformation', () => {
     })
 
     it('adds to the last position', async () => {
-      const addDeclaration = vitest.fn()
+      const onAddDeclaration = vitest.fn()
 
       const { vm, updateProps } = create({
-        'add-declaration': addDeclaration,
+        onAddDeclaration,
       })
       vm.$el.querySelector('.rule')!.dispatchEvent(new MouseEvent('click'))
 
-      expect(addDeclaration).toHaveBeenCalledWith({
+      expect(onAddDeclaration).toHaveBeenCalledWith({
         path: [0, 2],
       })
 
@@ -229,16 +224,16 @@ describe('StyleInformation', () => {
     })
 
     it('inserts to the clicked position', async () => {
-      const addDeclaration = vitest.fn()
+      const onAddDeclaration = vitest.fn()
 
       const { vm, updateProps } = create({
-        'add-declaration': addDeclaration,
+        onAddDeclaration,
       })
       vm.$el
         .querySelector('.declaration')!
         .dispatchEvent(new MouseEvent('click'))
 
-      expect(addDeclaration).toHaveBeenCalledWith({
+      expect(onAddDeclaration).toHaveBeenCalledWith({
         path: [0, 1],
       })
 

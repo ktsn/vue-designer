@@ -1,19 +1,20 @@
 <script lang="ts">
-import Vue, { VNode, VNodeData } from 'vue'
+import { defineComponent, h, VNode, Component } from 'vue'
 import ContainerVueComponent from './ContainerVueComponent.vue'
 import VueChild from './VueChild.vue'
 import { TEElement } from '../../parser/template/types'
 import { DefaultValue, ChildComponent } from '../../parser/script/types'
 import {
-  convertToVNodeData,
+  convertToVNodeProps,
   resolveControlDirectives,
   ResolvedChild,
-  resolveScopedSlots,
+  resolveSlots,
+  resolveDirectives,
 } from '../ui-logic/rendering'
 import { DraggingPlace } from '../store/modules/project/types'
 import { mapValues } from '../../utils'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'VueNode',
 
   props: {
@@ -34,11 +35,7 @@ export default Vue.extend({
       required: true,
     },
     slots: {
-      type: Object as { (): Record<string, VNode[]> },
-      required: true,
-    },
-    scopedSlots: {
-      type: Object,
+      type: Object as { (): Record<string, any> },
       required: true,
     },
     selectable: {
@@ -51,8 +48,10 @@ export default Vue.extend({
     },
   },
 
+  emits: ['select', 'dragover', 'add'],
+
   computed: {
-    vnodeTag(): string | typeof Vue {
+    vnodeTag(): string | Component {
       if (this.nodeUri) {
         return ContainerVueComponent
       }
@@ -60,67 +59,24 @@ export default Vue.extend({
       return this.data.name
     },
 
-    vnodeData(): VNodeData {
+    vnodeProps(): Record<string, any> {
       const { data: node, scope, selectable } = this
-      const data = convertToVNodeData(node.name, node.startTag, scope)
+      const vnodeProps = convertToVNodeProps(node.startTag, scope)
       const tag = this.vnodeTag
 
       if (selectable) {
         // The vnode may be a native element or ContainerVueComponent
-        const on = {
-          click: this.onClick,
-          dragover: this.onDragOver,
-          drop: this.onDrop,
-        }
-
-        if (tag === ContainerVueComponent) {
-          data.nativeOn = on
-        } else {
-          data.on = on
-        }
+        vnodeProps.onClick = this.onClick
+        vnodeProps.onDragover = this.onDragOver
+        vnodeProps.onDrop = this.onDrop
       }
 
       if (tag === ContainerVueComponent) {
-        data.props = {
-          uri: this.nodeUri,
-          propsData: data.attrs,
-        }
+        vnodeProps.uri = this.nodeUri
+        vnodeProps.propsData = { ...vnodeProps }
       }
 
-      const scopedSlots = resolveScopedSlots(node)
-      if (scopedSlots) {
-        const h = this.$createElement
-        data.scopedSlots = mapValues(scopedSlots, ({ scopeName, contents }) => {
-          return (props: any) => {
-            const newScope = {
-              ...scope,
-              [scopeName]: props,
-            }
-            const resolved = contents.reduce<ResolvedChild[]>((acc, child) => {
-              return resolveControlDirectives(acc, {
-                el: child,
-                scope: newScope,
-              })
-            }, [])
-
-            return resolved.map((c) => {
-              return h(VueChild, {
-                props: {
-                  uri: this.uri,
-                  data: c.el,
-                  scope: c.scope,
-                  childComponents: this.childComponents,
-                  slots: this.slots,
-                  scopedSlots: this.scopedSlots,
-                },
-                on: this.$listeners,
-              })
-            })
-          }
-        })
-      }
-
-      return data
+      return vnodeProps
     },
 
     /**
@@ -138,17 +94,47 @@ export default Vue.extend({
     /**
      * Returns children which is resolved v-for, v-if and its family.
      */
-    resolvedChildren(): ResolvedChild[] {
-      return this.data.children
-        .filter((child) => {
-          return child.type !== 'Element' || !child.startTag.attrs['slot-scope']
-        })
-        .reduce<ResolvedChild[]>((acc, child) => {
-          return resolveControlDirectives(acc, {
-            el: child,
-            scope: this.scope,
+    resolvedChildren(): Record<string, (props: any) => VNode[]> {
+      return mapValues(resolveSlots(this.data), ({ scopeName, contents }) => {
+        return (props: any) => {
+          const newScope = scopeName
+            ? {
+                ...this.scope,
+                [scopeName]: props,
+              }
+            : this.scope
+
+          const resolved = contents.reduce<ResolvedChild[]>((acc, child) => {
+            return resolveControlDirectives(acc, {
+              el: child,
+              scope: newScope,
+            })
+          }, [])
+
+          return resolved.map((c) => {
+            return h(VueChild, {
+              ...this.$attrs,
+              uri: this.uri,
+              data: c.el,
+              scope: c.scope,
+              childComponents: this.childComponents,
+              slots: this.slots,
+
+              onSelect: (...args: any[]) => {
+                this.$emit('select', ...args)
+              },
+
+              onDragover: (...args: any[]) => {
+                this.$emit('dragover', ...args)
+              },
+
+              onAdd: (...args: any[]) => {
+                this.$emit('add', ...args)
+              },
+            })
           })
-        }, [])
+        }
+      })
     },
   },
 
@@ -208,27 +194,10 @@ export default Vue.extend({
     },
   },
 
-  render(h): VNode {
-    const { uri, childComponents, slots, scopedSlots } = this
+  render(): VNode {
+    const vnode = h(this.vnodeTag, this.vnodeProps, this.resolvedChildren)
 
-    return h(
-      this.vnodeTag,
-      this.vnodeData,
-      this.resolvedChildren.map((c) => {
-        // Slot name will be resolved in <VueChild> component
-        return h(VueChild, {
-          props: {
-            uri,
-            data: c.el,
-            scope: c.scope,
-            childComponents,
-            slots,
-            scopedSlots,
-          },
-          on: this.$listeners,
-        })
-      })
-    )
+    return resolveDirectives(vnode, this.data.startTag, this.scope)
   },
 })
 </script>

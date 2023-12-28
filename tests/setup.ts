@@ -1,20 +1,7 @@
-import { install } from 'sinai'
-import { expect, vitest } from 'vitest'
+import { expect } from 'vitest'
 
 // @ts-expect-error
 import beautify from 'pretty'
-
-// https://github.com/vitest-dev/vitest/issues/1700#issuecomment-1222959153
-vitest.mock('vue', async () => {
-  const Vue = (await vitest.importActual('vue')) as any
-
-  Vue.default.config.productionTip = false
-  Vue.default.config.devtools = false
-
-  Vue.default.use(install)
-
-  return Vue
-})
 
 /*
  * Prettify Vue component html snapshots

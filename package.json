@@ -67,6 +67,7 @@
   "dependencies": {
     "@babel/parser": "^7.0.0",
     "@babel/types": "^7.0.0",
+    "@vue/compiler-sfc": "^3.3.13",
     "eslint": "^8.55.0",
     "hash-sum": "^1.0.2",
     "lodash.debounce": "^4.0.8",
@@ -74,7 +75,6 @@
     "postcss-safe-parser": "^4.0.1",
     "postcss-selector-parser": "^6.0.13",
     "vue-eslint-parser": "^3.2.2",
-    "vue-template-compiler": "^2.5.17",
     "ws": "^6.0.0"
   },
   "devDependencies": {
@@ -82,7 +82,7 @@
     "@types/eslint-visitor-keys": "^1.0.0",
     "@types/lodash.debounce": "^4.0.4",
     "@types/ws": "^6.0.0",
-    "@vitejs/plugin-vue2": "^2.3.1",
+    "@vitejs/plugin-vue": "^5.0.0",
     "conventional-changelog-cli": "^2.0.5",
     "jsdom": "^16.7.0",
     "lodash.camelcase": "^4.3.0",
@@ -91,14 +91,13 @@
     "prettier": "^2.8.8",
     "pretty": "^2.0.0",
     "rimraf": "^2.6.2",
-    "sinai": "^0.3.0",
+    "sinai": "^0.4.4",
     "typescript": "~5.3.3",
     "vite": "^5.0.8",
     "vitest": "^1.0.4",
     "vscode": "^1.1.37",
-    "vue": "^2.5.17",
-    "vue-global-events": "^1.0.3",
-    "vue-server-renderer": "^2.5.17",
-    "vue-tsc": "^1.8.25"
+    "vue": "^3.3.13",
+    "vue-global-events": "^3.0.1",
+    "vue-tsc": "^1.8.26"
   }
 }

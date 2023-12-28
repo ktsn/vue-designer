@@ -11,7 +11,7 @@
           :scale="scale"
           :shared-style="sharedStyle"
           @select="onSelectNode"
-          @dragover="setDraggingPlace"
+          @dragover="onDragOver"
           @add="applyDraggingElement"
           @resize="resize"
           @zoom="zoom"
@@ -75,7 +75,7 @@
       </div>
 
       <button
-        :aria-pressed="String(openPane)"
+        :aria-pressed="openPane"
         class="information-pane-toggle"
         type="button"
         aria-label="Toggle information pane"
@@ -86,13 +86,13 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import Renderer from './Renderer.vue'
 import ScopeInformation from './ScopeInformation.vue'
 import StyleInformation from './StyleInformation.vue'
 import ComponentCatalog from './ComponentCatalog.vue'
 import Toolbar from './Toolbar.vue'
-import { ScopedDocument } from '../store/modules/project/types'
+import { DraggingPlace, ScopedDocument } from '../store/modules/project/types'
 import { mapper } from '../store'
 import { TEElement } from '../../parser/template/types'
 
@@ -100,7 +100,7 @@ const projectMapper = mapper.module('project')
 const viewportMapper = mapper.module('viewport')
 const guideMapper = mapper.module('guide')
 
-export default Vue.extend({
+export default defineComponent({
   name: 'PageMain',
 
   components: {
@@ -175,6 +175,10 @@ export default Vue.extend({
       } else {
         this.deselect()
       }
+    },
+
+    onDragOver(params: { path: number[]; place: DraggingPlace }): void {
+      this.setDraggingPlace(params)
     },
   },
 })

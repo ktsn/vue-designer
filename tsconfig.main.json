@@ -5,10 +5,7 @@
     "moduleResolution": "node",
     "outDir": "lib",
     "noEmit": false,
-    "allowImportingTsExtensions": false,
-    "paths": {
-      "*": ["types/*"]
-    }
+    "allowImportingTsExtensions": false
   },
   "exclude": [
     "src/view/**",

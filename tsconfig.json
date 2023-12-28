@@ -19,10 +19,6 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "sourceMap": true,
-    "baseUrl": ".",
-    "paths": {
-      "*": ["types/*"]
-    },
     "allowJs": true,
     "noEmit": true
   },

@@ -23,7 +23,7 @@
     "watch": "run-p watch:*",
     "watch:server": "tsc --watch -p tsconfig.main.json",
     "watch:client": "vite",
-    "build": "tsc --sourceMap false -p tsconfig.main.json && vite build",
+    "build": "vue-tsc && tsc --sourceMap false -p tsconfig.main.json && vite build",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "vitest"

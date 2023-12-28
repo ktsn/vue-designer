@@ -72,6 +72,8 @@ export default defineComponent({
     },
   },
 
+  emits: ['select', 'dragover', 'add', 'resize', 'zoom'],
+
   data() {
     return {
       rendererSize: {

@@ -48,6 +48,8 @@ export default defineComponent({
     },
   },
 
+  emits: ['select', 'dragover', 'add'],
+
   computed: {
     vnodeTag(): string | Component {
       if (this.nodeUri) {

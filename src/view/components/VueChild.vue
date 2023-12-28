@@ -41,17 +41,20 @@ export default defineComponent({
   render() {
     const { data, scope } = this
     switch (data.type) {
-      case 'Element':
-        if (data.name === 'slot') {
-          return h(VueSlot, this.$props as any)
-        } else {
-          return h(ContainerVueNode, {
-            ...(this.$props as any),
-            onSelect: (...args: any[]) => this.$emit('select', ...args),
-            onDragover: (...args: any[]) => this.$emit('dragover', ...args),
-            onAdd: (...args: any[]) => this.$emit('add', ...args),
-          })
+      case 'Element': {
+        const props: any = {
+          ...this.$props,
+          onSelect: (...args: any[]) => this.$emit('select', ...args),
+          onDragover: (...args: any[]) => this.$emit('dragover', ...args),
+          onAdd: (...args: any[]) => this.$emit('add', ...args),
         }
+
+        if (data.name === 'slot') {
+          return h(VueSlot, props)
+        } else {
+          return h(ContainerVueNode, props)
+        }
+      }
       case 'TextNode':
         return [data.text]
       case 'ExpressionNode':

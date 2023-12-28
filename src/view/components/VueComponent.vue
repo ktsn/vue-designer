@@ -35,6 +35,8 @@ export default defineComponent({
     },
   },
 
+  emits: ['select', 'dragover', 'add'],
+
   computed: {
     scopeValues(): Record<string, any> {
       const values: Record<string, any> = {}

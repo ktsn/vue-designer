@@ -35,6 +35,8 @@ export default defineComponent({
     },
   },
 
+  emits: ['dragstart', 'dragend'],
+
   methods: {
     onDragStart(event: DragEvent, component: ScopedDocument): void {
       const dt = event.dataTransfer

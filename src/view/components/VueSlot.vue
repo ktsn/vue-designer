@@ -7,6 +7,7 @@ import { convertToSlotScope } from '../ui-logic/rendering'
 
 export default defineComponent({
   name: 'VueSlot',
+  inheritAttrs: false,
 
   props: {
     uri: {
@@ -47,6 +48,7 @@ export default defineComponent({
     // placeholder content
     return this.data.children.map((child) => {
       return h(VueChild, {
+        ...this.$attrs,
         uri: this.uri,
         data: child,
         scope: this.scope,

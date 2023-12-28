@@ -1,5 +1,4 @@
 <template>
-  <!-- Since viewport is aligned by center, the offset needs to be multiplied by 2 in default scale -->
   <Resizable
     :width="width"
     :height="height"
@@ -8,6 +7,8 @@
     class="viewport-wrapper"
     @resize="$emit('resize', $event)"
   >
+    <!-- Since viewport is aligned by center, the offset needs to be multiplied by 2 in default scale -->
+
     <!-- Hack for avoiding template compile error of style elements -->
     <div is="style" :text-content.prop="sharedStyle" />
 

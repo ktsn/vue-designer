@@ -11,7 +11,7 @@
           :scale="scale"
           :shared-style="sharedStyle"
           @select="onSelectNode"
-          @dragover="setDraggingPlace"
+          @dragover="onDragOver"
           @add="applyDraggingElement"
           @resize="resize"
           @zoom="zoom"
@@ -92,7 +92,7 @@ import ScopeInformation from './ScopeInformation.vue'
 import StyleInformation from './StyleInformation.vue'
 import ComponentCatalog from './ComponentCatalog.vue'
 import Toolbar from './Toolbar.vue'
-import { ScopedDocument } from '../store/modules/project/types'
+import { DraggingPlace, ScopedDocument } from '../store/modules/project/types'
 import { mapper } from '../store'
 import { TEElement } from '../../parser/template/types'
 
@@ -175,6 +175,10 @@ export default defineComponent({
       } else {
         this.deselect()
       }
+    },
+
+    onDragOver(params: { path: number[]; place: DraggingPlace }): void {
+      this.setDraggingPlace(params)
     },
   },
 })

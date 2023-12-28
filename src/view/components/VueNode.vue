@@ -119,6 +119,18 @@ export default defineComponent({
               scope: c.scope,
               childComponents: this.childComponents,
               slots: this.slots,
+
+              onSelect: (...args: any[]) => {
+                this.$emit('select', ...args)
+              },
+
+              onDragover: (...args: any[]) => {
+                this.$emit('dragover', ...args)
+              },
+
+              onAdd: (...args: any[]) => {
+                this.$emit('add', ...args)
+              },
             })
           })
         }

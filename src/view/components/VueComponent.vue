@@ -35,7 +35,7 @@ export default defineComponent({
     },
   },
 
-  emits: ['select', 'dragover', 'add'],
+  emits: ['click', 'select', 'dragover', 'add'],
 
   computed: {
     scopeValues(): Record<string, any> {
@@ -86,23 +86,31 @@ export default defineComponent({
               childComponents: this.childComponents,
               slots: this.$slots,
 
-              onSelect: (path: number[]) => {
-                this.$emit('select', path)
+              onSelect: (...args: any[]) => {
+                this.$emit('select', ...args)
               },
 
-              onDragover: (path: number[]) => {
-                this.$emit('dragover', path)
+              onDragover: (...args: any[]) => {
+                this.$emit('dragover', ...args)
               },
 
-              onAdd: () => {
-                this.$emit('add')
+              onAdd: (...args: any[]) => {
+                this.$emit('add', ...args)
               },
             })
           )
         })
     }
 
-    return h('div', children)
+    return h(
+      'div',
+      {
+        onClick: (...args: any[]) => {
+          this.$emit('click', ...args)
+        },
+      },
+      children
+    )
   },
 })
 </script>

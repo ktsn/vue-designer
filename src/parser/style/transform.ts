@@ -231,15 +231,14 @@ function transformChild(
   }
 }
 
-function toRange(source: postcss.Source | undefined, code: string): [number, number] {
-  const start = source?.start
-    ? source.start.offset
-    : 0
+function toRange(
+  source: postcss.Source | undefined,
+  code: string,
+): [number, number] {
+  const start = source?.start ? source.start.offset : 0
 
   // The postcss end position is short by one
-  const end = source?.end
-    ? source.end.offset
-    : code.length
+  const end = source?.end ? source.end.offset : code.length
 
   return [start, end]
 }

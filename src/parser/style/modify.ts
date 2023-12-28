@@ -45,7 +45,6 @@ export function insertDeclaration(
       type: 'Declaration',
       path: to,
       before: '',
-      after: '',
       range: [-1, -1],
       ...decl,
     }

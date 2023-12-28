@@ -71,9 +71,9 @@
     "eslint": "^8.55.0",
     "hash-sum": "^2.0.0",
     "lodash.debounce": "^4.0.8",
-    "postcss": "^7.0.2",
-    "postcss-safe-parser": "^4.0.1",
-    "postcss-selector-parser": "^6.0.13",
+    "postcss": "^8.4.32",
+    "postcss-safe-parser": "^7.0.0",
+    "postcss-selector-parser": "^6.0.14",
     "vue-eslint-parser": "^3.2.2",
     "ws": "^8.16.0"
   },

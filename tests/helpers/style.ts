@@ -134,7 +134,6 @@ export function declaration(
     type: 'Declaration',
     path: [],
     before: '',
-    after: '',
     prop,
     value,
     important,

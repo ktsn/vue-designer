@@ -19,7 +19,6 @@ export interface STRule extends Range, HasChildren<STDeclaration> {
 export interface STDeclaration extends Range {
   type: 'Declaration'
   before: string
-  after: string
   path: number[]
   prop: string
   value: string

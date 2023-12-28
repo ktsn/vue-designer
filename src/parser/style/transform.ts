@@ -205,7 +205,6 @@ function transformDeclaration(
     type: 'Declaration',
     path,
     before: decl.raws.before || '',
-    after: decl.raws.after || '',
     prop: decl.prop,
     value: decl.value,
     important: decl.important || false, // decl.import is possibly undefined
@@ -232,28 +231,17 @@ function transformChild(
   }
 }
 
-function toRange(source: postcss.NodeSource, code: string): [number, number] {
-  const start = source.start
-    ? toOffset(source.start.line, source.start.column, code)
+function toRange(source: postcss.Source | undefined, code: string): [number, number] {
+  const start = source?.start
+    ? source.start.offset
     : 0
 
   // The postcss end position is short by one
-  const end = source.end
-    ? toOffset(source.end.line, source.end.column, code) + 1
+  const end = source?.end
+    ? source.end.offset
     : code.length
 
   return [start, end]
-}
-
-function toOffset(line: number, column: number, code: string): number {
-  const codeLines = code.split('\n')
-  const beforeLines = codeLines.slice(0, line - 1)
-
-  const beforeLength = beforeLines.reduce((acc, line) => {
-    // +1 to include line break
-    return acc + line.length + 1
-  }, 0)
-  return beforeLength + column - 1
 }
 
 export function transformRuleForPrint(rule: t.STRule): t.STRuleForPrint {

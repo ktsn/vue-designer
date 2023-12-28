@@ -392,5 +392,5 @@ function resolveVModel(vnode: VNode, modelValue: any): void {
 }
 
 function isValidAttributeName(name: string): boolean {
-  return validateName(name).success
+  return validateName(name)
 }

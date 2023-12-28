@@ -26,16 +26,16 @@
             :prop="decl.prop"
             :value="decl.value"
             :auto-focus="shouldFocusFor(ruleIndex, declIndex)"
-            @update:prop="updateDeclarationProp(decl.path, arguments[0])"
-            @update:value="updateDeclarationValue(decl.path, arguments[0])"
+            @update:prop="updateDeclarationProp(decl.path, $event)"
+            @update:value="updateDeclarationValue(decl.path, $event)"
             @remove="removeDeclaration(decl.path)"
             @input-start:prop="onStartStyleInput"
             @input-start:value="onStartStyleInput"
             @input-end:prop="
-              onEndStyleInput(ruleIndex, declIndex, 'prop', arguments[0])
+              onEndStyleInput(ruleIndex, declIndex, 'prop', $event)
             "
             @input-end:value="
-              onEndStyleInput(ruleIndex, declIndex, 'value', arguments[0])
+              onEndStyleInput(ruleIndex, declIndex, 'value', $event)
             "
           />
         </li>
@@ -45,11 +45,11 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import StyleDeclaration from './StyleDeclaration.vue'
 import { STRuleForPrint, STDeclarationForPrint } from '../../parser/style/types'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'StyleInformation',
 
   components: {
@@ -231,9 +231,9 @@ export default Vue.extend({
       }
     },
 
-    shouldFocusFor(rule: number, decl: number): 'prop' | 'value' | null {
+    shouldFocusFor(rule: number, decl: number): 'prop' | 'value' | undefined {
       const f = this.autoFocusTarget
-      return f && f.rule === rule && f.declaration === decl ? f.type : null
+      return f && f.rule === rule && f.declaration === decl ? f.type : undefined
     },
   },
 })

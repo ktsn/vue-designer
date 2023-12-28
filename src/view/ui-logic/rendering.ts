@@ -1,4 +1,3 @@
-import { VNodeData } from 'vue'
 import { name as validateName } from 'xml-name-validator'
 import {
   TEDirective,
@@ -10,23 +9,7 @@ import {
 import { DefaultValue } from '../../parser/script/types'
 import { evalWithScope } from '../eval'
 import { isObject, range, mapValues } from '../../utils'
-
-function attributeValue(
-  startTag: TEStartTag,
-  key: string,
-  scope: Record<string, DefaultValue>
-): DefaultValue {
-  if (startTag.props[key]) {
-    return directiveValue(startTag.props[key], scope)
-  }
-
-  const attr = startTag.attrs[key]
-  if (attr) {
-    return attr.value
-  }
-
-  return undefined
-}
+import { VNode } from 'vue'
 
 function directiveValue(
   dir: TEDirective,
@@ -83,8 +66,8 @@ export interface ResolvedChild {
   scope: Record<string, DefaultValue>
 }
 
-export interface ResolvedScopedSlot {
-  scopeName: string
+export interface ResolvedSlot {
+  scopeName: string | undefined
   contents: TEChild[]
 }
 
@@ -162,36 +145,41 @@ function resolveVElse(
   }
 }
 
-export function resolveScopedSlots(
-  el: TEElement
-): Record<string, ResolvedScopedSlot> | undefined {
-  let scopedSlots: Record<string, ResolvedScopedSlot> | undefined
+export function resolveSlots(el: TEElement): Record<string, ResolvedSlot> {
+  let slots: Record<string, ResolvedSlot> = {}
 
   el.children.forEach((child) => {
-    if (child.type !== 'Element') return
-
-    const attrs = child.startTag.attrs
-
-    const slotScope = attrs['slot-scope']
-    const slotScopeName = slotScope && slotScope.value
-    if (!slotScopeName) return
-
-    const slot = attrs.slot
-    const slotName = (slot && slot.value) || 'default'
-
-    const contents = child.name === 'template' ? child.children : [child]
-
-    if (!scopedSlots) {
-      scopedSlots = {}
+    if (child.type !== 'Element') {
+      if (slots.default) {
+        slots.default.contents.push(child)
+      } else {
+        slots.default = {
+          scopeName: undefined,
+          contents: [child],
+        }
+      }
+      return
     }
 
-    scopedSlots[slotName] = {
-      scopeName: slotScopeName,
-      contents,
+    const attrs = child.startTag.attrs
+    const slotScope = attrs['slot-scope']
+    const slotScopeName = slotScope?.value
+    const slotName = attrs.slot?.value ?? 'default'
+
+    const contents =
+      (attrs.slot || slotScope) && child.name === 'template'
+        ? child.children
+        : [child]
+
+    slots[slotName] = {
+      scopeName: slotScopeName ?? slots[slotName]?.scopeName,
+      contents: slots[slotName]
+        ? slots[slotName].contents.concat(contents)
+        : contents,
     }
   })
 
-  return scopedSlots
+  return slots
 }
 
 /**
@@ -304,29 +292,27 @@ export function convertToSlotScope(
   }
 }
 
-export function convertToVNodeData(
-  tag: string,
+export function convertToVNodeProps(
   startTag: TEStartTag,
   scope: Record<string, DefaultValue>
-): VNodeData {
+): Record<string, any> {
   const { attrs, props, domProps, directives } = startTag
-  const data: VNodeData = {
-    attrs: {},
-    domProps: {},
+  const vnodeProps: Record<string, any> = {
     class: [],
-    directives: [],
+    style: [],
   }
 
   Object.keys(attrs).forEach((key) => {
     const attr = attrs[key]
     if (attr.name === 'class') {
-      data.staticClass = attr.value || undefined
+      vnodeProps.class = [...vnodeProps.class, attr.value ?? '']
     } else if (attr.name === 'style') {
-      data.staticStyle = parseStyleText(attr.value || '')
+      vnodeProps.style = [...vnodeProps.style, parseStyleText(attr.value || '')]
     } else if (attr.name === 'slot') {
-      data.slot = attr.value || undefined
+      // Skip
+      // Slot is handled in VNode children
     } else if (isValidAttributeName(attr.name)) {
-      data.attrs![attr.name] = attr.value || ''
+      vnodeProps[attr.name] = attr.value || ''
     }
   })
 
@@ -334,76 +320,75 @@ export function convertToVNodeData(
     const prop = props[key]
     const value = directiveValue(prop, scope)
     if (prop.argument === 'class') {
-      data.class.push(value)
+      vnodeProps.class = [...vnodeProps.class, value]
     } else if (prop.argument === 'style') {
-      data.style = value as any
+      vnodeProps.style = [...vnodeProps.style, value]
     } else if (isValidAttributeName(prop.argument!)) {
       // We need to assign the value into `attrs` here
       // to simulate vue-template-compiler.
-      data.attrs![prop.argument!] = value
+      vnodeProps[prop.argument!] = value
     }
   })
 
   Object.keys(domProps).forEach((key) => {
     const value = directiveValue(domProps[key], scope)
-    data.domProps![key] = value
+    vnodeProps[key] = value
   })
 
   directives.forEach((dir) => {
     const value = directiveValue(dir, scope)
-    if (dir.name === 'model') {
-      resolveVModel(data, tag, startTag, scope, value)
-    } else if (dir.name === 'text') {
-      data.domProps!.textContent = value
+    if (dir.name === 'text') {
+      vnodeProps.textContent = value
     } else if (dir.name === 'html') {
-      data.domProps!.innerHTML = value
+      vnodeProps.innerHTML = value
     } else if (dir.name === 'show') {
-      data.directives!.push({
-        name: 'show',
-        expression: dir.expression,
-        oldValue: undefined,
-        arg: dir.argument || '',
-        modifiers: dir.modifiers,
-        value,
-      })
+      vnodeProps.style = [
+        ...vnodeProps.style,
+        value ? undefined : { display: 'none' },
+      ]
     }
   })
 
-  return data
+  return vnodeProps
 }
 
-function resolveVModel(
-  data: VNodeData,
-  tag: string,
+export function resolveDirectives(
+  vnode: VNode,
   startTag: TEStartTag,
-  scope: Record<string, DefaultValue>,
-  modelValue: any
-): void {
-  if (tag === 'input') {
-    const type = attributeValue(startTag, 'type', scope)
+  scope: Record<string, DefaultValue>
+): VNode {
+  return startTag.directives.reduce((vnode, dir) => {
+    if (dir.name === 'model') {
+      resolveVModel(vnode, directiveValue(dir, scope))
+      return vnode
+    }
+
+    return vnode
+  }, vnode)
+}
+
+function resolveVModel(vnode: VNode, modelValue: any): void {
+  const vnodeProps = vnode.props ?? (vnode.props = {})
+  if (vnode.type === 'input') {
+    const type = vnodeProps.type
     if (type === 'checkbox') {
       if (typeof modelValue === 'boolean') {
-        data.domProps!.checked = modelValue
+        vnodeProps.checked = modelValue
       } else if (Array.isArray(modelValue)) {
-        const valueValue = attributeValue(startTag, 'value', scope)
-        data.domProps!.checked = modelValue.indexOf(valueValue) >= 0
+        const valueValue = vnodeProps.value
+        vnodeProps.checked = modelValue.indexOf(valueValue) >= 0
       }
       return
     }
 
     if (type === 'radio') {
-      const valueValue = attributeValue(startTag, 'value', scope)
-      data.domProps!.checked = valueValue === modelValue
+      const valueValue = vnodeProps.value
+      vnodeProps.checked = valueValue === modelValue
       return
     }
-  } else if (tag === 'select') {
-    // Utilize Vue's v-model directive to sync <select> value
-    data.directives!.push({
-      name: 'model',
-      value: modelValue,
-    } as any)
   }
-  data.attrs!.value = modelValue
+
+  vnodeProps.value = modelValue
 }
 
 function isValidAttributeName(name: string): boolean {

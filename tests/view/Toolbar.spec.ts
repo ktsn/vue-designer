@@ -1,6 +1,6 @@
 import { describe, expect, it, vitest } from 'vitest'
 import Toolbar from '../../src/view/components/Toolbar.vue'
-import Vue, { nextTick } from 'vue'
+import { ComponentPublicInstance, nextTick } from 'vue'
 import { mount } from '../helpers/vue'
 
 describe('Toolbar', () => {
@@ -94,25 +94,20 @@ describe('Toolbar', () => {
 })
 
 class ToolbarTest {
-  vm: Vue
+  vm: ComponentPublicInstance
   updateProps: (props: Record<string, any>) => void
 
   resizeListener = vitest.fn()
   zoomListener = vitest.fn()
 
   constructor(width: number, height: number, scale: number = 1) {
-    const { vm, updateProps } = mount(
-      Toolbar,
-      {
-        width,
-        height,
-        scale,
-      },
-      {
-        resize: this.resizeListener,
-        zoom: this.zoomListener,
-      }
-    )
+    const { vm, updateProps } = mount(Toolbar, {
+      width,
+      height,
+      scale,
+      onResize: this.resizeListener,
+      onZoom: this.zoomListener,
+    })
     this.vm = vm
     this.updateProps = updateProps
   }
@@ -120,7 +115,7 @@ class ToolbarTest {
   pressEnter(el: HTMLElement): void {
     el.dispatchEvent(
       new KeyboardEvent('keydown', {
-        keyCode: 13,
+        key: 'Enter',
       })
     )
   }

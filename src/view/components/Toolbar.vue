@@ -5,7 +5,7 @@
         v-model="dirtyWidth"
         type="text"
         class="toolbar-input viewport-size-input"
-        @focus="selectAll($event.target)"
+        @focus="selectAll($event.currentTarget as HTMLInputElement)"
         @keydown.enter="applySize"
       />
       <span class="toolbar-input-char">x</span>
@@ -13,7 +13,7 @@
         v-model="dirtyHeight"
         type="text"
         class="toolbar-input viewport-size-input"
-        @focus="selectAll($event.target)"
+        @focus="selectAll($event.currentTarget as HTMLInputElement)"
         @keydown.enter="applySize"
       />
     </div>
@@ -23,7 +23,7 @@
         v-model="dirtyScale"
         type="text"
         class="toolbar-input viewport-scale-input"
-        @focus="selectAll($event.target)"
+        @focus="selectAll($event.currentTarget as HTMLInputElement)"
         @keydown.enter="applyScale"
       />
       <span class="toolbar-input-char">%</span>
@@ -32,14 +32,14 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 
 const scaleFormatter = new Intl.NumberFormat(undefined, {
   maximumFractionDigits: 2,
   useGrouping: false,
 })
 
-export default Vue.extend({
+export default defineComponent({
   name: 'Toolbar',
 
   props: {

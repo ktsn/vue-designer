@@ -1,13 +1,12 @@
 <script lang="ts">
-import Vue, { VNode, VNodeChildrenArrayContents } from 'vue'
+import { defineComponent, h, VNode } from 'vue'
 import VueChild from './VueChild.vue'
 import { TEElement } from '../../parser/template/types'
 import { DefaultValue, ChildComponent } from '../../parser/script/types'
 import { convertToSlotScope } from '../ui-logic/rendering'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'VueSlot',
-  functional: true,
 
   props: {
     uri: {
@@ -27,19 +26,13 @@ export default Vue.extend({
       required: true,
     },
     slots: {
-      type: Object as { (): Record<string, VNode[]> },
-      required: true,
-    },
-    scopedSlots: {
-      type: Object as {
-        (): Record<string, (props: any) => string | VNodeChildrenArrayContents>
-      },
+      type: Object as { (): Record<string, any> },
       required: true,
     },
   },
 
-  render(h, { props }): any /* VNode[] */ {
-    const { data, scope, slots, scopedSlots } = props
+  render(): VNode[] {
+    const { data, scope, slots } = this
 
     const slotScope = convertToSlotScope(data.startTag, scope)
 
@@ -47,27 +40,18 @@ export default Vue.extend({
     delete slotScope.name
 
     const slot = slots[slotName]
-    const scopedSlot = scopedSlots[slotName]
-
-    if (scopedSlot) {
-      return scopedSlot(slotScope)
-    }
-
     if (slot) {
-      return slot
+      return slot(slotScope)
     }
 
     // placeholder content
-    return props.data.children.map((child) => {
+    return this.data.children.map((child) => {
       return h(VueChild, {
-        props: {
-          uri: props.uri,
-          data: child,
-          scope: props.scope,
-          childComponents: props.childComponents,
-          slots,
-          scopedSlots,
-        },
+        uri: this.uri,
+        data: child,
+        scope: this.scope,
+        childComponents: this.childComponents,
+        slots,
       })
     })
   },

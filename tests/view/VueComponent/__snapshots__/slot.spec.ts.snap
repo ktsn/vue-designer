@@ -5,8 +5,8 @@ exports[`VueComponent slot > renders named slot content 1`] = `
   <style></style>
   <div class="">
     <style></style>
-    <div data-scope-scope-id="" class="">
-      <p data-scope-scope-id="" class="">foo content</p>
+    <div class="" data-scope-scope-id="">
+      <p class="" data-scope-scope-id="">foo content</p>
       <p class="">named</p>
     </div>
   </div>
@@ -27,8 +27,8 @@ exports[`VueComponent slot > renders slot content 1`] = `
   <style></style>
   <div class="">
     <style></style>
-    <div data-scope-scope-id="" class="">
-      <p data-scope-scope-id="" class="">foo content</p>
+    <div class="" data-scope-scope-id="">
+      <p class="" data-scope-scope-id="">foo content</p>
       <p class="">injected</p>
     </div>
   </div>
@@ -40,7 +40,7 @@ exports[`VueComponent slot > resolves template element children as the named slo
   <style></style>
   <div class="">
     <style></style>
-    <div data-scope-scope-id="" class=""><strong class="">named</strong><span class="">content</span></div>
+    <div class="" data-scope-scope-id=""><strong class="">named</strong><span class="">content</span></div>
   </div>
 </div>
 `;

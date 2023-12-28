@@ -1,12 +1,12 @@
 <script lang="ts">
-import Vue, { VNode, PropType } from 'vue'
+import { defineComponent, h, VNode, PropType } from 'vue'
 import VueChild from './VueChild.vue'
 import { TETemplate } from '../../parser/template/types'
 import { ChildComponent } from '../../parser/script/types'
 import { DocumentScope } from '../store/modules/project/types'
 import { resolveControlDirectives, ResolvedChild } from '../ui-logic/rendering'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'VueComponent',
 
   props: {
@@ -24,7 +24,6 @@ export default Vue.extend({
     },
     scope: {
       type: Object as { (): DocumentScope },
-      required: true,
     },
     childComponents: {
       type: Array as { (): ChildComponent[] },
@@ -39,31 +38,34 @@ export default Vue.extend({
   computed: {
     scopeValues(): Record<string, any> {
       const values: Record<string, any> = {}
+      const scope = this.scope
 
-      Object.keys(this.scope.props).forEach((name) => {
-        const prop = this.scope.props[name]
+      if (scope) {
+        Object.keys(scope.props).forEach((name) => {
+          const prop = scope.props[name]
 
-        if (name in this.propsData) {
-          const propValue = this.propsData[name]
+          if (name in this.propsData) {
+            const propValue = this.propsData[name]
 
-          // Coerce empty string to `true` when it is declared as boolean prop
-          values[name] =
-            prop.type === 'Boolean' && propValue === '' ? true : propValue
-        } else {
-          values[name] = prop.value
-        }
-      })
+            // Coerce empty string to `true` when it is declared as boolean prop
+            values[name] =
+              prop.type === 'Boolean' && propValue === '' ? true : propValue
+          } else {
+            values[name] = prop.value
+          }
+        })
 
-      Object.keys(this.scope.data).forEach((name) => {
-        values[name] = this.scope.data[name].value
-      })
+        Object.keys(scope.data).forEach((name) => {
+          values[name] = scope.data[name].value
+        })
+      }
 
       return values
     },
   },
 
-  render(h): VNode {
-    const children = [h('style', { domProps: { textContent: this.styles } })]
+  render(): VNode {
+    const children = [h('style', { textContent: this.styles })]
 
     if (this.template) {
       this.template.children
@@ -74,28 +76,24 @@ export default Vue.extend({
           })
         }, [])
         .forEach((child) => {
-          return children.push(
+          children.push(
             h(VueChild, {
-              props: {
-                uri: this.uri,
-                data: child.el,
-                scope: child.scope,
-                childComponents: this.childComponents,
-                slots: this.$slots,
-                scopedSlots: this.$scopedSlots,
+              uri: this.uri,
+              data: child.el,
+              scope: child.scope,
+              childComponents: this.childComponents,
+              slots: this.$slots,
+
+              onSelect: (path: number[]) => {
+                this.$emit('select', path)
               },
-              on: {
-                select: (path: number[]) => {
-                  this.$emit('select', path)
-                },
 
-                dragover: (path: number[]) => {
-                  this.$emit('dragover', path)
-                },
+              onDragover: (path: number[]) => {
+                this.$emit('dragover', path)
+              },
 
-                add: () => {
-                  this.$emit('add')
-                },
+              onAdd: () => {
+                this.$emit('add')
               },
             })
           )

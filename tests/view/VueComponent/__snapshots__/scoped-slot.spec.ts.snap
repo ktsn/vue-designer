@@ -5,10 +5,10 @@ exports[`VueComponent scoped slot > renders named scoped slot content 1`] = `
   <style></style>
   <div class="">
     <style></style>
-    <div data-scope-scope-id="" class="">
-      <p data-scope-scope-id="" class="">foo content</p>
-      <p slot-scope="props" class=""><span class="">test1</span></p>
-      <p slot-scope="props" class=""><span class="">test2</span></p>
+    <div class="" data-scope-scope-id="">
+      <p class="" data-scope-scope-id="">foo content</p>
+      <p class="" slot-scope="props"><span class="">test1</span></p>
+      <p class="" slot-scope="props"><span class="">test2</span></p>
     </div>
   </div>
 </div>
@@ -19,9 +19,9 @@ exports[`VueComponent scoped slot > renders scoped slot content 1`] = `
   <style></style>
   <div class="">
     <style></style>
-    <div data-scope-scope-id="" class="">
-      <p data-scope-scope-id="" class="">foo content</p>
-      <p slot-scope="props" class=""><span class="">test</span></p>
+    <div class="" data-scope-scope-id="">
+      <p class="" data-scope-scope-id="">foo content</p>
+      <p class="" slot-scope="props"><span class="">test</span></p>
     </div>
   </div>
 </div>
@@ -32,7 +32,7 @@ exports[`VueComponent scoped slot > resolves template element children as a slot
   <style></style>
   <div class="">
     <style></style>
-    <div data-scope-scope-id="" class="">
+    <div class="" data-scope-scope-id="">
       <div class="">named</div>
       <div class=""><span class="">test</span></div>
     </div>

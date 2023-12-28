@@ -2,12 +2,10 @@ import './global.css'
 import './lib/drag-and-drop'
 import './load-icons'
 
-import Vue, { ComponentOptions } from 'vue'
+import { createApp } from 'vue'
 import App from './App.vue'
 import { store } from './store'
 
-new Vue({
-  el: '#app',
-  store,
-  render: (h) => h(App),
-} as ComponentOptions<Vue>)
+const app = createApp(App)
+app.use(store)
+app.mount('#app')

@@ -6,7 +6,7 @@
     :offset-weight="2 / scale"
     :style="viewportStyle"
     class="viewport-wrapper"
-    @resize="$emit('resize', arguments[0])"
+    @resize="$emit('resize', $event)"
   >
     <!-- Hack for avoiding template compile error of style elements -->
     <div is="style" :text-content.prop="sharedStyle" />
@@ -19,12 +19,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
-import GlobalEvents from 'vue-global-events'
+import { defineComponent } from 'vue'
+import { GlobalEvents } from 'vue-global-events'
 import Resizable from './Resizable.vue'
 import { minmax } from '../../utils'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'Viewport',
 
   components: {

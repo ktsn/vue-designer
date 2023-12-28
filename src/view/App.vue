@@ -1,12 +1,12 @@
 <template>
-  <div id="app"><PageMain /></div>
+  <PageMain />
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import PageMain from './components/PageMain.vue'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'App',
 
   components: {

@@ -54,10 +54,7 @@ describe('Renderer', () => {
         scale: 1,
         sharedStyle: '',
       },
-      {},
-      {
-        store: dummyStore,
-      }
+      [dummyStore]
     )
 
     const size = vm.scrollContentSize
@@ -76,10 +73,7 @@ describe('Renderer', () => {
         scale: 1,
         sharedStyle: '',
       },
-      {},
-      {
-        store: dummyStore,
-      }
+      [dummyStore]
     )
 
     const size = vm.scrollContentSize
@@ -98,10 +92,7 @@ describe('Renderer', () => {
         scale: 2,
         sharedStyle: '',
       },
-      {},
-      {
-        store: dummyStore,
-      }
+      [dummyStore]
     )
 
     const size = vm.scrollContentSize

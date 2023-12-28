@@ -7,8 +7,8 @@
         :height="height"
         :scale="scale"
         :shared-style="sharedStyle"
-        @resize="$emit('resize', arguments[0])"
-        @zoom="$emit('zoom', arguments[0])"
+        @resize="$emit('resize', $event)"
+        @zoom="$emit('zoom', $event)"
       >
         <VueComponent
           :uri="document.uri"
@@ -17,7 +17,7 @@
           :child-components="document.childComponents"
           :styles="document.styleCode"
           @select="onSelectNode"
-          @dragover="$emit('dragover', arguments[0])"
+          @dragover="$emit('dragover', $event)"
           @add="$emit('add')"
         />
 
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { ComponentPublicInstance, defineComponent, onBeforeUnmount } from 'vue'
 import Viewport from './Viewport.vue'
 import VueComponent from './VueComponent.vue'
 import RendererGuide from './RendererGuide.vue'
@@ -37,7 +37,7 @@ import { TEElement } from '../../parser/template/types'
 
 const scrollContentPadding = 100
 
-export default Vue.extend({
+export default defineComponent({
   name: 'Renderer',
 
   components: {
@@ -53,7 +53,6 @@ export default Vue.extend({
     },
     scope: {
       type: Object as () => DocumentScope,
-      required: true,
     },
     width: {
       type: Number,
@@ -164,7 +163,7 @@ export default Vue.extend({
 
     window.addEventListener('resize', listener)
     listener()
-    this.$once('hook:beforeDestroy', () => {
+    onBeforeUnmount(() => {
       window.removeEventListener('resize', listener)
     })
   },
@@ -187,7 +186,7 @@ export default Vue.extend({
       ast: TEElement
       element: HTMLElement
     }): void {
-      const viewport = (this.$refs.viewport as Vue).$el
+      const viewport = (this.$refs.viewport as ComponentPublicInstance).$el
       this.$emit('select', {
         ast,
         element,

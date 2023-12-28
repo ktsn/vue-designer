@@ -32,13 +32,21 @@ describe('VueComponent select event', () => {
     const template = createTemplate([root])
 
     const spy = vitest.fn()
-    const vm = render(template)
-    vm.$on('select', spy)
+    const vm = render(
+      template,
+      [],
+      [],
+      [],
+      {},
+      {
+        onSelect: spy,
+      }
+    )
 
-    vm.$el.querySelector<HTMLElement>('#root')!.click()
-    vm.$el.querySelector<HTMLElement>('#first')!.click()
-    vm.$el.querySelector<HTMLElement>('#second')!.click()
-    vm.$el.querySelector<HTMLElement>('#third')!.click()
+    vm.$el.querySelector('#root')!.click()
+    vm.$el.querySelector('#first')!.click()
+    vm.$el.querySelector('#second')!.click()
+    vm.$el.querySelector('#third')!.click()
 
     expect(spy).toHaveBeenCalledTimes(4)
     expect(spy).toHaveBeenCalledWith(expect.objectContaining({ ast: root }))
@@ -78,11 +86,13 @@ describe('VueComponent select event', () => {
           uri: 'file:///Foo.vue',
         },
       ],
-      components
+      components,
+      {
+        onSelect: spy,
+      }
     )
 
-    vm.$on('select', spy)
-    vm.$el.querySelector<HTMLElement>('#child-button')!.click()
+    vm.$el.querySelector('#child-button')!.click()
     expect(spy).toHaveBeenCalledTimes(1)
     expect(spy).toHaveBeenCalledWith(expect.objectContaining({ ast: comp }))
   })

@@ -7,15 +7,10 @@ describe('InputComposition', () => {
   it('ports value to real input element', async () => {
     const spy = vitest.fn()
 
-    const { vm } = mount(
-      InputComposition,
-      {
-        value: 'test',
-      },
-      {
-        input: spy,
-      }
-    )
+    const { vm } = mount(InputComposition, {
+      value: 'test',
+      onInput: spy,
+    })
 
     const input = vm.$el as HTMLInputElement
 
@@ -32,42 +27,37 @@ describe('InputComposition', () => {
 
   it('does not emit key events during composition', async () => {
     const listeners = {
-      input: vitest.fn(),
-      keydown: vitest.fn(),
+      onInput: vitest.fn(),
+      onKeydown: vitest.fn(),
     }
 
-    const { vm } = mount(
-      InputComposition,
-      {
-        value: 'test',
-      },
-      {
-        ...listeners,
-      }
-    )
+    const { vm } = mount(InputComposition, {
+      value: 'test',
+      ...listeners,
+    })
 
     const input = vm.$el as HTMLInputElement
     input.dispatchEvent(new InputEvent('input'))
     input.dispatchEvent(new KeyboardEvent('keydown'))
     await nextTick()
 
-    expect(listeners.input).toHaveBeenCalledTimes(1)
-    expect(listeners.keydown).toHaveBeenCalledTimes(1)
+    expect(listeners.onInput).toHaveBeenCalledTimes(1)
+    expect(listeners.onKeydown).toHaveBeenCalledTimes(1)
 
     input.dispatchEvent(new CompositionEvent('compositionstart'))
     input.dispatchEvent(new InputEvent('input'))
     input.dispatchEvent(new KeyboardEvent('keydown'))
     await nextTick()
 
-    expect(listeners.input).toHaveBeenCalledTimes(2)
-    expect(listeners.keydown).toHaveBeenCalledTimes(1)
+    expect(listeners.onInput).toHaveBeenCalledTimes(2)
+    expect(listeners.onKeydown).toHaveBeenCalledTimes(1)
 
     input.dispatchEvent(new CompositionEvent('compositionend'))
     input.dispatchEvent(new InputEvent('input'))
     input.dispatchEvent(new KeyboardEvent('keydown'))
     await nextTick()
 
-    expect(listeners.input).toHaveBeenCalledTimes(3)
-    expect(listeners.keydown).toHaveBeenCalledTimes(2)
+    expect(listeners.onInput).toHaveBeenCalledTimes(3)
+    expect(listeners.onKeydown).toHaveBeenCalledTimes(2)
   })
 })

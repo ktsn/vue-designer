@@ -75,7 +75,7 @@
       </div>
 
       <button
-        :aria-pressed="String(openPane)"
+        :aria-pressed="openPane"
         class="information-pane-toggle"
         type="button"
         aria-label="Toggle information pane"
@@ -86,7 +86,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import Renderer from './Renderer.vue'
 import ScopeInformation from './ScopeInformation.vue'
 import StyleInformation from './StyleInformation.vue'
@@ -100,7 +100,7 @@ const projectMapper = mapper.module('project')
 const viewportMapper = mapper.module('viewport')
 const guideMapper = mapper.module('guide')
 
-export default Vue.extend({
+export default defineComponent({
   name: 'PageMain',
 
   components: {

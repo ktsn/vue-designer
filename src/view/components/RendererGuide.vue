@@ -8,12 +8,12 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import { mapper } from '../store'
 
 const guideMapper = mapper.module('guide')
 
-export default Vue.extend({
+export default defineComponent({
   name: 'RendererGuide',
 
   computed: {

@@ -1,4 +1,3 @@
-import Vue from 'vue'
 import { Mutations } from 'sinai'
 import { VueFilePayload } from '../../../../parser/vue-file'
 import { TEElement } from '../../../../parser/template/types'
@@ -14,11 +13,11 @@ export class ProjectMutations extends Mutations<ProjectState>() {
   }
 
   setDocument(vueFile: VueFilePayload): void {
-    Vue.set(this.state.documents, vueFile.uri, vueFile)
+    this.state.documents[vueFile.uri] = vueFile
   }
 
   removeDocument(uri: string): void {
-    Vue.delete(this.state.documents, uri)
+    delete this.state.documents[uri]
   }
 
   changeActiveDocument(uri: string): void {
@@ -92,10 +91,10 @@ export class ProjectMutations extends Mutations<ProjectState>() {
 
       next.forEach((item) => {
         if (!scope[item.name]) {
-          Vue.set(scope, item.name, {
+          scope[item.name] = {
             type: null,
             value: item.default,
-          })
+          }
         }
 
         scope[item.name].type = 'type' in item ? item.type : null
@@ -107,16 +106,16 @@ export class ProjectMutations extends Mutations<ProjectState>() {
       })
 
       willRemove.forEach((key) => {
-        Vue.delete(scope, key)
+        delete scope[key]
       })
     }
 
     let scope = this.state.documentScopes[uri]
     if (!scope) {
-      scope = Vue.set(this.state.documentScopes, uri, {
+      scope = this.state.documentScopes[uri] = {
         props: {},
         data: {},
-      })
+      }
     }
 
     update(scope.props, props)
@@ -124,7 +123,7 @@ export class ProjectMutations extends Mutations<ProjectState>() {
   }
 
   cleanScope(uri: string): void {
-    Vue.delete(this.state.documentScopes, uri)
+    delete this.state.documentScopes[uri]
   }
 
   updatePropValue({ name, value }: { name: string; value: any }): void {

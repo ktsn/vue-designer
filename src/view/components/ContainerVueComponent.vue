@@ -1,12 +1,12 @@
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import { Comment, defineComponent, h, VNode } from 'vue'
 import VueComponent from './VueComponent.vue'
 import { ScopedDocument, DocumentScope } from '../store/modules/project/types'
 import { mapper } from '../store'
 
 const projectMapper = mapper.module('project')
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ContainerVueComponent',
 
   props: {
@@ -39,33 +39,20 @@ export default Vue.extend({
     },
   },
 
-  render(h): VNode {
-    if (!this.document) return h()
-
-    const flattenSlots = Object.keys(this.$slots).map((name) => {
-      return h(
-        'template',
-        {
-          slot: name,
-        },
-        this.$slots[name]
-      )
-    })
+  render(): VNode {
+    if (!this.document) return h(Comment)
 
     return h(
       VueComponent,
       {
-        props: {
-          uri: this.uri,
-          template: this.document.template,
-          scope: this.scope,
-          childComponents: this.document.childComponents,
-          styles: this.document.styleCode,
-          propsData: this.propsData,
-        },
-        scopedSlots: this.$scopedSlots,
+        uri: this.uri,
+        template: this.document.template,
+        scope: this.scope,
+        childComponents: this.document.childComponents,
+        styles: this.document.styleCode,
+        propsData: this.propsData,
       },
-      flattenSlots
+      this.$slots
     )
   },
 })

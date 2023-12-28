@@ -7,7 +7,7 @@
       </span>
       <InputComposition
         v-else
-        v-model="editingName"
+        v-model:value="editingName"
         class="input-json-label editing"
         type="text"
         @keydown="onKeydownInput"
@@ -19,7 +19,7 @@
       </span>
       <InputComposition
         v-else
-        v-model="editingValue"
+        v-model:value="editingValue"
         class="input-json-value editing"
         type="text"
         @keydown="onKeydownInput"
@@ -65,7 +65,7 @@
         <InputJson
           :renamable="valueType === 'object'"
           :field="child"
-          @change="onChangeChild(arguments[0], child.name)"
+          @change="onChangeChild($event, child.name)"
         />
       </li>
     </ul>
@@ -73,7 +73,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import BaseIcon from './BaseIcon.vue'
 import InputComposition from './InputComposition.vue'
 import { clone } from '../../utils'
@@ -93,7 +93,7 @@ interface JsonField {
   value: any
 }
 
-export default Vue.extend({
+export default defineComponent({
   name: 'InputJson',
 
   components: {

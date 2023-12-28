@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import { store as createStore, install, createMapper } from 'sinai'
+import { nextTick } from 'vue'
+import { store as createStore, createMapper } from 'sinai'
 import rootModule from './modules'
 import { CommunicationClient } from '../communication/client'
 import { StyleMatcher } from './style-matcher'
@@ -7,8 +7,6 @@ import { BoundsCalculator } from './bounds-calculator'
 import { ResolverType } from '../../server/resolver'
 import { MutatorType } from '../../server/mutator'
 import { SubjectType } from '../../server/subject-type'
-
-Vue.use(install)
 
 export const store = createStore(rootModule, {
   strict: import.meta.env.MODE !== 'production',
@@ -53,8 +51,8 @@ store.subscribe((path: any) => {
   const guideActions = store.actions.guide
 
   if (mayRelayout.indexOf(pathStr) >= 0) {
-    Vue.nextTick(guideActions.calculate)
+    nextTick(guideActions.calculate)
   } else if (shouldReset.indexOf(pathStr) >= 0) {
-    Vue.nextTick(guideActions.deselect)
+    nextTick(guideActions.deselect)
   }
 })

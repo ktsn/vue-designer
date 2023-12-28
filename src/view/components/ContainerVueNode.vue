@@ -3,12 +3,11 @@
     v-bind="$props"
     :selectable="currentUri === uri"
     :selected="selected"
-    v-on="$listeners"
   />
 </template>
 
 <script lang="ts">
-import Vue, { VNode } from 'vue'
+import { defineComponent } from 'vue'
 import VueNode from './VueNode.vue'
 import { TEElement } from '../../parser/template/types'
 import { DefaultValue, ChildComponent } from '../../parser/script/types'
@@ -16,7 +15,7 @@ import { mapper } from '../store'
 
 const projectMapper = mapper.module('project')
 
-export default Vue.extend({
+export default defineComponent({
   name: 'ContainerVueNode',
 
   props: {
@@ -41,12 +40,7 @@ export default Vue.extend({
     },
 
     slots: {
-      type: Object as { (): Record<string, VNode[]> },
-      required: true,
-    },
-
-    scopedSlots: {
-      type: Object,
+      type: Object as { (): Record<string, any> },
       required: true,
     },
   },
@@ -68,7 +62,8 @@ export default Vue.extend({
   },
 
   beforeCreate() {
-    this.$options.components!.VueNode = VueNode
+    this.$options.components ??= {}
+    this.$options.components.VueNode = VueNode
   },
 })
 </script>

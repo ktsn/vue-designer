@@ -1,18 +1,18 @@
 <template>
   <input
-    v-bind="$attrs"
+    v-bind="attrs"
     :value="value"
-    v-on="listeners"
+    @input="$emit('update:value', ($event.target as HTMLInputElement).value)"
     @compositionstart="compositing = true"
     @compositionend="compositing = false"
   />
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import { defineComponent } from 'vue'
 import { mapValues } from '../../utils'
 
-export default Vue.extend({
+export default defineComponent({
   name: 'InputComposition',
   inheritAttrs: false,
 
@@ -30,15 +30,17 @@ export default Vue.extend({
   },
 
   computed: {
-    listeners(): Record<string, ((event: Event) => void)[]> {
-      const convert = (
-        fn: Function | Function[]
-      ): ((event: Event) => void)[] => {
-        if (!Array.isArray(fn)) {
-          return convert([fn])
+    attrs(): Record<string, unknown> {
+      const convert = (value: unknown, key: string): unknown => {
+        if (!/^on[A-Z1-9]/.test(key)) {
+          return value
         }
 
-        return fn.map((f) => {
+        if (!Array.isArray(value)) {
+          return convert([value], key)
+        }
+
+        return value.map((f) => {
           return (event: Event) => {
             const isKeyEvent = /^key/.test(event.type)
             if (isKeyEvent && this.compositing) {
@@ -51,7 +53,7 @@ export default Vue.extend({
         })
       }
 
-      return mapValues(this.$listeners, convert)
+      return mapValues(this.$attrs, convert)
     },
   },
 })

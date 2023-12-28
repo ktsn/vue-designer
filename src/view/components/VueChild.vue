@@ -6,8 +6,7 @@ import VueExpression from './VueExpression.vue'
 import { TEChild } from '../../parser/template/types'
 import { DefaultValue, ChildComponent } from '../../parser/script/types'
 
-// Assign to a constant to recursively use this component
-const VueChild = defineComponent({
+export default defineComponent({
   name: 'VueChild',
 
   props: {
@@ -37,6 +36,8 @@ const VueChild = defineComponent({
     },
   },
 
+  emits: ['select', 'dragover', 'add'],
+
   render() {
     const { data, scope } = this
     switch (data.type) {
@@ -44,7 +45,12 @@ const VueChild = defineComponent({
         if (data.name === 'slot') {
           return h(VueSlot, this.$props as any)
         } else {
-          return h(ContainerVueNode, this.$props as any)
+          return h(ContainerVueNode, {
+            ...(this.$props as any),
+            onSelect: (...args: any[]) => this.$emit('select', ...args),
+            onDragover: (...args: any[]) => this.$emit('dragover', ...args),
+            onAdd: (...args: any[]) => this.$emit('add', ...args),
+          })
         }
       case 'TextNode':
         return [data.text]
@@ -58,5 +64,4 @@ const VueChild = defineComponent({
     }
   },
 })
-export default VueChild
 </script>

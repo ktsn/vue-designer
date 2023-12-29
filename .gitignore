@@ -1,4 +1,9 @@
 .DS_Store
-npm-debug.log
+*.log
+
+.vscode
+!.vscode/launch.json
+!.vscode/tasks.json
+
 node_modules
 /lib/

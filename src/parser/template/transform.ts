@@ -107,7 +107,7 @@ function transformAttribute(
   code: string,
 ): t.TEAttribute | t.TEDirective {
   if (attr.directive) {
-    if (attr.key.name === 'for') {
+    if (attr.key.name.name === 'for') {
       const exp =
         attr.value &&
         attr.value.expression &&
@@ -123,11 +123,14 @@ function transformAttribute(
       )
     } else {
       const exp = attr.value && attr.value.expression
+      const argStr = attr.key.argument
+        ? extractExpression(attr.key.argument, code)
+        : undefined
       const expStr = exp ? extractExpression(exp, code) : undefined
       return directive(
         index,
         attr.key.name,
-        attr.key.argument || undefined,
+        argStr,
         attr.key.modifiers,
         expStr,
         attr.range,
@@ -275,20 +278,20 @@ function attribute(
 
 function directive(
   attrIndex: number,
-  name: string,
+  name: AST.VIdentifier,
   argument: string | undefined,
-  modifiers: string[],
+  modifiers: AST.VIdentifier[],
   expression: string | undefined,
   range: [number, number],
 ): t.TEDirective {
   const mod: Record<string, boolean> = {}
   modifiers.forEach((m) => {
-    mod[m] = true
+    mod[m.name] = true
   })
   return {
     type: 'Directive',
     attrIndex,
-    name,
+    name: name.name,
     argument,
     modifiers: mod,
     expression,

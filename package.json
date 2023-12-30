@@ -65,8 +65,8 @@
     "vscode": "^1.23.0"
   },
   "dependencies": {
-    "@babel/parser": "^7.0.0",
-    "@babel/types": "^7.0.0",
+    "@babel/parser": "^7.23.6",
+    "@babel/types": "^7.23.6",
     "@vue/compiler-sfc": "^3.3.13",
     "eslint": "^8.55.0",
     "hash-sum": "^2.0.0",

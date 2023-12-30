@@ -208,13 +208,13 @@ function isStringLiteral(node: t.Node): node is t.StringLiteral {
  * If it returns `true`, `node.key` should be `StaticKey`.
  */
 function isStaticProperty(
-  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty,
+  node: t.ObjectProperty | t.ObjectMethod | t.SpreadElement,
 ): node is t.ObjectProperty {
   return t.isObjectProperty(node) && !node.computed
 }
 
 function isStaticPropertyOrMethod(
-  node: t.ObjectProperty | t.ObjectMethod | t.SpreadProperty,
+  node: t.ObjectProperty | t.ObjectMethod | t.SpreadElement,
 ): node is t.ObjectProperty | t.ObjectMethod {
   return isStaticProperty(node) || (t.isObjectMethod(node) && !node.computed)
 }
@@ -227,7 +227,7 @@ function getStaticKeyName(key: StaticKey): string {
  * Find a property name that matches the specified property name.
  */
 export function findProperty(
-  props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
+  props: (t.ObjectProperty | t.ObjectMethod | t.SpreadElement)[],
   name: string,
 ): t.ObjectProperty | undefined {
   return props.filter(isStaticProperty).find((p) => {
@@ -237,7 +237,7 @@ export function findProperty(
 }
 
 function findPropertyOrMethod(
-  props: (t.ObjectProperty | t.ObjectMethod | t.SpreadProperty)[],
+  props: (t.ObjectProperty | t.ObjectMethod | t.SpreadElement)[],
   name: string,
 ): t.ObjectProperty | t.ObjectMethod | undefined {
   return props.filter(isStaticPropertyOrMethod).find((p) => {

@@ -67,7 +67,7 @@
   "dependencies": {
     "@babel/parser": "^7.23.6",
     "@babel/types": "^7.23.6",
-    "@vue/compiler-sfc": "^3.3.13",
+    "@vue/compiler-sfc": "^3.4.1",
     "eslint": "^8.56.0",
     "hash-sum": "^2.0.0",
     "lodash.debounce": "^4.0.8",
@@ -82,7 +82,7 @@
     "@types/eslint-visitor-keys": "^3.3.0",
     "@types/lodash.debounce": "^4.0.9",
     "@types/ws": "^8.5.10",
-    "@vitejs/plugin-vue": "^5.0.0",
+    "@vitejs/plugin-vue": "^5.0.1",
     "conventional-changelog-cli": "^4.1.0",
     "jsdom": "^23.0.1",
     "lodash.camelcase": "^4.3.0",
@@ -96,7 +96,7 @@
     "vite": "^5.0.8",
     "vitest": "^1.1.0",
     "vscode": "^1.1.37",
-    "vue": "^3.3.13",
+    "vue": "^3.4.1",
     "vue-global-events": "^3.0.1",
     "vue-tsc": "^1.8.27",
     "xml-name-validator": "^5.0.0"
